@@ -60,3 +60,36 @@ class DefaultCmsHeader extends StatelessWidget {
     );
   }
 }
+
+/// InheritedWidget that provides CMS header configuration (branding)
+/// to descendant widgets like the top bar in [StudioShell].
+class DefaultCmsHeaderConfig extends InheritedWidget {
+  final String title;
+  final String? subtitle;
+  final IconData? icon;
+  final String? dashboardUrl;
+  final VoidCallback? onDashboardPressed;
+
+  const DefaultCmsHeaderConfig({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.icon,
+    this.dashboardUrl,
+    this.onDashboardPressed,
+    required super.child,
+  });
+
+  static DefaultCmsHeaderConfig? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<DefaultCmsHeaderConfig>();
+  }
+
+  @override
+  bool updateShouldNotify(DefaultCmsHeaderConfig oldWidget) {
+    return title != oldWidget.title ||
+        subtitle != oldWidget.subtitle ||
+        icon != oldWidget.icon ||
+        dashboardUrl != oldWidget.dashboardUrl ||
+        onDashboardPressed != oldWidget.onDashboardPressed;
+  }
+}
