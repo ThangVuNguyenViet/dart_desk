@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../../providers/studio_provider.dart';
-
 /// A navigation item widget for a CmsDocumentType
 class CmsDocumentTypeItem extends StatelessWidget {
   final CmsDocumentType documentType;
@@ -22,15 +20,9 @@ class CmsDocumentTypeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final viewModel = cmsViewModelProvider.of(context);
 
     return GestureDetector(
-      onTap: () {
-        // Update the ViewModel
-        viewModel.selectDocumentType(documentType);
-        // Call the optional onTap callback
-        onTap?.call();
-      },
+      onTap: onTap,
       child: ShadCard(
         padding: EdgeInsets.all(8),
         child: Row(
@@ -68,18 +60,6 @@ class CmsDocumentTypeItem extends StatelessWidget {
                           : theme.colorScheme.foreground,
                     ),
                   ),
-                  // if (documentType.description.isNotEmpty) ...[
-                  //   const SizedBox(height: 2),
-                  //   Text(
-                  //     documentType.description,
-                  //     style: theme.textTheme.muted.copyWith(
-                  //       fontSize: 12,
-                  //       height: 1.3,
-                  //     ),
-                  //     maxLines: 2,
-                  //     overflow: TextOverflow.ellipsis,
-                  //   ),
-                  // ],
                 ],
               ),
             ),

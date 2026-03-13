@@ -316,12 +316,9 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                       // Clear documentId to indicate this is a new document
                       documentViewModel.documentId.value = null;
 
-                      // Clear versionId as well
-                      viewModel.selectedVersionId.value = null;
-
                       viewModel.createDocument(
                         title,
-                        viewModel.selectedDocumentType.value?.defaultValue
+                        viewModel.currentDocumentType.value?.defaultValue
                                 ?.toMap() ??
                             {},
                         slug: slug,

@@ -4,14 +4,20 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../providers/studio_provider.dart';
+import '../routes/document_route.dart';
+import '../routes/studio_coordinator.dart';
 import 'document_editor.dart';
 import 'document_list.dart';
 
 class CmsStudio extends StatefulWidget {
-  final Widget header;
+  final StudioCoordinator coordinator;
   final Widget sidebar;
 
-  const CmsStudio({super.key, required this.header, required this.sidebar});
+  const CmsStudio({
+    super.key,
+    required this.coordinator,
+    required this.sidebar,
+  });
 
   @override
   State<CmsStudio> createState() => _CmsStudioState();
@@ -25,8 +31,8 @@ class _CmsStudioState extends State<CmsStudio> {
     return Container(
       decoration: BoxDecoration(color: theme.colorScheme.background),
       child: Watch((context) {
-        final selectedDocumentType = cmsViewModel.selectedDocumentType.value;
-        if (selectedDocumentType == null) {
+        final docType = cmsViewModel.currentDocumentType.value;
+        if (docType == null) {
           return _buildEmptyState(
             icon: Icons.edit,
             title: 'Document Editor',
@@ -37,8 +43,8 @@ class _CmsStudioState extends State<CmsStudio> {
 
         // Build document editor with compact spacing for web
         return CmsDocumentEditor(
-          fields: selectedDocumentType.fields,
-          title: selectedDocumentType.title,
+          fields: docType.fields,
+          title: docType.title,
         );
       }),
     );
@@ -54,8 +60,8 @@ class _CmsStudioState extends State<CmsStudio> {
         border: Border(left: BorderSide(color: theme.colorScheme.border)),
       ),
       child: Watch((context) {
-        final selectedDocument = viewModel.selectedDocumentType.value;
-        if (selectedDocument == null) {
+        final docType = viewModel.currentDocumentType.value;
+        if (docType == null) {
           return _buildEmptyState(
             icon: Icons.visibility,
             title: 'Content Preview',
@@ -65,7 +71,7 @@ class _CmsStudioState extends State<CmsStudio> {
         }
 
         // Use the documentDataContainer for preview
-        final versionId = viewModel.selectedVersionId.value;
+        final versionId = viewModel.selectedVersionIdInt;
         if (versionId == null) {
           return _buildEmptyState(
             icon: Icons.article,
@@ -102,7 +108,7 @@ class _CmsStudioState extends State<CmsStudio> {
             // Wrap preview content with compact padding for web
             return Padding(
               padding: const EdgeInsets.all(16.0),
-              child: selectedDocument.builder(versionData.data!),
+              child: docType.builder(versionData.data!),
             );
           },
         );
@@ -120,9 +126,9 @@ class _CmsStudioState extends State<CmsStudio> {
         border: Border(right: BorderSide(color: theme.colorScheme.border)),
       ),
       child: Watch((context) {
-        final selectedDocument = viewModel.selectedDocumentType.value;
+        final docType = viewModel.currentDocumentType.value;
 
-        if (selectedDocument == null) {
+        if (docType == null) {
           return _buildEmptyState(
             icon: Icons.folder_open,
             title: 'Documents',
@@ -133,14 +139,12 @@ class _CmsStudioState extends State<CmsStudio> {
         return Padding(
           padding: const EdgeInsets.all(12.0),
           child: CmsDocumentListView(
-            selectedDocumentType: selectedDocument,
+            selectedDocumentType: docType,
             icon: Icons.description,
             onOpenDocument: (documentId) {
-              // Select the document by ID
-              final docId = int.tryParse(documentId);
-              if (docId != null) {
-                viewModel.selectDocument(docId);
-              }
+              widget.coordinator.push(
+                DocumentRoute(docType.name, documentId),
+              );
             },
           ),
         );
@@ -157,27 +161,9 @@ class _CmsStudioState extends State<CmsStudio> {
         color: theme.colorScheme.muted.withValues(alpha: 0.3),
         border: Border(right: BorderSide(color: theme.colorScheme.border)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header with compact styling for web
-          Container(
-            decoration: BoxDecoration(
-              color: theme.colorScheme.background,
-              border: Border(
-                bottom: BorderSide(color: theme.colorScheme.border),
-              ),
-            ),
-            child: widget.header,
-          ),
-          // Sidebar content with compact padding for web
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: widget.sidebar,
-            ),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: widget.sidebar,
       ),
     );
   }
@@ -245,7 +231,6 @@ class _CmsStudioState extends State<CmsStudio> {
       body: Container(
         decoration: BoxDecoration(
           color: theme.colorScheme.background,
-          // Add subtle backdrop to entire studio
         ),
         child: ResizableContainer(
           direction: Axis.horizontal,

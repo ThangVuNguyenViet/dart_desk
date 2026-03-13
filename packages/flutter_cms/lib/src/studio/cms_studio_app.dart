@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
 
-import '../../studio.dart';
 import '../data/cms_data_source.dart';
-import 'providers/studio_provider.dart';
+import 'routes/studio_coordinator.dart';
+import 'screens/cms_studio.dart';
 
 class CmsStudioApp extends StatelessWidget {
   const CmsStudioApp({
     super.key,
-    required this.header,
+    required this.coordinator,
     required this.sidebar,
     required this.dataSource,
   });
 
-  final Widget header;
+  final StudioCoordinator coordinator;
   final Widget sidebar;
-
   final CmsDataSource dataSource;
 
   @override
   Widget build(BuildContext context) {
-    return StudioProvider(
-      dataSource: dataSource,
-      child: CmsStudio(header: header, sidebar: sidebar),
-    );
+    return CmsStudio(coordinator: coordinator, sidebar: sidebar);
   }
 }

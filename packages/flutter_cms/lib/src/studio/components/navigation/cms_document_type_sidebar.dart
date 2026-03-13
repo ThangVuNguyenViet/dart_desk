@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../providers/studio_provider.dart';
+import '../../routes/document_type_route.dart';
+import '../../routes/studio_coordinator.dart';
 import '../common/cms_document_type_decoration.dart';
 import '../common/cms_document_type_item.dart';
 
 /// A sidebar widget that displays a list of CmsDocumentTypeDecoration navigation items
-class CmsDocumentTypeSidebar extends StatefulWidget {
+class CmsDocumentTypeSidebar extends StatelessWidget {
   final List<CmsDocumentTypeDecoration> documentTypeDecorations;
+  final StudioCoordinator coordinator;
   final EdgeInsets? padding;
   final Widget? header;
   final Widget? footer;
@@ -15,47 +18,28 @@ class CmsDocumentTypeSidebar extends StatefulWidget {
   const CmsDocumentTypeSidebar({
     super.key,
     required this.documentTypeDecorations,
+    required this.coordinator,
     this.padding,
     this.header,
     this.footer,
   });
 
   @override
-  State<CmsDocumentTypeSidebar> createState() => _CmsDocumentTypeSidebarState();
-}
-
-class _CmsDocumentTypeSidebarState extends State<CmsDocumentTypeSidebar> {
-  @override
-  void initState() {
-    super.initState();
-    // Auto-select the first document type if none is selected
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final viewModel = cmsViewModelProvider.of(context);
-      if (widget.documentTypeDecorations.isNotEmpty &&
-          viewModel.selectedDocumentType.value == null) {
-        viewModel.selectDocumentType(
-          widget.documentTypeDecorations.first.documentType,
-        );
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final viewModel = cmsViewModelProvider.of(context);
 
     return Watch((context) {
-      final selectedDocument = viewModel.selectedDocumentType.value;
+      final currentSlug = viewModel.currentDocumentTypeSlug.value;
       return Column(
         children: [
-          if (widget.header != null) widget.header!,
+          if (header != null) header!,
           Expanded(
             child: ListView(
-              padding: widget.padding ?? const EdgeInsets.all(8),
+              padding: padding ?? const EdgeInsets.all(8),
               children: [
-                ...widget.documentTypeDecorations.map((decoration) {
+                ...documentTypeDecorations.map((decoration) {
                   final isSelected =
-                      selectedDocument?.name == decoration.documentType.name;
+                      currentSlug == decoration.documentType.name;
 
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 4),
@@ -63,13 +47,18 @@ class _CmsDocumentTypeSidebarState extends State<CmsDocumentTypeSidebar> {
                       documentType: decoration.documentType,
                       isSelected: isSelected,
                       icon: decoration.icon,
+                      onTap: () {
+                        coordinator.push(
+                          DocumentTypeRoute(decoration.documentType.name),
+                        );
+                      },
                     ),
                   );
                 }),
               ],
             ),
           ),
-          if (widget.footer != null) widget.footer!,
+          if (footer != null) footer!,
         ],
       );
     });

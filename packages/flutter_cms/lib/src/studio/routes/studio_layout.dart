@@ -3,16 +3,16 @@ import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:zenrouter/zenrouter.dart';
 
-import '../cms_studio_app.dart';
 import '../components/common/default_cms_header.dart';
 import '../components/navigation/cms_document_type_sidebar.dart';
 import '../providers/studio_provider.dart';
+import '../screens/cms_studio.dart';
 import 'studio_coordinator.dart';
 import 'studio_route.dart';
 
 /// The root layout for all studio routes.
 ///
-/// Wraps content in [StudioShell] + [CmsStudioApp] to provide
+/// Wraps content in [StudioProvider] + [StudioShell] + [CmsStudio] to provide
 /// the top bar, sidebar, and document management panels.
 class StudioLayout extends StudioRoute with RouteLayout<StudioRoute> {
   @override
@@ -21,16 +21,18 @@ class StudioLayout extends StudioRoute with RouteLayout<StudioRoute> {
 
   @override
   Widget build(StudioCoordinator coordinator, BuildContext context) {
-    return StudioShell(
-      coordinator: coordinator,
-      child: CmsStudioApp(
+    return StudioProvider(
+      dataSource: coordinator.dataSource,
+      documentTypes: coordinator.documentTypes,
+      child: StudioShell(
         coordinator: coordinator,
-        sidebar: CmsDocumentTypeSidebar(
-          documentTypeDecorations: coordinator.documentTypeDecorations,
+        child: CmsStudio(
           coordinator: coordinator,
+          sidebar: CmsDocumentTypeSidebar(
+            documentTypeDecorations: coordinator.documentTypeDecorations,
+            coordinator: coordinator,
+          ),
         ),
-        dataSource: coordinator.dataSource,
-        documentTypes: coordinator.documentTypes,
       ),
     );
   }
@@ -57,6 +59,10 @@ class _StudioShellState extends State<StudioShell> {
   void initState() {
     super.initState();
     widget.coordinator.studioStack.addListener(_onRouteChanged);
+    // Sync initial route params after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _onRouteChanged();
+    });
   }
 
   @override
@@ -68,36 +74,11 @@ class _StudioShellState extends State<StudioShell> {
   void _onRouteChanged() {
     final vm = cmsViewModelProvider.of(context);
 
-    final documentTypeSlug = widget.coordinator.currentDocumentTypeSlug;
-    final documentId = widget.coordinator.currentDocumentId;
-    final versionId = widget.coordinator.currentVersionId;
-
-    // Sync document type selection
-    if (documentTypeSlug != null) {
-      final docType = widget.coordinator.documentTypes
-          .where((dt) => dt.name == documentTypeSlug)
-          .firstOrNull;
-      if (docType != null &&
-          vm.selectedDocumentType.value?.name != docType.name) {
-        vm.selectDocumentType(docType);
-      }
-    }
-
-    // Sync document selection
-    if (documentId != null) {
-      final docIdInt = int.tryParse(documentId);
-      if (docIdInt != null) {
-        vm.selectDocument(docIdInt);
-      }
-    }
-
-    // Sync version selection
-    if (versionId != null) {
-      final versionIdInt = int.tryParse(versionId);
-      if (versionIdInt != null) {
-        vm.selectVersion(versionIdInt);
-      }
-    }
+    vm.setRouteParams(
+      documentTypeSlug: widget.coordinator.currentDocumentTypeSlug,
+      documentId: widget.coordinator.currentDocumentId,
+      versionId: widget.coordinator.currentVersionId,
+    );
   }
 
   @override

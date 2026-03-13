@@ -67,7 +67,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
       return versionsState.map(
         data: (data) {
           final selectedVersion = data.versions.firstWhere(
-            (v) => v.id == widget.viewModel.selectedVersionId.value,
+            (v) => v.id == widget.viewModel.selectedVersionIdInt,
             orElse: () => data.versions.isNotEmpty
                 ? data.versions.first
                 : DocumentVersion(
@@ -259,14 +259,20 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
               itemBuilder: (context, index) {
                 final version = data.versions[index];
                 final isSelected =
-                    widget.viewModel.selectedVersionId.value == version.id;
+                    widget.viewModel.selectedVersionIdInt == version.id;
 
                 return _VersionMenuItem(
                   version: version,
                   isSelected: isSelected,
                   onTap: () {
                     if (version.id != null) {
-                      widget.viewModel.selectVersion(version.id!);
+                      widget.viewModel.setRouteParams(
+                        documentTypeSlug:
+                            widget.viewModel.currentDocumentTypeSlug.value,
+                        documentId:
+                            widget.viewModel.currentDocumentId.value,
+                        versionId: version.id.toString(),
+                      );
                       _popoverController.toggle();
                     }
                   },

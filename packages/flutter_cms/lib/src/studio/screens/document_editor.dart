@@ -26,8 +26,8 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   @override
   void initState() {
     final viewModel = cmsViewModelProvider.of(context);
-    final selectedDoc = viewModel.selectedDocumentType.value;
-    editedData = createMapSignal(selectedDoc?.defaultValue?.toMap() ?? {});
+    final docType = viewModel.currentDocumentType.value;
+    editedData = createMapSignal(docType?.defaultValue?.toMap() ?? {});
     super.initState();
   }
 
@@ -79,7 +79,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   Future<void> _discardDocument() async {
     try {
       final viewModel = cmsViewModelProvider.of(context);
-      final versionId = viewModel.selectedVersionId.value;
+      final versionId = viewModel.selectedVersionIdInt;
 
       if (versionId != null) {
         // Reset to original version data
@@ -92,8 +92,8 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
         }
       } else {
         // Reset to default values
-        final selectedDoc = viewModel.selectedDocumentType.value;
-        editedData.value = selectedDoc?.defaultValue?.toMap() ?? {};
+        final docType = viewModel.currentDocumentType.value;
+        editedData.value = docType?.defaultValue?.toMap() ?? {};
       }
 
       if (mounted) {
@@ -116,19 +116,19 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
 
     return Watch((context) {
       final isSaving = viewModel.isSaving.value;
-      final versionId = viewModel.selectedVersionId.value;
+      final versionId = viewModel.selectedVersionIdInt;
 
       if (versionId == null) {
         // No version selected - use editedData or defaults
-        final selectedDoc = viewModel.selectedDocumentType.value;
+        final docType = viewModel.currentDocumentType.value;
         final data = editedData.value.isEmpty
-            ? (selectedDoc?.defaultValue?.toMap() ?? {})
+            ? (docType?.defaultValue?.toMap() ?? {})
             : editedData.value;
 
         // Initialize editedData if empty
-        if (editedData.value.isEmpty && selectedDoc?.defaultValue != null) {
+        if (editedData.value.isEmpty && docType?.defaultValue != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            editedData.value = selectedDoc!.defaultValue!.toMap();
+            editedData.value = docType!.defaultValue!.toMap();
           });
         }
 
@@ -165,7 +165,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   Widget _buildEditor(Map<String, dynamic> documentData, bool isSaving) {
     return Watch((context) {
       final viewModel = cmsViewModelProvider.of(context);
-      final versionId = viewModel.selectedVersionId.value;
+      final versionId = viewModel.selectedVersionIdInt;
 
       // Compute hasUnsavedChanges by comparing editedData with version data
       bool hasUnsavedChanges = false;
