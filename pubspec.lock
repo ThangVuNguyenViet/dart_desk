@@ -1076,54 +1076,71 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.3"
+  serverpod_admin_client:
+    dependency: transitive
+    description:
+      path: serverpod_admin_client
+      ref: HEAD
+      resolved-ref: "1790997e18370085cd1c91fdff16d54135c6d922"
+      url: "https://github.com/AdamMusa/serverpod_admin.git"
+    source: git
+    version: "1.0.6"
   serverpod_auth_core_client:
     dependency: transitive
     description:
       name: serverpod_auth_core_client
-      sha256: "0a9e2c83aad06fdf233cd5c4064c5dab1bf2daed1f55e9e218b2deba62522e17"
+      sha256: "01d3ecc55200b1e6b777271ed2cac40b66e7ef57ff8239332f8f48fe3e09064d"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.1"
+    version: "3.4.3"
   serverpod_auth_core_flutter:
     dependency: transitive
     description:
       name: serverpod_auth_core_flutter
-      sha256: "052c9bee53f626dcde7dd34c3e9525755b68c584680d32f01ac73609b622c938"
+      sha256: c5d564d0459edfd5a84a7ba4ea9f8a0c96ca876a9fa09682c093e852ac6a0a30
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.1"
+    version: "3.4.3"
   serverpod_auth_idp_client:
     dependency: transitive
     description:
       name: serverpod_auth_idp_client
-      sha256: "5339d06858541dce5867d7b39695844a7c6eef91205da53485071313a64b9eba"
+      sha256: "0e216f99c4b55d4e12c66673f95c99f428c8b7b18deed5fe0b20626481d067ac"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.1"
+    version: "3.4.3"
   serverpod_auth_idp_flutter:
     dependency: transitive
     description:
       name: serverpod_auth_idp_flutter
-      sha256: d7bf91016ef4f1bd0275773b9b14a1d3c27fe40b9e6bcdc07f757e083ba54f20
+      sha256: "2aa89aa6f7b5b40a5c59068c4a0fa928821d28a6573014b74271628927230fa5"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.1"
+    version: "3.4.3"
   serverpod_client:
     dependency: transitive
     description:
       name: serverpod_client
-      sha256: e936d6fa951f548cf2a16f75a526d645162c3b88437ff57550fb596835266a00
+      sha256: "08041dd5219c190443d5ab823ac4f1a9d910faff6b2dbfbd64782f6df26d2daf"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.1"
+    version: "3.4.3"
+  serverpod_flutter:
+    dependency: transitive
+    description:
+      name: serverpod_flutter
+      sha256: "7b35c08d86e0857e8416b3a3dd6adc895372417cb417f8275222a99d050a1ebf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.3"
   serverpod_serialization:
     dependency: transitive
     description:
       name: serverpod_serialization
-      sha256: b1422d3e99a26e8c5fc9cf09785cb2f6c10713cb08d46b2b86dd7054e9e7decd
+      sha256: "1c774ee85229fb09ee72ebb183f823601b3c45ae40edc18f5e27f6e87e00dae6"
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.1"
+    version: "3.4.3"
   shadcn_ui:
     dependency: transitive
     description:
@@ -1501,10 +1518,10 @@ packages:
     dependency: transitive
     description:
       name: uuid
-      sha256: a11b666489b1954e01d992f3d601b1804a33937b5a8fe677bd26b8a9f96f96e8
+      sha256: "1fef9e8e11e2991bb773070d4656b7bd5d850967a2456cfc83cf47925ba79489"
       url: "https://pub.dev"
     source: hosted
-    version: "4.5.2"
+    version: "4.5.3"
   vector_graphics:
     dependency: transitive
     description:
@@ -1625,6 +1642,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.3"
+  zenrouter:
+    dependency: transitive
+    description:
+      name: zenrouter
+      sha256: "98db924ad61f5529707e13d31bc5804cf994c36d49d9198823bc6570a3664544"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
 sdks:
   dart: ">=3.10.0 <4.0.0"
   flutter: ">=3.38.0"
