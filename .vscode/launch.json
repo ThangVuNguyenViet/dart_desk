@@ -8,7 +8,8 @@
             "name": "cms_app",
             "cwd": "examples/cms_app",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": ["--web-port", "60366"]
         }
     ]
 }

@@ -14,7 +14,7 @@ Marionette MCP enables AI agents to inspect and interact with running Flutter ap
 ```yaml
 # pubspec.yaml
 dev_dependencies:
-  marionette_flutter: ^0.1.0
+  marionette_flutter: ^0.3.0
 ```
 
 ### 2. Initialize Binding (Debug Mode Only)
