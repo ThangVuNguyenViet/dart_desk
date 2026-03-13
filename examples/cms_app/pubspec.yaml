@@ -44,11 +44,12 @@ dependencies:
   intl: ^0.20.2
   shadcn_ui: ^0.39.14
 
-  serverpod_auth_shared_flutter: ^3.3.1
+  serverpod_flutter: ^3.3.1
 
   # Cloud data source
   flutter_cms_be_client:
     path: ../../../flutter_cms_be/flutter_cms_be_client
+  marionette_flutter: ^0.3.0
 
 dev_dependencies:
   flutter_test:
@@ -62,7 +63,6 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   build_runner: ^2.9.0
   dart_mappable_builder: ^4.6.1
-  marionette_flutter: ^0.3.0
   marionette_mcp: ^0.3.0
 
 # For information on the generic Dart part of this file, see the
