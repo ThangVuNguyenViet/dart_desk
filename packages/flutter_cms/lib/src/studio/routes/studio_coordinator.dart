@@ -34,7 +34,7 @@ class StudioCoordinator extends Coordinator<StudioRoute> {
   }
 
   String? get currentDocumentTypeSlug {
-    final route = studioStack.current;
+    final route = studioStack.activeRoute;
     if (route is VersionRoute) return route.documentTypeSlug;
     if (route is DocumentRoute) return route.documentTypeSlug;
     if (route is DocumentTypeRoute) return route.documentTypeSlug;
@@ -42,14 +42,14 @@ class StudioCoordinator extends Coordinator<StudioRoute> {
   }
 
   String? get currentDocumentId {
-    final route = studioStack.current;
+    final route = studioStack.activeRoute;
     if (route is VersionRoute) return route.documentId;
     if (route is DocumentRoute) return route.documentId;
     return null;
   }
 
   String? get currentVersionId {
-    final route = studioStack.current;
+    final route = studioStack.activeRoute;
     if (route is VersionRoute) return route.versionId;
     return null;
   }

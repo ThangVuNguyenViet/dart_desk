@@ -37,5 +37,12 @@ export 'src/studio/screens/cms_studio.dart';
 // Main screens
 export 'src/studio/screens/document_editor.dart';
 export 'src/studio/screens/document_list.dart';
+// Routes
+export 'src/studio/routes/studio_coordinator.dart';
+export 'src/studio/routes/studio_layout.dart';
+export 'src/studio/routes/studio_route.dart';
+export 'src/studio/routes/document_type_route.dart';
+export 'src/studio/routes/document_route.dart';
+export 'src/studio/routes/version_route.dart';
 // Theme
 export 'src/studio/theme/theme.dart';
