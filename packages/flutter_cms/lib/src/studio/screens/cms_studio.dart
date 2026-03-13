@@ -29,7 +29,10 @@ class _CmsStudioState extends State<CmsStudio> {
     final cmsViewModel = cmsViewModelProvider.of(context);
 
     return Container(
-      decoration: BoxDecoration(color: theme.colorScheme.background),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.background,
+        border: Border(left: BorderSide(color: theme.colorScheme.border)),
+      ),
       child: Watch((context) {
         final docType = cmsViewModel.currentDocumentType.value;
         if (docType == null) {
@@ -137,7 +140,7 @@ class _CmsStudioState extends State<CmsStudio> {
         }
 
         return Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
           child: CmsDocumentListView(
             selectedDocumentType: docType,
             icon: Icons.description,
@@ -158,7 +161,7 @@ class _CmsStudioState extends State<CmsStudio> {
     return Container(
       width: 220,
       decoration: BoxDecoration(
-        color: theme.colorScheme.muted.withValues(alpha: 0.3),
+        color: theme.colorScheme.muted.withValues(alpha: 0.15),
         border: Border(right: BorderSide(color: theme.colorScheme.border)),
       ),
       child: Padding(
@@ -182,7 +185,7 @@ class _CmsStudioState extends State<CmsStudio> {
       height: double.infinity,
       child: Center(
         child: ShadCard(
-          width: 280,
+          width: 320,
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
