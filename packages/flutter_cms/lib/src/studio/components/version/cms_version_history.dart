@@ -4,6 +4,7 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../../data/models/document_version.dart';
 import '../../core/view_models/cms_view_model.dart';
+import '../../providers/studio_provider.dart';
 
 /// A version history dropdown component that displays and manages document versions.
 ///
@@ -57,7 +58,8 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     final theme = ShadTheme.of(context);
 
     return Watch((context) {
-      final docId = widget.viewModel.documentViewModel.documentId.value;
+      final documentViewModel = documentViewModelProvider.of(context);
+      final docId = documentViewModel.documentId.value;
       if (docId == null) return SizedBox();
 
       final versionsState = widget.viewModel.versionsContainer(docId).value;
@@ -66,15 +68,13 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
         data: (data) {
           final selectedVersion = data.versions.firstWhere(
             (v) => v.id == widget.viewModel.selectedVersionId.value,
-            orElse:
-                () =>
-                    data.versions.isNotEmpty
-                        ? data.versions.first
-                        : DocumentVersion(
-                          documentId: 0,
-                          versionNumber: 0,
-                          status: DocumentVersionStatus.draft,
-                        ),
+            orElse: () => data.versions.isNotEmpty
+                ? data.versions.first
+                : DocumentVersion(
+                    documentId: 0,
+                    versionNumber: 0,
+                    status: DocumentVersionStatus.draft,
+                  ),
           );
 
           return ShadPopover(
@@ -251,12 +251,11 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
               padding: const EdgeInsets.symmetric(vertical: 4),
               shrinkWrap: true,
               itemCount: data.versions.length,
-              separatorBuilder:
-                  (context, index) => Container(
-                    height: 1,
-                    margin: const EdgeInsets.symmetric(horizontal: 8),
-                    color: theme.colorScheme.border.withValues(alpha: 0.3),
-                  ),
+              separatorBuilder: (context, index) => Container(
+                height: 1,
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                color: theme.colorScheme.border.withValues(alpha: 0.3),
+              ),
               itemBuilder: (context, index) {
                 final version = data.versions[index];
                 final isSelected =
@@ -357,12 +356,11 @@ class _VersionMenuItemState extends State<_VersionMenuItem> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color:
-                widget.isSelected
-                    ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                    : _isHovered
-                    ? theme.colorScheme.muted.withValues(alpha: 0.3)
-                    : Colors.transparent,
+            color: widget.isSelected
+                ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                : _isHovered
+                ? theme.colorScheme.muted.withValues(alpha: 0.3)
+                : Colors.transparent,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -372,10 +370,9 @@ class _VersionMenuItemState extends State<_VersionMenuItem> {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color:
-                      widget.isSelected
-                          ? theme.colorScheme.primary.withValues(alpha: 0.15)
-                          : theme.colorScheme.muted.withValues(alpha: 0.5),
+                  color: widget.isSelected
+                      ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                      : theme.colorScheme.muted.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -383,10 +380,9 @@ class _VersionMenuItemState extends State<_VersionMenuItem> {
                     'v${widget.version.versionNumber}',
                     style: theme.textTheme.small.copyWith(
                       fontWeight: FontWeight.w600,
-                      color:
-                          widget.isSelected
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.mutedForeground,
+                      color: widget.isSelected
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.mutedForeground,
                       fontSize: 11,
                     ),
                   ),
@@ -405,10 +401,9 @@ class _VersionMenuItemState extends State<_VersionMenuItem> {
                           'Version ${widget.version.versionNumber}',
                           style: theme.textTheme.small.copyWith(
                             fontWeight: FontWeight.w600,
-                            color:
-                                widget.isSelected
-                                    ? theme.colorScheme.primary
-                                    : theme.colorScheme.foreground,
+                            color: widget.isSelected
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.foreground,
                             fontSize: 13,
                           ),
                         ),
@@ -536,10 +531,9 @@ class _StatusBadge extends StatelessWidget {
     }
 
     return Container(
-      padding:
-          compact
-              ? const EdgeInsets.symmetric(horizontal: 6, vertical: 2)
-              : const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: compact
+          ? const EdgeInsets.symmetric(horizontal: 6, vertical: 2)
+          : const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(compact ? 8 : 12),

@@ -12,7 +12,7 @@ class CmsViewModel {
   final CmsDataSource dataSource;
 
   /// Document-specific view model
-  final CmsDocumentViewModel documentViewModel;
+  final CmsDocumentViewModel _documentViewModel;
 
   // ============================================================
   // Selection Signals
@@ -93,7 +93,10 @@ class CmsViewModel {
   /// Creates a new CmsViewModel.
   ///
   /// [dataSource] - The data source for backend communication.
-  CmsViewModel({required this.dataSource, required this.documentViewModel});
+  CmsViewModel({
+    required this.dataSource,
+    required CmsDocumentViewModel documentViewModel,
+  }) : _documentViewModel = documentViewModel;
 
   // ============================================================
   // Internal Fetch Methods
@@ -125,14 +128,14 @@ class CmsViewModel {
   /// Selects a document type and clears any current selection.
   void selectDocumentType(CmsDocumentType? documentType) {
     selectedDocumentType.value = documentType;
-    documentViewModel.documentId.value = null;
+    _documentViewModel.documentId.value = null;
     selectedVersionId.value = null;
   }
 
   /// Clears the selected document type and all selections.
   void clearSelection() {
     selectedDocumentType.value = null;
-    documentViewModel.documentId.value = null;
+    _documentViewModel.documentId.value = null;
     selectedVersionId.value = null;
   }
 
@@ -142,7 +145,7 @@ class CmsViewModel {
 
   /// Selects a document by ID, which will trigger fetching its versions.
   void selectDocument(int documentId) {
-    documentViewModel.documentId.value = documentId;
+    _documentViewModel.documentId.value = documentId;
     selectedVersionId.value = null;
   }
 
@@ -193,7 +196,7 @@ class CmsViewModel {
       );
 
       // Select the new document
-      documentViewModel.documentId.value = document.id;
+      _documentViewModel.documentId.value = document.id;
 
       // Refresh by clearing the container caches (they will refetch on next access)
       // Note: In Signals, changing the signal values will automatically trigger recomputation
@@ -215,8 +218,8 @@ class CmsViewModel {
   /// Returns true if the document was deleted, false otherwise.
   Future<bool> deleteDocument(int documentId) async {
     final result = await dataSource.deleteDocument(documentId);
-    if (result && documentViewModel.documentId.value == documentId) {
-      documentViewModel.documentId.value = null;
+    if (result && _documentViewModel.documentId.value == documentId) {
+      _documentViewModel.documentId.value = null;
       selectedVersionId.value = null;
     }
     // Changing signals will automatically trigger recomputation
@@ -234,7 +237,7 @@ class CmsViewModel {
   ///
   /// Returns the updated document.
   Future<CmsDocument?> updateDocumentData(Map<String, dynamic> data) async {
-    final documentId = documentViewModel.documentId.value;
+    final documentId = _documentViewModel.documentId.value;
     if (documentId == null) return null;
 
     isSaving.value = true;
@@ -271,7 +274,7 @@ class CmsViewModel {
       final result = await dataSource.publishDocumentVersion(versionId);
 
       // Refresh the document data and versions to get the updated data
-      final docId = documentViewModel.documentId.value;
+      final docId = _documentViewModel.documentId.value;
       if (docId != null) {
         versionsContainer(docId).reload();
       }
@@ -295,7 +298,7 @@ class CmsViewModel {
       final result = await dataSource.archiveDocumentVersion(versionId);
 
       // Refresh the document data and versions to get the updated data
-      final docId = documentViewModel.documentId.value;
+      final docId = _documentViewModel.documentId.value;
       if (docId != null) {
         versionsContainer(docId).reload();
       }
@@ -318,7 +321,7 @@ class CmsViewModel {
       }
 
       // Refresh the versions list to reflect the deletion
-      final docId = documentViewModel.documentId.value;
+      final docId = _documentViewModel.documentId.value;
       if (docId != null) {
         versionsContainer(docId).reload();
       }
@@ -359,7 +362,7 @@ class CmsViewModel {
 
   /// Manually refreshes the versions list by refreshing the container signal.
   void refreshVersions() {
-    final docId = documentViewModel.documentId.value;
+    final docId = _documentViewModel.documentId.value;
     if (docId != null) {
       versionsContainer(docId).reload();
     }
@@ -381,7 +384,7 @@ class CmsViewModel {
   void dispose() {
     queryParams.dispose();
     selectedDocumentType.dispose();
-    documentViewModel.dispose();
+    _documentViewModel.dispose();
     selectedVersionId.dispose();
     page.dispose();
     pageSize.dispose();

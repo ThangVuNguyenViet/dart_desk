@@ -34,7 +34,9 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   Future<void> _saveDocument() async {
     final viewModel = cmsViewModelProvider.of(context);
     try {
-      final docId = viewModel.documentViewModel.documentId.value;
+      final documentViewModel = documentViewModelProvider.of(context);
+      final docId = documentViewModel.documentId.value;
+
       final dataToSave = editedData.value;
 
       if (docId != null) {

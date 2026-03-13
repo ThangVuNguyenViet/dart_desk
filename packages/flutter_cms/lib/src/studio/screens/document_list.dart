@@ -231,7 +231,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                       const SizedBox(height: 6),
                   itemBuilder: (context, index) {
                     if (_isCreatingNew && index == 0) {
-                      return _buildInlineCreateForm(context, theme, viewModel);
+                      return _buildInlineCreateForm(context, theme);
                     }
                     final docIndex = _isCreatingNew ? index - 1 : index;
                     final doc = result.documents[docIndex];
@@ -243,14 +243,12 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     );
   }
 
-  Widget _buildInlineCreateForm(
-    BuildContext context,
-    ShadThemeData theme,
-    CmsViewModel viewModel,
-  ) {
+  Widget _buildInlineCreateForm(BuildContext context, ShadThemeData theme) {
+    final viewModel = cmsViewModelProvider.of(context);
+    final documentViewModel = documentViewModelProvider.of(context);
+
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withValues(alpha: 0.05),
         border: Border.all(
           color: theme.colorScheme.primary.withValues(alpha: 0.3),
           width: 1.5,
@@ -312,14 +310,22 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                     if (_titleController.text.trim().isNotEmpty &&
                         _slugController.text.trim().isNotEmpty) {
                       // Save title and slug to the document view model signals
-                      viewModel.documentViewModel.title.value = _titleController.text.trim();
-                      viewModel.documentViewModel.slug.value = _slugController.text.trim();
+                      final title = _titleController.text.trim();
+                      final slug = _slugController.text.trim();
 
                       // Clear documentId to indicate this is a new document
-                      viewModel.documentViewModel.documentId.value = null;
+                      documentViewModel.documentId.value = null;
 
                       // Clear versionId as well
                       viewModel.selectedVersionId.value = null;
+
+                      viewModel.createDocument(
+                        title,
+                        viewModel.selectedDocumentType.value?.defaultValue
+                                ?.toMap() ??
+                            {},
+                        slug: slug,
+                      );
 
                       setState(() {
                         _isCreatingNew = false;
@@ -345,7 +351,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     CmsDocument doc,
     CmsViewModel viewModel,
   ) {
-    final isSelected = viewModel.documentViewModel.documentId.value == doc.id;
+    final documentViewModel = documentViewModelProvider.of(context);
+    final isSelected = documentViewModel.documentId.value == doc.id;
 
     return Container(
       decoration: BoxDecoration(

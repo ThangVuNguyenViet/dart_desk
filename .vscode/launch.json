@@ -9,20 +9,6 @@
             "cwd": "examples/cms_app",
             "request": "launch",
             "type": "dart"
-        },
-        {
-            "name": "cms_app (profile mode)",
-            "cwd": "examples/cms_app",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "profile"
-        },
-        {
-            "name": "cms_app (release mode)",
-            "cwd": "examples/cms_app",
-            "request": "launch",
-            "type": "dart",
-            "flutterMode": "release"
-        },
+        }
     ]
 }

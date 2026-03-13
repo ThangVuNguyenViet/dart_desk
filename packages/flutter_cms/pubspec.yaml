@@ -21,7 +21,7 @@ dependencies:
   connectivity_plus: ^6.0.0
   signals: ^6.1.0
   flutter_resizable_container: ^4.2.0
-  super_editor: ^0.3.0-dev.42
+  super_editor: ^0.3.0-dev.50
   disco: ^1.0.3+1
 
 dev_dependencies:
