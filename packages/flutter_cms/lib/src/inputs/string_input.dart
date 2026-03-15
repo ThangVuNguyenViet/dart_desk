@@ -50,6 +50,18 @@ class _CmsStringInputState extends State<CmsStringInput> {
   }
 
   @override
+  void didUpdateWidget(covariant CmsStringInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newText = widget.data?.value?.toString() ?? '';
+    if (newText != _controller.text &&
+        oldWidget.data?.value != widget.data?.value) {
+      _controller.removeListener(_onTextChanged);
+      _controller.text = newText;
+      _controller.addListener(_onTextChanged);
+    }
+  }
+
+  @override
   void dispose() {
     _controller.removeListener(_onTextChanged);
     _controller.dispose();

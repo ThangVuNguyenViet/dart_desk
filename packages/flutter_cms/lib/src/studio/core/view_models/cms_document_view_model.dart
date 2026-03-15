@@ -34,6 +34,9 @@ class CmsDocumentViewModel {
   /// Signal for tracking save operations
   final isSaving = Signal<bool>(false);
 
+  /// Shared edited data signal — written by the editor, read by the preview.
+  final editedData = MapSignal<String, dynamic>({});
+
   CmsDocumentViewModel(this.dataSource);
 
   /// Updates the document metadata (title, slug, isDefault).
@@ -121,5 +124,6 @@ class CmsDocumentViewModel {
     slug.dispose();
     isDefault.dispose();
     isSaving.dispose();
+    editedData.dispose();
   }
 }

@@ -115,6 +115,16 @@ abstract class CmsDataSource {
   /// Throws [CmsAuthenticationException] if authentication is required.
   Future<bool> deleteDocument(int documentId);
 
+  /// Suggests a unique slug for a document based on its title.
+  ///
+  /// [title] - The document title to generate a slug from
+  /// [documentType] - The document type to check uniqueness within
+  ///
+  /// Returns a unique slug string. If a duplicate exists, appends a suffix.
+  ///
+  /// Throws [CmsDataSourceException] if the operation fails.
+  Future<String> suggestSlug(String title, String documentType);
+
   /// Retrieves all unique document types in the system.
   ///
   /// Returns a list of document type names.

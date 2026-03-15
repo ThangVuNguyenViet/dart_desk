@@ -45,10 +45,7 @@ class _CmsStudioState extends State<CmsStudio> {
         }
 
         // Build document editor with compact spacing for web
-        return CmsDocumentEditor(
-          fields: docType.fields,
-          title: docType.title,
-        );
+        return CmsDocumentEditor(fields: docType.fields, title: docType.title);
       }),
     );
   }
@@ -56,6 +53,7 @@ class _CmsStudioState extends State<CmsStudio> {
   Widget _buildContentPreview() {
     final theme = ShadTheme.of(context);
     final viewModel = cmsViewModelProvider.of(context);
+    final documentViewModel = documentViewModelProvider.of(context);
 
     return Container(
       decoration: BoxDecoration(
@@ -64,6 +62,8 @@ class _CmsStudioState extends State<CmsStudio> {
       ),
       child: Watch((context) {
         final docType = viewModel.currentDocumentType.value;
+
+        // No document type → empty view
         if (docType == null) {
           return _buildEmptyState(
             icon: Icons.visibility,
@@ -73,47 +73,32 @@ class _CmsStudioState extends State<CmsStudio> {
           );
         }
 
-        // Use the documentDataContainer for preview
-        final versionId = viewModel.selectedVersionIdInt;
-        if (versionId == null) {
-          return _buildEmptyState(
-            icon: Icons.article,
-            title: 'Content Preview',
-            description: 'No version selected',
+        // Prefer live editedData from the editor; fall back to saved version
+        final edited = documentViewModel.editedData.value;
+        if (edited.isNotEmpty) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: docType.builder(edited),
           );
         }
 
-        final versionState = viewModel.documentDataContainer(versionId).value;
+        // Fall back to saved version data
+        final defaultData = docType.defaultValue?.toMap() ?? {};
+        Map<String, dynamic> data = defaultData;
 
-        return versionState.map<Widget>(
-          loading: () => _buildEmptyState(
-            icon: Icons.article,
-            title: 'Content Preview',
-            description: 'Loading document...',
-            showProgress: true,
-          ),
-          error: (error, stackTrace) => _buildEmptyState(
-            icon: Icons.error,
-            title: 'Error',
-            description: 'Failed to load document: $error',
-          ),
-          data: (versionData) {
-            if (versionData == null || versionData.data == null) {
-              return _buildEmptyState(
-                icon: Icons.article,
-                title: 'Content Preview',
-                description:
-                    'Start editing your document to see the preview here',
-                showProgress: false,
-              );
-            }
+        final versionId = viewModel.selectedVersionId.watch(context);
+        if (versionId != null) {
+          final versionState = viewModel.documentDataContainer(versionId).value;
+          data = versionState.map<Map<String, dynamic>>(
+            loading: () => defaultData,
+            error: (_, __) => defaultData,
+            data: (version) => version?.data ?? defaultData,
+          );
+        }
 
-            // Wrap preview content with compact padding for web
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: docType.builder(versionData.data!),
-            );
-          },
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: docType.builder(data),
         );
       }),
     );
@@ -145,7 +130,7 @@ class _CmsStudioState extends State<CmsStudio> {
             selectedDocumentType: docType,
             icon: Icons.description,
             onOpenDocument: (documentId) {
-              widget.coordinator.push(
+              widget.coordinator.pushOrMoveToTop(
                 DocumentRoute(docType.name, documentId),
               );
             },
@@ -232,9 +217,7 @@ class _CmsStudioState extends State<CmsStudio> {
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
       body: Container(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.background,
-        ),
+        decoration: BoxDecoration(color: theme.colorScheme.background),
         child: ResizableContainer(
           direction: Axis.horizontal,
           children: [

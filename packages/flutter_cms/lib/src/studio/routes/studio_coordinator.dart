@@ -17,7 +17,10 @@ class StudioCoordinator extends Coordinator<StudioRoute> {
   String get defaultDocumentTypeSlug =>
       documentTypes.isNotEmpty ? documentTypes.first.name : '';
 
-  late final studioStack = NavigationPath<StudioRoute>('studio');
+  late final studioStack = NavigationPath<StudioRoute>.createWith(
+    coordinator: this,
+    label: 'studio',
+  )..bindLayout(StudioLayout.new);
 
   StudioCoordinator({
     required this.documentTypes,
@@ -27,11 +30,6 @@ class StudioCoordinator extends Coordinator<StudioRoute> {
 
   @override
   List<StackPath> get paths => [...super.paths, studioStack];
-
-  @override
-  void defineLayout() {
-    RouteLayout.defineLayout(StudioLayout, StudioLayout.new);
-  }
 
   String? get currentDocumentTypeSlug {
     final route = studioStack.activeRoute;

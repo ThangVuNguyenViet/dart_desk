@@ -18,8 +18,6 @@ import '../../../inputs/object_input.dart';
 import '../../../inputs/string_input.dart';
 import '../../../inputs/text_input.dart';
 import '../../../inputs/url_input.dart';
-import '../../providers/studio_provider.dart';
-import '../version/cms_version_history.dart';
 
 /// Type definition for field value change callbacks
 typedef OnFieldChanged = void Function(String fieldName, dynamic value);
@@ -216,29 +214,29 @@ class _CmsFormState extends State<CmsForm> {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final viewModel = cmsViewModelProvider.of(context);
 
     return Column(
       children: [
         Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CmsVersionHistory(viewModel: viewModel, width: 240),
-                if (widget.title != null)
-                  Text(widget.title!, style: theme.textTheme.h2),
-                const SizedBox(height: 12),
-                // Dynamic form fields
-                ...widget.fields.map((field) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 20),
-                    child: _buildFieldInput(field),
-                  );
-                }),
-              ],
-            ),
+          child: CustomScrollView(
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.all(24),
+                sliver: SliverList.list(
+                  children: [
+                    if (widget.title != null)
+                      Text(widget.title!, style: theme.textTheme.h2),
+                    const SizedBox(height: 12),
+                    ...widget.fields.map((field) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: _buildFieldInput(field),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
         const Divider(height: 0),

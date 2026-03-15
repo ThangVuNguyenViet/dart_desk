@@ -77,8 +77,7 @@ class CmsViewModel {
   );
 
   late final documentDataContainer = SignalContainer(
-    (int versionId) =>
-        FutureSignal(() => dataSource.getDocumentVersion(versionId)),
+    (int versionId) => FutureSignal(() => _fetchVersionWithData(versionId)),
     cache: true,
   );
 
@@ -95,6 +94,21 @@ class CmsViewModel {
   // ============================================================
   // Internal Fetch Methods
   // ============================================================
+
+  /// Fetches a document version with its data.
+  ///
+  /// `getDocumentVersion` returns metadata only (no data field).
+  /// This method also fetches the version data and combines them.
+  Future<DocumentVersion?> _fetchVersionWithData(int versionId) async {
+    final results = await Future.wait([
+      dataSource.getDocumentVersion(versionId),
+      dataSource.getDocumentVersionData(versionId),
+    ]);
+    final version = results[0] as DocumentVersion?;
+    final data = results[1] as Map<String, dynamic>?;
+    if (version == null) return null;
+    return version.copyWith(data: data);
+  }
 
   Future<DocumentList> _fetchDocumentsWithParams(
     _DocumentQueryParams params,
@@ -126,8 +140,11 @@ class CmsViewModel {
 
     // Update document ID (and document view model)
     final docIdInt = documentId != null ? int.tryParse(documentId) : null;
-    if (_documentViewModel.documentId.value != docIdInt) {
+    final docChanged = _documentViewModel.documentId.value != docIdInt;
+    if (docChanged) {
       _documentViewModel.documentId.value = docIdInt;
+      // Reset shared editedData when switching documents
+      _documentViewModel.editedData.value = {};
     }
     currentDocumentId.value = documentId;
 
@@ -136,18 +153,50 @@ class CmsViewModel {
 
     // If version ID changed, also set selectedVersionId for containers
     final versionIdInt = versionId != null ? int.tryParse(versionId) : null;
-    _selectedVersionIdInt.value = versionIdInt;
+    selectedVersionId.value = versionIdInt;
+
+    // Auto-select latest version when document is opened without a version
+    if (docIdInt != null && versionIdInt == null) {
+      _autoSelectLatestVersion(docIdInt);
+    }
   }
 
-  /// Internal int version of selectedVersionId for containers.
-  final _selectedVersionIdInt = Signal<int?>(null);
+  /// Fetches versions for a document and auto-selects the latest one.
+  /// Pre-populates editedData so the preview and editor have data immediately.
+  Future<void> _autoSelectLatestVersion(int docId) async {
+    try {
+      final versions = await dataSource.getDocumentVersions(docId);
+      if (versions.versions.isNotEmpty) {
+        final versionId = versions.versions.first.id!;
 
-  /// Public getter for the int version ID (used by panels).
-  int? get selectedVersionIdInt => _selectedVersionIdInt.value;
+        // Pre-load version data into editedData first.
+        final versionData = await dataSource.getDocumentVersionData(versionId);
+        if (versionData != null && versionData.isNotEmpty) {
+          _documentViewModel.editedData.value = Map<String, dynamic>.from(
+            versionData,
+          );
+        }
+
+        // Set version ID after editedData so the editor's early-return
+        // path (editedData.isNotEmpty) prevents the loading→form transition.
+        selectedVersionId.value = versionId;
+      }
+    } catch (_) {
+      // Silently ignore — editor will show empty state
+    }
+  }
+
+  final selectedVersionId = Signal<int?>(null);
 
   // ============================================================
   // Document Operations
   // ============================================================
+
+  Future<String?> suggestSlug(String title) async {
+    final docType = currentDocumentType.value;
+    if (docType == null) return null;
+    return await dataSource.suggestSlug(title, docType.name);
+  }
 
   Future<CmsDocument?> createDocument(
     String title,
@@ -172,8 +221,10 @@ class CmsViewModel {
 
       final versions = await dataSource.getDocumentVersions(document.id!);
       if (versions.versions.isNotEmpty) {
-        _selectedVersionIdInt.value = versions.versions.first.id;
+        selectedVersionId.value = versions.versions.first.id;
       }
+
+      documentsContainer(queryParams.value).reload();
 
       return document;
     } finally {
@@ -185,7 +236,7 @@ class CmsViewModel {
     final result = await dataSource.deleteDocument(documentId);
     if (result && _documentViewModel.documentId.value == documentId) {
       _documentViewModel.documentId.value = null;
-      _selectedVersionIdInt.value = null;
+      selectedVersionId.value = null;
     }
     return result;
   }
@@ -216,7 +267,7 @@ class CmsViewModel {
   // ============================================================
 
   Future<DocumentVersion?> publishVersion() async {
-    final versionId = _selectedVersionIdInt.value;
+    final versionId = selectedVersionId.value;
     if (versionId == null) return null;
 
     isSaving.value = true;
@@ -236,7 +287,7 @@ class CmsViewModel {
   }
 
   Future<DocumentVersion?> archiveVersion() async {
-    final versionId = _selectedVersionIdInt.value;
+    final versionId = selectedVersionId.value;
     if (versionId == null) return null;
 
     isSaving.value = true;
@@ -258,8 +309,8 @@ class CmsViewModel {
   Future<bool> deleteVersion(int versionId) async {
     final result = await dataSource.deleteDocumentVersion(versionId);
     if (result) {
-      if (_selectedVersionIdInt.value == versionId) {
-        _selectedVersionIdInt.value = null;
+      if (selectedVersionId.value == versionId) {
+        selectedVersionId.value = null;
       }
 
       final docId = _documentViewModel.documentId.value;
@@ -305,7 +356,7 @@ class CmsViewModel {
   }
 
   void refreshSelectedData() {
-    final versionId = _selectedVersionIdInt.value;
+    final versionId = selectedVersionId.value;
     if (versionId != null) {
       documentDataContainer(versionId).reload();
     }
@@ -321,7 +372,7 @@ class CmsViewModel {
     currentDocumentTypeSlug.dispose();
     currentDocumentId.dispose();
     currentVersionId.dispose();
-    _selectedVersionIdInt.dispose();
+    selectedVersionId.dispose();
     _documentViewModel.dispose();
     page.dispose();
     pageSize.dispose();

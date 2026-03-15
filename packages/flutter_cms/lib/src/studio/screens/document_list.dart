@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -30,8 +32,10 @@ class CmsDocumentListView extends StatefulWidget {
 class _CmsDocumentListViewState extends State<CmsDocumentListView> {
   String _searchQuery = '';
   bool _isCreatingNew = false;
+  bool _isLoadingSlug = false;
   final _titleController = TextEditingController();
   final _slugController = TextEditingController();
+  Timer? _slugDebounceTimer;
 
   @override
   void initState() {
@@ -40,6 +44,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
 
   @override
   void dispose() {
+    _slugDebounceTimer?.cancel();
     _titleController.dispose();
     _slugController.dispose();
     super.dispose();
@@ -226,7 +231,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                 )
               : ListView.separated(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  itemCount: (_isCreatingNew ? 1 : 0) + result.documents.length,
+                  itemCount: (_isCreatingNew ? 1 : 0) + filteredDocuments.length,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 6),
                   itemBuilder: (context, index) {
@@ -234,7 +239,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                       return _buildInlineCreateForm(context, theme);
                     }
                     final docIndex = _isCreatingNew ? index - 1 : index;
-                    final doc = result.documents[docIndex];
+                    final doc = filteredDocuments[docIndex];
                     return _buildDocumentTile(context, theme, doc, viewModel);
                   },
                 ),
@@ -272,20 +277,51 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
             controller: _titleController,
             placeholder: const Text('Document title'),
             onChanged: (value) {
-              // Auto-generate slug from title
-              final slug = value
-                  .toLowerCase()
-                  .replaceAll(RegExp(r'[^\w\s-]'), '')
-                  .replaceAll(RegExp(r'\s+'), '-')
-                  .replaceAll(RegExp(r'-+'), '-')
-                  .trim();
-              _slugController.text = slug;
+              _slugDebounceTimer?.cancel();
+              if (value.trim().isEmpty) {
+                _slugController.text = '';
+                setState(() => _isLoadingSlug = false);
+                return;
+              }
+              setState(() => _isLoadingSlug = true);
+              _slugDebounceTimer = Timer(
+                const Duration(milliseconds: 500),
+                () async {
+                  try {
+                    final slug = await viewModel.suggestSlug(value.trim());
+                    if (mounted && slug != null) {
+                      _slugController.text = slug;
+                    }
+                  } catch (_) {
+                    // Fallback to local slug generation
+                    if (mounted) {
+                      _slugController.text = value
+                          .toLowerCase()
+                          .replaceAll(RegExp(r'[^\w\s-]'), '')
+                          .replaceAll(RegExp(r'\s+'), '-')
+                          .replaceAll(RegExp(r'-+'), '-')
+                          .trim();
+                    }
+                  } finally {
+                    if (mounted) {
+                      setState(() => _isLoadingSlug = false);
+                    }
+                  }
+                },
+              );
             },
           ),
           const SizedBox(height: 8),
           ShadInputFormField(
             controller: _slugController,
             placeholder: const Text('slug (auto-generated)'),
+            trailing: _isLoadingSlug
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : null,
           ),
           const SizedBox(height: 12),
           Row(
@@ -349,9 +385,11 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     CmsViewModel viewModel,
   ) {
     final documentViewModel = documentViewModelProvider.of(context);
-    final isSelected = documentViewModel.documentId.value == doc.id;
 
-    return Container(
+    return Watch((context) {
+      final isSelected = documentViewModel.documentId.value == doc.id;
+
+      return Container(
       decoration: BoxDecoration(
         color: isSelected
             ? theme.colorScheme.primary.withValues(alpha: 0.1)
@@ -367,7 +405,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
       padding: const EdgeInsets.all(12),
       child: InkWell(
         onTap: () {
-          if (doc.id != null) {
+          if (doc.id != null && !isSelected) {
             widget.onOpenDocument?.call(doc.id.toString());
           }
         },
@@ -429,5 +467,6 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
         ),
       ),
     );
+    });
   }
 }

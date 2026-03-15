@@ -20,14 +20,18 @@ class CmsDocumentEditor extends StatefulWidget {
 
 class _CmsDocumentEditorState extends State<CmsDocumentEditor>
     with SignalsMixin {
-  /// Signal for edited document data (working copy)
-  late final MapSignal<String, dynamic> editedData;
+  /// Shared edited data signal from the document view model.
+  MapSignal<String, dynamic> get editedData =>
+      documentViewModelProvider.of(context).editedData;
 
   @override
   void initState() {
     final viewModel = cmsViewModelProvider.of(context);
     final docType = viewModel.currentDocumentType.value;
-    editedData = createMapSignal(docType?.defaultValue?.toMap() ?? {});
+    final defaults = docType?.defaultValue?.toMap() ?? {};
+    if (editedData.value.isEmpty && defaults.isNotEmpty) {
+      editedData.value = defaults;
+    }
     super.initState();
   }
 
@@ -79,7 +83,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   Future<void> _discardDocument() async {
     try {
       final viewModel = cmsViewModelProvider.of(context);
-      final versionId = viewModel.selectedVersionIdInt;
+      final versionId = viewModel.selectedVersionId.watch(context);
 
       if (versionId != null) {
         // Reset to original version data
@@ -114,83 +118,49 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   Widget build(BuildContext context) {
     final viewModel = cmsViewModelProvider.of(context);
 
-    return Watch((context) {
-      final isSaving = viewModel.isSaving.value;
-      final versionId = viewModel.selectedVersionIdInt;
+    final isSaving = viewModel.isSaving.watch(context);
+    final versionId = viewModel.selectedVersionId.watch(context);
+    final versionState = versionId != null
+        ? viewModel.documentDataContainer(versionId).watch(context)
+        : null;
 
-      if (versionId == null) {
-        // No version selected - use editedData or defaults
-        final docType = viewModel.currentDocumentType.value;
-        final data = editedData.value.isEmpty
-            ? (docType?.defaultValue?.toMap() ?? {})
-            : editedData.value;
+    // If editedData is already populated (e.g. by auto-version-select),
+    // skip the loading state and render the editor immediately.
+    final edited = editedData.value;
+    if (versionState == null) {
+      return _buildEditor(edited, isSaving);
+    }
 
-        // Initialize editedData if empty
-        if (editedData.value.isEmpty && docType?.defaultValue != null) {
+    return versionState.map<Widget>(
+      loading: () => const Center(child: ShadProgress()),
+      error: (error, stackTrace) =>
+          Center(child: Text('Error loading document: $error')),
+      data: (versionData) {
+        final versionDataMap = versionData?.data ?? {};
+
+        // Initialize editedData from version data
+        if (editedData.value.isEmpty && versionDataMap.isNotEmpty) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            editedData.value = docType!.defaultValue!.toMap();
+            if (mounted) {
+              editedData.value = Map<String, dynamic>.from(versionDataMap);
+            }
           });
         }
 
-        return _buildEditor(data, isSaving);
-      }
+        final displayData = editedData.value.isEmpty
+            ? versionDataMap
+            : editedData.value;
 
-      final versionState = viewModel.documentDataContainer(versionId).value;
-
-      return versionState.map<Widget>(
-        loading: () => const Center(child: ShadProgress()),
-        error: (error, stackTrace) =>
-            Center(child: Text('Error loading document: $error')),
-        data: (versionData) {
-          final versionDataMap = versionData?.data ?? {};
-
-          // Initialize editedData from version data if not already set
-          if (editedData.value.isEmpty && versionDataMap.isNotEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              editedData.value = Map<String, dynamic>.from(versionDataMap);
-            });
-          }
-
-          // Use editedData for display (working copy)
-          final displayData = editedData.value.isEmpty
-              ? versionDataMap
-              : editedData.value;
-
-          return _buildEditor(displayData, isSaving);
-        },
-      );
-    });
+        return _buildEditor(displayData, isSaving);
+      },
+    );
   }
 
   Widget _buildEditor(Map<String, dynamic> documentData, bool isSaving) {
     return Watch((context) {
-      final viewModel = cmsViewModelProvider.of(context);
-      final versionId = viewModel.selectedVersionIdInt;
-
-      // Compute hasUnsavedChanges by comparing editedData with version data
-      bool hasUnsavedChanges = false;
-      if (versionId != null) {
-        final versionState = viewModel.documentDataContainer(versionId).value;
-        if (versionState is AsyncData<DocumentVersion?>) {
-          final originalData = versionState.value?.data ?? {};
-          final edited = editedData.value;
-
-          // Check if there are changes
-          if (edited.length != originalData.length) {
-            hasUnsavedChanges = true;
-          } else {
-            for (final key in edited.keys) {
-              if (edited[key] != originalData[key]) {
-                hasUnsavedChanges = true;
-                break;
-              }
-            }
-          }
-        }
-      } else {
-        // For new documents, check if editedData is not empty
-        hasUnsavedChanges = editedData.value.isNotEmpty;
-      }
+      // Track editedData changes for the Discard button state
+      final edited = editedData.value;
+      final hasUnsavedChanges = edited.isNotEmpty;
 
       return Stack(
         children: [

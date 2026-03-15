@@ -14,19 +14,14 @@ const String _defaultApiToken =
 
 void main() {
   if (kDebugMode) {
-    MarionetteBinding.ensureInitialized();
+    MarionetteBinding.ensureInitialized(CmsMarionetteConfig.configuration);
   }
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
   static const serverUrl = String.fromEnvironment(
     'SERVER_URL',
     defaultValue: _defaultServerUrl,
@@ -42,9 +37,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // FlutterCmsAuth handles its own client creation and login UI.
-    // Once authenticated, it calls builder with the client.
-    // We wrap it in ShadApp so the login screen gets dark theme + directionality.
+    // ShadApp wraps FlutterCmsAuth so the login screen gets theme + directionality.
+    // CmsStudioApp provides its own ShadApp.router after authentication.
     return ShadApp(
       theme: cmsStudioTheme,
       home: FlutterCmsAuth(
@@ -52,49 +46,19 @@ class _MyAppState extends State<MyApp> {
         apiToken: apiToken,
         serverUrl: serverUrl,
         title: 'Honeygrow CMS',
-        builder: (context, client) => _AuthenticatedApp(client: client),
-      ),
-    );
-  }
-}
-
-/// The authenticated portion of the app — creates the coordinator and router.
-class _AuthenticatedApp extends StatefulWidget {
-  final Client client;
-  const _AuthenticatedApp({required this.client});
-
-  @override
-  State<_AuthenticatedApp> createState() => _AuthenticatedAppState();
-}
-
-class _AuthenticatedAppState extends State<_AuthenticatedApp> {
-  late final StudioCoordinator coordinator;
-
-  @override
-  void initState() {
-    super.initState();
-    coordinator = StudioCoordinator(
-      documentTypes: [homeScreenConfigDocumentType],
-      dataSource: CloudDataSource(widget.client),
-      documentTypeDecorations: [
-        CmsDocumentTypeDecoration(
-          documentType: homeScreenConfigDocumentType,
-          icon: Icons.home,
+        builder: (context, client) => CmsStudioApp(
+          dataSource: CloudDataSource(client),
+          documentTypes: [homeScreenConfigDocumentType],
+          documentTypeDecorations: [
+            CmsDocumentTypeDecoration(
+              documentType: homeScreenConfigDocumentType,
+              icon: Icons.home,
+            ),
+          ],
+          title: 'Honeygrow CMS',
+          subtitle: 'Content Management',
+          icon: Icons.dashboard,
         ),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return DefaultCmsHeaderConfig(
-      title: 'Honeygrow CMS',
-      subtitle: 'Content Management',
-      icon: Icons.dashboard,
-      child: ShadApp.router(
-        theme: cmsStudioTheme,
-        routeInformationParser: coordinator.routeInformationParser,
-        routerDelegate: coordinator.routerDelegate,
       ),
     );
   }

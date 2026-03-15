@@ -180,8 +180,10 @@ class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
           ),
           options: selectOptions,
           selectedOptionBuilder: (context, T value) {
-            final option = options.firstWhere((opt) => opt.value == value);
-            return Text(option.label);
+            final option = options
+                .where((opt) => opt.value == value)
+                .firstOrNull;
+            return Text(option?.label ?? value.toString());
           },
           initialValue: _selectedValue,
           onChanged: (value) {

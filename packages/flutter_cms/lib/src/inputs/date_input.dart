@@ -36,7 +36,11 @@ class _CmsDateInputState extends State<CmsDateInput> {
   @override
   void initState() {
     super.initState();
-    _selectedDate = widget.data?.value as DateTime?;
+    _selectedDate = switch (widget.data?.value) {
+      DateTime dt => dt,
+      String s => DateTime.tryParse(s),
+      _ => null,
+    };
   }
 
   @override

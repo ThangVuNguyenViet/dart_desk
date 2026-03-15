@@ -3,12 +3,8 @@ import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:zenrouter/zenrouter.dart';
 
-import '../components/common/default_cms_header.dart';
-import '../components/navigation/cms_document_type_sidebar.dart';
+import '../../../studio.dart';
 import '../providers/studio_provider.dart';
-import '../screens/cms_studio.dart';
-import 'studio_coordinator.dart';
-import 'studio_route.dart';
 
 /// The root layout for all studio routes.
 ///
@@ -150,6 +146,8 @@ class _TopBar extends StatelessWidget {
               onPressed: headerConfig!.onDashboardPressed,
               child: const Text('Open Dashboard'),
             ),
+          const SizedBox(width: 8),
+          CmsVersionHistory(viewModel: cmsViewModelProvider.of(context)),
           const SizedBox(width: 8),
           ShadButton.outline(
             size: ShadButtonSize.sm,

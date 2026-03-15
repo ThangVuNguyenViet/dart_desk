@@ -48,7 +48,7 @@ class CmsDocumentTypeSidebar extends StatelessWidget {
                       isSelected: isSelected,
                       icon: decoration.icon,
                       onTap: () {
-                        coordinator.push(
+                        coordinator.pushOrMoveToTop(
                           DocumentTypeRoute(decoration.documentType.name),
                         );
                       },

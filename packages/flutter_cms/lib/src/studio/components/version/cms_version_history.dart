@@ -29,10 +29,7 @@ class CmsVersionHistory extends StatefulWidget {
   /// The CMS view model containing version data and selection state.
   final CmsViewModel viewModel;
 
-  /// Optional width constraint for the dropdown.
-  final double? width;
-
-  const CmsVersionHistory({super.key, required this.viewModel, this.width});
+  const CmsVersionHistory({super.key, required this.viewModel});
 
   @override
   State<CmsVersionHistory> createState() => _CmsVersionHistoryState();
@@ -57,40 +54,43 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
 
-    return Watch((context) {
-      final documentViewModel = documentViewModelProvider.of(context);
-      final docId = documentViewModel.documentId.value;
-      if (docId == null) return SizedBox();
+    final documentViewModel = documentViewModelProvider.of(context);
+    final docId = documentViewModel.documentId.watch(context);
 
-      final versionsState = widget.viewModel.versionsContainer(docId).value;
-
-      return versionsState.map(
-        data: (data) {
-          final selectedVersion = data.versions.firstWhere(
-            (v) => v.id == widget.viewModel.selectedVersionIdInt,
-            orElse: () => data.versions.isNotEmpty
-                ? data.versions.first
-                : DocumentVersion(
-                    documentId: 0,
-                    versionNumber: 0,
-                    status: DocumentVersionStatus.draft,
-                  ),
+    final versionsState = docId != null
+        ? widget.viewModel.versionsContainer(docId).watch(context)
+        : AsyncState.data(
+            DocumentVersionList(versions: [], total: 0, page: 1, pageSize: 10),
           );
 
-          return ShadPopover(
-            controller: _popoverController,
-            popover: (context) => _buildVersionsList(context, theme, data),
-            child: _buildTrigger(context, theme, selectedVersion, data),
-          );
-        },
-        error: (error, stackTrace) {
-          return _buildErrorTrigger(context, theme, error);
-        },
-        loading: () {
-          return _buildLoadingTrigger(context, theme);
-        },
-      );
-    });
+    final selectedVersionId = widget.viewModel.selectedVersionId.watch(context);
+
+    return versionsState.map(
+      data: (data) {
+        final selectedVersion = data.versions.firstWhere(
+          (v) => v.id == selectedVersionId,
+          orElse: () => data.versions.isNotEmpty
+              ? data.versions.first
+              : DocumentVersion(
+                  documentId: 0,
+                  versionNumber: 0,
+                  status: DocumentVersionStatus.draft,
+                ),
+        );
+
+        return ShadPopover(
+          controller: _popoverController,
+          popover: (context) => _buildVersionsList(context, theme, data),
+          child: _buildTrigger(context, theme, selectedVersion, data),
+        );
+      },
+      error: (error, stackTrace) {
+        return _buildErrorTrigger(context, theme, error);
+      },
+      loading: () {
+        return _buildLoadingTrigger(context, theme);
+      },
+    );
   }
 
   /// Builds the dropdown trigger button.
@@ -103,34 +103,29 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     final hasSelection = selectedVersion.versionNumber > 0;
 
     return ShadButton.outline(
-      width: widget.width ?? 250,
-      onPressed: _popoverController.toggle,
+      onPressed: data.versions.isEmpty ? null : _popoverController.toggle,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           if (hasSelection) ...[
-            Expanded(
-              child: Row(
-                children: [
-                  Text(
-                    'v${selectedVersion.versionNumber}',
-                    style: theme.textTheme.small.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.foreground,
-                    ),
+            Row(
+              children: [
+                Text(
+                  'v${selectedVersion.versionNumber}',
+                  style: theme.textTheme.small.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.foreground,
                   ),
-                  const SizedBox(width: 8),
-                  _StatusBadge(version: selectedVersion, compact: true),
-                ],
-              ),
+                ),
+                const SizedBox(width: 8),
+                _StatusBadge(version: selectedVersion, compact: true),
+              ],
             ),
           ] else ...[
-            Expanded(
-              child: Text(
-                'Select Version',
-                style: theme.textTheme.small.copyWith(
-                  color: theme.colorScheme.mutedForeground,
-                ),
+            Text(
+              'Select Version',
+              style: theme.textTheme.small.copyWith(
+                color: theme.colorScheme.mutedForeground,
               ),
             ),
           ],
@@ -147,7 +142,6 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
   /// Builds the loading trigger button.
   Widget _buildLoadingTrigger(BuildContext context, ShadThemeData theme) {
     return ShadButton.outline(
-      width: widget.width ?? 250,
       onPressed: null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,7 +174,6 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     Object error,
   ) {
     return ShadButton.outline(
-      width: widget.width ?? 250,
       onPressed: null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -215,7 +208,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     }
 
     return Container(
-      width: widget.width ?? 350,
+      width: 350,
       constraints: const BoxConstraints(maxHeight: 400),
       decoration: BoxDecoration(
         color: theme.colorScheme.background,
@@ -259,7 +252,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
               itemBuilder: (context, index) {
                 final version = data.versions[index];
                 final isSelected =
-                    widget.viewModel.selectedVersionIdInt == version.id;
+                    widget.viewModel.selectedVersionId == version.id;
 
                 return _VersionMenuItem(
                   version: version,
@@ -269,8 +262,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
                       widget.viewModel.setRouteParams(
                         documentTypeSlug:
                             widget.viewModel.currentDocumentTypeSlug.value,
-                        documentId:
-                            widget.viewModel.currentDocumentId.value,
+                        documentId: widget.viewModel.currentDocumentId.value,
                         versionId: version.id.toString(),
                       );
                       _popoverController.toggle();
@@ -288,7 +280,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
   /// Builds the empty state UI.
   Widget _buildEmptyState(BuildContext context, ShadThemeData theme) {
     return Container(
-      width: widget.width ?? 300,
+      width: 300,
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
         color: theme.colorScheme.background,

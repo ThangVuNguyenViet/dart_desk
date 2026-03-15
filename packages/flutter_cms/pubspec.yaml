@@ -23,7 +23,9 @@ dependencies:
   flutter_resizable_container: ^4.2.0
   super_editor: ^0.3.0-dev.50
   disco: ^1.0.3+1
-  zenrouter: ^0.1.0
+  zenrouter: ^2.0.3
+  marionette_flutter:
+    path: ../../../marionette_mcp/packages/marionette_flutter
 
 dev_dependencies:
   flutter_test:

@@ -1713,10 +1713,18 @@ packages:
     dependency: transitive
     description:
       name: zenrouter
-      sha256: "98db924ad61f5529707e13d31bc5804cf994c36d49d9198823bc6570a3664544"
+      sha256: "2857c21c9ca64ee7493c137c5a7f1c952a6e821f2cbeeb97f85d23b18e1ee2e2"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.2"
+    version: "2.0.3"
+  zenrouter_core:
+    dependency: transitive
+    description:
+      name: zenrouter_core
+      sha256: "940dfdf5df03abeaf43624b239c910abc7eb8542b8983b14f205358b0dfbfba9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2"
 sdks:
   dart: ">=3.10.1 <4.0.0"
   flutter: ">=3.38.0"

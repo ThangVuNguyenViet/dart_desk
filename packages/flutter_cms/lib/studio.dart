@@ -30,7 +30,10 @@ export 'src/studio/components/common/default_cms_header.dart';
 export 'src/studio/components/forms/cms_form.dart';
 export 'src/studio/components/navigation/cms_document_type_sidebar.dart';
 export 'src/studio/components/version/cms_version_history.dart';
+// App entry point
+export 'src/studio/cms_studio_app.dart';
 // Core studio functionality
+export 'src/studio/core/marionette_config.dart';
 export 'src/studio/core/registry.dart';
 export 'src/studio/core/view_models/cms_view_model.dart';
 export 'src/studio/screens/cms_studio.dart';
