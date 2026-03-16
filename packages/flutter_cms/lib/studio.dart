@@ -49,3 +49,9 @@ export 'src/studio/routes/document_route.dart';
 export 'src/studio/routes/version_route.dart';
 // Theme
 export 'src/studio/theme/theme.dart';
+export 'src/studio/theme/spacing.dart';
+// Common components
+export 'src/studio/components/common/cms_breadcrumbs.dart';
+export 'src/studio/components/common/cms_status_pill.dart';
+export 'src/studio/components/common/cms_theme_toggle.dart';
+export 'src/studio/components/common/cms_toolbar_ribbon.dart';
