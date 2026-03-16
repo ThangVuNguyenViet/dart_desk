@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -75,8 +76,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.folder_outlined,
+          FaIcon(
+            FontAwesomeIcons.folderOpen,
             size: 40,
             color: theme.colorScheme.mutedForeground,
           ),
@@ -111,8 +112,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
+          FaIcon(
+            FontAwesomeIcons.circleExclamation,
             size: 40,
             color: theme.colorScheme.destructive,
           ),
@@ -155,7 +156,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
         Row(
           children: [
             if (widget.icon != null) ...[
-              Icon(widget.icon, size: 18, color: theme.colorScheme.primary),
+              FaIcon(widget.icon!, size: 18, color: theme.colorScheme.primary),
               const SizedBox(width: 8),
             ],
             Expanded(
@@ -177,7 +178,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                   }
                 });
               },
-              icon: Icon(_isCreatingNew ? Icons.close : Icons.add, size: 16),
+              icon: FaIcon(_isCreatingNew ? FontAwesomeIcons.xmark : FontAwesomeIcons.plus, size: 16),
             ),
           ],
         ),
@@ -189,7 +190,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
               _searchQuery = value;
             });
           },
-          trailing: const Icon(Icons.search),
+          trailing: const FaIcon(FontAwesomeIcons.magnifyingGlass),
         ),
         // Search bar
         if (widget.filter != null)
@@ -211,8 +212,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.inbox,
+                      FaIcon(
+                        FontAwesomeIcons.inbox,
                         size: 40,
                         color: theme.colorScheme.mutedForeground,
                       ),
@@ -427,8 +428,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                   ),
                 ),
                 if (isSelected)
-                  Icon(
-                    Icons.check_circle,
+                  FaIcon(
+                    FontAwesomeIcons.solidCircleCheck,
                     size: 16,
                     color: theme.colorScheme.primary,
                   ),

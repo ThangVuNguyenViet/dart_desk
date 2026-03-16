@@ -9,6 +9,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../components/forms/cms_form.dart';
@@ -78,7 +79,7 @@ class CmsRatingOption extends CmsOption {
 
   const CmsRatingOption({
     this.maxRating = 5,
-    this.icon = Icons.star,
+    this.icon = FontAwesomeIcons.solidStar,
     super.hidden,
   });
 }
@@ -127,7 +128,7 @@ class _CmsRatingInputState extends State<CmsRatingInput> {
           children: List.generate(widget.field.option.maxRating, (index) {
             final starIndex = index + 1;
             return ShadIconButton(
-              icon: Icon(
+              icon: FaIcon(
                 widget.field.option.icon,
                 color: starIndex <= _rating ? Colors.amber : Colors.grey,
               ),
@@ -174,7 +175,7 @@ void registerRatingField() {
 ///       title: 'Rate this product',
 ///       option: CmsRatingOption(
 ///         maxRating: 5,
-///         icon: Icons.star,
+///         icon: FontAwesomeIcons.solidStar,
 ///       ),
 ///     ),
 ///   ],

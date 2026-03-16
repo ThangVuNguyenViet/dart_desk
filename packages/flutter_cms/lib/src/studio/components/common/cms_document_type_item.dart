@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// A navigation item widget for a CmsDocumentType
@@ -37,8 +38,8 @@ class CmsDocumentTypeItem extends StatelessWidget {
                     : theme.colorScheme.muted.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(
-                icon ?? Icons.description,
+              child: FaIcon(
+                icon ?? FontAwesomeIcons.file,
                 size: 20,
                 color: isSelected
                     ? theme.colorScheme.primary

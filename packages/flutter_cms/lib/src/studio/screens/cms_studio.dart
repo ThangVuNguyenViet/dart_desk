@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_resizable_container/flutter_resizable_container.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -37,7 +38,7 @@ class _CmsStudioState extends State<CmsStudio> {
         final docType = cmsViewModel.currentDocumentType.value;
         if (docType == null) {
           return _buildEmptyState(
-            icon: Icons.edit,
+            icon: FontAwesomeIcons.pen,
             title: 'Document Editor',
             description:
                 'Select a document type from the sidebar to start editing',
@@ -66,7 +67,7 @@ class _CmsStudioState extends State<CmsStudio> {
         // No document type → empty view
         if (docType == null) {
           return _buildEmptyState(
-            icon: Icons.visibility,
+            icon: FontAwesomeIcons.eye,
             title: 'Content Preview',
             description:
                 'Select a document type from the sidebar to see preview',
@@ -118,7 +119,7 @@ class _CmsStudioState extends State<CmsStudio> {
 
         if (docType == null) {
           return _buildEmptyState(
-            icon: Icons.folder_open,
+            icon: FontAwesomeIcons.folderOpen,
             title: 'Documents',
             description: 'Select a document type to see available documents',
           );
@@ -128,7 +129,7 @@ class _CmsStudioState extends State<CmsStudio> {
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
           child: CmsDocumentListView(
             selectedDocumentType: docType,
-            icon: Icons.description,
+            icon: FontAwesomeIcons.file,
             onOpenDocument: (documentId) {
               widget.coordinator.pushOrMoveToTop(
                 DocumentRoute(docType.name, documentId),
@@ -182,7 +183,7 @@ class _CmsStudioState extends State<CmsStudio> {
                     color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Icon(icon, size: 24, color: theme.colorScheme.primary),
+                  child: FaIcon(icon, size: 24, color: theme.colorScheme.primary),
                 ),
                 const SizedBox(height: 12),
                 Text(

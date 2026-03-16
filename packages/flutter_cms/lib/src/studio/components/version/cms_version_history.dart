@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -129,8 +130,8 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
               ),
             ),
           ],
-          Icon(
-            Icons.unfold_more,
+          FaIcon(
+            FontAwesomeIcons.arrowsUpDown,
             size: 16,
             color: theme.colorScheme.mutedForeground,
           ),
@@ -187,8 +188,8 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Icon(
-            Icons.error_outline,
+          FaIcon(
+            FontAwesomeIcons.circleExclamation,
             size: 16,
             color: theme.colorScheme.destructive,
           ),
@@ -297,8 +298,8 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
               color: theme.colorScheme.muted.withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              Icons.history,
+            child: FaIcon(
+              FontAwesomeIcons.clockRotateLeft,
               size: 24,
               color: theme.colorScheme.mutedForeground,
             ),
