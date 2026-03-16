@@ -157,30 +157,27 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   }
 
   Widget _buildEditor(Map<String, dynamic> documentData, bool isSaving) {
-    return Watch((context) {
-      // Track editedData changes for the Discard button state
-      final edited = editedData.value;
-      final hasUnsavedChanges = edited.isNotEmpty;
+    final edited = editedData.watch(context);
+    final hasUnsavedChanges = edited.isNotEmpty;
 
-      return Stack(
-        children: [
-          CmsForm(
-            fields: widget.fields,
-            data: Map<String, dynamic>.from(documentData),
-            title: widget.title,
-            onSave: isSaving ? null : _saveDocument,
-            onDiscard: isSaving || !hasUnsavedChanges ? null : _discardDocument,
-            onFieldChanged: (fieldName, value) => editedData[fieldName] = value,
-          ),
-          if (isSaving)
-            Positioned.fill(
-              child: Container(
-                color: Colors.black.withValues(alpha: 0.3),
-                child: const Center(child: ShadProgress()),
-              ),
+    return Stack(
+      children: [
+        CmsForm(
+          fields: widget.fields,
+          data: Map<String, dynamic>.from(documentData),
+          title: widget.title,
+          onSave: isSaving ? null : _saveDocument,
+          onDiscard: isSaving || !hasUnsavedChanges ? null : _discardDocument,
+          onFieldChanged: (fieldName, value) => editedData[fieldName] = value,
+        ),
+        if (isSaving)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withValues(alpha: 0.3),
+              child: const Center(child: ShadProgress()),
             ),
-        ],
-      );
-    });
+          ),
+      ],
+    );
   }
 }
