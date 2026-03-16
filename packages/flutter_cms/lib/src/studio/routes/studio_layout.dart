@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cms_be_client/flutter_cms_be_client.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:signals/signals_flutter.dart';
 import 'package:zenrouter/zenrouter.dart';
 
 import '../../../studio.dart';
+import '../components/common/cms_breadcrumbs.dart';
+import '../components/common/cms_theme_toggle.dart';
 import '../providers/studio_provider.dart';
 
 /// The root layout for all studio routes.
@@ -81,7 +86,7 @@ class _StudioShellState extends State<StudioShell> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const _TopBar(),
+        _TopBar(coordinator: widget.coordinator),
         const Divider(height: 1),
         Expanded(child: widget.child),
       ],
@@ -94,65 +99,125 @@ class _StudioShellState extends State<StudioShell> {
 /// Reads branding from [DefaultCmsHeaderConfig] and provides
 /// navigation and sign-out actions.
 class _TopBar extends StatelessWidget {
-  const _TopBar();
+  final StudioCoordinator coordinator;
+
+  const _TopBar({required this.coordinator});
 
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     final headerConfig = DefaultCmsHeaderConfig.of(context);
+    final viewModel = cmsViewModelProvider.of(context);
+
+    // Build breadcrumb segments reactively
+    final docTypeSlug = viewModel.currentDocumentTypeSlug.watch(context);
+    final docId = viewModel.currentDocumentId.watch(context);
+
+    final segments = <BreadcrumbSegment>[
+      BreadcrumbSegment(
+        label: headerConfig?.title ?? 'CMS Studio',
+        onTap: docTypeSlug != null
+            ? () => coordinator.studioStack.reset()
+            : null,
+      ),
+    ];
+
+    if (docTypeSlug != null) {
+      final docType = viewModel.currentDocumentType.value;
+      segments.add(BreadcrumbSegment(
+        label: docType?.title ?? docTypeSlug,
+        onTap: docId != null
+            ? () => coordinator.pushOrMoveToTop(
+                  DocumentTypeRoute(docTypeSlug),
+                )
+            : null,
+      ));
+    }
+
+    if (docId != null) {
+      final documentViewModel = documentViewModelProvider.of(context);
+      final title = documentViewModel.title.watch(context);
+      segments.add(BreadcrumbSegment(label: title.isNotEmpty ? title : 'Document'));
+    }
+
+    final themeModeSignal = CmsThemeModeProvider.of(context);
+    final currentTheme = themeModeSignal.watch(context);
 
     return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: CmsSpacing.lg),
       decoration: BoxDecoration(
         color: theme.colorScheme.background,
         border: Border(
-          bottom: BorderSide(color: theme.colorScheme.border, width: 1),
+          bottom: BorderSide(color: theme.colorScheme.border),
         ),
       ),
       child: Row(
         children: [
+          // Logo
           if (headerConfig?.icon != null) ...[
-            Icon(
-              headerConfig!.icon,
-              size: 24,
-              color: theme.colorScheme.primary,
+            Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.primary.withValues(alpha: 0.7),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(CmsBorderRadius.md),
+              ),
+              child: Center(
+                child: FaIcon(
+                  headerConfig!.icon!,
+                  size: 14,
+                  color: theme.colorScheme.primaryForeground,
+                ),
+              ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: CmsSpacing.md),
           ],
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  headerConfig?.title ?? 'CMS Studio',
-                  style: theme.textTheme.large.copyWith(
-                    fontWeight: FontWeight.bold,
+
+          // Breadcrumbs
+          Expanded(child: CmsBreadcrumbs(segments: segments)),
+
+          // Right section
+          CmsThemeToggle(
+            themeMode: currentTheme,
+            onChanged: (mode) async {
+              themeModeSignal.value = mode;
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('cms_theme_mode_dark', mode == ThemeMode.dark);
+            },
+          ),
+          const SizedBox(width: CmsSpacing.md),
+          CmsVersionHistory(viewModel: viewModel),
+          const SizedBox(width: CmsSpacing.md),
+
+          // User avatar with sign-out
+          GestureDetector(
+            onTap: () => context.signOut(),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: FaIcon(
+                    FontAwesomeIcons.solidUser,
+                    size: 12,
+                    color: theme.colorScheme.primaryForeground,
                   ),
                 ),
-                if (headerConfig?.subtitle != null)
-                  Text(
-                    headerConfig!.subtitle!,
-                    style: theme.textTheme.small.copyWith(
-                      color: theme.colorScheme.mutedForeground,
-                    ),
-                  ),
-              ],
+              ),
             ),
-          ),
-          if (headerConfig?.onDashboardPressed != null)
-            ShadButton.ghost(
-              onPressed: headerConfig!.onDashboardPressed,
-              child: const Text('Open Dashboard'),
-            ),
-          const SizedBox(width: 8),
-          CmsVersionHistory(viewModel: cmsViewModelProvider.of(context)),
-          const SizedBox(width: 8),
-          ShadButton.outline(
-            size: ShadButtonSize.sm,
-            onPressed: () => context.signOut(),
-            child: const Text('Sign Out'),
           ),
         ],
       ),
