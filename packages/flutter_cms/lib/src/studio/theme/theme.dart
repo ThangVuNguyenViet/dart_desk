@@ -6,6 +6,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+export 'spacing.dart';
+
 /// Default theme for the CMS studio (dark)
 ShadThemeData get cmsStudioTheme => ShadThemeData(
   brightness: Brightness.dark,
@@ -17,5 +19,3 @@ ShadThemeData get cmsStudioLightTheme => ShadThemeData(
   brightness: Brightness.light,
   colorScheme: const ShadStoneColorScheme.light(),
 );
-
-export 'spacing.dart';
