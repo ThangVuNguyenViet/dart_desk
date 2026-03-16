@@ -48,6 +48,13 @@ class CmsViewModel {
   final isSaving = Signal<bool>(false);
 
   // ============================================================
+  // UI State Signals
+  // ============================================================
+
+  final sidebarCollapsed = Signal<bool>(false);
+  final documentListVisible = Signal<bool>(true);
+
+  // ============================================================
   // Computed Signals
   // ============================================================
 
@@ -377,6 +384,8 @@ class CmsViewModel {
     page.dispose();
     pageSize.dispose();
     searchQuery.dispose();
+    sidebarCollapsed.dispose();
+    documentListVisible.dispose();
     isSaving.dispose();
   }
 }
