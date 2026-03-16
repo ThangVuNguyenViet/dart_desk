@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:signals/signals_flutter.dart';
 
 import '../data/cms_data_source.dart';
 import 'components/common/cms_document_type_decoration.dart';
@@ -41,6 +43,7 @@ class CmsStudioApp extends StatefulWidget {
 
 class _CmsStudioAppState extends State<CmsStudioApp> {
   late final StudioCoordinator coordinator;
+  final _themeMode = Signal<ThemeMode>(ThemeMode.dark);
 
   @override
   void initState() {
@@ -50,20 +53,61 @@ class _CmsStudioAppState extends State<CmsStudioApp> {
       dataSource: widget.dataSource,
       documentTypeDecorations: widget.documentTypeDecorations,
     );
+    _loadPersistedTheme();
+  }
+
+  Future<void> _loadPersistedTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isDark = prefs.getBool('cms_theme_mode_dark') ?? true;
+    _themeMode.value = isDark ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  @override
+  void dispose() {
+    _themeMode.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultCmsHeaderConfig(
-      title: widget.title,
-      subtitle: widget.subtitle,
-      icon: widget.icon,
-      onDashboardPressed: widget.onDashboardPressed,
-      child: ShadApp.router(
-        theme: widget.theme ?? cmsStudioTheme,
-        routeInformationParser: coordinator.routeInformationParser,
-        routerDelegate: coordinator.routerDelegate,
+    final currentMode = _themeMode.watch(context);
+    final resolvedTheme = widget.theme ??
+        (currentMode == ThemeMode.dark ? cmsStudioTheme : cmsStudioLightTheme);
+
+    return CmsThemeModeProvider(
+      themeMode: _themeMode,
+      child: DefaultCmsHeaderConfig(
+        title: widget.title,
+        subtitle: widget.subtitle,
+        icon: widget.icon,
+        onDashboardPressed: widget.onDashboardPressed,
+        child: ShadApp.router(
+          theme: resolvedTheme,
+          routeInformationParser: coordinator.routeInformationParser,
+          routerDelegate: coordinator.routerDelegate,
+        ),
       ),
     );
   }
+}
+
+/// Provides the theme mode signal to descendants.
+class CmsThemeModeProvider extends InheritedWidget {
+  final Signal<ThemeMode> themeMode;
+
+  const CmsThemeModeProvider({
+    super.key,
+    required this.themeMode,
+    required super.child,
+  });
+
+  static Signal<ThemeMode> of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<CmsThemeModeProvider>()!
+        .themeMode;
+  }
+
+  @override
+  bool updateShouldNotify(CmsThemeModeProvider oldWidget) =>
+      themeMode != oldWidget.themeMode;
 }
