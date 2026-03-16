@@ -3,10 +3,16 @@ import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-/// A navigation item widget for a CmsDocumentType
+import '../../theme/spacing.dart';
+
+/// A navigation item for a document type in the sidebar.
+///
+/// Supports expanded mode (icon + label) and collapsed mode (icon only with tooltip).
+/// Uses solid Font Awesome icons when selected, regular when not.
 class CmsDocumentTypeItem extends StatelessWidget {
   final CmsDocumentType documentType;
   final bool isSelected;
+  final bool isCollapsed;
   final VoidCallback? onTap;
   final IconData? icon;
 
@@ -14,6 +20,7 @@ class CmsDocumentTypeItem extends StatelessWidget {
     super.key,
     required this.documentType,
     this.isSelected = false,
+    this.isCollapsed = false,
     this.onTap,
     this.icon,
   });
@@ -22,61 +29,76 @@ class CmsDocumentTypeItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
 
-    return GestureDetector(
+    final activeIcon = icon ?? FontAwesomeIcons.solidFile;
+    final inactiveIcon = icon ?? FontAwesomeIcons.file;
+
+    final item = GestureDetector(
       onTap: onTap,
-      child: ShadCard(
-        padding: EdgeInsets.all(8),
-        child: Row(
-          children: [
-            // Icon container
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? theme.colorScheme.primary.withValues(alpha: 0.15)
-                    : theme.colorScheme.muted.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: FaIcon(
-                icon ?? FontAwesomeIcons.file,
-                size: 20,
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.mutedForeground,
-              ),
-            ),
-            const SizedBox(width: 8),
-            // Content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    documentType.title,
-                    style: theme.textTheme.small.copyWith(
-                      fontWeight: FontWeight.w600,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: EdgeInsets.all(isCollapsed ? CmsSpacing.sm : CmsSpacing.sm),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(CmsBorderRadius.md),
+            border: isSelected
+                ? Border(
+                    left: BorderSide(
+                      color: theme.colorScheme.primary,
+                      width: 2,
+                    ),
+                  )
+                : null,
+          ),
+          child: isCollapsed
+              ? Center(
+                  child: FaIcon(
+                    isSelected ? activeIcon : inactiveIcon,
+                    size: 14,
+                    color: isSelected
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.mutedForeground,
+                  ),
+                )
+              : Row(
+                  children: [
+                    FaIcon(
+                      isSelected ? activeIcon : inactiveIcon,
+                      size: 14,
                       color: isSelected
                           ? theme.colorScheme.primary
-                          : theme.colorScheme.foreground,
+                          : theme.colorScheme.mutedForeground,
                     ),
-                  ),
-                ],
-              ),
-            ),
-            // Selection indicator
-            if (isSelected)
-              Container(
-                width: 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
-                  borderRadius: BorderRadius.circular(3),
+                    const SizedBox(width: CmsSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        documentType.title,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                          color: isSelected
+                              ? theme.colorScheme.foreground
+                              : theme.colorScheme.mutedForeground,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-          ],
         ),
       ),
     );
+
+    if (isCollapsed) {
+      return Tooltip(
+        message: documentType.title,
+        child: item,
+      );
+    }
+
+    return item;
   }
 }
