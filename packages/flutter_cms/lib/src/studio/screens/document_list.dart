@@ -8,8 +8,10 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../data/models/cms_document.dart';
 import '../../data/models/document_list.dart';
+import '../components/common/cms_status_pill.dart';
 import '../core/view_models/cms_view_model.dart';
 import '../providers/studio_provider.dart';
+import '../theme/spacing.dart';
 
 /// Document list view for browsing multiple documents of a type
 class CmsDocumentListView extends StatefulWidget {
@@ -56,19 +58,17 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     final theme = ShadTheme.of(context);
     final viewModel = cmsViewModelProvider.of(context);
 
-    return Watch((context) {
-      final params = viewModel.queryParams.value;
-      if (params.documentType == null) {
-        return _buildEmpty(theme);
-      }
+    final params = viewModel.queryParams.watch(context);
+    if (params.documentType == null) {
+      return _buildEmpty(theme);
+    }
 
-      final resourceState = viewModel.documentsContainer(params).value;
-      return resourceState.map<Widget>(
-        data: (result) => _buildContent(context, theme, result),
-        loading: () => _buildLoading(theme),
-        error: (error, stackTrace) => _buildError(theme, error),
-      );
-    });
+    final resourceState = viewModel.documentsContainer(params).watch(context);
+    return resourceState.map<Widget>(
+      data: (result) => _buildContent(context, theme, result),
+      loading: () => _buildLoading(theme),
+      error: (error, stackTrace) => _buildError(theme, error),
+    );
   }
 
   Widget _buildEmpty(ShadThemeData theme) {
@@ -386,88 +386,110 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     CmsViewModel viewModel,
   ) {
     final documentViewModel = documentViewModelProvider.of(context);
+    final isSelected = documentViewModel.documentId.watch(context) == doc.id;
 
-    return Watch((context) {
-      final isSelected = documentViewModel.documentId.value == doc.id;
-
-      return Container(
-      decoration: BoxDecoration(
-        color: isSelected
-            ? theme.colorScheme.primary.withValues(alpha: 0.1)
-            : theme.colorScheme.card,
-        border: Border.all(
-          color: isSelected
-              ? theme.colorScheme.primary.withValues(alpha: 0.4)
-              : theme.colorScheme.border,
-          width: isSelected ? 1.5 : 1,
-        ),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      padding: const EdgeInsets.all(12),
-      child: InkWell(
-        onTap: () {
-          if (doc.id != null && !isSelected) {
-            widget.onOpenDocument?.call(doc.id.toString());
-          }
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    doc.title,
-                    style: theme.textTheme.muted.copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                      color: isSelected
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.foreground,
+    return GestureDetector(
+      onTap: () {
+        if (doc.id != null && !isSelected) {
+          widget.onOpenDocument?.call(doc.id.toString());
+        }
+      },
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CmsSpacing.md,
+            vertical: CmsSpacing.sm + 2,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? theme.colorScheme.primary.withValues(alpha: 0.06)
+                : Colors.transparent,
+            border: Border.all(
+              color: isSelected
+                  ? theme.colorScheme.primary.withValues(alpha: 0.2)
+                  : theme.colorScheme.border,
+            ),
+            borderRadius: BorderRadius.circular(CmsBorderRadius.md),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Title + status pill row
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      doc.title,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: isSelected
+                            ? FontWeight.w500
+                            : FontWeight.normal,
+                        color: theme.colorScheme.foreground,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ),
-                if (isSelected)
-                  FaIcon(
-                    FontAwesomeIcons.solidCircleCheck,
-                    size: 16,
-                    color: theme.colorScheme.primary,
+                  // Status is currently always "published" — actual status
+                  // derivation from version data can be added as a follow-up.
+                  const CmsStatusPill(status: CmsStatus.published),
+                ],
+              ),
+              if (doc.slug != null) ...[
+                const SizedBox(height: CmsSpacing.xs),
+                Text(
+                  '/${doc.slug}',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: theme.colorScheme.mutedForeground,
+                    fontFamily: 'monospace',
                   ),
+                ),
               ],
-            ),
-            if (doc.slug != null) ...[
-              const SizedBox(height: 3),
-              Text(
-                '/${doc.slug}',
-                style: theme.textTheme.small.copyWith(
-                  color: theme.colorScheme.mutedForeground,
-                  fontFamily: 'monospace',
-                  fontSize: 11,
-                ),
-              ),
-            ],
-            if (doc.isDefault) ...[
-              const SizedBox(height: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                child: Text(
-                  'DEFAULT',
-                  style: theme.textTheme.small.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 9,
+              const SizedBox(height: CmsSpacing.xs),
+              Row(
+                children: [
+                  if (doc.isDefault) ...[
+                    Text(
+                      'Default',
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: theme.colorScheme.mutedForeground,
+                      ),
+                    ),
+                    Text(
+                      ' · ',
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: theme.colorScheme.mutedForeground,
+                      ),
+                    ),
+                  ],
+                  Text(
+                    _formatTimestamp(doc.updatedAt),
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: theme.colorScheme.mutedForeground,
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
-          ],
+          ),
         ),
       ),
     );
-    });
+  }
+
+  String _formatTimestamp(DateTime? date) {
+    if (date == null) return '';
+    final now = DateTime.now();
+    final diff = now.difference(date);
+    if (diff.inMinutes < 1) return 'Updated just now';
+    if (diff.inMinutes < 60) return 'Updated ${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return 'Updated ${diff.inHours}h ago';
+    if (diff.inDays < 7) return 'Updated ${diff.inDays}d ago';
+    return 'Updated ${(diff.inDays / 7).floor()}w ago';
   }
 }
