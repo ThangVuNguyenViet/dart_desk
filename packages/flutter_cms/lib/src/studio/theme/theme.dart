@@ -9,11 +9,13 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 /// Default theme for the CMS studio (dark)
 ShadThemeData get cmsStudioTheme => ShadThemeData(
   brightness: Brightness.dark,
-  colorScheme: const ShadSlateColorScheme.dark(),
+  colorScheme: const ShadStoneColorScheme.dark(),
 );
 
 /// Light theme for the CMS studio
 ShadThemeData get cmsStudioLightTheme => ShadThemeData(
   brightness: Brightness.light,
-  colorScheme: const ShadSlateColorScheme.light(),
+  colorScheme: const ShadStoneColorScheme.light(),
 );
+
+export 'spacing.dart';
