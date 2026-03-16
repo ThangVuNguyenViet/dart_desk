@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:super_editor/super_editor.dart';
 
@@ -247,25 +248,25 @@ class _BlockEditorToolbar extends StatelessWidget {
           child: Wrap(
             children: [
               _ToolbarButton(
-                icon: Icons.format_bold,
+                icon: FontAwesomeIcons.bold,
                 tooltip: 'Bold',
                 iconColor: iconColor,
                 onPressed: () => _toggle({boldAttribution}),
               ),
               _ToolbarButton(
-                icon: Icons.format_italic,
+                icon: FontAwesomeIcons.italic,
                 tooltip: 'Italic',
                 iconColor: iconColor,
                 onPressed: () => _toggle({italicsAttribution}),
               ),
               _ToolbarButton(
-                icon: Icons.format_underlined,
+                icon: FontAwesomeIcons.underline,
                 tooltip: 'Underline',
                 iconColor: iconColor,
                 onPressed: () => _toggle({underlineAttribution}),
               ),
               _ToolbarButton(
-                icon: Icons.strikethrough_s,
+                icon: FontAwesomeIcons.strikethrough,
                 tooltip: 'Strikethrough',
                 iconColor: iconColor,
                 onPressed: () => _toggle({strikethroughAttribution}),
@@ -278,19 +279,19 @@ class _BlockEditorToolbar extends StatelessWidget {
                 ),
               ),
               _ToolbarButton(
-                icon: Icons.title,
+                icon: FontAwesomeIcons.heading,
                 tooltip: 'Header 1',
                 iconColor: iconColor,
                 onPressed: () => _setBlockType(header1Attribution),
               ),
               _ToolbarButton(
-                icon: Icons.text_fields,
+                icon: FontAwesomeIcons.font,
                 tooltip: 'Header 2',
                 iconColor: iconColor,
                 onPressed: () => _setBlockType(header2Attribution),
               ),
               _ToolbarButton(
-                icon: Icons.text_format,
+                icon: FontAwesomeIcons.textHeight,
                 tooltip: 'Paragraph',
                 iconColor: iconColor,
                 onPressed: () => _setBlockType(null),
@@ -303,19 +304,19 @@ class _BlockEditorToolbar extends StatelessWidget {
                 ),
               ),
               _ToolbarButton(
-                icon: Icons.format_list_bulleted,
+                icon: FontAwesomeIcons.listUl,
                 tooltip: 'Bullet list',
                 iconColor: iconColor,
                 onPressed: () => _convertToListItem(ListItemType.unordered),
               ),
               _ToolbarButton(
-                icon: Icons.format_list_numbered,
+                icon: FontAwesomeIcons.listOl,
                 tooltip: 'Numbered list',
                 iconColor: iconColor,
                 onPressed: () => _convertToListItem(ListItemType.ordered),
               ),
               _ToolbarButton(
-                icon: Icons.format_quote,
+                icon: FontAwesomeIcons.quoteLeft,
                 tooltip: 'Blockquote',
                 iconColor: iconColor,
                 onPressed: () => _setBlockType(blockquoteAttribution),
@@ -348,7 +349,7 @@ class _ToolbarButton extends StatelessWidget {
       height: 32,
       child: IconButton(
         onPressed: onPressed,
-        icon: Icon(icon, size: 18, color: iconColor),
+        icon: FaIcon(icon, size: 18, color: iconColor),
         splashRadius: 16,
         padding: EdgeInsets.zero,
         tooltip: tooltip,

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -122,7 +123,7 @@ class _CmsImageInputState extends State<CmsImageInput> {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return const Center(
-                    child: Icon(Icons.broken_image, size: 48),
+                    child: FaIcon(FontAwesomeIcons.imagePortrait, size: 48),
                   );
                 },
               )
@@ -131,7 +132,7 @@ class _CmsImageInputState extends State<CmsImageInput> {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return const Center(
-                    child: Icon(Icons.broken_image, size: 48),
+                    child: FaIcon(FontAwesomeIcons.imagePortrait, size: 48),
                   );
                 },
               );
@@ -145,7 +146,7 @@ class _CmsImageInputState extends State<CmsImageInput> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.broken_image, size: 48),
+                const FaIcon(FontAwesomeIcons.imagePortrait, size: 48),
                 const SizedBox(height: 8),
                 Text(
                   'Failed to load image',
@@ -215,7 +216,7 @@ class _CmsImageInputState extends State<CmsImageInput> {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.upload, size: 16),
+                  FaIcon(FontAwesomeIcons.cloudArrowUp, size: 16),
                   SizedBox(width: 4),
                   Text('Upload'),
                 ],
@@ -249,7 +250,7 @@ class _CmsImageInputState extends State<CmsImageInput> {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.delete, size: 14),
+                    FaIcon(FontAwesomeIcons.trash, size: 14),
                     SizedBox(width: 4),
                     Text('Remove'),
                   ],
@@ -265,8 +266,8 @@ class _CmsImageInputState extends State<CmsImageInput> {
             padding: const EdgeInsets.only(top: 8.0),
             child: Row(
               children: [
-                Icon(
-                  Icons.center_focus_strong,
+                FaIcon(
+                  FontAwesomeIcons.cropSimple,
                   size: 14,
                   color: theme.colorScheme.mutedForeground,
                 ),

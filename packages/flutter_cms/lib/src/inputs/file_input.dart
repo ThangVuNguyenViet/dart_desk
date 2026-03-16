@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 @Preview(name: 'CmsFileInput')
@@ -94,43 +95,43 @@ class _CmsFileInputState extends State<CmsFileInput> {
   }
 
   IconData _getFileIcon(String? fileName) {
-    if (fileName == null) return Icons.insert_drive_file;
+    if (fileName == null) return FontAwesomeIcons.solidFile;
 
     final extension = fileName.split('.').last.toLowerCase();
     switch (extension) {
       case 'pdf':
-        return Icons.picture_as_pdf;
+        return FontAwesomeIcons.solidFilePdf;
       case 'doc':
       case 'docx':
-        return Icons.description;
+        return FontAwesomeIcons.file;
       case 'xls':
       case 'xlsx':
-        return Icons.table_chart;
+        return FontAwesomeIcons.solidFileExcel;
       case 'ppt':
       case 'pptx':
-        return Icons.slideshow;
+        return FontAwesomeIcons.solidFilePowerpoint;
       case 'zip':
       case 'rar':
       case '7z':
-        return Icons.folder_zip;
+        return FontAwesomeIcons.solidFileZipper;
       case 'jpg':
       case 'jpeg':
       case 'png':
       case 'gif':
       case 'webp':
-        return Icons.image;
+        return FontAwesomeIcons.solidImage;
       case 'mp4':
       case 'avi':
       case 'mov':
-        return Icons.video_file;
+        return FontAwesomeIcons.solidFileVideo;
       case 'mp3':
       case 'wav':
       case 'ogg':
-        return Icons.audio_file;
+        return FontAwesomeIcons.solidFileAudio;
       case 'txt':
-        return Icons.text_snippet;
+        return FontAwesomeIcons.solidFileLines;
       default:
-        return Icons.insert_drive_file;
+        return FontAwesomeIcons.solidFile;
     }
   }
 
@@ -157,7 +158,7 @@ class _CmsFileInputState extends State<CmsFileInput> {
             ),
             child: Row(
               children: [
-                Icon(
+                FaIcon(
                   _getFileIcon(_fileName),
                   size: 24,
                   color: theme.colorScheme.primary,
@@ -184,7 +185,7 @@ class _CmsFileInputState extends State<CmsFileInput> {
                   ),
                 ),
                 ShadIconButton(
-                  icon: const Icon(Icons.close, size: 18),
+                  icon: const FaIcon(FontAwesomeIcons.xmark, size: 18),
                   onPressed: _removeFile,
                 ),
               ],
@@ -203,7 +204,7 @@ class _CmsFileInputState extends State<CmsFileInput> {
             child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.upload_file, size: 16),
+                FaIcon(FontAwesomeIcons.cloudArrowUp, size: 16),
                 SizedBox(width: 8),
                 Text('Upload File'),
               ],

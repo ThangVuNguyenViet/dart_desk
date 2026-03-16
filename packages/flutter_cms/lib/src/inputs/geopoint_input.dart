@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 @Preview(name: 'CmsGeopointInput')
@@ -158,8 +159,8 @@ class _CmsGeopointInputState extends State<CmsGeopointInput> {
           const SizedBox(height: 12),
           Row(
             children: [
-              Icon(
-                Icons.info_outline,
+              FaIcon(
+                FontAwesomeIcons.circleInfo,
                 size: 16,
                 color: theme.colorScheme.mutedForeground,
               ),
@@ -187,7 +188,7 @@ class _CmsGeopointInputState extends State<CmsGeopointInput> {
             child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.map, size: 16),
+                FaIcon(FontAwesomeIcons.locationDot, size: 16),
                 SizedBox(width: 8),
                 Text('Pick from map'),
               ],
