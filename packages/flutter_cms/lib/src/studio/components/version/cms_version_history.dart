@@ -253,7 +253,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
               itemBuilder: (context, index) {
                 final version = data.versions[index];
                 final isSelected =
-                    widget.viewModel.selectedVersionId == version.id;
+                    widget.viewModel.selectedVersionId.value == version.id;
 
                 return _VersionMenuItem(
                   version: version,

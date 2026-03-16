@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'edit_styles/edit_styles.dart';
@@ -127,7 +128,7 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.add, size: 16),
+                        FaIcon(FontAwesomeIcons.plus, size: 12),
                         SizedBox(width: 4),
                         Text('Add'),
                       ],
@@ -225,9 +226,9 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
             index: index,
             child: MouseRegion(
               cursor: SystemMouseCursors.grab,
-              child: Icon(
-                Icons.drag_handle,
-                size: 18,
+              child: FaIcon(
+                FontAwesomeIcons.gripLines,
+                size: 14,
                 color: theme.colorScheme.mutedForeground,
               ),
             ),
@@ -239,13 +240,13 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
         const SizedBox(width: 8),
         if (_editingIndex == null && widget.editStyle is InlineEditStyles) ...[
           ShadIconButton(
-            icon: const Icon(Icons.edit, size: 16),
+            icon: const FaIcon(FontAwesomeIcons.pen, size: 12),
             onPressed: () => _startEditing(index),
           ),
           const SizedBox(width: 4),
         ],
         ShadIconButton(
-          icon: const Icon(Icons.delete, size: 18),
+          icon: const FaIcon(FontAwesomeIcons.trash, size: 14),
           onPressed: _editingIndex == null ? () => _removeItem(index) : null,
         ),
       ],

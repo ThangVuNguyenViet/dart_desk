@@ -7,8 +7,6 @@ import 'package:signals/signals_flutter.dart';
 import 'package:zenrouter/zenrouter.dart';
 
 import '../../../studio.dart';
-import '../components/common/cms_breadcrumbs.dart';
-import '../components/common/cms_theme_toggle.dart';
 import '../providers/studio_provider.dart';
 
 /// The root layout for all studio routes.
