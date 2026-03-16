@@ -50,7 +50,7 @@ dependencies:
   flutter_cms_be_client:
     path: ../../../flutter_cms_be/flutter_cms_be_client
   marionette_flutter:
-    path: ../../../marionette_mcp/packages/marionette_flutter
+    path: ../../../../marionette_mcp/packages/marionette_flutter
 
 dev_dependencies:
   flutter_test:

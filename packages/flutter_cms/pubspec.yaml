@@ -25,7 +25,8 @@ dependencies:
   disco: ^1.0.3+1
   zenrouter: ^2.0.3
   marionette_flutter:
-    path: ../../../marionette_mcp/packages/marionette_flutter
+    path: ../../../../marionette_mcp/packages/marionette_flutter
+  font_awesome_flutter: ^10.8.0
 
 dev_dependencies:
   flutter_test:
