@@ -474,8 +474,7 @@ cd flutter_cms_be/flutter_cms_be_server
 docker compose up -d postgres_test redis_test
 # Wait for postgres
 until docker compose exec -T postgres_test pg_isready -U postgres; do sleep 1; done
-dart test test/integration/document_endpoint_test.dart --concurrency=1
-```
+dart test test/integration/document_endpoint_test.dart```
 
 Expected: All tests PASS. If `createDocument` fails due to missing client with `id=1`, the `setUp` client creation must run first — check that `createTestClient` returns a client and that `withServerpod`'s migration creates the necessary tables.
 
@@ -704,8 +703,7 @@ void main() {
 - [ ] **Step 2: Run the test**
 
 ```bash
-dart test test/integration/document_versioning_test.dart --concurrency=1
-```
+dart test test/integration/document_versioning_test.dart```
 
 Expected: All tests PASS.
 
@@ -868,8 +866,7 @@ void main() {
 - [ ] **Step 2: Run the test**
 
 ```bash
-dart test test/integration/document_crdt_test.dart --concurrency=1
-```
+dart test test/integration/document_crdt_test.dart```
 
 Expected: All tests PASS. The `data` field on `CmsDocument` is a `String?` containing JSON — verify by checking how `updateDocumentData` returns data. If the field is already a `Map`, adjust the parsing.
 
@@ -1017,8 +1014,7 @@ void main() {
 - [ ] **Step 2: Run the test**
 
 ```bash
-dart test test/integration/media_endpoint_test.dart --concurrency=1
-```
+dart test test/integration/media_endpoint_test.dart```
 
 Expected: All tests PASS. The `UploadResponse.id` may be a String representation of the media file ID — check the actual return value and adjust `int.parse` if needed.
 
@@ -1421,8 +1417,7 @@ void main() {
 - [ ] **Step 4: Run all three test files**
 
 ```bash
-dart test test/integration/cms_client_endpoint_test.dart test/integration/cms_api_token_endpoint_test.dart test/integration/user_endpoint_test.dart --concurrency=1
-```
+dart test test/integration/cms_client_endpoint_test.dart test/integration/cms_api_token_endpoint_test.dart test/integration/user_endpoint_test.dart```
 
 Expected: All tests PASS. The `ensureUser` call requires a valid API token matching the client — the token returned by `createClient` is the `cms_live_` prefixed plaintext token.
 
@@ -1603,8 +1598,7 @@ void main() {
 - [ ] **Step 2: Run the test (verifies skip works)**
 
 ```bash
-dart test test/integration/multi_tenancy_test.dart --concurrency=1
-```
+dart test test/integration/multi_tenancy_test.dart```
 
 Expected: Tests show as SKIPPED with reason message.
 
@@ -1653,7 +1647,10 @@ echo "PostgreSQL ready."
 echo "[3/3] Running integration tests..."
 echo ""
 TEST_EXIT=0
-dart test test/integration/ --concurrency=1 || TEST_EXIT=$?
+# NOTE: If you see flaky test failures due to cross-test DB interference,
+# add --concurrency=1 to run tests sequentially. This is only needed if
+# any test file uses rollbackDatabase: RollbackDatabase.disabled.
+dart test test/integration/ || TEST_EXIT=$?
 
 echo ""
 echo "Stopping test Docker services..."
