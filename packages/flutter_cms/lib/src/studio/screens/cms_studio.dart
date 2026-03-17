@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../components/common/cms_status_pill.dart';
+import '../../data/models/document_version.dart';
 import '../components/common/cms_toolbar_ribbon.dart';
 import '../core/view_models/cms_view_model.dart';
 import '../providers/studio_provider.dart';
@@ -245,6 +245,22 @@ class _CmsStudioState extends State<CmsStudio> {
     );
   }
 
+  DocumentVersionStatus _deriveToolbarStatus(
+    BuildContext context,
+    CmsViewModel viewModel,
+  ) {
+    final versionId = viewModel.selectedVersionId.watch(context);
+    if (versionId == null) return DocumentVersionStatus.draft;
+
+    final versionState =
+        viewModel.documentDataContainer(versionId).watch(context);
+    return versionState.map(
+      loading: () => DocumentVersionStatus.draft,
+      error: (_, __) => DocumentVersionStatus.draft,
+      data: (version) => version?.status ?? DocumentVersionStatus.draft,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
@@ -269,7 +285,9 @@ class _CmsStudioState extends State<CmsStudio> {
             listVisible: isListVisible,
             onToggleList: () =>
                 viewModel.documentListVisible.value = !isListVisible,
-            documentStatus: docType != null ? CmsStatus.published : null,
+            documentStatus: docType != null
+                ? _deriveToolbarStatus(context, viewModel)
+                : null,
             hasUnsavedChanges: editedData.isNotEmpty && docType != null,
             isSaving: isSaving,
             onSave: () => _saveDocument(context),

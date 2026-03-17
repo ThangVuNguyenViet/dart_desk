@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../../../data/models/document_version.dart';
 import '../../theme/spacing.dart';
 import 'cms_status_pill.dart';
 
@@ -16,7 +17,7 @@ class CmsToolbarRibbon extends StatelessWidget {
   final VoidCallback onToggleSidebar;
   final bool listVisible;
   final VoidCallback onToggleList;
-  final CmsStatus? documentStatus;
+  final DocumentVersionStatus? documentStatus;
   final String? lastSavedText;
   final bool hasUnsavedChanges;
   final bool isSaving;
@@ -78,7 +79,10 @@ class CmsToolbarRibbon extends StatelessWidget {
               color: theme.colorScheme.border,
             ),
             const SizedBox(width: CmsSpacing.sm),
-            CmsStatusPill(status: documentStatus!),
+            CmsStatusPill(
+              status: documentStatus!,
+              hasUnsavedChanges: hasUnsavedChanges,
+            ),
             if (lastSavedText != null) ...[
               const SizedBox(width: CmsSpacing.sm),
               Text(
@@ -95,6 +99,7 @@ class CmsToolbarRibbon extends StatelessWidget {
           // Right section: document actions
           if (hasUnsavedChanges) ...[
             ShadButton.outline(
+              key: const ValueKey('discard_button'),
               size: ShadButtonSize.sm,
               height: 28,
               onPressed: isSaving ? null : onDiscard,
@@ -102,6 +107,7 @@ class CmsToolbarRibbon extends StatelessWidget {
             ),
             const SizedBox(width: CmsSpacing.sm),
             ShadButton(
+              key: const ValueKey('save_button'),
               size: ShadButtonSize.sm,
               height: 28,
               onPressed: isSaving ? null : onSave,

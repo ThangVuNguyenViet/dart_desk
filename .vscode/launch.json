@@ -31,11 +31,6 @@
             "request": "launch",
             "cwd": "examples/cms_app",
             "program": "lib/main_test.dart",
-            // "deviceId": "chrome",
-            // "args": [
-            //     "--web-port=60366",
-            //     "--web-browser-flag=--user-data-dir=/tmp/flutter_cms_chrome_profile"
-            // ]
         }
     ]
 }

@@ -6,7 +6,11 @@ abstract class CmsArrayOption extends CmsOption {
   const CmsArrayOption({super.hidden});
 
   CmsArrayFieldItemBuilder get itemBuilder;
-  CmsArrayFieldItemEditor get itemEditor;
+
+  /// Override to provide a custom editor widget for array items.
+  /// When null, a default text-based editor will be used,
+  /// which stores items as String values.
+  CmsArrayFieldItemEditor? get itemEditor => null;
 }
 
 class CmsArrayField extends CmsField {

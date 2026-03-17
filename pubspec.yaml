@@ -12,6 +12,10 @@ workspace:
   - packages/flutter_cms_annotation
   - packages/flutter_cms_generator
 
+dependencies: 
+  collection: ^1.19.1
+  shadcn_ui: ^0.52.1
+
 dependency_overrides:
   signals:
     git:

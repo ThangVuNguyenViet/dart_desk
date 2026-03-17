@@ -100,18 +100,20 @@ final allFieldsDocumentType = CmsDocumentType(
       name: 'object_field',
       title: 'Object Field',
       description: 'A nested object with sub-fields',
-      option: CmsObjectOption(fields: [
-        CmsStringField(
-          name: 'nested_title',
-          title: 'Nested Title',
-          option: CmsStringOption(),
-        ),
-        CmsNumberField(
-          name: 'nested_count',
-          title: 'Nested Count',
-          option: CmsNumberOption(),
-        ),
-      ]),
+      option: CmsObjectOption(
+        fields: [
+          CmsStringField(
+            name: 'nested_title',
+            title: 'Nested Title',
+            option: CmsStringOption(),
+          ),
+          CmsNumberField(
+            name: 'nested_count',
+            title: 'Nested Count',
+            option: CmsNumberOption(),
+          ),
+        ],
+      ),
     ),
     const CmsBlockField(
       name: 'block_field',
@@ -163,13 +165,6 @@ class TestStringArrayOption extends CmsArrayOption {
   @override
   CmsArrayFieldItemBuilder get itemBuilder =>
       (context, value) => Text(value?.toString() ?? '');
-
-  @override
-  CmsArrayFieldItemEditor get itemEditor =>
-      (context, value, onChanged) => TextField(
-            controller: TextEditingController(text: value?.toString() ?? ''),
-            onChanged: onChanged,
-          );
 }
 
 /// Seed data for 3 test documents with known values.

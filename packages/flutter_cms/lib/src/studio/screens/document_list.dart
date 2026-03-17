@@ -8,8 +8,10 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../data/models/cms_document.dart';
 import '../../data/models/document_list.dart';
+import '../../data/models/document_version.dart';
 import '../components/common/cms_status_pill.dart';
 import '../core/view_models/cms_view_model.dart';
+
 import '../providers/studio_provider.dart';
 import '../theme/spacing.dart';
 
@@ -438,9 +440,11 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  // Status is currently always "published" — actual status
-                  // derivation from version data can be added as a follow-up.
-                  const CmsStatusPill(status: CmsStatus.published),
+                  if (doc.id != null)
+                    _DocumentStatusPill(
+                      documentId: doc.id!,
+                      viewModel: viewModel,
+                    ),
                 ],
               ),
               if (doc.slug != null) ...[
@@ -498,5 +502,34 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     if (diff.inHours < 24) return 'Updated ${diff.inHours}h ago';
     if (diff.inDays < 7) return 'Updated ${diff.inDays}d ago';
     return 'Updated ${(diff.inDays / 7).floor()}w ago';
+  }
+}
+
+/// Watches the versions container for a document and displays its latest
+/// version's status as a [CmsStatusPill].
+class _DocumentStatusPill extends StatelessWidget {
+  final int documentId;
+  final CmsViewModel viewModel;
+
+  const _DocumentStatusPill({
+    required this.documentId,
+    required this.viewModel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final versionsState =
+        viewModel.versionsContainer(documentId).watch(context);
+
+    final status = versionsState.map(
+      loading: () => DocumentVersionStatus.draft,
+      error: (_, __) => DocumentVersionStatus.draft,
+      data: (versionList) {
+        if (versionList.versions.isEmpty) return DocumentVersionStatus.draft;
+        return versionList.versions.first.status;
+      },
+    );
+
+    return CmsStatusPill(status: status);
   }
 }

@@ -102,6 +102,7 @@ class _CmsBlockInputState extends State<CmsBlockInput> {
         ShadCard(
           padding: EdgeInsets.zero,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _BlockEditorToolbar(
                 editor: _editor,
@@ -169,7 +170,7 @@ class _CmsBlockInputState extends State<CmsBlockInput> {
   }
 }
 
-class _BlockEditorToolbar extends StatelessWidget {
+class _BlockEditorToolbar extends StatefulWidget {
   const _BlockEditorToolbar({
     required this.editor,
     required this.document,
@@ -181,6 +182,33 @@ class _BlockEditorToolbar extends StatelessWidget {
   final MutableDocument document;
   final MutableDocumentComposer composer;
   final FocusNode editorFocusNode;
+
+  @override
+  State<_BlockEditorToolbar> createState() => _BlockEditorToolbarState();
+}
+
+class _BlockEditorToolbarState extends State<_BlockEditorToolbar> {
+  Editor get editor => widget.editor;
+  MutableDocument get document => widget.document;
+  MutableDocumentComposer get composer => widget.composer;
+  FocusNode get editorFocusNode => widget.editorFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    document.addListener(_onDocumentChange);
+  }
+
+  @override
+  void dispose() {
+    document.removeListener(_onDocumentChange);
+    super.dispose();
+  }
+
+  void _onDocumentChange(DocumentChangeLog changeLog) {
+    // Rebuild toolbar to reflect attribution changes
+    setState(() {});
+  }
 
   void _toggle(Set<Attribution> attributions) {
     final selection = composer.selection;
@@ -235,6 +263,36 @@ class _BlockEditorToolbar extends StatelessWidget {
     editorFocusNode.requestFocus();
   }
 
+  /// Returns the set of inline attributions active in the current selection.
+  Set<Attribution> _activeInlineAttributions() {
+    final selection = composer.selection;
+    if (selection == null) return {};
+    return document.getAllAttributions(selection);
+  }
+
+  /// Returns the block-level attribution of the node at the current selection.
+  Attribution? _activeBlockAttribution() {
+    final selection = composer.selection;
+    if (selection == null) return null;
+
+    final node = document.getNodeById(selection.extent.nodeId);
+    if (node is ListItemNode) return null;
+    if (node is ParagraphNode) {
+      return node.getMetadataValue('blockType') as Attribution?;
+    }
+    return null;
+  }
+
+  /// Returns the list item type if the current node is a list item.
+  ListItemType? _activeListItemType() {
+    final selection = composer.selection;
+    if (selection == null) return null;
+
+    final node = document.getNodeById(selection.extent.nodeId);
+    if (node is ListItemNode) return node.type;
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
@@ -243,32 +301,41 @@ class _BlockEditorToolbar extends StatelessWidget {
     return ListenableBuilder(
       listenable: composer.selectionNotifier,
       builder: (context, _) {
+        final inlineAttrs = _activeInlineAttributions();
+        final blockAttr = _activeBlockAttribution();
+        final listType = _activeListItemType();
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           child: Wrap(
+            alignment: WrapAlignment.start,
             children: [
               _ToolbarButton(
                 icon: FontAwesomeIcons.bold,
                 tooltip: 'Bold',
                 iconColor: iconColor,
+                isActive: inlineAttrs.contains(boldAttribution),
                 onPressed: () => _toggle({boldAttribution}),
               ),
               _ToolbarButton(
                 icon: FontAwesomeIcons.italic,
                 tooltip: 'Italic',
                 iconColor: iconColor,
+                isActive: inlineAttrs.contains(italicsAttribution),
                 onPressed: () => _toggle({italicsAttribution}),
               ),
               _ToolbarButton(
                 icon: FontAwesomeIcons.underline,
                 tooltip: 'Underline',
                 iconColor: iconColor,
+                isActive: inlineAttrs.contains(underlineAttribution),
                 onPressed: () => _toggle({underlineAttribution}),
               ),
               _ToolbarButton(
                 icon: FontAwesomeIcons.strikethrough,
                 tooltip: 'Strikethrough',
                 iconColor: iconColor,
+                isActive: inlineAttrs.contains(strikethroughAttribution),
                 onPressed: () => _toggle({strikethroughAttribution}),
               ),
               SizedBox(
@@ -282,18 +349,22 @@ class _BlockEditorToolbar extends StatelessWidget {
                 icon: FontAwesomeIcons.heading,
                 tooltip: 'Header 1',
                 iconColor: iconColor,
+                isActive: blockAttr == header1Attribution,
                 onPressed: () => _setBlockType(header1Attribution),
               ),
               _ToolbarButton(
                 icon: FontAwesomeIcons.font,
                 tooltip: 'Header 2',
                 iconColor: iconColor,
+                isActive: blockAttr == header2Attribution,
                 onPressed: () => _setBlockType(header2Attribution),
               ),
               _ToolbarButton(
                 icon: FontAwesomeIcons.textHeight,
                 tooltip: 'Paragraph',
                 iconColor: iconColor,
+                isActive: blockAttr == paragraphAttribution ||
+                    blockAttr == null && listType == null,
                 onPressed: () => _setBlockType(null),
               ),
               SizedBox(
@@ -307,18 +378,21 @@ class _BlockEditorToolbar extends StatelessWidget {
                 icon: FontAwesomeIcons.listUl,
                 tooltip: 'Bullet list',
                 iconColor: iconColor,
+                isActive: listType == ListItemType.unordered,
                 onPressed: () => _convertToListItem(ListItemType.unordered),
               ),
               _ToolbarButton(
                 icon: FontAwesomeIcons.listOl,
                 tooltip: 'Numbered list',
                 iconColor: iconColor,
+                isActive: listType == ListItemType.ordered,
                 onPressed: () => _convertToListItem(ListItemType.ordered),
               ),
               _ToolbarButton(
                 icon: FontAwesomeIcons.quoteLeft,
                 tooltip: 'Blockquote',
                 iconColor: iconColor,
+                isActive: blockAttr == blockquoteAttribution,
                 onPressed: () => _setBlockType(blockquoteAttribution),
               ),
             ],
@@ -335,24 +409,42 @@ class _ToolbarButton extends StatelessWidget {
     required this.tooltip,
     required this.iconColor,
     required this.onPressed,
+    this.isActive = false,
   });
 
   final IconData icon;
   final String tooltip;
   final Color iconColor;
   final VoidCallback onPressed;
+  final bool isActive;
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+
     return SizedBox(
       width: 32,
       height: 32,
-      child: IconButton(
-        onPressed: onPressed,
-        icon: FaIcon(icon, size: 18, color: iconColor),
-        splashRadius: 16,
-        padding: EdgeInsets.zero,
-        tooltip: tooltip,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: isActive
+              ? theme.colorScheme.primary.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: IconButton(
+          onPressed: onPressed,
+          icon: FaIcon(
+            icon,
+            size: 18,
+            color: isActive
+                ? theme.colorScheme.primary
+                : iconColor,
+          ),
+          splashRadius: 16,
+          padding: EdgeInsets.zero,
+          tooltip: tooltip,
+        ),
       ),
     );
   }

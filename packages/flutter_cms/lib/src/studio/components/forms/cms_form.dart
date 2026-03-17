@@ -51,54 +51,63 @@ class CmsFieldInputRegistry {
     switch (field) {
       case CmsTextField():
         return (_, data, onChanged) => CmsTextInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsStringField():
         return (_, data, onChanged) => CmsStringInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsNumberField():
         return (_, data, onChanged) => CmsNumberInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsBooleanField():
         return (_, data, onChanged) => CmsBooleanInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsCheckboxField():
         return (_, data, onChanged) => CmsCheckboxInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsDateField():
         return (_, data, onChanged) => CmsDateInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsDateTimeField():
         return (_, data, onChanged) => CmsDateTimeInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsDropdownField():
         return (_, data, onChanged) => CmsDropdownInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsUrlField():
         return (_, data, onChanged) => CmsUrlInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
@@ -106,30 +115,35 @@ class CmsFieldInputRegistry {
 
       case CmsImageField():
         return (_, data, onChanged) => CmsImageInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsFileField():
         return (_, data, onChanged) => CmsFileInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsArrayField():
         return (_, data, onChanged) => CmsArrayInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsBlockField():
         return (_, data, onChanged) => CmsBlockInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsObjectField():
         return (_, data, onChanged) => CmsObjectInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
@@ -137,12 +151,14 @@ class CmsFieldInputRegistry {
 
       case CmsGeopointField():
         return (_, data, onChanged) => CmsGeopointInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsColorField():
         return (_, data, onChanged) => CmsColorInput(
+          key: ValueKey(field.name),
           field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),

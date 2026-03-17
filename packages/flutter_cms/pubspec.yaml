@@ -14,7 +14,7 @@ dependencies:
     path: ../../../flutter_cms_be/flutter_cms_be_client
   flutter:
     sdk: flutter
-  shadcn_ui: ^0.39.14
+  shadcn_ui: ^0.52.1
   image_picker: ^1.1.2
   file_picker: ^8.1.4
   shared_preferences: ^2.2.2
@@ -27,6 +27,7 @@ dependencies:
   marionette_flutter:
     path: ../../../../marionette_mcp/packages/marionette_flutter
   font_awesome_flutter: ^10.8.0
+  collection: ^1.19.1
 
 dev_dependencies:
   flutter_test:

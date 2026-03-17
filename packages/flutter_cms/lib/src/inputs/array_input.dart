@@ -122,16 +122,22 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  ShadButton(
-                    size: ShadButtonSize.sm,
-                    onPressed: _addItem,
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FaIcon(FontAwesomeIcons.plus, size: 12),
-                        SizedBox(width: 4),
-                        Text('Add'),
-                      ],
+                  Opacity(
+                    opacity: _editingIndex == null ? 1.0 : 0.4,
+                    child: IgnorePointer(
+                      ignoring: _editingIndex != null,
+                      child: ShadButton(
+                        size: ShadButtonSize.sm,
+                        onPressed: _addItem,
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FaIcon(FontAwesomeIcons.plus, size: 12),
+                            SizedBox(width: 4),
+                            Text('Add'),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -153,50 +159,55 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: _items.length,
                   onReorder: _onReorder,
+                  buildDefaultDragHandles: false,
                   itemBuilder: (context, index) {
                     final isEditing = _editingIndex == index;
 
                     return Padding(
                       key: ValueKey('item_$index'),
                       padding: const EdgeInsets.only(bottom: 8.0),
-                      child:
-                          isEditing && widget.editStyle is InlineEditStyles
-                              ? _buildInlineEditor(context, theme, isNew: false)
-                              : _buildItemRow(context, theme, index),
+                      child: isEditing && widget.editStyle is InlineEditStyles
+                          ? _buildEditorWithActions(context, theme, isNew: false)
+                          : _buildItemRow(context, theme, index),
                     );
                   },
                 ),
 
               // Inline editor for adding new item
+              SizedBox(height: 8),
+              if (widget.editStyle is InlineEditStyles && _editingIndex == -1)
+                _buildEditorWithActions(context, theme, isNew: true),
             ],
           ),
         ),
-        SizedBox(height: 8),
-        if (widget.editStyle is InlineEditStyles && _editingIndex == -1)
-          ShadCard(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              children: [
-                _buildInlineEditor(context, theme, isNew: true),
-                SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ShadButton(
-                      onPressed: _saveItem,
-                      size: ShadButtonSize.sm,
-                      child: const Text('Save'),
-                    ),
-                    const SizedBox(width: 8),
-                    ShadButton.outline(
-                      onPressed: _cancelEditing,
-                      child: const Text('Cancel'),
-                    ),
-                  ],
-                ),
-              ],
+      ],
+    );
+  }
+
+  Widget _buildEditorWithActions(
+    BuildContext context,
+    ShadThemeData theme, {
+    required bool isNew,
+  }) {
+    return Column(
+      children: [
+        _buildInlineEditor(context, theme, isNew: isNew),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ShadButton(
+              onPressed: _saveItem,
+              size: ShadButtonSize.sm,
+              child: const Text('Save'),
             ),
-          ),
+            const SizedBox(width: 8),
+            ShadButton.outline(
+              onPressed: _cancelEditing,
+              child: const Text('Cancel'),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -211,45 +222,70 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
       return const SizedBox.shrink();
     }
 
-    return widget.field.option.itemEditor(context, _editingValue, (value) {
-      setState(() {
-        _editingValue = value;
+    final itemEditor = widget.field.option.itemEditor;
+    if (itemEditor != null) {
+      return itemEditor(context, _editingValue, (value) {
+        setState(() {
+          _editingValue = value;
+        });
       });
-    });
+    }
+
+    // Default shadcn text editor
+    return ShadInputFormField(
+      initialValue: _editingValue?.toString() ?? '',
+      onChanged: (value) {
+        setState(() {
+          _editingValue = value;
+        });
+      },
+      placeholder: const Text('Enter value...'),
+    );
   }
 
   Widget _buildItemRow(BuildContext context, ShadThemeData theme, int index) {
-    return Row(
-      children: [
-        if (_editingIndex == null)
-          ReorderableDragStartListener(
-            index: index,
-            child: MouseRegion(
-              cursor: SystemMouseCursors.grab,
-              child: FaIcon(
-                FontAwesomeIcons.gripLines,
-                size: 14,
-                color: theme.colorScheme.mutedForeground,
+    final isIdle = _editingIndex == null;
+    final showEditButton = widget.editStyle is InlineEditStyles;
+
+    return Opacity(
+      opacity: isIdle ? 1.0 : 0.4,
+      child: IgnorePointer(
+        ignoring: !isIdle,
+        child: Row(
+          children: [
+            ReorderableDragStartListener(
+              index: index,
+              enabled: isIdle,
+              child: MouseRegion(
+                cursor: isIdle
+                    ? SystemMouseCursors.grab
+                    : SystemMouseCursors.basic,
+                child: FaIcon(
+                  FontAwesomeIcons.gripLines,
+                  size: 14,
+                  color: theme.colorScheme.mutedForeground,
+                ),
               ),
             ),
-          ),
-        if (_editingIndex == null) const SizedBox(width: 8),
-        Expanded(
-          child: widget.field.option.itemBuilder(context, _items[index]),
+            const SizedBox(width: 8),
+            Expanded(
+              child: widget.field.option.itemBuilder(context, _items[index]),
+            ),
+            const SizedBox(width: 8),
+            if (showEditButton) ...[
+              ShadIconButton(
+                icon: const FaIcon(FontAwesomeIcons.pen, size: 12),
+                onPressed: () => _startEditing(index),
+              ),
+              const SizedBox(width: 4),
+            ],
+            ShadIconButton(
+              icon: const FaIcon(FontAwesomeIcons.trash, size: 14),
+              onPressed: () => _removeItem(index),
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
-        if (_editingIndex == null && widget.editStyle is InlineEditStyles) ...[
-          ShadIconButton(
-            icon: const FaIcon(FontAwesomeIcons.pen, size: 12),
-            onPressed: () => _startEditing(index),
-          ),
-          const SizedBox(width: 4),
-        ],
-        ShadIconButton(
-          icon: const FaIcon(FontAwesomeIcons.trash, size: 14),
-          onPressed: _editingIndex == null ? () => _removeItem(index) : null,
-        ),
-      ],
+      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
@@ -52,10 +53,9 @@ class CmsDropdownInput<T> extends StatelessWidget {
 
           final List<DropdownOption<T>> loadedOptions =
               snapshot.data?.first as List<DropdownOption<T>>? ?? [];
-          final loadedDefaultValue =
-              (defaultValue is Future<T?>)
-                  ? snapshot.data?.last as T?
-                  : defaultValue;
+          final loadedDefaultValue = (defaultValue is Future<T?>)
+              ? snapshot.data?.last as T?
+              : defaultValue;
 
           return _CmsDropdownInput<T>(
             title: field.title,
@@ -108,20 +108,34 @@ class _CmsDropdownInput<T> extends StatefulWidget {
 }
 
 class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
-  T? _selectedValue;
+  late ShadSelectController<T> _controller;
 
   @override
   void initState() {
     super.initState();
-    _selectedValue = widget.data?.value as T? ?? widget.defaultValue;
+    _controller = ShadSelectController<T>(initialValue: _resolveInitialSet());
   }
 
   @override
   void didUpdateWidget(_CmsDropdownInput<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.data != oldWidget.data) {
-      _selectedValue = widget.data?.value as T? ?? widget.defaultValue;
+      final resolved = _resolveInitialSet();
+      _controller.value = resolved;
     }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  /// Resolves the initial value set, returning empty set when no valid selection.
+  Set<T> _resolveInitialSet() {
+    final value = widget.data?.value ?? widget.defaultValue;
+    if (value == null) return {};
+    return {value};
   }
 
   @override
@@ -155,13 +169,12 @@ class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
     }
 
     // Convert dropdown options to select options
-    final selectOptions =
-        options
-            .map(
-              (option) =>
-                  ShadOption<T>(value: option.value, child: Text(option.label)),
-            )
-            .toList();
+    final selectOptions = options
+        .map(
+          (option) =>
+              ShadOption<T>(value: option.value, child: Text(option.label)),
+        )
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,25 +187,21 @@ class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
           const SizedBox(height: 8),
         ],
         ShadSelect<T>(
+          controller: _controller,
           placeholder: Text(
             widget.placeholder ?? 'Select an option...',
             style: theme.textTheme.muted,
           ),
           options: selectOptions,
           selectedOptionBuilder: (context, T value) {
-            final option = options
-                .where((opt) => opt.value == value)
-                .firstOrNull;
+            final option = options.firstWhereOrNull(
+              (opt) => opt.value == value,
+            );
             return Text(option?.label ?? value.toString());
           },
-          initialValue: _selectedValue,
           onChanged: (value) {
-            setState(() {
-              _selectedValue = value;
-            });
             widget.onChanged?.call(value);
           },
-          enabled: true,
         ),
         if (widget.description != null) ...[
           const SizedBox(height: 4),

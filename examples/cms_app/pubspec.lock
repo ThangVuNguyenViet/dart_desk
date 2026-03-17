@@ -1143,6 +1143,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.3"
+  serial_csv:
+    dependency: transitive
+    description:
+      name: serial_csv
+      sha256: "2d62bb70cb3ce7251383fc86ea9aae1298ab1e57af6ef4e93b6a9751c5c268dd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.2"
   serverpod_admin_client:
     dependency: transitive
     description:
@@ -1212,10 +1220,10 @@ packages:
     dependency: "direct main"
     description:
       name: shadcn_ui
-      sha256: "17b4d311fc9b8775a06d489716dce6848319b4a37093a5addf2197ec0073b24a"
+      sha256: "3a303139ed289f4e7d2bd6fc2bc19952033e4456b55dfbf8365461691cc19f48"
       url: "https://pub.dev"
     source: hosted
-    version: "0.39.14"
+    version: "0.52.1"
   shared_preferences:
     dependency: transitive
     description:
@@ -1357,6 +1365,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  slang:
+    dependency: transitive
+    description:
+      name: slang
+      sha256: ea6702ed6b1c82065fb2de906fe34ac9298117342e3c2ea2567132efdc81bd17
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.14.0"
+  slang_flutter:
+    dependency: transitive
+    description:
+      name: slang_flutter
+      sha256: dcc4e77527c91b12348fc8bdd43d3eb92d8cea37c12a23a1f9719cdc12c804c6
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.14.0"
   source_gen:
     dependency: transitive
     description:
@@ -1489,10 +1513,10 @@ packages:
     dependency: transitive
     description:
       name: theme_extensions_builder_annotation
-      sha256: "84069dfd7be08a34e4b3cf87cdb9ad56d7570974f67eaff7c867bc8ccd12d3f8"
+      sha256: e14648a3318842992f14b207cb811df48a1d6f0bd742b77bcbf1b74557493c00
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.0"
+    version: "7.1.0"
   two_dimensional_scrollables:
     dependency: transitive
     description:

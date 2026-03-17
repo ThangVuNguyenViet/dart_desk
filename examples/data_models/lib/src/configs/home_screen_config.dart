@@ -147,7 +147,8 @@ class HomeScreenConfig
   );
 
   static Widget configBuilder(Map<String, dynamic> config) {
-    final homeScreenConfig = HomeScreenConfigMapper.fromMap(config);
+    final mergedConfig = {...defaultValue.toMap(), ...config};
+    final homeScreenConfig = HomeScreenConfigMapper.fromMap(mergedConfig);
 
     return HomeScreen(config: homeScreenConfig);
   }

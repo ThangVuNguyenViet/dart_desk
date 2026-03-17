@@ -16,7 +16,7 @@ dependencies:
   flutter_cms_annotation:
     path: ../../packages/flutter_cms_annotation
   dart_mappable: ^4.6.1
-  shadcn_ui: ^0.39.14
+  shadcn_ui: ^0.52.1
 
 dev_dependencies:
   build_runner: ^2.10.4
