@@ -119,9 +119,8 @@ class TestDataFactory {
   }
 
   /// Creates a document via the document endpoint.
-  /// Note: DocumentEndpoint.createDocument currently has hardcoded clientId: 1.
-  /// A CmsClient with id=1 must exist for this to work, or the endpoint
-  /// must be fixed to derive clientId from the session.
+  /// Requires a CmsClient and CmsUser to exist for the authenticated user.
+  /// The endpoint derives clientId from the user's CmsUser.clientId.
   Future<CmsDocument> createTestDocument({
     String documentType = 'test_type',
     String title = 'Test Document',
@@ -212,7 +211,7 @@ git commit -m "test: add TestDataFactory for integration test entity creation"
 **Files:**
 - Create: `flutter_cms_be/flutter_cms_be_server/test/integration/document_endpoint_test.dart`
 
-**Context:** Tests basic document CRUD operations. The `createDocument` endpoint currently hardcodes `clientId: 1`, so a `CmsClient` record with `id=1` must be seeded first via `createTestClient`. Since `withServerpod` rolls back the DB after each test, the first `createTestClient` call in `setUp` should get `id=1` due to sequence reset. If this is flaky, seed the client via direct DB insert using `sessionBuilder.build()` to guarantee `id=1`. All write ops require an authenticated session.
+**Context:** Tests basic document CRUD operations. The `createDocument` endpoint derives `clientId` from the authenticated user's `CmsUser.clientId`. Tests must first create a `CmsClient`, then call `ensureUser` so the test user belongs to that client. All write ops require an authenticated session.
 
 **Reference:**
 - `lib/src/endpoints/document_endpoint.dart` — all method signatures
@@ -232,14 +231,20 @@ void main() {
   withServerpod('Document endpoint', (sessionBuilder, endpoints) {
     late TestDataFactory factory;
 
+    late ClientWithToken testClient;
+
     setUp(() async {
       factory = TestDataFactory(
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      // Seed a client so createDocument (hardcoded clientId:1) works.
-      // This may need adjustment once clientId is derived from session.
-      await factory.createTestClient(slug: 'test-client-doc');
+      // Create a client and associate the test user with it.
+      // createDocument derives clientId from the authenticated user's CmsUser.
+      testClient = await factory.createTestClient(slug: 'test-client-doc');
+      final authed = factory.authenticatedSession();
+      await endpoints.user.ensureUser(
+        authed, 'test-client-doc', testClient.apiToken,
+      );
     });
 
     group('createDocument', () {
@@ -523,7 +528,9 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      await factory.createTestClient(slug: 'test-client-ver');
+      final client = await factory.createTestClient(slug: 'test-client-ver');
+      final authed = factory.authenticatedSession();
+      await endpoints.user.ensureUser(authed, 'test-client-ver', client.apiToken);
     });
 
     group('createDocumentVersion', () {
@@ -749,7 +756,9 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      await factory.createTestClient(slug: 'test-client-crdt');
+      final client = await factory.createTestClient(slug: 'test-client-crdt');
+      final authed = factory.authenticatedSession();
+      await endpoints.user.ensureUser(authed, 'test-client-crdt', client.apiToken);
     });
 
     group('updateDocumentData', () {
@@ -913,7 +922,9 @@ void main() {
         sessionBuilder: sessionBuilder,
         endpoints: endpoints,
       );
-      await factory.createTestClient(slug: 'test-client-media');
+      final client = await factory.createTestClient(slug: 'test-client-media');
+      final authed = factory.authenticatedSession();
+      await endpoints.user.ensureUser(authed, 'test-client-media', client.apiToken);
     });
 
     group('uploadImage', () {
@@ -1437,11 +1448,7 @@ git commit -m "test: add client, API token, and user integration tests"
 **Files:**
 - Create: `flutter_cms_be/flutter_cms_be_server/test/integration/multi_tenancy_test.dart`
 
-**Context:** Tests cross-client data isolation. Creates two separate clients with their own users, verifies that one cannot access the other's data. **Important:** The `createDocument` endpoint has `clientId: 1` hardcoded — this test will likely fail until that's fixed. Document this in the test as a known blocker and add a skip annotation.
-
-**Reference:**
-- Spec blocker #1: `clientId` hardcoded to `1`
-- Spec blocker #2: `deleteDocument` has no auth check
+**Context:** Tests cross-client data isolation. Creates two separate clients with their own users, verifies that one cannot access the other's data. `createDocument` derives `clientId` from the authenticated user's `CmsUser.clientId`, and `deleteDocument` verifies client ownership.
 
 - [ ] **Step 1: Write the test file**
 
@@ -1462,10 +1469,6 @@ void main() {
         endpoints: endpoints,
       );
     });
-
-    // NOTE: These tests are blocked until DocumentEndpoint.createDocument
-    // derives clientId from the authenticated session instead of hardcoding 1.
-    // See spec prerequisite #1.
 
     group('document isolation', () {
       test(
@@ -1511,7 +1514,6 @@ void main() {
             reason: 'Client B should not see Client A documents',
           );
         },
-        skip: 'Blocked: createDocument has hardcoded clientId: 1 (spec prerequisite #1)',
       );
 
       test(
@@ -1538,7 +1540,6 @@ void main() {
             throwsA(isA<Exception>()),
           );
         },
-        skip: 'Blocked: createDocument has hardcoded clientId: 1 (spec prerequisite #1)',
       );
 
       test(
@@ -1563,7 +1564,6 @@ void main() {
             throwsA(isA<Exception>()),
           );
         },
-        skip: 'Blocked: deleteDocument has no auth check (spec prerequisite #2)',
       );
 
       test(
@@ -1588,7 +1588,6 @@ void main() {
           expect(docA.slug, equals('hello'));
           expect(docB.slug, equals('hello'));
         },
-        skip: 'Blocked: createDocument has hardcoded clientId: 1 (spec prerequisite #1)',
       );
     });
   });
@@ -1606,7 +1605,7 @@ Expected: Tests show as SKIPPED with reason message.
 
 ```bash
 git add test/integration/multi_tenancy_test.dart
-git commit -m "test: add multi-tenancy integration tests (skipped — blocked by hardcoded clientId)"
+git commit -m "test: add multi-tenancy integration tests"
 ```
 
 ---

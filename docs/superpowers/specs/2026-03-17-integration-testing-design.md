@@ -10,13 +10,9 @@ The existing `test_automation/` suite (10 markdown specs against `MockCmsDataSou
 
 ### Prerequisites / Blockers
 
-Before the full test suite can be implemented, the following backend issues must be resolved:
-
-1. **`clientId` hardcoded to `1`** — `DocumentEndpoint.createDocument` has `clientId: 1` with a TODO. Multi-tenancy tests (backend and E2E) are blocked until `clientId` is derived from the authenticated session/API token.
-2. **No auth check on `deleteDocument`** — The endpoint does not verify `session.authenticated` or check client ownership. Multi-tenancy delete isolation tests will fail until this is fixed.
+1. ~~**`clientId` hardcoded to `1`**~~ — RESOLVED: `createDocument` now uses `cmsUser.clientId`.
+2. ~~**No auth check on `deleteDocument`**~~ — RESOLVED: `deleteDocument` now requires auth and verifies client ownership.
 3. **`seed_data.sh` implementation** — The E2E seed script depends on `CmsClient` and `CmsApiToken` endpoint signatures being finalized. This is a blocking dependency for the E2E suite.
-
-These are expected to be caught and fixed as part of the implementation plan.
 
 ---
 
