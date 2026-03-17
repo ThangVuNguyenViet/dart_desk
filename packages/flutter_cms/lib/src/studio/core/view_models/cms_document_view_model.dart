@@ -13,29 +13,29 @@ class CmsDocumentViewModel {
   final CmsDataSource dataSource;
 
   /// Signal for the document ID
-  final documentId = Signal<int?>(null);
+  final documentId = Signal<int?>(null, debugLabel: 'documentId');
 
   /// FutureSignal for the currently selected document
   late final selectedDocument = FutureSignal<CmsDocument?>(() async {
     final docId = documentId.value;
     if (docId == null) return null;
     return await dataSource.getDocument(docId);
-  });
+  }, debugLabel: 'selectedDocument');
 
   /// Signal for the document title
-  final title = Signal<String>('');
+  final title = Signal<String>('', debugLabel: 'title');
 
   /// Signal for the document slug
-  final slug = Signal<String>('');
+  final slug = Signal<String>('', debugLabel: 'slug');
 
   /// Signal for whether the document is the default for its type
-  final isDefault = Signal<bool>(false);
+  final isDefault = Signal<bool>(false, debugLabel: 'isDefault');
 
   /// Signal for tracking save operations
-  final isSaving = Signal<bool>(false);
+  final isSaving = Signal<bool>(false, debugLabel: 'isSaving');
 
   /// Shared edited data signal — written by the editor, read by the preview.
-  final editedData = MapSignal<String, dynamic>({});
+  final editedData = MapSignal<String, dynamic>({}, debugLabel: 'editedData');
 
   CmsDocumentViewModel(this.dataSource);
 

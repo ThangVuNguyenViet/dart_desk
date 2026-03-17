@@ -43,7 +43,7 @@ class CmsStudioApp extends StatefulWidget {
 
 class _CmsStudioAppState extends State<CmsStudioApp> {
   late final StudioCoordinator coordinator;
-  final _themeMode = Signal<ThemeMode>(ThemeMode.dark);
+  final _themeMode = Signal<ThemeMode>(ThemeMode.dark, debugLabel: 'themeMode');
 
   @override
   void initState() {

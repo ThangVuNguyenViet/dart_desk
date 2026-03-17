@@ -18,9 +18,9 @@ class CmsViewModel {
   // Route Param Signals (set by coordinator via setRouteParams)
   // ============================================================
 
-  final currentDocumentTypeSlug = Signal<String?>(null);
-  final currentDocumentId = Signal<String?>(null);
-  final currentVersionId = Signal<String?>(null);
+  final currentDocumentTypeSlug = Signal<String?>(null, debugLabel: 'currentDocumentTypeSlug');
+  final currentDocumentId = Signal<String?>(null, debugLabel: 'currentDocumentId');
+  final currentVersionId = Signal<String?>(null, debugLabel: 'currentVersionId');
 
   /// Computed: resolves the slug to a CmsDocumentType object.
   late final currentDocumentType = Computed<CmsDocumentType?>(() {
@@ -31,28 +31,28 @@ class CmsViewModel {
     } catch (_) {
       return null;
     }
-  });
+  }, debugLabel: 'currentDocumentType');
 
   // ============================================================
   // Pagination & Search Signals
   // ============================================================
 
-  final page = Signal<int>(1);
-  final pageSize = Signal<int>(20);
-  final searchQuery = Signal<String?>(null);
+  final page = Signal<int>(1, debugLabel: 'page');
+  final pageSize = Signal<int>(20, debugLabel: 'pageSize');
+  final searchQuery = Signal<String?>(null, debugLabel: 'searchQuery');
 
   // ============================================================
   // Operation State Signals
   // ============================================================
 
-  final isSaving = Signal<bool>(false);
+  final isSaving = Signal<bool>(false, debugLabel: 'isSaving');
 
   // ============================================================
   // UI State Signals
   // ============================================================
 
-  final sidebarCollapsed = Signal<bool>(false);
-  final documentListVisible = Signal<bool>(true);
+  final sidebarCollapsed = Signal<bool>(false, debugLabel: 'sidebarCollapsed');
+  final documentListVisible = Signal<bool>(true, debugLabel: 'documentListVisible');
 
   // ============================================================
   // Computed Signals
@@ -65,6 +65,7 @@ class CmsViewModel {
       pageSize: pageSize.value,
       search: searchQuery.value,
     ),
+    debugLabel: 'queryParams',
   );
 
   // ============================================================
@@ -73,18 +74,18 @@ class CmsViewModel {
 
   late final documentsContainer = SignalContainer(
     (_DocumentQueryParams params) =>
-        FutureSignal(() => _fetchDocumentsWithParams(params)),
+        FutureSignal(() => _fetchDocumentsWithParams(params), debugLabel: 'documents'),
     cache: true,
   );
 
   late final versionsContainer = SignalContainer(
     (int documentId) =>
-        FutureSignal(() => dataSource.getDocumentVersions(documentId)),
+        FutureSignal(() => dataSource.getDocumentVersions(documentId), debugLabel: 'versions'),
     cache: true,
   );
 
   late final documentDataContainer = SignalContainer(
-    (int versionId) => FutureSignal(() => _fetchVersionWithData(versionId)),
+    (int versionId) => FutureSignal(() => _fetchVersionWithData(versionId), debugLabel: 'documentData'),
     cache: true,
   );
 
@@ -193,7 +194,7 @@ class CmsViewModel {
     }
   }
 
-  final selectedVersionId = Signal<int?>(null);
+  final selectedVersionId = Signal<int?>(null, debugLabel: 'selectedVersionId');
 
   // ============================================================
   // Document Operations
