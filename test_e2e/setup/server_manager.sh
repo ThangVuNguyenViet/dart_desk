@@ -19,7 +19,10 @@ case "$1" in
 
     echo "Starting Serverpod E2E server on port 8080..."
     cd "$BACKEND_DIR"
-    dart run bin/main.dart --apply-migrations --role=monolith --mode=e2e &
+    # Note: Serverpod only supports development/staging/production/test modes.
+    # We use development mode which runs on port 8080 with the dev database.
+    # Ensure dev Docker services are running (postgres + redis).
+    dart run bin/main.dart --apply-migrations --role=monolith &
     SERVER_PID=$!
     echo $SERVER_PID > "$PID_FILE"
     echo "Server PID: $SERVER_PID"

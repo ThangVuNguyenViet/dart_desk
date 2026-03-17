@@ -12,11 +12,11 @@ fi
 
 case "$1" in
   up)
-    echo "Starting test Docker services..."
-    docker compose -f "$BACKEND_DIR/docker-compose.yaml" up -d postgres_test redis_test
-    echo "Waiting for PostgreSQL (port 9090)..."
+    echo "Starting Docker services..."
+    docker compose -f "$BACKEND_DIR/docker-compose.yaml" up -d postgres redis
+    echo "Waiting for PostgreSQL (port 8090)..."
     RETRIES=30
-    until docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres_test pg_isready -U postgres > /dev/null 2>&1; do
+    until docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres pg_isready -U postgres > /dev/null 2>&1; do
       RETRIES=$((RETRIES - 1))
       if [ $RETRIES -le 0 ]; then
         echo "ERROR: PostgreSQL did not become ready in time."
