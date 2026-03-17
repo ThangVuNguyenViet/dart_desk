@@ -1277,28 +1277,31 @@ packages:
     source: hosted
     version: "3.0.0"
   signals:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: signals
-      sha256: "0d644f4ec8ce4862c61e3d3d1168d08a7b9b6ecbe067d4f96e26dd35287f5dcd"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/signals"
+      ref: HEAD
+      resolved-ref: "157794c6206df0b7ff10d9a5bac46f62d2ec1b98"
+      url: "https://github.com/rodydavis/signals.dart.git"
+    source: git
     version: "6.3.0"
   signals_core:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: signals_core
-      sha256: ea427bd53619e69e6f6cf244177e3b72870e433065c807600fb496fd80611c9f
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/signals_core"
+      ref: HEAD
+      resolved-ref: "157794c6206df0b7ff10d9a5bac46f62d2ec1b98"
+      url: "https://github.com/rodydavis/signals.dart.git"
+    source: git
     version: "6.2.1"
   signals_flutter:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: signals_flutter
-      sha256: "7c83418f47e3538685217e583f0fbd17a29716fa1a9ce2247e2455786e8ea81a"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/signals_flutter"
+      ref: HEAD
+      resolved-ref: "157794c6206df0b7ff10d9a5bac46f62d2ec1b98"
+      url: "https://github.com/rodydavis/signals.dart.git"
+    source: git
     version: "6.3.0"
   sky_engine:
     dependency: transitive

@@ -18,9 +18,18 @@ class CmsViewModel {
   // Route Param Signals (set by coordinator via setRouteParams)
   // ============================================================
 
-  final currentDocumentTypeSlug = Signal<String?>(null, debugLabel: 'currentDocumentTypeSlug');
-  final currentDocumentId = Signal<String?>(null, debugLabel: 'currentDocumentId');
-  final currentVersionId = Signal<String?>(null, debugLabel: 'currentVersionId');
+  final currentDocumentTypeSlug = Signal<String?>(
+    null,
+    debugLabel: 'currentDocumentTypeSlug',
+  );
+  final currentDocumentId = Signal<String?>(
+    null,
+    debugLabel: 'currentDocumentId',
+  );
+  final currentVersionId = Signal<String?>(
+    null,
+    debugLabel: 'currentVersionId',
+  );
 
   /// Computed: resolves the slug to a CmsDocumentType object.
   late final currentDocumentType = Computed<CmsDocumentType?>(() {
@@ -52,40 +61,49 @@ class CmsViewModel {
   // ============================================================
 
   final sidebarCollapsed = Signal<bool>(false, debugLabel: 'sidebarCollapsed');
-  final documentListVisible = Signal<bool>(true, debugLabel: 'documentListVisible');
+  final documentListVisible = Signal<bool>(
+    true,
+    debugLabel: 'documentListVisible',
+  );
 
   // ============================================================
   // Computed Signals
   // ============================================================
 
-  late final queryParams = Computed(
-    () => _DocumentQueryParams(
+  late final queryParams = Computed(() {
+    return _DocumentQueryParams(
       documentType: currentDocumentType.value?.name,
       page: page.value,
       pageSize: pageSize.value,
       search: searchQuery.value,
-    ),
-    debugLabel: 'queryParams',
-  );
+    );
+  }, debugLabel: 'queryParams');
 
   // ============================================================
   // Signal Containers for Dynamic Data Fetching
   // ============================================================
 
   late final documentsContainer = SignalContainer(
-    (_DocumentQueryParams params) =>
-        FutureSignal(() => _fetchDocumentsWithParams(params), debugLabel: 'documents'),
+    (_DocumentQueryParams params) => FutureSignal(
+      () => _fetchDocumentsWithParams(params),
+      debugLabel: 'documents',
+    ),
     cache: true,
   );
 
   late final versionsContainer = SignalContainer(
-    (int documentId) =>
-        FutureSignal(() => dataSource.getDocumentVersions(documentId), debugLabel: 'versions'),
+    (int documentId) => FutureSignal(
+      () => dataSource.getDocumentVersions(documentId),
+      debugLabel: 'versions',
+    ),
     cache: true,
   );
 
   late final documentDataContainer = SignalContainer(
-    (int versionId) => FutureSignal(() => _fetchVersionWithData(versionId), debugLabel: 'documentData'),
+    (int versionId) => FutureSignal(
+      () => _fetchVersionWithData(versionId),
+      debugLabel: 'documentData',
+    ),
     cache: true,
   );
 

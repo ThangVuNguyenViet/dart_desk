@@ -58,7 +58,10 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     final theme = ShadTheme.of(context);
     final viewModel = cmsViewModelProvider.of(context);
 
-    final params = viewModel.queryParams.watch(context);
+    final params = viewModel.queryParams.watch(
+      context,
+      debugLabel: 'documentListParams',
+    );
     if (params.documentType == null) {
       return _buildEmpty(theme);
     }
@@ -178,7 +181,10 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                   }
                 });
               },
-              icon: FaIcon(_isCreatingNew ? FontAwesomeIcons.xmark : FontAwesomeIcons.plus, size: 16),
+              icon: FaIcon(
+                _isCreatingNew ? FontAwesomeIcons.xmark : FontAwesomeIcons.plus,
+                size: 16,
+              ),
             ),
           ],
         ),
@@ -232,7 +238,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                 )
               : ListView.separated(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  itemCount: (_isCreatingNew ? 1 : 0) + filteredDocuments.length,
+                  itemCount:
+                      (_isCreatingNew ? 1 : 0) + filteredDocuments.length,
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 6),
                   itemBuilder: (context, index) {
