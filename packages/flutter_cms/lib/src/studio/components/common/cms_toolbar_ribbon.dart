@@ -96,12 +96,14 @@ class CmsToolbarRibbon extends StatelessWidget {
           if (hasUnsavedChanges) ...[
             ShadButton.outline(
               size: ShadButtonSize.sm,
+              height: 28,
               onPressed: isSaving ? null : onDiscard,
               child: const Text('Discard'),
             ),
             const SizedBox(width: CmsSpacing.sm),
             ShadButton(
               size: ShadButtonSize.sm,
+              height: 28,
               onPressed: isSaving ? null : onSave,
               child: Text(isSaving ? 'Saving...' : 'Save'),
             ),

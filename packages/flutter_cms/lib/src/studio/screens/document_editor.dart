@@ -83,7 +83,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   Future<void> _discardDocument() async {
     try {
       final viewModel = cmsViewModelProvider.of(context);
-      final versionId = viewModel.selectedVersionId.watch(context);
+      final versionId = viewModel.selectedVersionId.value;
 
       if (versionId != null) {
         // Reset to original version data

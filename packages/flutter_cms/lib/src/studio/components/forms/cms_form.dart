@@ -239,27 +239,6 @@ class _CmsFormState extends State<CmsForm> {
             ],
           ),
         ),
-        const Divider(height: 0),
-        Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (widget.onDiscard != null)
-                ShadButton.outline(
-                  onPressed: widget.onDiscard,
-                  child: const Text('Discard'),
-                ),
-              if (widget.onDiscard != null) const SizedBox(width: 8),
-              if (widget.onSave != null)
-                ShadButton(
-                  onPressed: widget.onSave,
-                  size: ShadButtonSize.sm,
-                  child: const Text('Save'),
-                ),
-            ],
-          ),
-        ),
       ],
     );
   }

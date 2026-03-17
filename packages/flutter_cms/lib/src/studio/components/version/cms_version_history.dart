@@ -105,34 +105,35 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
 
     return ShadButton.outline(
       onPressed: data.versions.isEmpty ? null : _popoverController.toggle,
+      height: 28,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisSize: MainAxisSize.min,
         children: [
           if (hasSelection) ...[
-            Row(
-              children: [
-                Text(
-                  'v${selectedVersion.versionNumber}',
-                  style: theme.textTheme.small.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.foreground,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                _StatusBadge(version: selectedVersion, compact: true),
-              ],
+            Text(
+              'v${selectedVersion.versionNumber}',
+              style: theme.textTheme.small.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.foreground,
+                fontSize: 12,
+              ),
             ),
+            const SizedBox(width: 6),
+            _StatusBadge(version: selectedVersion, compact: true),
           ] else ...[
             Text(
               'Select Version',
               style: theme.textTheme.small.copyWith(
                 color: theme.colorScheme.mutedForeground,
+                fontSize: 12,
               ),
             ),
           ],
+          const SizedBox(width: 6),
           FaIcon(
             FontAwesomeIcons.arrowsUpDown,
-            size: 16,
+            size: 12,
             color: theme.colorScheme.mutedForeground,
           ),
         ],

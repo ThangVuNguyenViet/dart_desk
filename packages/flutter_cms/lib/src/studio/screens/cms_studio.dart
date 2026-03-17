@@ -117,28 +117,28 @@ class _CmsStudioState extends State<CmsStudio> {
     // 50/50 split initially. An adjustable divider can be added as a follow-up.
     return Row(
       children: [
-        // Editor panel
+        // Preview panel
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: theme.colorScheme.background,
+              color: theme.colorScheme.card,
               border: Border(
                 right: BorderSide(
                   color: theme.colorScheme.border.withValues(alpha: 0.5),
                 ),
               ),
             ),
+            child: _buildPreview(context, theme, viewModel, docType),
+          ),
+        ),
+        // Editor panel
+        Expanded(
+          child: Container(
+            color: theme.colorScheme.background,
             child: CmsDocumentEditor(
               fields: docType.fields,
               title: docType.title,
             ),
-          ),
-        ),
-        // Preview panel
-        Expanded(
-          child: Container(
-            color: theme.colorScheme.card,
-            child: _buildPreview(context, theme, viewModel, docType),
           ),
         ),
       ],
@@ -154,54 +154,23 @@ class _CmsStudioState extends State<CmsStudio> {
     final documentViewModel = documentViewModelProvider.of(context);
     final edited = documentViewModel.editedData.watch(context);
 
+    // Prefer live editedData; fall back to saved version data
+    Map<String, dynamic> data;
     if (edited.isNotEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(CmsSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Preview header
-            Row(
-              children: [
-                Text(
-                  'PREVIEW',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: theme.colorScheme.mutedForeground,
-                    letterSpacing: 1,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: CmsSpacing.md),
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(CmsBorderRadius.lg),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: docType.builder(edited),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+      data = edited;
+    } else {
+      final versionId = viewModel.selectedVersionId.value;
+      final defaultData = docType.defaultValue?.toMap() ?? {};
+      data = defaultData;
 
-    // Fallback to version data
-    final versionId = viewModel.selectedVersionId.value;
-    final defaultData = docType.defaultValue?.toMap() ?? {};
-    Map<String, dynamic> data = defaultData;
-
-    if (versionId != null) {
-      final versionState = viewModel.documentDataContainer(versionId).value;
-      data = versionState.map<Map<String, dynamic>>(
-        loading: () => defaultData,
-        error: (_, __) => defaultData,
-        data: (version) => version?.data ?? defaultData,
-      );
+      if (versionId != null) {
+        final versionState = viewModel.documentDataContainer(versionId).value;
+        data = versionState.map<Map<String, dynamic>>(
+          loading: () => defaultData,
+          error: (_, __) => defaultData,
+          data: (version) => version?.data ?? defaultData,
+        );
+      }
     }
 
     return Padding(
@@ -222,7 +191,6 @@ class _CmsStudioState extends State<CmsStudio> {
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
                 borderRadius: BorderRadius.circular(CmsBorderRadius.lg),
               ),
               clipBehavior: Clip.antiAlias,

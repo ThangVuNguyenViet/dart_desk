@@ -25,7 +25,7 @@ class CmsThemeToggle extends StatelessWidget {
     final isDark = themeMode == ThemeMode.dark;
 
     return Container(
-      height: 28,
+      height: 26,
       decoration: BoxDecoration(
         color: theme.colorScheme.muted.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(CmsBorderRadius.md),
@@ -37,12 +37,14 @@ class CmsThemeToggle extends StatelessWidget {
           _ToggleSegment(
             icon: isDark ? FontAwesomeIcons.sun : FontAwesomeIcons.solidSun,
             isActive: !isDark,
+            isSun: true,
             onTap: () => onChanged(ThemeMode.light),
             theme: theme,
           ),
           _ToggleSegment(
             icon: isDark ? FontAwesomeIcons.solidMoon : FontAwesomeIcons.moon,
             isActive: isDark,
+            isSun: false,
             onTap: () => onChanged(ThemeMode.dark),
             theme: theme,
           ),
@@ -55,12 +57,14 @@ class CmsThemeToggle extends StatelessWidget {
 class _ToggleSegment extends StatelessWidget {
   final IconData icon;
   final bool isActive;
+  final bool isSun;
   final VoidCallback onTap;
   final ShadThemeData theme;
 
   const _ToggleSegment({
     required this.icon,
     required this.isActive,
+    required this.isSun,
     required this.onTap,
     required this.theme,
   });
@@ -83,9 +87,11 @@ class _ToggleSegment extends StatelessWidget {
             child: FaIcon(
               icon,
               size: 12,
-              color: isActive
-                  ? theme.colorScheme.foreground
-                  : theme.colorScheme.mutedForeground,
+              color: isSun
+                  ? const Color(0xFFeab308)
+                  : isActive
+                      ? theme.colorScheme.foreground
+                      : theme.colorScheme.mutedForeground,
             ),
           ),
         ),

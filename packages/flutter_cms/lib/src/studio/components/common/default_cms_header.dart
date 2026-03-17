@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// Default header widget for CMS Studio
@@ -33,7 +34,7 @@ class DefaultCmsHeader extends StatelessWidget {
           Row(
             children: [
               if (icon != null) ...[
-                Icon(icon, size: 24, color: theme.colorScheme.primary),
+                FaIcon(icon!, size: 24, color: theme.colorScheme.primary),
                 const SizedBox(width: 12),
               ],
               Expanded(
