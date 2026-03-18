@@ -270,6 +270,12 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
                       _popoverController.toggle();
                     }
                   },
+                  onPublish: version.isDraft
+                      ? () => _publishVersion(context, version)
+                      : null,
+                  onArchive: version.isPublished
+                      ? () => _archiveVersion(context, version)
+                      : null,
                 );
               },
             ),
@@ -277,6 +283,92 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
         ],
       ),
     );
+  }
+
+  Future<void> _publishVersion(BuildContext context, DocumentVersion version) async {
+    final toaster = ShadToaster.of(context);
+
+    final confirmed = await showShadDialog<bool>(
+      context: context,
+      builder: (context) => ShadDialog(
+        title: const Text('Publish version'),
+        actions: [
+          ShadButton.outline(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ShadButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Publish'),
+          ),
+        ],
+        child: const Text(
+          'Publishing this version will archive any currently published version.',
+        ),
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    widget.viewModel.selectedVersionId.value = version.id;
+
+    try {
+      await widget.viewModel.publishVersion();
+      if (mounted) {
+        toaster.show(
+          const ShadToast(description: Text('Version published')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        toaster.show(
+          ShadToast.destructive(description: Text('Failed to publish: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _archiveVersion(BuildContext context, DocumentVersion version) async {
+    final toaster = ShadToaster.of(context);
+
+    final confirmed = await showShadDialog<bool>(
+      context: context,
+      builder: (context) => ShadDialog(
+        title: const Text('Archive version'),
+        actions: [
+          ShadButton.outline(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ShadButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Archive'),
+          ),
+        ],
+        child: const Text(
+          'This version will no longer be the active published version.',
+        ),
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    widget.viewModel.selectedVersionId.value = version.id;
+
+    try {
+      await widget.viewModel.archiveVersion();
+      if (mounted) {
+        toaster.show(
+          const ShadToast(description: Text('Version archived')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        toaster.show(
+          ShadToast.destructive(description: Text('Failed to archive: $e')),
+        );
+      }
+    }
   }
 
   /// Builds the empty state UI.
@@ -330,11 +422,15 @@ class _VersionMenuItem extends StatefulWidget {
   final DocumentVersion version;
   final bool isSelected;
   final VoidCallback? onTap;
+  final VoidCallback? onPublish;
+  final VoidCallback? onArchive;
 
   const _VersionMenuItem({
     required this.version,
     required this.isSelected,
     this.onTap,
+    this.onPublish,
+    this.onArchive,
   });
 
   @override
@@ -433,6 +529,29 @@ class _VersionMenuItemState extends State<_VersionMenuItem> {
                   ],
                 ),
               ),
+              // Action button (publish for draft, archive for published)
+              if (widget.onPublish != null) ...[
+                const SizedBox(width: 8),
+                ShadButton(
+                  key: ValueKey('publish_button_${widget.version.id}'),
+                  size: ShadButtonSize.sm,
+                  height: 24,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  onPressed: widget.onPublish,
+                  child: const Text('Publish', style: TextStyle(fontSize: 11)),
+                ),
+              ],
+              if (widget.onArchive != null) ...[
+                const SizedBox(width: 8),
+                ShadButton.outline(
+                  key: ValueKey('archive_button_${widget.version.id}'),
+                  size: ShadButtonSize.sm,
+                  height: 24,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  onPressed: widget.onArchive,
+                  child: const Text('Archive', style: TextStyle(fontSize: 11)),
+                ),
+              ],
               // Selection checkmark
               if (widget.isSelected) ...[
                 const SizedBox(width: 8),
