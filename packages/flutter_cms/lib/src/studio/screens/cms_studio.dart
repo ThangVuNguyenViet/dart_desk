@@ -74,6 +74,62 @@ class _CmsStudioState extends State<CmsStudio> {
     }
   }
 
+  Future<void> _deleteDocument(BuildContext context) async {
+    final viewModel = cmsViewModelProvider.of(context);
+    final documentViewModel = documentViewModelProvider.of(context);
+    final toaster = ShadToaster.of(context);
+    final docId = documentViewModel.documentId.value;
+
+    if (docId == null) return;
+
+    final confirmed = await showShadDialog<bool>(
+      context: context,
+      builder: (context) => ShadDialog(
+        title: const Text('Delete document'),
+        actions: [
+          ShadButton.outline(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ShadButton.destructive(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete'),
+          ),
+        ],
+        child: const Text(
+          'This will permanently delete this document and all its versions. This cannot be undone.',
+        ),
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    try {
+      final result = await viewModel.deleteDocument(docId);
+      if (mounted) {
+        if (result) {
+          toaster.show(
+            const ShadToast(description: Text('Document deleted')),
+          );
+        } else {
+          toaster.show(
+            ShadToast.destructive(
+              description: const Text('Failed to delete document'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        toaster.show(
+          ShadToast.destructive(
+            description: Text('Failed to delete: $e'),
+          ),
+        );
+      }
+    }
+  }
+
   Widget _buildDocumentsList(
     BuildContext context,
     ShadThemeData theme,
@@ -309,6 +365,7 @@ class _CmsStudioState extends State<CmsStudio> {
             isSaving: isSaving,
             onSave: () => _saveDocument(context),
             onDiscard: () => _discardDocument(context),
+            onDelete: () => _deleteDocument(context),
           ),
           // Main content area
           Expanded(

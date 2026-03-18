@@ -23,6 +23,7 @@ class CmsToolbarRibbon extends StatelessWidget {
   final bool isSaving;
   final VoidCallback? onSave;
   final VoidCallback? onDiscard;
+  final VoidCallback? onDelete;
 
   const CmsToolbarRibbon({
     super.key,
@@ -36,6 +37,7 @@ class CmsToolbarRibbon extends StatelessWidget {
     this.isSaving = false,
     this.onSave,
     this.onDiscard,
+    this.onDelete,
   });
 
   @override
@@ -112,6 +114,21 @@ class CmsToolbarRibbon extends StatelessWidget {
               height: 28,
               onPressed: isSaving ? null : onSave,
               child: Text(isSaving ? 'Saving...' : 'Save'),
+            ),
+          ],
+          if (documentStatus != null) ...[
+            const SizedBox(width: CmsSpacing.sm),
+            ShadButton.ghost(
+              key: const ValueKey('more_actions_button'),
+              size: ShadButtonSize.sm,
+              height: 28,
+              width: 28,
+              padding: EdgeInsets.zero,
+              onPressed: onDelete,
+              child: const FaIcon(
+                FontAwesomeIcons.ellipsisVertical,
+                size: 14,
+              ),
             ),
           ],
         ],
