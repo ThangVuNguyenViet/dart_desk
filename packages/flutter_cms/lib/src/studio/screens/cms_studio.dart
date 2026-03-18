@@ -32,6 +32,7 @@ class _CmsStudioState extends State<CmsStudio> {
   Future<void> _saveDocument(BuildContext context) async {
     final viewModel = cmsViewModelProvider.of(context);
     final documentViewModel = documentViewModelProvider.of(context);
+    final toaster = ShadToaster.of(context);
     final docId = documentViewModel.documentId.value;
     final data = documentViewModel.editedData.value;
 
@@ -41,13 +42,13 @@ class _CmsStudioState extends State<CmsStudio> {
       }
 
       if (mounted) {
-        ShadToaster.of(context).show(
+        toaster.show(
           const ShadToast(description: Text('Document saved successfully')),
         );
       }
     } catch (e) {
       if (mounted) {
-        ShadToaster.of(context).show(
+        toaster.show(
           ShadToast.destructive(
             description: Text('Failed to save: $e'),
           ),

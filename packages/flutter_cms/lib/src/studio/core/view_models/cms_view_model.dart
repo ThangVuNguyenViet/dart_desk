@@ -195,11 +195,14 @@ class CmsViewModel {
       if (versions.versions.isNotEmpty) {
         final versionId = versions.versions.first.id!;
 
-        // Pre-load version data into editedData first.
-        final versionData = await dataSource.getDocumentVersionData(versionId);
-        if (versionData != null && versionData.isNotEmpty) {
+        // Use the document's activeVersionData which reflects the latest
+        // CRDT-merged state, rather than getDocumentVersionData which only
+        // reconstructs state up to the version's snapshot HLC.
+        final doc = await dataSource.getDocument(docId);
+        final docData = doc?.activeVersionData;
+        if (docData != null && docData.isNotEmpty) {
           _documentViewModel.editedData.value = Map<String, dynamic>.from(
-            versionData,
+            docData,
           );
         }
 
