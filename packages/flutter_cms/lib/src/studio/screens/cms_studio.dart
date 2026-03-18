@@ -35,8 +35,24 @@ class _CmsStudioState extends State<CmsStudio> {
     final docId = documentViewModel.documentId.value;
     final data = documentViewModel.editedData.value;
 
-    if (docId != null) {
-      await viewModel.updateDocumentData(data);
+    try {
+      if (docId != null) {
+        await viewModel.updateDocumentData(data);
+      }
+
+      if (mounted) {
+        ShadToaster.of(context).show(
+          const ShadToast(description: Text('Document saved successfully')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ShadToaster.of(context).show(
+          ShadToast.destructive(
+            description: Text('Failed to save: $e'),
+          ),
+        );
+      }
     }
   }
 
