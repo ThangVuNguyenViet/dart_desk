@@ -27,12 +27,25 @@ case "$1" in
     echo "Test services ready."
     ;;
   down)
-    echo "Stopping test Docker services..."
+    echo "Stopping Docker services..."
     docker compose -f "$BACKEND_DIR/docker-compose.yaml" down
     echo "Services stopped."
     ;;
+  reset)
+    echo "Resetting database (dropping all data)..."
+    # Drop and recreate the database inside the running postgres container
+    if ! docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres pg_isready -U postgres > /dev/null 2>&1; then
+      echo "ERROR: PostgreSQL is not running. Start it first with: $0 up"
+      exit 1
+    fi
+    docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
+      psql -U postgres -c "DROP DATABASE IF EXISTS flutter_cms_be;"
+    docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
+      psql -U postgres -c "CREATE DATABASE flutter_cms_be OWNER postgres;"
+    echo "Database reset. Restart the server with server_manager.sh to re-apply migrations."
+    ;;
   *)
-    echo "Usage: $0 {up|down}"
+    echo "Usage: $0 {up|down|reset}"
     exit 1
     ;;
 esac
