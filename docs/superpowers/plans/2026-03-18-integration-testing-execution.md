@@ -143,7 +143,7 @@ If failures → send each failure to **bug-fixer** agent with:
 cd flutter_cms/test_e2e/setup
 bash server_manager.sh stop
 ```
-- [ ] **Step 3: Reset database** (drops all E2E test data, recreates empty DB)
+- [ ] **Step 3: Clean up test data** (truncates documents, versions, CRDT data, media — preserves clients, users, tokens)
 ```bash
 bash docker_manager.sh reset
 ```
@@ -152,7 +152,7 @@ bash docker_manager.sh reset
 bash docker_manager.sh down
 ```
 
-**Note:** `docker_manager.sh reset` drops and recreates the database while keeping the container running. On next `server_manager.sh start`, migrations are re-applied to a clean schema. Use this between test runs to ensure a clean state.
+**Note:** `docker_manager.sh reset` truncates document-related tables only. Client, user, and API token data is preserved so you don't need to re-seed auth on the next run.
 
 ---
 

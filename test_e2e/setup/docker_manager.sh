@@ -32,17 +32,25 @@ case "$1" in
     echo "Services stopped."
     ;;
   reset)
-    echo "Resetting database (dropping all data)..."
-    # Drop and recreate the database inside the running postgres container
+    echo "Cleaning up E2E test data (preserving clients, users, tokens)..."
     if ! docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres pg_isready -U postgres > /dev/null 2>&1; then
       echo "ERROR: PostgreSQL is not running. Start it first with: $0 up"
       exit 1
     fi
+    # Truncate document/version/media tables, preserve client/user/token tables.
+    # Order matters: child tables first due to foreign key constraints.
     docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
-      psql -U postgres -c "DROP DATABASE IF EXISTS flutter_cms_be;"
-    docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
-      psql -U postgres -c "CREATE DATABASE flutter_cms_be OWNER postgres;"
-    echo "Database reset. Restart the server with server_manager.sh to re-apply migrations."
+      psql -U postgres -d flutter_cms_be -c "
+        TRUNCATE
+          document_crdt_operations,
+          document_crdt_snapshots,
+          document_versions,
+          cms_documents_data,
+          cms_documents,
+          media_files
+        CASCADE;
+      "
+    echo "Done. Documents, versions, CRDT data, and media cleared. Clients, users, and tokens preserved."
     ;;
   *)
     echo "Usage: $0 {up|down|reset}"
