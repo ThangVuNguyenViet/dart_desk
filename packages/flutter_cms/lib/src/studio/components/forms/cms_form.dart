@@ -179,8 +179,6 @@ class CmsForm extends StatefulWidget {
   final List<CmsField> fields;
   final Map<String, dynamic> data;
   final String? title;
-  final VoidCallback? onSave;
-  final VoidCallback? onDiscard;
 
   /// Callback when a field value changes
   final OnFieldChanged? onFieldChanged;
@@ -190,8 +188,6 @@ class CmsForm extends StatefulWidget {
     required this.fields,
     this.data = const {},
     this.title,
-    this.onSave,
-    this.onDiscard,
     this.onFieldChanged,
   });
 

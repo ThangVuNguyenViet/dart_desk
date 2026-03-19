@@ -4,6 +4,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../data/models/document_version.dart';
+import '../components/common/cms_button.dart';
 import '../components/forms/cms_form.dart';
 import '../providers/studio_provider.dart';
 
@@ -166,15 +167,27 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
           fields: widget.fields,
           data: Map<String, dynamic>.from(documentData),
           title: widget.title,
-          onSave: isSaving ? null : _saveDocument,
-          onDiscard: isSaving || !hasUnsavedChanges ? null : _discardDocument,
           onFieldChanged: (fieldName, value) => editedData[fieldName] = value,
         ),
-        if (isSaving)
-          Positioned.fill(
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.3),
-              child: const Center(child: ShadProgress()),
+        if (hasUnsavedChanges)
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CmsButton(
+                  text: 'Discard',
+                  variant: ShadButtonVariant.outline,
+                  onPressed: isSaving ? null : _discardDocument,
+                ),
+                const SizedBox(width: 8),
+                CmsButton(
+                  text: 'Save',
+                  loading: isSaving,
+                  onPressed: isSaving ? null : _saveDocument,
+                ),
+              ],
             ),
           ),
       ],
