@@ -175,6 +175,13 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                 ),
               ),
             ),
+            ShadIconButton.ghost(
+              onPressed: () {
+                final viewModel = cmsViewModelProvider.of(context);
+                viewModel.documentListVisible.value = false;
+              },
+              icon: const FaIcon(FontAwesomeIcons.anglesLeft, size: 14),
+            ),
             ShadIconButton.secondary(
               onPressed: () {
                 setState(() {
