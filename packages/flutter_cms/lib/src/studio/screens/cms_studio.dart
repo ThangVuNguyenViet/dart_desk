@@ -4,8 +4,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../../data/models/document_version.dart';
-import '../components/common/cms_toolbar_ribbon.dart';
 import '../core/view_models/cms_view_model.dart';
 import '../providers/studio_provider.dart';
 import '../routes/document_route.dart';
@@ -29,51 +27,6 @@ class CmsStudio extends StatefulWidget {
 }
 
 class _CmsStudioState extends State<CmsStudio> {
-  Future<void> _saveDocument(BuildContext context) async {
-    final viewModel = cmsViewModelProvider.of(context);
-    final documentViewModel = documentViewModelProvider.of(context);
-    final toaster = ShadToaster.of(context);
-    final docId = documentViewModel.documentId.value;
-    final data = documentViewModel.editedData.value;
-
-    try {
-      if (docId != null) {
-        await viewModel.updateDocumentData(data);
-      }
-
-      if (mounted) {
-        toaster.show(
-          const ShadToast(description: Text('Document saved successfully')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        toaster.show(
-          ShadToast.destructive(
-            description: Text('Failed to save: $e'),
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _discardDocument(BuildContext context) async {
-    final viewModel = cmsViewModelProvider.of(context);
-    final documentViewModel = documentViewModelProvider.of(context);
-    final versionId = viewModel.selectedVersionId.value;
-
-    if (versionId != null) {
-      final versionState = viewModel.documentDataContainer(versionId).value;
-      if (versionState is AsyncData && versionState.value?.data != null) {
-        documentViewModel.editedData.value =
-            Map<String, dynamic>.from(versionState.value!.data!);
-      }
-    } else {
-      final docType = viewModel.currentDocumentType.value;
-      documentViewModel.editedData.value = docType?.defaultValue?.toMap() ?? {};
-    }
-  }
-
   Future<void> _deleteDocument(BuildContext context, {int? docId}) async {
     final viewModel = cmsViewModelProvider.of(context);
     final documentViewModel = documentViewModelProvider.of(context);
@@ -128,49 +81,6 @@ class _CmsStudioState extends State<CmsStudio> {
         );
       }
     }
-  }
-
-  Widget _buildDocumentsList(
-    BuildContext context,
-    ShadThemeData theme,
-    CmsViewModel viewModel,
-  ) {
-    final docType = viewModel.currentDocumentType.value;
-
-    return Container(
-      width: 220,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.card,
-        border: Border(
-          right: BorderSide(
-            color: theme.colorScheme.border.withValues(alpha: 0.5),
-          ),
-        ),
-      ),
-      child: docType == null
-          ? _buildEmptyState(
-              theme: theme,
-              icon: FontAwesomeIcons.folderOpen,
-              title: 'Documents',
-              description: 'Select a document type to see available documents',
-            )
-          : Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CmsSpacing.md, CmsSpacing.sm, CmsSpacing.md, CmsSpacing.md,
-              ),
-              child: CmsDocumentListView(
-                selectedDocumentType: docType,
-                icon: FontAwesomeIcons.file,
-                onOpenDocument: (documentId) {
-                  widget.coordinator.pushOrMoveToTop(
-                    DocumentRoute(docType.name, documentId),
-                  );
-                },
-                onDeleteDocument: (docId) =>
-                    _deleteDocument(context, docId: docId),
-              ),
-            ),
-    );
   }
 
   Widget _buildEditorPreview(
@@ -320,69 +230,90 @@ class _CmsStudioState extends State<CmsStudio> {
     );
   }
 
-  DocumentVersionStatus _deriveToolbarStatus(
-    BuildContext context,
-    CmsViewModel viewModel,
-  ) {
-    final versionId = viewModel.selectedVersionId.watch(context);
-    if (versionId == null) return DocumentVersionStatus.draft;
-
-    final versionState =
-        viewModel.documentDataContainer(versionId).watch(context);
-    return versionState.map(
-      loading: () => DocumentVersionStatus.draft,
-      error: (_, __) => DocumentVersionStatus.draft,
-      data: (version) => version?.status ?? DocumentVersionStatus.draft,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     final viewModel = cmsViewModelProvider.of(context);
-    final documentViewModel = documentViewModelProvider.of(context);
 
     final isListVisible = viewModel.documentListVisible.watch(context);
-    final isSidebarCollapsed = viewModel.sidebarCollapsed.watch(context);
     final docType = viewModel.currentDocumentType.watch(context);
-    final isSaving = viewModel.isSaving.watch(context);
-    final editedData = documentViewModel.editedData.watch(context);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
-      body: Column(
+      body: Row(
         children: [
-          // Toolbar ribbon
-          CmsToolbarRibbon(
-            sidebarVisible: !isSidebarCollapsed,
-            onToggleSidebar: () =>
-                viewModel.sidebarCollapsed.value = !isSidebarCollapsed,
-            listVisible: isListVisible,
-            onToggleList: () =>
-                viewModel.documentListVisible.value = !isListVisible,
-            documentStatus: docType != null
-                ? _deriveToolbarStatus(context, viewModel)
-                : null,
-            hasUnsavedChanges: editedData.isNotEmpty && docType != null,
-            isSaving: isSaving,
-            onSave: () => _saveDocument(context),
-            onDiscard: () => _discardDocument(context),
-          ),
-          // Main content area
-          Expanded(
-            child: Row(
-              children: [
-                // Sidebar (already handles its own width/collapse)
-                widget.sidebar,
-                // Document list (collapsible)
-                if (isListVisible)
-                  _buildDocumentsList(context, theme, viewModel),
-                // Editor + Preview split
-                Expanded(
-                    child: _buildEditorPreview(context, theme, viewModel)),
-              ],
+          // Sidebar (already handles its own width/collapse)
+          widget.sidebar,
+          // Document list (collapsible via header chevron)
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: isListVisible ? 220 : 0,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.card,
+              border: Border(
+                right: BorderSide(
+                  color: theme.colorScheme.border.withValues(alpha: 0.5),
+                ),
+              ),
             ),
+            child: docType == null
+                ? _buildEmptyState(
+                    theme: theme,
+                    icon: FontAwesomeIcons.folderOpen,
+                    title: 'Documents',
+                    description:
+                        'Select a document type to see available documents',
+                  )
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      CmsSpacing.md,
+                      CmsSpacing.sm,
+                      CmsSpacing.md,
+                      CmsSpacing.md,
+                    ),
+                    child: CmsDocumentListView(
+                      selectedDocumentType: docType,
+                      icon: FontAwesomeIcons.file,
+                      onOpenDocument: (documentId) {
+                        widget.coordinator.pushOrMoveToTop(
+                          DocumentRoute(docType.name, documentId),
+                        );
+                      },
+                      onDeleteDocument: (docId) =>
+                          _deleteDocument(context, docId: docId),
+                    ),
+                  ),
           ),
+          // Expand handle when document list is collapsed
+          if (!isListVisible)
+            GestureDetector(
+              onTap: () => viewModel.documentListVisible.value = true,
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: Container(
+                  width: 24,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.card,
+                    border: Border(
+                      right: BorderSide(
+                        color:
+                            theme.colorScheme.border.withValues(alpha: 0.5),
+                      ),
+                    ),
+                  ),
+                  child: Center(
+                    child: FaIcon(
+                      FontAwesomeIcons.anglesRight,
+                      size: 12,
+                      color: theme.colorScheme.mutedForeground,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          // Editor + Preview split
+          Expanded(child: _buildEditorPreview(context, theme, viewModel)),
         ],
       ),
     );
