@@ -14,9 +14,9 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // App Bar with Hero Section
+          // Hero Section
           SliverAppBar(
-            expandedHeight: 300.0,
+            expandedHeight: 320.0,
             floating: false,
             pinned: true,
             backgroundColor: config.primaryColor,
@@ -39,34 +39,71 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Promotional Banner
-                  if (config.showPromotionalBanner) _buildPromotionalBanner(),
+                  if (config.showPromotionalBanner) ...[
+                    _buildPromotionalBanner(theme),
+                    const SizedBox(height: 24),
+                  ],
 
-                  const SizedBox(height: 24),
-
-                  // Section Title
-                  Text(
-                    'Featured Items',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      color: config.primaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  // Featured Items Header
+                  Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: config.accentColor,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Featured',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: config.accentColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${config.featuredItems.take(config.maxFeaturedItems).length} items',
+                          style: TextStyle(
+                            color: config.accentColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 16),
-
-                  // Featured Items
                   _buildFeaturedItems(),
-
                   const SizedBox(height: 32),
 
                   // Action Buttons
                   _buildActionButtons(),
+                  const SizedBox(height: 32),
 
-                  const SizedBox(height: 24),
+                  // Downloads section
+                  if (config.downloadableResource != null &&
+                      config.downloadableResource!.isNotEmpty)
+                    ...[
+                      _buildDownloadCard(theme),
+                      const SizedBox(height: 24),
+                    ],
 
-                  // Footer Information
-                  _buildFooterInfo(context),
+                  // Footer
+                  if (config.showFooter) _buildFooter(context, theme),
+
+                  const SizedBox(height: 16),
                 ],
               ),
             ),
@@ -80,25 +117,42 @@ class HomeScreen extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Background Image
-        Image.network(
-          config.backgroundImageUrl,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: config.primaryColor.withValues(alpha: 0.3),
-              child: const Icon(
-                Icons.image_not_supported,
-                size: 64,
-                color: Colors.white54,
-              ),
-            );
-          },
-        ),
+        // Background
+        if (config.backgroundImageUrl.isNotEmpty)
+          Image.network(
+            config.backgroundImageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                _buildHeroFallbackBackground(),
+          )
+        else
+          _buildHeroFallbackBackground(),
 
-        // Dark Overlay
+        // Overlay
         if (config.enableDarkOverlay)
-          Container(color: Colors.black.withValues(alpha: 0.5)),
+          Container(
+            color: Colors.black.withValues(alpha: config.heroOverlayOpacity),
+          ),
+
+        // Gradient fade at bottom
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 120,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  config.primaryColor.withValues(alpha: 0.8),
+                ],
+              ),
+            ),
+          ),
+        ),
 
         // Hero Content
         Padding(
@@ -112,29 +166,25 @@ class HomeScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
+                  letterSpacing: -0.5,
                   shadows: [
                     const Shadow(
                       offset: Offset(0, 2),
-                      blurRadius: 4,
+                      blurRadius: 8,
                       color: Colors.black45,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Text(
                 config.heroSubtitle,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Colors.white.withValues(alpha: 0.9),
-                  height: 1.4,
-                  shadows: [
-                    const Shadow(
-                      offset: Offset(0, 1),
-                      blurRadius: 2,
-                      color: Colors.black45,
-                    ),
-                  ],
+                  height: 1.5,
                 ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -143,50 +193,118 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPromotionalBanner() {
+  Widget _buildHeroFallbackBackground() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            config.primaryColor,
+            config.primaryColor.withValues(alpha: 0.6),
+            config.accentColor.withValues(alpha: 0.4),
+          ],
+        ),
+      ),
+      child: CustomPaint(painter: _GridPatternPainter(config.primaryColor)),
+    );
+  }
+
+  Widget _buildPromotionalBanner(ThemeData theme) {
+    final isActive = _isPromoActive();
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      margin: const EdgeInsets.only(top: 16),
+      margin: const EdgeInsets.only(top: 8),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            config.primaryColor.withValues(alpha: 0.1),
-            config.primaryColor.withValues(alpha: 0.05),
+            config.accentColor.withValues(alpha: 0.12),
+            config.accentColor.withValues(alpha: 0.04),
           ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: config.primaryColor.withValues(alpha: 0.3),
-          width: 1,
+          color: config.accentColor.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.campaign, color: config.primaryColor, size: 24),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: config.accentColor.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(Icons.campaign_rounded, color: config.accentColor, size: 20),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Special Announcement',
-                  style: TextStyle(
-                    color: config.primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        config.bannerHeadline,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                    if (!isActive)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'Scheduled',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Last updated ${DateFormat('MMM dd, yyyy').format(config.lastUpdated)}',
-                  style: TextStyle(
-                    color: config.primaryColor.withValues(alpha: 0.7),
-                    fontSize: 12,
+                if (config.bannerBody.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    config.bannerBody,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[700],
+                      height: 1.4,
+                    ),
                   ),
-                ),
+                ],
+                if (config.promoStartDate != null ||
+                    config.promoEndDate != null) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.schedule, size: 14, color: Colors.grey[500]),
+                      const SizedBox(width: 4),
+                      Text(
+                        _formatPromoDateRange(),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey[500],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -196,17 +314,16 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildFeaturedItems() {
-    final displayItems = config.featuredItems
-        .take(config.maxFeaturedItems)
-        .toList();
+    final displayItems =
+        config.featuredItems.take(config.maxFeaturedItems).toList();
 
     switch (config.layoutStyle.toLowerCase()) {
       case 'grid':
         return _buildGridLayout(displayItems);
       case 'list':
         return _buildListLayout(displayItems);
-      case 'carousel':
-        return _buildCarouselLayout(displayItems);
+      case 'masonry':
+        return _buildMasonryLayout(displayItems);
       default:
         return _buildGridLayout(displayItems);
     }
@@ -216,16 +333,14 @@ class HomeScreen extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 3,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: config.gridColumns,
+        childAspectRatio: config.gridColumns == 1 ? 5 : 2.4,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
       ),
       itemCount: items.length,
-      itemBuilder: (context, index) {
-        return _buildFeatureCard(items[index], index);
-      },
+      itemBuilder: (context, index) => _buildFeatureCard(items[index], index),
     );
   }
 
@@ -233,22 +348,22 @@ class HomeScreen extends StatelessWidget {
     return Column(
       children: items.asMap().entries.map((entry) {
         return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
+          padding: const EdgeInsets.only(bottom: 10),
           child: _buildFeatureListItem(entry.value, entry.key),
         );
       }).toList(),
     );
   }
 
-  Widget _buildCarouselLayout(List<String> items) {
+  Widget _buildMasonryLayout(List<String> items) {
     return SizedBox(
-      height: 120,
+      height: 140,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
         itemBuilder: (context, index) {
           return Container(
-            width: 200,
+            width: 180,
             margin: const EdgeInsets.only(right: 12),
             child: _buildFeatureCard(items[index], index),
           );
@@ -259,14 +374,14 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildFeatureCard(String item, int index) {
     final icons = [
-      Icons.analytics,
-      Icons.group,
-      Icons.cloud_sync,
-      Icons.notifications_active,
-      Icons.devices,
-      Icons.security,
-      Icons.speed,
-      Icons.support,
+      Icons.analytics_outlined,
+      Icons.group_outlined,
+      Icons.cloud_sync_outlined,
+      Icons.notifications_active_outlined,
+      Icons.devices_outlined,
+      Icons.security_outlined,
+      Icons.speed_outlined,
+      Icons.support_outlined,
     ];
 
     return Container(
@@ -276,32 +391,36 @@ class HomeScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: config.primaryColor.withValues(alpha: 0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
         border: Border.all(
-          color: config.primaryColor.withValues(alpha: 0.1),
-          width: 1,
+          color: Colors.grey.withValues(alpha: 0.12),
         ),
       ),
       child: Row(
         children: [
-          Icon(
-            icons[index % icons.length],
-            color: config.primaryColor,
-            size: 24,
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: config.primaryColor.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icons[index % icons.length],
+              color: config.primaryColor,
+              size: 22,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               item,
-              style: TextStyle(
-                color: Colors.grey[800],
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -311,87 +430,100 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildFeatureListItem(String item, int index) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            blurRadius: 4,
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundColor: config.primaryColor.withValues(alpha: 0.1),
-            radius: 20,
-            child: Text(
-              '${index + 1}',
-              style: TextStyle(
-                color: config.primaryColor,
-                fontWeight: FontWeight.bold,
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: config.accentColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Text(
+                '${index + 1}',
+                style: TextStyle(
+                  color: config.accentColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           Expanded(
             child: Text(
               item,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
             ),
           ),
+          Icon(Icons.chevron_right, color: Colors.grey[400], size: 20),
         ],
       ),
     );
   }
 
   Widget _buildActionButtons() {
-    return Column(
+    return Row(
       children: [
         // Primary Button
-        SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: ElevatedButton.icon(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: config.primaryColor,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+        Expanded(
+          flex: 3,
+          child: SizedBox(
+            height: 52,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: config.primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
               ),
-              elevation: 3,
-            ),
-            icon: const Icon(Icons.play_arrow),
-            label: Text(
-              config.primaryButtonLabel,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Text(
+                config.primaryButtonLabel,
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ),
-
-        const SizedBox(height: 12),
+        const SizedBox(width: 12),
         // Secondary Button
-        SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: OutlinedButton.icon(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: config.primaryColor,
-              side: BorderSide(color: config.primaryColor, width: 2),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+        Expanded(
+          flex: 2,
+          child: SizedBox(
+            height: 52,
+            child: OutlinedButton(
+              onPressed: () {},
+              style: OutlinedButton.styleFrom(
+                foregroundColor: config.primaryColor,
+                side: BorderSide(
+                  color: config.primaryColor.withValues(alpha: 0.4),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-            ),
-            icon: const Icon(Icons.info_outline),
-            label: Text(
-              config.secondaryButtonLabel,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              child: Text(
+                config.secondaryButtonLabel,
+                style:
+                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ),
@@ -399,64 +531,156 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFooterInfo(BuildContext context) {
+  Widget _buildDownloadCard(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: config.primaryColor.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: config.primaryColor.withValues(alpha: 0.15),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: config.primaryColor.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child:
+                Icon(Icons.file_download_outlined, color: config.primaryColor),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Downloadable Resource',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  config.downloadableResource!,
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.open_in_new, size: 18, color: config.primaryColor),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFooter(BuildContext context, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.grey[50],
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!, width: 1),
+        border: Border.all(color: Colors.grey[200]!),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Footer logo
+          if (config.footerLogoUrl != null &&
+              config.footerLogoUrl!.isNotEmpty) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                config.footerLogoUrl!,
+                height: 40,
+                errorBuilder: (_, __, _) => const SizedBox.shrink(),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+
           Row(
             children: [
-              Icon(Icons.info_outline, color: config.primaryColor, size: 20),
+              Icon(Icons.info_outline, color: config.primaryColor, size: 18),
               const SizedBox(width: 8),
               Text(
-                'Additional Information',
+                'Details',
                 style: TextStyle(
                   color: config.primaryColor,
                   fontWeight: FontWeight.w600,
-                  fontSize: 16,
+                  fontSize: 15,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
+          const Divider(height: 1),
+          const SizedBox(height: 14),
 
           _buildInfoRow(
             'Last Updated',
-            DateFormat(
-              'EEEE, MMMM dd, yyyy \'at\' h:mm a',
-            ).format(config.lastUpdated),
+            DateFormat('MMM dd, yyyy · h:mm a').format(config.lastUpdated),
             Icons.schedule,
           ),
 
-          if (config.externalLink != null) ...[
-            const SizedBox(height: 8),
-            _buildInfoRow(
-              'Learn More',
-              config.externalLink!,
-              Icons.link,
-              isLink: true,
-            ),
+          if (config.externalLink != null &&
+              config.externalLink!.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            _buildInfoRow('Learn More', config.externalLink!, Icons.link,
+                isLink: true),
           ],
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           _buildInfoRow(
-            'Layout Style',
-            config.layoutStyle.toUpperCase(),
-            Icons.view_module,
+            'Layout',
+            '${config.layoutStyle[0].toUpperCase()}${config.layoutStyle.substring(1)} · ${config.gridColumns} col',
+            Icons.grid_view,
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           _buildInfoRow(
-            'Content Items',
-            '${config.featuredItems.length} total (showing ${config.maxFeaturedItems})',
-            Icons.list,
+            'Items',
+            '${config.featuredItems.length} total · showing ${config.maxFeaturedItems}',
+            Icons.list_alt,
           ),
+
+          // SEO info
+          if (config.metaTitle != null && config.metaTitle!.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            const Divider(height: 1),
+            const SizedBox(height: 14),
+            Text(
+              'SEO Preview',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[500],
+                letterSpacing: 0.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              config.metaTitle!,
+              style: TextStyle(
+                color: Colors.blue[700],
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (config.metaDescription != null &&
+                config.metaDescription!.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                config.metaDescription!,
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ],
         ],
       ),
     );
@@ -470,13 +694,13 @@ class HomeScreen extends StatelessWidget {
   }) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Colors.grey[600]),
-        const SizedBox(width: 8),
+        Icon(icon, size: 16, color: Colors.grey[500]),
+        const SizedBox(width: 10),
         Text(
           '$label: ',
           style: TextStyle(
             color: Colors.grey[600],
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -485,8 +709,7 @@ class HomeScreen extends StatelessWidget {
             value,
             style: TextStyle(
               color: isLink ? config.primaryColor : Colors.grey[800],
-              fontSize: 14,
-              fontWeight: isLink ? FontWeight.w500 : FontWeight.normal,
+              fontSize: 13,
               decoration: isLink ? TextDecoration.underline : null,
             ),
           ),
@@ -494,4 +717,53 @@ class HomeScreen extends StatelessWidget {
       ],
     );
   }
+
+  // ── Helpers ──────────────────────────────────────────────────────────
+
+  bool _isPromoActive() {
+    final now = DateTime.now();
+    if (config.promoStartDate != null && now.isBefore(config.promoStartDate!)) {
+      return false;
+    }
+    if (config.promoEndDate != null && now.isAfter(config.promoEndDate!)) {
+      return false;
+    }
+    return true;
+  }
+
+  String _formatPromoDateRange() {
+    final fmt = DateFormat('MMM dd');
+    if (config.promoStartDate != null && config.promoEndDate != null) {
+      return '${fmt.format(config.promoStartDate!)} – ${fmt.format(config.promoEndDate!)}';
+    } else if (config.promoStartDate != null) {
+      return 'From ${fmt.format(config.promoStartDate!)}';
+    } else if (config.promoEndDate != null) {
+      return 'Until ${fmt.format(config.promoEndDate!)}';
+    }
+    return '';
+  }
+}
+
+/// Draws a subtle grid pattern for the hero fallback background.
+class _GridPatternPainter extends CustomPainter {
+  final Color color;
+  _GridPatternPainter(this.color);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.06)
+      ..strokeWidth = 1;
+
+    const spacing = 30.0;
+    for (double x = 0; x < size.width; x += spacing) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (double y = 0; y < size.height; y += spacing) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -18,7 +18,7 @@ part 'home_screen_config.mapper.dart';
 @MappableClass(ignoreNull: false, includeCustomMappers: [ColorMapper()])
 class HomeScreenConfig
     with HomeScreenConfigMappable, Serializable<HomeScreenConfig> {
-  // Hero Section
+  // ── Hero Section ──────────────────────────────────────────────────────
   @CmsStringFieldConfig(
     description: 'Title text displayed prominently in the hero section',
     option: CmsStringOption(),
@@ -49,7 +49,13 @@ class HomeScreenConfig
   )
   final Color primaryColor;
 
-  // Content Configuration
+  @CmsColorFieldConfig(
+    description: 'Accent color for highlights, badges, and secondary elements',
+    option: CmsColorOption(),
+  )
+  final Color accentColor;
+
+  // ── Content Configuration ─────────────────────────────────────────────
   @CmsArrayFieldConfig<String>(
     description: 'List of features to highlight on the home screen',
     option: FeaturedItemsArrayOption(),
@@ -58,9 +64,47 @@ class HomeScreenConfig
 
   @CmsNumberFieldConfig(
     description: 'Maximum number of items to display in featured section',
-    option: CmsNumberOption(min: 0, max: 10),
+    option: CmsNumberOption(min: 1, max: 10),
   )
   final int maxFeaturedItems;
+
+  @CmsNumberFieldConfig(
+    description: 'Opacity of the hero overlay (0.0 fully transparent, 1.0 fully opaque)',
+    option: CmsNumberOption(min: 0.0, max: 1.0),
+  )
+  final double heroOverlayOpacity;
+
+  // ── Promotional Banner ────────────────────────────────────────────────
+  @CmsCheckboxFieldConfig(
+    description: 'Show promotional banner at the top of the page',
+    option: CmsCheckboxOption(label: 'Enable promotional banner'),
+  )
+  final bool showPromotionalBanner;
+
+  @CmsStringFieldConfig(
+    description: 'Headline text for the promotional banner',
+    option: CmsStringOption(),
+  )
+  final String bannerHeadline;
+
+  @CmsTextFieldConfig(
+    description: 'Body text for the promotional banner',
+    option: CmsTextOption(rows: 2),
+  )
+  final String bannerBody;
+
+  // ── Dates & Scheduling ────────────────────────────────────────────────
+  @CmsDateFieldConfig(
+    description: 'Date when the promotional banner starts showing',
+    option: CmsDateOption(),
+  )
+  final DateTime? promoStartDate;
+
+  @CmsDateFieldConfig(
+    description: 'Date when the promotional banner stops showing',
+    option: CmsDateOption(),
+  )
+  final DateTime? promoEndDate;
 
   @CmsDateTimeFieldConfig(
     description: 'Last updated timestamp for the configuration',
@@ -68,24 +112,37 @@ class HomeScreenConfig
   )
   final DateTime lastUpdated;
 
+  // ── Links & Media ─────────────────────────────────────────────────────
   @CmsUrlFieldConfig(
     description: 'External link for more information',
     option: CmsUrlOption(),
   )
   final String? externalLink;
 
-  @CmsBooleanFieldConfig(
-    description: 'Show promotional banner at the top',
-    option: CmsBooleanOption(),
+  @CmsFileFieldConfig(
+    description: 'Downloadable resource file (PDF, guide, etc.)',
+    option: CmsFileOption(),
   )
-  final bool showPromotionalBanner;
+  final String? downloadableResource;
 
-  // Action Buttons - simplified as strings for now
+  @CmsImageFieldConfig(
+    description: 'Logo image shown in the footer',
+    option: CmsImageOption(hotspot: false),
+  )
+  final String? footerLogoUrl;
+
+  // ── Action Buttons ────────────────────────────────────────────────────
   @CmsStringFieldConfig(
     description: 'Label text for the primary action button',
     option: CmsStringOption(),
   )
   final String primaryButtonLabel;
+
+  @CmsUrlFieldConfig(
+    description: 'URL the primary button navigates to',
+    option: CmsUrlOption(),
+  )
+  final String? primaryButtonUrl;
 
   @CmsStringFieldConfig(
     description: 'Label text for the secondary action button',
@@ -93,7 +150,7 @@ class HomeScreenConfig
   )
   final String secondaryButtonLabel;
 
-  // Layout Configuration
+  // ── Layout Configuration ──────────────────────────────────────────────
   @CmsDropdownFieldConfig<String>(
     description: 'Layout style for the content area',
     option: LayoutStyleDropdownOption(),
@@ -102,9 +159,34 @@ class HomeScreenConfig
 
   @CmsNumberFieldConfig(
     description: 'Padding around the main content area in pixels',
-    option: CmsNumberOption(min: 8.0, max: 32.0),
+    option: CmsNumberOption(min: 8.0, max: 48.0),
   )
   final double contentPadding;
+
+  @CmsNumberFieldConfig(
+    description: 'Number of columns in grid layout',
+    option: CmsNumberOption(min: 1, max: 4),
+  )
+  final int gridColumns;
+
+  @CmsCheckboxFieldConfig(
+    description: 'Show the footer information section',
+    option: CmsCheckboxOption(label: 'Show footer section'),
+  )
+  final bool showFooter;
+
+  // ── SEO / Metadata ────────────────────────────────────────────────────
+  @CmsStringFieldConfig(
+    description: 'SEO meta title for search engines',
+    option: CmsStringOption(),
+  )
+  final String? metaTitle;
+
+  @CmsTextFieldConfig(
+    description: 'SEO meta description for search engines',
+    option: CmsTextOption(rows: 2),
+  )
+  final String? metaDescription;
 
   const HomeScreenConfig({
     required this.heroTitle,
@@ -112,15 +194,28 @@ class HomeScreenConfig
     required this.backgroundImageUrl,
     required this.enableDarkOverlay,
     required this.primaryColor,
+    required this.accentColor,
     required this.featuredItems,
     required this.maxFeaturedItems,
+    required this.heroOverlayOpacity,
+    required this.showPromotionalBanner,
+    required this.bannerHeadline,
+    required this.bannerBody,
+    this.promoStartDate,
+    this.promoEndDate,
     required this.lastUpdated,
     this.externalLink,
-    required this.showPromotionalBanner,
+    this.downloadableResource,
+    this.footerLogoUrl,
     required this.primaryButtonLabel,
+    this.primaryButtonUrl,
     required this.secondaryButtonLabel,
     required this.layoutStyle,
     required this.contentPadding,
+    required this.gridColumns,
+    required this.showFooter,
+    this.metaTitle,
+    this.metaDescription,
   });
 
   static HomeScreenConfig defaultValue = HomeScreenConfig(
@@ -130,6 +225,7 @@ class HomeScreenConfig
     backgroundImageUrl: '',
     enableDarkOverlay: true,
     primaryColor: Colors.deepPurple,
+    accentColor: Colors.amber,
     featuredItems: [
       'Advanced Analytics',
       'Real-time Collaboration',
@@ -138,13 +234,26 @@ class HomeScreenConfig
       'Cross-platform Support',
     ],
     maxFeaturedItems: 4,
+    heroOverlayOpacity: 0.5,
+    showPromotionalBanner: true,
+    bannerHeadline: 'New Release Available',
+    bannerBody:
+        'Version 2.0 is here with improved performance and new features.',
+    promoStartDate: null,
+    promoEndDate: null,
     lastUpdated: DateTime.now(),
     externalLink: 'https://example.com/learn-more',
-    showPromotionalBanner: true,
+    downloadableResource: null,
+    footerLogoUrl: null,
     primaryButtonLabel: 'Get Started',
+    primaryButtonUrl: null,
     secondaryButtonLabel: 'Learn More',
     layoutStyle: 'grid',
     contentPadding: 16.0,
+    gridColumns: 2,
+    showFooter: true,
+    metaTitle: null,
+    metaDescription: null,
   );
 
   static Widget configBuilder(Map<String, dynamic> config) {
@@ -163,7 +272,6 @@ class HomeScreenConfig
     final homeScreenConfig = HomeScreenConfigMapper.fromMap(mergedConfig);
     return HomeScreen(config: homeScreenConfig);
   }
-
 }
 
 class ColorMapper extends SimpleMapper<Color> {

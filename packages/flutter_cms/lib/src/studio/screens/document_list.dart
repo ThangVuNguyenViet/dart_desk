@@ -12,6 +12,7 @@ import '../../data/models/document_version.dart';
 import '../components/common/cms_status_pill.dart';
 import '../core/view_models/cms_view_model.dart';
 
+import '../components/common/cms_collapse_bar.dart';
 import '../providers/studio_provider.dart';
 import '../theme/spacing.dart';
 
@@ -175,13 +176,6 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                 ),
               ),
             ),
-            ShadIconButton.ghost(
-              onPressed: () {
-                final viewModel = cmsViewModelProvider.of(context);
-                viewModel.documentListVisible.value = false;
-              },
-              icon: const FaIcon(FontAwesomeIcons.anglesLeft, size: 14),
-            ),
             ShadIconButton.secondary(
               onPressed: () {
                 setState(() {
@@ -262,6 +256,12 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                     return _buildDocumentTile(context, theme, doc, viewModel);
                   },
                 ),
+        ),
+        CmsCollapseBar(
+          onToggle: () {
+            final viewModel = cmsViewModelProvider.of(context);
+            viewModel.documentListVisible.value = false;
+          },
         ),
       ],
     );

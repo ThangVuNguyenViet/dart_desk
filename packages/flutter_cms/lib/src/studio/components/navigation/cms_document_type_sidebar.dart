@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -7,6 +6,7 @@ import '../../providers/studio_provider.dart';
 import '../../routes/document_type_route.dart';
 import '../../routes/studio_coordinator.dart';
 import '../../theme/spacing.dart';
+import '../common/cms_collapse_bar.dart';
 import '../common/cms_document_type_decoration.dart';
 import '../common/cms_document_type_item.dart';
 
@@ -93,46 +93,10 @@ class CmsDocumentTypeSidebar extends StatelessWidget {
             ),
           ),
           if (footer != null && !isCollapsed) footer!,
-          // Collapse/expand button
-          GestureDetector(
-            onTap: () => viewModel.sidebarCollapsed.value = !isCollapsed,
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: Container(
-                padding: const EdgeInsets.all(CmsSpacing.sm),
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(
-                      color: theme.colorScheme.border.withValues(alpha: 0.5),
-                    ),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: isCollapsed
-                      ? MainAxisAlignment.center
-                      : MainAxisAlignment.start,
-                  children: [
-                    FaIcon(
-                      isCollapsed
-                          ? FontAwesomeIcons.anglesRight
-                          : FontAwesomeIcons.anglesLeft,
-                      size: 12,
-                      color: theme.colorScheme.mutedForeground,
-                    ),
-                    if (!isCollapsed) ...[
-                      const SizedBox(width: CmsSpacing.sm),
-                      Text(
-                        'Collapse',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: theme.colorScheme.mutedForeground,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ),
+          CmsCollapseBar(
+            isCollapsed: isCollapsed,
+            onToggle: () =>
+                viewModel.sidebarCollapsed.value = !isCollapsed,
           ),
         ],
       ),

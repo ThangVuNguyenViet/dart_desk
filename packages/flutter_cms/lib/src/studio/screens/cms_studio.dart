@@ -8,6 +8,7 @@ import '../core/view_models/cms_view_model.dart';
 import '../providers/studio_provider.dart';
 import '../routes/document_route.dart';
 import '../routes/studio_coordinator.dart';
+import '../components/common/cms_collapse_bar.dart';
 import '../theme/spacing.dart';
 import 'document_editor.dart';
 import 'document_list.dart';
@@ -270,7 +271,7 @@ class _CmsStudioState extends State<CmsStudio> {
                       CmsSpacing.md,
                       CmsSpacing.sm,
                       CmsSpacing.md,
-                      CmsSpacing.md,
+                      0,
                     ),
                     child: CmsDocumentListView(
                       selectedDocumentType: docType,
@@ -285,31 +286,28 @@ class _CmsStudioState extends State<CmsStudio> {
                     ),
                   ),
           ),
-          // Expand handle when document list is collapsed
+          // Collapsed document list rail (matching sidebar collapsed style)
           if (!isListVisible)
-            GestureDetector(
-              onTap: () => viewModel.documentListVisible.value = true,
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: Container(
-                  width: 24,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.card,
-                    border: Border(
-                      right: BorderSide(
-                        color:
-                            theme.colorScheme.border.withValues(alpha: 0.5),
-                      ),
-                    ),
-                  ),
-                  child: Center(
-                    child: FaIcon(
-                      FontAwesomeIcons.anglesRight,
-                      size: 12,
-                      color: theme.colorScheme.mutedForeground,
-                    ),
+            Container(
+              width: 48,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.card,
+                border: Border(
+                  right: BorderSide(
+                    color:
+                        theme.colorScheme.border.withValues(alpha: 0.5),
                   ),
                 ),
+              ),
+              child: Column(
+                children: [
+                  const Spacer(),
+                  CmsCollapseBar(
+                    isCollapsed: true,
+                    onToggle: () =>
+                        viewModel.documentListVisible.value = true,
+                  ),
+                ],
               ),
             ),
           // Editor + Preview split

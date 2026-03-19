@@ -161,20 +161,31 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
     final edited = editedData.watch(context);
     final hasUnsavedChanges = edited.isNotEmpty;
 
-    return Stack(
+    final theme = ShadTheme.of(context);
+
+    return Column(
       children: [
-        CmsForm(
-          fields: widget.fields,
-          data: Map<String, dynamic>.from(documentData),
-          title: widget.title,
-          onFieldChanged: (fieldName, value) => editedData[fieldName] = value,
+        Expanded(
+          child: CmsForm(
+            fields: widget.fields,
+            data: Map<String, dynamic>.from(documentData),
+            title: widget.title,
+            onFieldChanged: (fieldName, value) =>
+                editedData[fieldName] = value,
+          ),
         ),
         if (hasUnsavedChanges)
-          Positioned(
-            bottom: 16,
-            right: 16,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: theme.colorScheme.border,
+                ),
+              ),
+            ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 CmsButton(
                   text: 'Discard',
