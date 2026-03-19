@@ -54,4 +54,4 @@ export 'src/studio/theme/spacing.dart';
 export 'src/studio/components/common/cms_breadcrumbs.dart';
 export 'src/studio/components/common/cms_status_pill.dart';
 export 'src/studio/components/common/cms_theme_toggle.dart';
-export 'src/studio/components/common/cms_toolbar_ribbon.dart';
+export 'src/studio/components/common/cms_button.dart';
