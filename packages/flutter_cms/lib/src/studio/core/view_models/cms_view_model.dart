@@ -263,9 +263,12 @@ class CmsViewModel {
 
   Future<bool> deleteDocument(int documentId) async {
     final result = await dataSource.deleteDocument(documentId);
-    if (result && _documentViewModel.documentId.value == documentId) {
-      _documentViewModel.documentId.value = null;
-      selectedVersionId.value = null;
+    if (result) {
+      if (_documentViewModel.documentId.value == documentId) {
+        _documentViewModel.documentId.value = null;
+        selectedVersionId.value = null;
+      }
+      documentsContainer(queryParams.value).reload();
     }
     return result;
   }

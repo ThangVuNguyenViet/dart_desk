@@ -9,10 +9,6 @@
             "cwd": "examples/cms_app",
             "request": "launch",
             "type": "dart",
-            "args": [
-                "--web-port",
-                "60366"
-            ]
         },
         {
             "name": "CMS App (Chrome)",
@@ -21,7 +17,6 @@
             "program": "lib/main.dart",
             "deviceId": "chrome",
             "args": [
-                "--web-port=60366",
                 "--web-browser-flag=--user-data-dir=/tmp/flutter_cms_chrome_profile"
             ]
         },

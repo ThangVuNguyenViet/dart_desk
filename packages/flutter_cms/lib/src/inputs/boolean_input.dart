@@ -33,7 +33,12 @@ class _CmsBooleanInputState extends State<CmsBooleanInput> {
   @override
   void initState() {
     super.initState();
-    _value = widget.data?.value as bool? ?? false;
+    final raw = widget.data?.value;
+    _value = switch (raw) {
+      bool b => b,
+      'true' => true,
+      _ => false,
+    };
   }
 
   @override

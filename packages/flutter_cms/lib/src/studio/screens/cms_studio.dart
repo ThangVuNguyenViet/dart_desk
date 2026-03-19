@@ -74,11 +74,11 @@ class _CmsStudioState extends State<CmsStudio> {
     }
   }
 
-  Future<void> _deleteDocument(BuildContext context) async {
+  Future<void> _deleteDocument(BuildContext context, {int? docId}) async {
     final viewModel = cmsViewModelProvider.of(context);
     final documentViewModel = documentViewModelProvider.of(context);
     final toaster = ShadToaster.of(context);
-    final docId = documentViewModel.documentId.value;
+    docId ??= documentViewModel.documentId.value;
 
     if (docId == null) return;
 
@@ -166,6 +166,8 @@ class _CmsStudioState extends State<CmsStudio> {
                     DocumentRoute(docType.name, documentId),
                   );
                 },
+                onDeleteDocument: (docId) =>
+                    _deleteDocument(context, docId: docId),
               ),
             ),
     );
@@ -365,7 +367,6 @@ class _CmsStudioState extends State<CmsStudio> {
             isSaving: isSaving,
             onSave: () => _saveDocument(context),
             onDiscard: () => _discardDocument(context),
-            onDelete: () => _deleteDocument(context),
           ),
           // Main content area
           Expanded(

@@ -85,15 +85,22 @@ bash seed_data.sh
 ```
 Note the API token from output.
 
-- [ ] **Step 3: Launch Flutter app**
-```bash
-cd flutter_cms/examples/cms_app
-flutter run -d chrome --web-port=60366 --web-browser-flag="--user-data-dir=/tmp/flutter_cms_e2e_profile"
-```
-Note the VM service URI from output.
+- [ ] **Step 3: Launch Flutter app** (as Client A)
+Use `mcp__dart__launch_app` with:
+- `root`: `flutter_cms/examples/cms_app`
+- `device`: `chrome`
+- `target`: `lib/main_e2e.dart`
+
+Defaults (server=localhost:8080, client=e2e-client-a, token) are baked into `main_e2e.dart` — no `--dart-define` needed.
 
 - [ ] **Step 4: Connect marionette**
 Use `mcp__marionette__connect` with the VM service URI.
+
+- [ ] **Step 5: Sign in via marionette**
+The app launches to the sign-in screen. The E2E agent must sign in using marionette:
+1. Use `enter_text` to type `thangvnv0806@gmail.com` into the Email field
+2. Use `enter_text` to type `1234567890` into the Password field
+3. Use `tap` to tap "Sign in with email"
 
 ### Task 3: Run E2E Test Specs (Sequential)
 
@@ -210,9 +217,9 @@ After fixing, notify e2e-test-runner to hot-reload and re-test.
      └─────────────────────────────────────┘
            │                            │
            ▼                            ▼
-┌──────────────────────┐    ┌──────────────────────┐
-│  Re-run backend tests│    │  Hot-reload + re-test │
-└──────────────────────┘    └──────────────────────┘
+┌──────────────────────┐    ┌────────────────────────┐
+│  Re-run backend tests│    │  Hot-restart + re-test │
+└──────────────────────┘    └────────────────────────┘
 ```
 
 **Parallelism:** Backend tests (Phase 1) and E2E setup+tests (Phase 2) can run in parallel. Bug fixing (Phase 3) happens as failures are reported — doesn't need to wait for all tests to complete.

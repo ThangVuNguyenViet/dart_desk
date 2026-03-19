@@ -27,7 +27,7 @@ void main() {
 
 2. Run the test app in debug mode:
 ```bash
-flutter run -d chrome --web-port=60366
+flutter run -d chrome
 ```
 
 3. In Claude Code, connect marionette to the app's VM service URI

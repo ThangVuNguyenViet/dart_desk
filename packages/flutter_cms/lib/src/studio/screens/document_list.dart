@@ -21,6 +21,7 @@ class CmsDocumentListView extends StatefulWidget {
   final IconData? icon;
   final String? filter;
   final void Function(String documentId)? onOpenDocument;
+  final void Function(int documentId)? onDeleteDocument;
 
   const CmsDocumentListView({
     super.key,
@@ -28,6 +29,7 @@ class CmsDocumentListView extends StatefulWidget {
     this.icon,
     this.filter,
     this.onOpenDocument,
+    this.onDeleteDocument,
   });
 
   @override
@@ -424,7 +426,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title + status pill row
+              // Title + status pill + menu row
               Row(
                 children: [
                   Expanded(
@@ -444,6 +446,48 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                     _DocumentStatusPill(
                       documentId: doc.id!,
                       viewModel: viewModel,
+                    ),
+                  if (doc.id != null && widget.onDeleteDocument != null)
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: PopupMenuButton<String>(
+                        key: ValueKey('document_menu_${doc.id}'),
+                        padding: EdgeInsets.zero,
+                        iconSize: 14,
+                        icon: const FaIcon(
+                          FontAwesomeIcons.ellipsisVertical,
+                          size: 12,
+                        ),
+                        onSelected: (value) {
+                          if (value == 'delete') {
+                            widget.onDeleteDocument!(doc.id!);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem<String>(
+                            key: const ValueKey('delete_document_button'),
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                FaIcon(
+                                  FontAwesomeIcons.trashCan,
+                                  size: 12,
+                                  color: theme.colorScheme.destructive,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Delete',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.destructive,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                 ],
               ),

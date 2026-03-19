@@ -28,11 +28,9 @@ Before running tests, ensure the E2E environment is up:
    ./test_e2e/setup/seed_data.sh
    ```
 
-4. Launch the Flutter app with CloudDataSource:
-   ```bash
-   cd examples/cms_app && flutter run -d chrome --web-port=60366 --web-browser-flag="--user-data-dir=/tmp/flutter_cms_e2e_chrome_profile"
-   ```
-   Ensure `main.dart` is configured to use `CloudDataSource` with the test server URL and seeded API token.
+4. Launch the Flutter app via Dart MCP:
+   Use `mcp__dart__launch_app` with root=`examples/cms_app`, device=`chrome`, target=`lib/main_e2e.dart`.
+   Defaults (server, client ID, API token) are baked into `main_e2e.dart`.
 
 5. Connect Marionette to the Flutter VM service URI.
 
