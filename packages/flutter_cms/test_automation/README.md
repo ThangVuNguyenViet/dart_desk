@@ -25,10 +25,7 @@ void main() {
 }
 ```
 
-2. Run the test app in debug mode:
-```bash
-flutter run -d chrome
-```
+2. Run the test app in debug mode using dart MCP tools (`mcp__dart__launch_app`).
 
 3. In Claude Code, connect marionette to the app's VM service URI
 

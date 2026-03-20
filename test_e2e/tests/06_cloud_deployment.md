@@ -68,11 +68,54 @@
 **Expected:**
 - Build completes without errors
 - CLI deploy output contains "Deployed v1" (or similar success message)
-- Output includes the URL `e2e-deploy-test.dartdesk.dev`
+- Output includes the URL `http://localhost:8082/preview/e2e-deploy-test/`
 
-## Phase 3: Manage App — Verify Deployments Tab
+## Phase 3: Preview Route Verification
 
-### TC-E2E-06-05: Verify deployment appears in manage app
+### TC-E2E-06-05: Preview route serves index.html with rewritten base href
+**Steps:**
+1. Run: `curl -s http://localhost:8082/preview/e2e-deploy-test/`
+2. Inspect the response body
+
+**Expected:**
+- HTTP 200
+- Response contains `<base href="/preview/e2e-deploy-test/">`
+- Response does NOT contain `<base href="/">`
+- Response is valid HTML containing Flutter web bootstrap (`flutter_service_worker.js` or `main.dart.js` reference)
+
+### TC-E2E-06-06: Preview route serves static assets
+**Steps:**
+1. Run: `curl -sI http://localhost:8082/preview/e2e-deploy-test/main.dart.js`
+2. Run: `curl -sI http://localhost:8082/preview/e2e-deploy-test/flutter_service_worker.js`
+
+**Expected:**
+- Both return HTTP 200
+- `main.dart.js` response has `content-type: application/javascript` (or similar JS MIME type)
+- Assets are served verbatim (no base href rewriting on non-HTML files)
+
+### TC-E2E-06-07: Preview route SPA fallback serves rewritten index.html
+**Steps:**
+1. Run: `curl -s http://localhost:8082/preview/e2e-deploy-test/some/deep/route`
+2. Inspect the response body
+
+**Expected:**
+- HTTP 200 (not 404)
+- Response contains `<base href="/preview/e2e-deploy-test/">`
+- Response is the same rewritten index.html (SPA fallback)
+
+### TC-E2E-06-08: Preview route returns 404 for nonexistent slug
+**Steps:**
+1. Run: `curl -s http://localhost:8082/preview/nonexistent-slug/`
+2. Inspect the response body
+
+**Expected:**
+- HTTP 404
+- Response contains "Studio Not Found"
+- Response contains "nonexistent-slug"
+
+## Phase 4: Manage App — Verify Deployments Tab
+
+### TC-E2E-06-09: Verify deployment appears in manage app
 **Steps:**
 1. Switch back to the manage app browser tab
 2. Tap "Deployments" tab
@@ -82,38 +125,47 @@
    - "active" status badge
    - "Current" text (indicating it's the active deployment)
 5. Verify "Activate" button is NOT present (current deployment doesn't need activation)
-6. Verify "Open Live Site" button is present and contains `e2e-deploy-test.dartdesk.dev`
+6. Verify "Open Live Site" button is present
 7. Take a screenshot
 
 **Expected:**
 - Deployments table shows exactly one row with version "v1"
 - Status is "active" and shows "Current" label
-- "Open Live Site" button URL matches the project slug
+- "Open Live Site" button opens `http://localhost:8082/preview/e2e-deploy-test/`
 
-## Phase 4: Manage App — Verify Open Studio URL
+## Phase 5: Manage App — Verify Open Studio URL
 
-### TC-E2E-06-06: Verify Open Studio URL on overview
+### TC-E2E-06-10: Verify Open Studio URL on overview
 **Steps:**
 1. Tap "Overview" tab
-2. Use `get_interactive_elements` to find the "Open Studio" button
-3. Verify the button text contains `e2e-deploy-test.dartdesk.dev`
-4. Take a screenshot
+2. Use `get_interactive_elements` to find the "Open Studio" button in the quick links section
+3. Take a screenshot
 
 **Expected:**
-- Open Studio button shows the correct URL for the project slug
-- URL format is `e2e-deploy-test.dartdesk.dev`
+- "Open Studio" button is present
+- Clicking it would open `http://localhost:8082/preview/e2e-deploy-test/`
 
-## Phase 5: Deploy v2 + Verify Rollback
+### TC-E2E-06-11: Verify Open Studio URL in top bar
+**Steps:**
+1. Use `get_interactive_elements` to find the "Open Studio" button in the top navigation bar
+2. Take a screenshot
 
-### TC-E2E-06-07: Deploy v2 via CLI
+**Expected:**
+- Top bar "Open Studio" button is present
+- Clicking it would open `http://localhost:8082/preview/e2e-deploy-test/`
+
+## Phase 6: Deploy v2 + Verify Rollback
+
+### TC-E2E-06-12: Deploy v2 via CLI
 **Steps:**
 1. Run CLI deploy again: `cd flutter_cms/examples/cms_app && dart run flutter_cms_cli deploy --token {captured_token} --skip-build`
 2. Capture stdout
 
 **Expected:**
 - CLI deploy output contains "Deployed v2" (or similar success for version 2)
+- Output includes the URL `http://localhost:8082/preview/e2e-deploy-test/`
 
-### TC-E2E-06-08: Verify v2 is active and v1 can be rolled back
+### TC-E2E-06-13: Verify v2 is active and v1 can be rolled back
 **Steps:**
 1. Switch to manage app
 2. Tap "Deployments" tab (or refresh if already there)
@@ -128,7 +180,7 @@
 - v1 has an "Activate" button for rollback
 - v2 does NOT have an "Activate" button (it's current)
 
-### TC-E2E-06-09: Rollback to v1
+### TC-E2E-06-14: Rollback to v1
 **Steps:**
 1. Tap "Activate" on the v1 row
 2. Wait for the activation to complete
@@ -141,3 +193,13 @@
 - v1 successfully activated (rolled back)
 - v2 becomes inactive
 - The active deployment version changed from v2 to v1
+
+### TC-E2E-06-15: Verify preview route serves rolled-back version
+**Steps:**
+1. Run: `curl -s http://localhost:8082/preview/e2e-deploy-test/`
+2. Inspect the response body
+
+**Expected:**
+- HTTP 200
+- Response contains `<base href="/preview/e2e-deploy-test/">`
+- Preview route serves the v1 deployment (rollback took effect)

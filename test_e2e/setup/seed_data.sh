@@ -53,6 +53,11 @@ E2E_PWD_HASH='$2b$10$E6ICM474gY5FtSV2mLwaK.qLuz1F9RfVWEgzjT.oeDKdPDjUM3TJS'
 
 docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
   psql -U postgres -d flutter_cms_be -c "
+    -- Seed Serverpod core auth user first (FK parent)
+    INSERT INTO serverpod_auth_core_user (id, \"createdAt\", \"scopeNames\", blocked)
+    VALUES ('$E2E_AUTH_USER_ID', NOW(), '[]', false)
+    ON CONFLICT (id) DO NOTHING;
+
     -- Seed Serverpod auth email account for E2E manage app login
     INSERT INTO serverpod_auth_idp_email_account (\"authUserId\", \"createdAt\", email, \"passwordHash\")
     VALUES ('$E2E_AUTH_USER_ID', NOW(), 'e2e@dartdesk.dev', '$E2E_PWD_HASH')

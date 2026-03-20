@@ -17,9 +17,8 @@ End-to-end integration tests for the Flutter CMS app against a real Serverpod ba
 ./setup/server_manager.sh start
 ./setup/seed_data.sh
 
-# 2. Launch the Flutter E2E app
-cd ../../examples/cms_app
-flutter run -d chrome -t lib/main_e2e.dart
+# 2. Launch the Flutter E2E app via dart MCP
+#    Use mcp__dart__launch_app to launch examples/cms_app with target lib/main_e2e.dart
 
 # 3. Run tests via Claude Code:
 #    "run E2E tests"
