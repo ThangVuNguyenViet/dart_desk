@@ -1,7 +1,12 @@
 name: dart_desk_annotation
-description: "Annotations for Dart Desk code generation"
-publish_to: 'none'
+description: Annotations and field definitions for the Dart Desk CMS framework.
 version: 0.1.0
+homepage: https://github.com/vietthangvunguyen/dart_desk
+repository: https://github.com/vietthangvunguyen/dart_desk
+topics:
+  - cms
+  - annotations
+  - flutter
 
 environment:
   sdk: ^3.8.0
