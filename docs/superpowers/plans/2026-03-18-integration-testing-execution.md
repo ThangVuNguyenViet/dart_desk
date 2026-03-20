@@ -34,14 +34,14 @@
 
 - [ ] **Step 1: Start Docker test services**
 ```bash
-cd flutter_cms_be/flutter_cms_be_server
+cd dart_desk_be/dart_desk_be_server
 docker compose up -d postgres_test redis_test
 until docker compose exec -T postgres_test pg_isready -U postgres; do sleep 1; done
 ```
 
 - [ ] **Step 2: Run all integration tests**
 ```bash
-cd flutter_cms_be/flutter_cms_be_server
+cd dart_desk_be/dart_desk_be_server
 dart test test/integration/ --tags integration --concurrency=1
 ```
 
@@ -74,7 +74,7 @@ If failures → send each failure to **bug-fixer** agent with:
 
 - [ ] **Step 1: Start Docker + backend server**
 ```bash
-cd flutter_cms/test_e2e/setup
+cd dart_desk/test_e2e/setup
 bash docker_manager.sh up
 bash server_manager.sh start
 ```
@@ -87,7 +87,7 @@ Note the API token from output.
 
 - [ ] **Step 3: Launch Flutter app** (as Client A)
 Use `mcp__dart__launch_app` with:
-- `root`: `flutter_cms/examples/cms_app`
+- `root`: `dart_desk/examples/cms_app`
 - `device`: `chrome`
 - `target`: `lib/main_e2e.dart`
 
@@ -147,7 +147,7 @@ If failures → send each failure to **bug-fixer** agent with:
 - [ ] **Step 1: Stop Flutter app**
 - [ ] **Step 2: Stop server**
 ```bash
-cd flutter_cms/test_e2e/setup
+cd dart_desk/test_e2e/setup
 bash server_manager.sh stop
 ```
 - [ ] **Step 3: Clean up test data** (truncates documents, versions, CRDT data, media — preserves clients, users, tokens)

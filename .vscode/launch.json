@@ -17,7 +17,7 @@
             "program": "lib/main.dart",
             "deviceId": "chrome",
             "args": [
-                "--web-browser-flag=--user-data-dir=/tmp/flutter_cms_chrome_profile"
+                "--web-browser-flag=--user-data-dir=/tmp/dart_desk_chrome_profile"
             ]
         },
         {

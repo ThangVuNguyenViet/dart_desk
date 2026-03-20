@@ -1,4 +1,4 @@
-name: flutter_cms_workspace
+name: dart_desk_workspace
 description: "Flutter CMS monorepo workspace"
 publish_to: 'none'
 version: 0.1.0
@@ -8,9 +8,9 @@ environment:
 
 # Workspace configuration
 workspace:
-  - packages/flutter_cms
-  - packages/flutter_cms_annotation
-  - packages/flutter_cms_generator
+  - packages/dart_desk
+  - packages/dart_desk_annotation
+  - packages/dart_desk_generator
 
 dependencies: 
   collection: ^1.19.1

@@ -2,11 +2,11 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-BACKEND_DIR="$SCRIPT_DIR/../../../flutter_cms_be/flutter_cms_be_server"
+BACKEND_DIR="$SCRIPT_DIR/../../../dart_desk_be/dart_desk_be_server"
 
 if [ ! -f "$BACKEND_DIR/docker-compose.yaml" ]; then
   echo "ERROR: Backend docker-compose.yaml not found at $BACKEND_DIR"
-  echo "Expected workspace layout: flutter_cms_workspace/{flutter_cms, flutter_cms_be}"
+  echo "Expected workspace layout: dart_desk_workspace/{dart_desk, dart_desk_be}"
   exit 1
 fi
 
@@ -40,7 +40,7 @@ case "$1" in
     # Truncate document/version/media tables, preserve client/user/token tables.
     # Order matters: child tables first due to foreign key constraints.
     docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
-      psql -U postgres -d flutter_cms_be -c "
+      psql -U postgres -d dart_desk_be -c "
         TRUNCATE
           document_crdt_operations,
           document_crdt_snapshots,

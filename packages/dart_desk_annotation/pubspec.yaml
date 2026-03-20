@@ -1,0 +1,14 @@
+name: dart_desk_annotation
+description: "Annotations for Flutter CMS code generation"
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.8.0
+resolution: workspace
+
+dependencies:
+  meta: ^1.9.1
+  flutter:
+    sdk: flutter
+  form_builder_validators: ^11.2.0

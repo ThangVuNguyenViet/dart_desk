@@ -1,0 +1,9 @@
+builders:
+  cmsBuilder:
+    target: ":dart_desk_generator"
+    import: "package:dart_desk_generator/dart_desk_generator.dart"
+    builder_factories: ["cmsBuilder"]
+    build_extensions: {".dart": [".cms.g.dart"]}
+    auto_apply: dependents
+    build_to: source
+    applies_builders: ["source_gen|combining_builder"]

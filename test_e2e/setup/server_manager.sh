@@ -2,8 +2,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-BACKEND_DIR="$SCRIPT_DIR/../../../flutter_cms_be/flutter_cms_be_server"
-PID_FILE="/tmp/flutter_cms_e2e_server.pid"
+BACKEND_DIR="$SCRIPT_DIR/../../../dart_desk_be/dart_desk_be_server"
+PID_FILE="/tmp/dart_desk_e2e_server.pid"
 
 if [ ! -f "$BACKEND_DIR/bin/main.dart" ]; then
   echo "ERROR: Backend main.dart not found at $BACKEND_DIR"

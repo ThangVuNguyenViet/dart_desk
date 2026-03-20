@@ -30,8 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_cms:
-    path: ../../packages/flutter_cms
+  dart_desk:
+    path: ../../packages/dart_desk
   example_app:
     path: ../example_app
   data_models:
@@ -47,8 +47,8 @@ dependencies:
   serverpod_flutter: ^3.3.1
 
   # Cloud data source
-  flutter_cms_be_client:
-    path: ../../../flutter_cms_be/flutter_cms_be_client
+  dart_desk_be_client:
+    path: ../../../dart_desk_be/dart_desk_be_client
   marionette_flutter:
     path: ../../../../marionette_mcp/packages/marionette_flutter
 

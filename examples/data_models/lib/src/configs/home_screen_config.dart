@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:example_app/screens/homes_creen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cms_annotation/flutter_cms_annotation.dart';
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 part 'home_screen_config.cms.g.dart';

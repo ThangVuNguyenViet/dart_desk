@@ -2,28 +2,28 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Rename the entire flutter_cms workspace to dart_desk, update all references, scrub credentials from the public repo, and update GitHub repos.
+**Goal:** Rename the entire dart_desk workspace to dart_desk, update all references, scrub credentials from the public repo, and update GitHub repos.
 
-**Architecture:** Mechanical find-and-replace across 3 git repos + 1 new repo. Rename directories bottom-up (inner first), then do text replacements, then GitHub operations. The `flutter_cms_be_flutter` subproject becomes `dart_desk_admin` (intentionally asymmetric).
+**Architecture:** Mechanical find-and-replace across 3 git repos + 1 new repo. Rename directories bottom-up (inner first), then do text replacements, then GitHub operations. The `dart_desk_admin` subproject becomes `dart_desk_admin` (intentionally asymmetric).
 
 **Tech Stack:** Dart/Flutter, Serverpod, GitHub CLI, git
 
 **Important rename mappings:**
-- `flutter_cms` → `dart_desk` (package and repo)
-- `flutter_cms_annotation` → `dart_desk_annotation`
-- `flutter_cms_generator` → `dart_desk_generator`
-- `flutter_cms_be` → `dart_desk_be` (repo)
-- `flutter_cms_be_server` → `dart_desk_be_server`
-- `flutter_cms_be_client` → `dart_desk_be_client`
-- `flutter_cms_be_flutter` → `dart_desk_admin`
-- `flutter_cms_manage` → `dart_desk_manage`
-- `flutter_cms_cli` → `dart_desk_cli`
-- `flutter_cms_workspace` → `dart_desk_workspace`
-- CLI executable: `flutter_cms` → `dart_desk`
+- `dart_desk` → `dart_desk` (package and repo)
+- `dart_desk_annotation` → `dart_desk_annotation`
+- `dart_desk_generator` → `dart_desk_generator`
+- `dart_desk_be` → `dart_desk_be` (repo)
+- `dart_desk_be_server` → `dart_desk_be_server`
+- `dart_desk_be_client` → `dart_desk_be_client`
+- `dart_desk_admin` → `dart_desk_admin`
+- `dart_desk_manage` → `dart_desk_manage`
+- `dart_desk_cli` → `dart_desk_cli`
+- `dart_desk_workspace` → `dart_desk_workspace`
+- CLI executable: `dart_desk` → `dart_desk`
 
 ---
 
-### Task 1: Credential scrub in flutter_cms (public repo)
+### Task 1: Credential scrub in dart_desk (public repo)
 
 Remove any credential or seed data references before they get carried into the renamed repo.
 
@@ -36,7 +36,7 @@ Remove any credential or seed data references before they get carried into the r
 
 - [ ] **Step 1: Find all credential references**
 
-Run: `grep -rn "thangvnv0806\|1234567890" --include="*.md" --include="*.sh" --include="*.dart" --include="*.yaml" .` (in flutter_cms dir, excluding .git)
+Run: `grep -rn "thangvnv0806\|1234567890" --include="*.md" --include="*.sh" --include="*.dart" --include="*.yaml" .` (in dart_desk dir, excluding .git)
 
 - [ ] **Step 2: Replace credentials with placeholders**
 
@@ -59,131 +59,131 @@ git commit -m "chore: scrub credentials from public repo"
 
 ---
 
-### Task 2: Text replacements in flutter_cms repo
+### Task 2: Text replacements in dart_desk repo
 
 Do all string replacements BEFORE renaming directories (so paths are still valid).
 
-**Files:** All ~69 files listed in the exploration that contain `flutter_cms` references.
+**Files:** All ~69 files listed in the exploration that contain `dart_desk` references.
 
 - [ ] **Step 1: Replace package/import references (order matters — longest match first)**
 
-In the flutter_cms repo, perform these replacements across ALL files (excluding .git):
-1. `flutter_cms_be_flutter` → `dart_desk_admin`
-2. `flutter_cms_be_server` → `dart_desk_be_server`
-3. `flutter_cms_be_client` → `dart_desk_be_client`
-4. `flutter_cms_annotation` → `dart_desk_annotation`
-5. `flutter_cms_generator` → `dart_desk_generator`
-6. `flutter_cms_workspace` → `dart_desk_workspace`
-7. `flutter_cms_manage` → `dart_desk_manage`
-8. `flutter_cms_cli` → `dart_desk_cli`
-9. `flutter_cms_be` → `dart_desk_be`
-10. `flutter_cms` → `dart_desk` (catches remaining — package imports, etc.)
+In the dart_desk repo, perform these replacements across ALL files (excluding .git):
+1. `dart_desk_admin` → `dart_desk_admin`
+2. `dart_desk_be_server` → `dart_desk_be_server`
+3. `dart_desk_be_client` → `dart_desk_be_client`
+4. `dart_desk_annotation` → `dart_desk_annotation`
+5. `dart_desk_generator` → `dart_desk_generator`
+6. `dart_desk_workspace` → `dart_desk_workspace`
+7. `dart_desk_manage` → `dart_desk_manage`
+8. `dart_desk_cli` → `dart_desk_cli`
+9. `dart_desk_be` → `dart_desk_be`
+10. `dart_desk` → `dart_desk` (catches remaining — package imports, etc.)
 
-Use `find . -not -path './.git/*' -type f | xargs sed -i '' 's/flutter_cms_be_flutter/dart_desk_admin/g'` etc.
+Use `find . -not -path './.git/*' -type f | xargs sed -i '' 's/dart_desk_admin/dart_desk_admin/g'` etc.
 
-IMPORTANT: Do replacements in this exact order to avoid partial matches (e.g., replacing `flutter_cms` before `flutter_cms_be` would produce `dart_desk_be` instead of `dart_desk_be`).
+IMPORTANT: Do replacements in this exact order to avoid partial matches (e.g., replacing `dart_desk` before `dart_desk_be` would produce `dart_desk_be` instead of `dart_desk_be`).
 
-- [ ] **Step 2: Rename files that contain flutter_cms in their name**
+- [ ] **Step 2: Rename files that contain dart_desk in their name**
 
 ```bash
 # In packages/
-mv packages/flutter_cms packages/dart_desk
-mv packages/flutter_cms_annotation packages/dart_desk_annotation
-mv packages/flutter_cms_generator packages/dart_desk_generator
+mv packages/dart_desk packages/dart_desk
+mv packages/dart_desk_annotation packages/dart_desk_annotation
+mv packages/dart_desk_generator packages/dart_desk_generator
 
 # Rename library files
-mv packages/dart_desk/lib/flutter_cms.dart packages/dart_desk/lib/dart_desk.dart
-mv packages/dart_desk_annotation/lib/flutter_cms_annotation.dart packages/dart_desk_annotation/lib/dart_desk_annotation.dart
-mv packages/dart_desk_generator/lib/flutter_cms_generator.dart packages/dart_desk_generator/lib/dart_desk_generator.dart
+mv packages/dart_desk/lib/dart_desk.dart packages/dart_desk/lib/dart_desk.dart
+mv packages/dart_desk_annotation/lib/dart_desk_annotation.dart packages/dart_desk_annotation/lib/dart_desk_annotation.dart
+mv packages/dart_desk_generator/lib/dart_desk_generator.dart packages/dart_desk_generator/lib/dart_desk_generator.dart
 
 # Rename example config
-mv examples/cms_app/flutter_cms.yaml examples/cms_app/dart_desk.yaml
+mv examples/cms_app/dart_desk.yaml examples/cms_app/dart_desk.yaml
 
-# Rename CLI entry point (in flutter_cms_cli — handled in Task 5)
+# Rename CLI entry point (in dart_desk_cli — handled in Task 5)
 ```
 
-- [ ] **Step 3: Verify no flutter_cms references remain**
+- [ ] **Step 3: Verify no dart_desk references remain**
 
-Run: `grep -rn "flutter_cms" --include="*.dart" --include="*.yaml" --include="*.md" --include="*.json" --include="*.sh" . | grep -v ".git/"`
+Run: `grep -rn "dart_desk" --include="*.dart" --include="*.yaml" --include="*.md" --include="*.json" --include="*.sh" . | grep -v ".git/"`
 Expected: zero matches (or only in lock files which will regenerate)
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add -A
-git commit -m "chore: rename flutter_cms to dart_desk in all source files"
+git commit -m "chore: rename dart_desk to dart_desk in all source files"
 ```
 
 ---
 
-### Task 3: Text replacements in flutter_cms_be repo
+### Task 3: Text replacements in dart_desk_be repo
 
-**Files:** All ~156 files containing flutter_cms references in the backend repo.
+**Files:** All ~156 files containing dart_desk references in the backend repo.
 
 - [ ] **Step 1: Replace all text references (longest match first)**
 
-Same replacement order as Task 2, applied across the entire flutter_cms_be directory (excluding .git).
+Same replacement order as Task 2, applied across the entire dart_desk_be directory (excluding .git).
 
 - [ ] **Step 2: Rename directories**
 
 ```bash
-cd /Users/vietthangvunguyen/Workspace/flutter_cms_workspace/flutter_cms_be
-mv flutter_cms_be_flutter dart_desk_admin
-mv flutter_cms_be_server dart_desk_be_server
-mv flutter_cms_be_client dart_desk_be_client
-mv flutter_cms_manage dart_desk_manage
+cd /Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be
+mv dart_desk_admin dart_desk_admin
+mv dart_desk_be_server dart_desk_be_server
+mv dart_desk_be_client dart_desk_be_client
+mv dart_desk_manage dart_desk_manage
 ```
 
 - [ ] **Step 3: Rename library/entry files inside those dirs**
 
 ```bash
-mv dart_desk_be_client/lib/flutter_cms_be_client.dart dart_desk_be_client/lib/dart_desk_be_client.dart
-mv dart_desk_be_client/lib/src/flutter_cms_auth.dart dart_desk_be_client/lib/src/dart_desk_auth.dart
-# Rename any other files with flutter_cms in their name
+mv dart_desk_be_client/lib/dart_desk_be_client.dart dart_desk_be_client/lib/dart_desk_be_client.dart
+mv dart_desk_be_client/lib/src/dart_desk_auth.dart dart_desk_be_client/lib/src/dart_desk_auth.dart
+# Rename any other files with dart_desk in their name
 ```
 
-- [ ] **Step 4: Verify no flutter_cms references remain**
+- [ ] **Step 4: Verify no dart_desk references remain**
 
-Run: `grep -rn "flutter_cms" --include="*.dart" --include="*.yaml" --include="*.yml" --include="*.md" --include="*.json" --include="*.sh" --include="*.tf" . | grep -v ".git/" | grep -v "migration"`
+Run: `grep -rn "dart_desk" --include="*.dart" --include="*.yaml" --include="*.yml" --include="*.md" --include="*.json" --include="*.sh" --include="*.tf" . | grep -v ".git/" | grep -v "migration"`
 Expected: zero matches (migrations may still have old names — that's OK, they're historical)
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add -A
-git commit -m "chore: rename flutter_cms_be to dart_desk_be in all source files"
+git commit -m "chore: rename dart_desk_be to dart_desk_be in all source files"
 ```
 
 ---
 
-### Task 4: Text replacements in flutter_cms_cli
+### Task 4: Text replacements in dart_desk_cli
 
 **Files:** All 13 files in the CLI project.
 
 - [ ] **Step 1: Replace all text references**
 
-Same replacement order. Also rename the executable in pubspec.yaml from `flutter_cms` to `dart_desk`.
+Same replacement order. Also rename the executable in pubspec.yaml from `dart_desk` to `dart_desk`.
 
 - [ ] **Step 2: Rename files**
 
 ```bash
-cd /Users/vietthangvunguyen/Workspace/flutter_cms_workspace/flutter_cms_cli
-mv bin/flutter_cms.dart bin/dart_desk.dart
-mv lib/flutter_cms_cli.dart lib/dart_desk_cli.dart
+cd /Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_cli
+mv bin/dart_desk.dart bin/dart_desk.dart
+mv lib/dart_desk_cli.dart lib/dart_desk_cli.dart
 ```
 
 - [ ] **Step 3: Verify**
 
-Run: `grep -rn "flutter_cms" . | grep -v ".git/"`
+Run: `grep -rn "dart_desk" . | grep -v ".git/"`
 Expected: zero matches
 
 - [ ] **Step 4: Init git and commit**
 
 ```bash
-cd /Users/vietthangvunguyen/Workspace/flutter_cms_workspace/flutter_cms_cli
+cd /Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_cli
 git init
 git add -A
-git commit -m "chore: rename flutter_cms_cli to dart_desk_cli"
+git commit -m "chore: rename dart_desk_cli to dart_desk_cli"
 ```
 
 ---
@@ -192,25 +192,25 @@ git commit -m "chore: rename flutter_cms_cli to dart_desk_cli"
 
 - [ ] **Step 1: Update workspace CLAUDE.md**
 
-Replace all `flutter_cms` references with `dart_desk` equivalents in `/Users/vietthangvunguyen/Workspace/flutter_cms_workspace/CLAUDE.md`.
+Replace all `dart_desk` references with `dart_desk` equivalents in `/Users/vietthangvunguyen/Workspace/dart_desk_workspace/CLAUDE.md`.
 
 - [ ] **Step 2: Update and rename .code-workspace file**
 
-Update internal folder paths in `flutter_cms.code-workspace`, then rename to `dart_desk.code-workspace`.
+Update internal folder paths in `dart_desk.code-workspace`, then rename to `dart_desk.code-workspace`.
 
 - [ ] **Step 3: Rename project directories**
 
 ```bash
-cd /Users/vietthangvunguyen/Workspace/flutter_cms_workspace
-mv flutter_cms dart_desk
-mv flutter_cms_be dart_desk_be
-mv flutter_cms_cli dart_desk_cli
+cd /Users/vietthangvunguyen/Workspace/dart_desk_workspace
+mv dart_desk dart_desk
+mv dart_desk_be dart_desk_be
+mv dart_desk_cli dart_desk_cli
 ```
 
 - [ ] **Step 4: Rename workspace directory itself**
 
 ```bash
-mv /Users/vietthangvunguyen/Workspace/flutter_cms_workspace /Users/vietthangvunguyen/Workspace/dart_desk_workspace
+mv /Users/vietthangvunguyen/Workspace/dart_desk_workspace /Users/vietthangvunguyen/Workspace/dart_desk_workspace
 ```
 
 ---
@@ -220,8 +220,8 @@ mv /Users/vietthangvunguyen/Workspace/flutter_cms_workspace /Users/vietthangvung
 - [ ] **Step 1: Rename repos**
 
 ```bash
-gh repo rename dart_desk --repo ThangVuNguyenViet/flutter_cms --yes
-gh repo rename dart_desk_be --repo ThangVuNguyenViet/flutter_cms_be --yes
+gh repo rename dart_desk --repo ThangVuNguyenViet/dart_desk --yes
+gh repo rename dart_desk_be --repo ThangVuNguyenViet/dart_desk_be --yes
 ```
 
 - [ ] **Step 2: Update git remotes**
@@ -260,16 +260,16 @@ git push
 - [ ] **Step 1: Copy memory to new project paths**
 
 The active memory directory is at:
-`~/.claude/projects/-Users-vietthangvunguyen-Workspace-flutter_cms_workspace-flutter_cms/memory/`
+`~/.claude/projects/-Users-vietthangvunguyen-Workspace-dart_desk_workspace-dart_desk/memory/`
 
 Create new directory matching new path and copy memory files, updating content:
 `~/.claude/projects/-Users-vietthangvunguyen-Workspace-dart_desk_workspace-dart_desk/memory/`
 
-Update all `flutter_cms` references in memory file content to `dart_desk`.
+Update all `dart_desk` references in memory file content to `dart_desk`.
 
 - [ ] **Step 2: Update other project directories**
 
-For each `.claude/projects/` directory referencing flutter_cms:
+For each `.claude/projects/` directory referencing dart_desk:
 - Create equivalent with dart_desk path
 - Copy and update any settings/memory files
 - Old directories can be left (Claude Code will ignore them) or removed
@@ -283,9 +283,9 @@ Expected: new directories exist with updated memory files
 
 ### Task 8: Final verification
 
-- [ ] **Step 1: Grep entire workspace for flutter_cms**
+- [ ] **Step 1: Grep entire workspace for dart_desk**
 
-Run: `grep -rn "flutter_cms" /Users/vietthangvunguyen/Workspace/dart_desk_workspace/ --include="*.dart" --include="*.yaml" --include="*.yml" --include="*.md" --include="*.json" --include="*.sh" --include="*.tf" | grep -v ".git/" | grep -v "serverpod_fork" | grep -v "migration" | grep -v ".lock"`
+Run: `grep -rn "dart_desk" /Users/vietthangvunguyen/Workspace/dart_desk_workspace/ --include="*.dart" --include="*.yaml" --include="*.yml" --include="*.md" --include="*.json" --include="*.sh" --include="*.tf" | grep -v ".git/" | grep -v "serverpod_fork" | grep -v "migration" | grep -v ".lock"`
 Expected: zero matches
 
 - [ ] **Step 2: Grep public repo for credentials**

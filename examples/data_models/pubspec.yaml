@@ -13,8 +13,8 @@ dependencies:
     path: ../example_app
   flutter:
     sdk: flutter
-  flutter_cms_annotation:
-    path: ../../packages/flutter_cms_annotation
+  dart_desk_annotation:
+    path: ../../packages/dart_desk_annotation
   dart_mappable: ^4.6.1
   shadcn_ui: ^0.52.1
 

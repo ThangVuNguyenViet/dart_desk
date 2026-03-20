@@ -5,7 +5,7 @@
 - Seed data applied (including manage app auth user: `e2e@dartdesk.dev` / `e2e-password-123`)
 - Manage app launched in Chrome pointed at localhost:8080
 - Marionette connected to manage app's VM service
-- `flutter_cms.yaml` present in `flutter_cms/examples/cms_app/` (slug: `e2e-deploy-test`, server: `http://localhost:8080`)
+- `dart_desk.yaml` present in `dart_desk/examples/cms_app/` (slug: `e2e-deploy-test`, server: `http://localhost:8080`)
 
 ## Phase 1: Manage App — Login + Create Project + API Token
 
@@ -55,14 +55,14 @@
 
 ### TC-E2E-06-04: Build and deploy via CLI
 **Steps:**
-1. Verify `flutter_cms/examples/cms_app/flutter_cms.yaml` exists with content:
+1. Verify `dart_desk/examples/cms_app/dart_desk.yaml` exists with content:
    ```yaml
    slug: e2e-deploy-test
    server: http://localhost:8080
    ```
-2. Run: `cd flutter_cms/examples/cms_app && flutter build web --release`
+2. Run: `cd dart_desk/examples/cms_app && flutter build web --release`
 3. Wait for build to complete successfully
-4. Run: `dart run flutter_cms_cli deploy --token {captured_token} --skip-build`
+4. Run: `dart run dart_desk_cli deploy --token {captured_token} --skip-build`
 5. Capture stdout
 
 **Expected:**
@@ -158,7 +158,7 @@
 
 ### TC-E2E-06-12: Deploy v2 via CLI
 **Steps:**
-1. Run CLI deploy again: `cd flutter_cms/examples/cms_app && dart run flutter_cms_cli deploy --token {captured_token} --skip-build`
+1. Run CLI deploy again: `cd dart_desk/examples/cms_app && dart run dart_desk_cli deploy --token {captured_token} --skip-build`
 2. Capture stdout
 
 **Expected:**

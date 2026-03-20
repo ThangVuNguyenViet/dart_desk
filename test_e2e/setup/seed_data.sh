@@ -2,7 +2,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BACKEND_DIR="$SCRIPT_DIR/../../../flutter_cms_be/flutter_cms_be_server"
+BACKEND_DIR="$SCRIPT_DIR/../../../dart_desk_be/dart_desk_be_server"
 
 if [ ! -f "$BACKEND_DIR/docker-compose.yaml" ]; then
   echo "ERROR: Backend docker-compose.yaml not found at $BACKEND_DIR"
@@ -20,7 +20,7 @@ HASH_A='$2b$10$Z0kp3lgBwCTj.bhCovYR6uztc7xOZ3HradOvzOlp1eBPBOaMJE3BC'
 HASH_B='$2b$10$I3p3Gw9cGKGSFbr8qDU2kuskI/T.8CAi5QpIOIOEZx04CZiHPzLcC'
 
 docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
-  psql -U postgres -d flutter_cms_be -c "
+  psql -U postgres -d dart_desk_be -c "
     -- Seed Client A
     INSERT INTO cms_clients (name, slug, \"apiTokenHash\", \"apiTokenPrefix\", \"isActive\", \"createdAt\", \"updatedAt\")
     VALUES ('E2E Client A', 'e2e-client-a', '$HASH_A', 'cms_ad_', true, NOW(), NOW())
@@ -52,7 +52,7 @@ E2E_AUTH_USER_ID="00000000-0000-7000-8000-e2e000000001"
 E2E_PWD_HASH='$2b$10$E6ICM474gY5FtSV2mLwaK.qLuz1F9RfVWEgzjT.oeDKdPDjUM3TJS'
 
 docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
-  psql -U postgres -d flutter_cms_be -c "
+  psql -U postgres -d dart_desk_be -c "
     -- Seed Serverpod core auth user first (FK parent)
     INSERT INTO serverpod_auth_core_user (id, \"createdAt\", \"scopeNames\", blocked)
     VALUES ('$E2E_AUTH_USER_ID', NOW(), '[]', false)

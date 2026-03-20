@@ -7,7 +7,7 @@ End-to-end integration tests for the Flutter CMS app against a real Serverpod ba
 - Docker installed and running
 - Flutter SDK available
 - No other process using port 8080
-- Backend project at `../../flutter_cms_be/` (sibling directory)
+- Backend project at `../../dart_desk_be/` (sibling directory)
 
 ## Quick Start
 

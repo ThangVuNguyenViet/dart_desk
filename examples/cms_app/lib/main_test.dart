@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cms/studio.dart';
-import 'package:flutter_cms/testing.dart';
+import 'package:dart_desk/studio.dart';
+import 'package:dart_desk/testing.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 
 void main() {
