@@ -1,7 +1,12 @@
 name: dart_desk
 description: "CMS studio interface with inputs, validators, and runtime components for Dart Desk applications"
-publish_to: 'none'
 version: 0.1.0
+homepage: https://github.com/vietthangvunguyen/dart_desk
+repository: https://github.com/vietthangvunguyen/dart_desk
+topics:
+  - cms
+  - flutter
+  - content-management
 
 resolution: workspace
 environment:
