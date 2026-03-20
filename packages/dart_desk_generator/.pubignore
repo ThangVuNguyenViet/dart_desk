@@ -1,0 +1,5 @@
+CLAUDE.md
+*.skill
+*.iml
+.specify/
+devtools_options.yaml
