@@ -98,8 +98,8 @@ Use `mcp__marionette__connect` with the VM service URI.
 
 - [ ] **Step 5: Sign in via marionette**
 The app launches to the sign-in screen. The E2E agent must sign in using marionette:
-1. Use `enter_text` to type `thangvnv0806@gmail.com` into the Email field
-2. Use `enter_text` to type `1234567890` into the Password field
+1. Use `enter_text` to type the E2E test email into the Email field
+2. Use `enter_text` to type the E2E test password into the Password field
 3. Use `tap` to tap "Sign in with email"
 
 ### Task 3: Run E2E Test Specs (Sequential)
