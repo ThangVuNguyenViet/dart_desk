@@ -160,6 +160,13 @@ set.remove(1);    // Triggers updates
 4. Put effects in `initState()`, not as late fields
 5. Access signal values BEFORE await in `computedAsync()`
 6. Prefer `computedFrom()` over `computedAsync()` to avoid await timing issues
+7. Always add `debugLabel` to every signal — use the variable name (no class prefix):
+   ```dart
+   final counter = Signal<int>(0, debugLabel: 'counter');
+   final data = FutureSignal(() => fetch(), debugLabel: 'data');
+   final items = ListSignal([], debugLabel: 'items');
+   late final total = Computed(() => items.value.length, debugLabel: 'total');
+   ```
 
 ## Reference
 

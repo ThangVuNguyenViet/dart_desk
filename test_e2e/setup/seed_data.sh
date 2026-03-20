@@ -44,8 +44,24 @@ docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
     ON CONFLICT (\"clientId\", \"tokenPrefix\", \"tokenSuffix\") DO NOTHING;
   "
 
+# -----------------------------------------------------------------------
+# Manage App E2E auth user (email: e2e@dartdesk.dev, password: e2e-password-123)
+# -----------------------------------------------------------------------
+E2E_AUTH_USER_ID="00000000-0000-7000-8000-e2e000000001"
+# Pre-computed bcrypt hash of "e2e-password-123"
+E2E_PWD_HASH='$2b$10$E6ICM474gY5FtSV2mLwaK.qLuz1F9RfVWEgzjT.oeDKdPDjUM3TJS'
+
+docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
+  psql -U postgres -d flutter_cms_be -c "
+    -- Seed Serverpod auth email account for E2E manage app login
+    INSERT INTO serverpod_auth_idp_email_account (\"authUserId\", \"createdAt\", email, \"passwordHash\")
+    VALUES ('$E2E_AUTH_USER_ID', NOW(), 'e2e@dartdesk.dev', '$E2E_PWD_HASH')
+    ON CONFLICT (email) DO NOTHING;
+  "
+
 echo ""
 echo "E2E seed data ready."
+echo "  Manage app login: email=e2e@dartdesk.dev password=e2e-password-123"
 echo "  Client A: slug=e2e-client-a token=$TOKEN_A"
 echo "  Client B: slug=e2e-client-b token=$TOKEN_B"
 echo ""

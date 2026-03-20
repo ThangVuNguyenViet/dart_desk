@@ -1,9 +1,20 @@
 {
   "mcpServers": {
-    "marionette": {
+    "marionette2": {
       "command": "dart",
-      "args": ["run", "marionette_mcp"],
-      "cwd": "/Users/vietthangvunguyen/Workspace/flutter_cms/examples/cms_app"
+      "args": [
+        "run",
+        "marionette_mcp"
+      ],
+      "cwd": "/Users/vietthangvunguyen/Workspace/marionette_mcp/packages/marionette_mcp"
+    },
+    "marionette3": {
+      "command": "dart",
+      "args": [
+        "run",
+        "marionette_mcp"
+      ],
+      "cwd": "/Users/vietthangvunguyen/Workspace/marionette_mcp/packages/marionette_mcp"
     }
   }
 }
