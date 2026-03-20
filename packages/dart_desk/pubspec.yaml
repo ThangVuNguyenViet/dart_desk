@@ -22,7 +22,7 @@ dependencies:
   file_picker: ^8.1.4
   shared_preferences: ^2.2.2
   connectivity_plus: ^6.0.0
-  signals: ^6.1.0
+  signals: ^6.3.0
   flutter_resizable_container: ^4.2.0
   super_editor: ^0.3.0-dev.50
   disco: ^1.0.3+1

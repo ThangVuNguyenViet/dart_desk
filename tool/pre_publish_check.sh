@@ -29,10 +29,17 @@ for pkg in "${PACKAGES[@]}"; do
 
   # Run dry-run
   echo "Running dart pub publish --dry-run for $pkg..."
-  (cd "$pkg" && flutter pub get && dart pub publish --dry-run) || {
+  # --ignore-warnings: the "modified in git" warning is expected since we edit pubspec
+  # NOTE: Packages must be published in order (annotation → generator → main).
+  # The dry-run for generator/main will fail with "could not find package dart_desk_annotation"
+  # until annotation is actually published. This is expected.
+  if ! (cd "$pkg" && flutter pub get && dart pub publish --dry-run --ignore-warnings); then
+    echo ""
     echo "FAILED: $pkg"
+    echo "If the error is 'could not find package dart_desk_annotation', this is expected —"
+    echo "publish dart_desk_annotation first, then re-run this script."
     exit 1
-  }
+  fi
 
   # Restore pubspec (trap also handles this, but be explicit)
   mv "$pkg/pubspec.yaml.bak" "$pkg/pubspec.yaml"
