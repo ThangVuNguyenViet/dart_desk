@@ -1,4 +1,4 @@
-# Flutter CMS
+# Dart Desk
 
 Flutter widget library for building CMS studio interfaces.
 

@@ -1,13 +1,13 @@
 ---
 name: e2e-testing
-description: Run E2E integration tests against a real Flutter CMS backend using Marionette MCP
+description: Run E2E integration tests against a real Dart Desk backend using Marionette MCP
 ---
 
 # E2E Integration Testing Skill
 
 ## Overview
 
-This skill runs end-to-end tests for the Flutter CMS app against a real Serverpod backend. Unlike the mock-based `test_automation/` suite, these tests verify data persistence, media handling, CRDT collaboration, error resilience, and multi-tenancy against a live database.
+This skill runs end-to-end tests for the Dart Desk app against a real Serverpod backend. Unlike the mock-based `test_automation/` suite, these tests verify data persistence, media handling, CRDT collaboration, error resilience, and multi-tenancy against a live database.
 
 ## Setup
 

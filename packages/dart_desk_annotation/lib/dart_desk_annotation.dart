@@ -1,4 +1,4 @@
-/// Annotations for Flutter CMS code generation.
+/// Annotations for Dart Desk code generation.
 ///
 /// This library provides annotations that can be used to generate
 /// CMS configuration and data models.

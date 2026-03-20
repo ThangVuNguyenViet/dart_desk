@@ -1,4 +1,4 @@
-/// Data layer for Flutter CMS.
+/// Data layer for Dart Desk.
 ///
 /// This library provides the data source abstraction and implementations
 /// for communicating with different backends.

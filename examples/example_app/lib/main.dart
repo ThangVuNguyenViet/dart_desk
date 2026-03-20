@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     final dynamic config = null; // Load your CMS config here
 
     return MaterialApp(
-      title: 'Flutter CMS Demo',
+      title: 'Dart Desk Demo',
       theme: ThemeData(
         // This is the theme of your application.
         //

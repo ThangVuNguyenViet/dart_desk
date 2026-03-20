@@ -1,6 +1,6 @@
 # Version History Component
 
-A comprehensive version history UI component for the Flutter CMS system, built with shadcn/ui components.
+A comprehensive version history UI component for the Dart Desk system, built with shadcn/ui components.
 
 ## Features
 

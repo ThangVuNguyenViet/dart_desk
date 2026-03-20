@@ -9,7 +9,7 @@ Executes structured QA test cases against a running dart_desk app via Marionette
 
 ## Prerequisites
 
-- Flutter CMS app running in debug mode with the mock data source and test document types
+- Dart Desk app running in debug mode with the mock data source and test document types
 - Marionette MCP server connected to the app's VM service URI
 - The app should be on the studio screen with at least one document type visible in the sidebar
 

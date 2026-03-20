@@ -1,8 +1,8 @@
 # dart_desk_generator
 
-Code generators for Flutter CMS.
+Code generators for Dart Desk.
 
-This package contains the code generation logic for the Flutter CMS system,
+This package contains the code generation logic for the Dart Desk system,
 including generators for data models, field configurations, and UI components.
 
 ## Usage

@@ -1,7 +1,7 @@
-/// Code generators for Flutter CMS.
+/// Code generators for Dart Desk.
 ///
 /// This library provides the code generation infrastructure for
-/// Flutter CMS, including generators for data models, field configurations,
+/// Dart Desk, including generators for data models, field configurations,
 /// and UI components.
 library dart_desk_generator;
 

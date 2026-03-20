@@ -1,4 +1,4 @@
-/// Flutter CMS - Studio and runtime components for CMS applications
+/// Dart Desk - Studio and runtime components for CMS applications
 ///
 /// This package provides the CMS studio interface with:
 /// - Complete CMS studio UI with document management

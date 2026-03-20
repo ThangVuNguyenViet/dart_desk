@@ -1,5 +1,5 @@
 name: dart_desk_annotation
-description: "Annotations for Flutter CMS code generation"
+description: "Annotations for Dart Desk code generation"
 publish_to: 'none'
 version: 0.1.0
 

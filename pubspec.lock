@@ -225,6 +225,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
+  dart_desk_be_client:
+    dependency: transitive
+    description:
+      path: "../dart_desk_be/dart_desk_be_client"
+      relative: true
+    source: path
+    version: "0.0.0"
   dart_quill_delta:
     dependency: transitive
     description:
@@ -398,13 +405,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.5.2"
-  flutter_cms_be_client:
-    dependency: transitive
-    description:
-      path: "../flutter_cms_be/flutter_cms_be_client"
-      relative: true
-    source: path
-    version: "0.0.0"
   flutter_lints:
     dependency: transitive
     description:
@@ -850,7 +850,7 @@ packages:
       path: "../../marionette_mcp/packages/marionette_flutter"
       relative: true
     source: path
-    version: "0.3.0"
+    version: "0.4.0"
   markdown:
     dependency: transitive
     description:
@@ -1103,7 +1103,7 @@ packages:
     dependency: transitive
     description:
       path: serverpod_admin_client
-      ref: HEAD
+      ref: "1790997e18370085cd1c91fdff16d54135c6d922"
       resolved-ref: "1790997e18370085cd1c91fdff16d54135c6d922"
       url: "https://github.com/AdamMusa/serverpod_admin.git"
     source: git

@@ -1,4 +1,4 @@
-/// Flutter CMS Studio Theme
+/// Dart Desk Studio Theme
 ///
 /// Provides theme configuration for the CMS studio interface
 library;

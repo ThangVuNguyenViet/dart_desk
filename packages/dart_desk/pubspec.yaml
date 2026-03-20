@@ -1,5 +1,5 @@
 name: dart_desk
-description: "CMS studio interface with inputs, validators, and runtime components for Flutter CMS applications"
+description: "CMS studio interface with inputs, validators, and runtime components for Dart Desk applications"
 publish_to: 'none'
 version: 0.1.0
 

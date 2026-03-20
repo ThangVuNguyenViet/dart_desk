@@ -1,6 +1,6 @@
-# Flutter CMS E2E Tests
+# Dart Desk E2E Tests
 
-End-to-end integration tests for the Flutter CMS app against a real Serverpod backend.
+End-to-end integration tests for the Dart Desk app against a real Serverpod backend.
 
 ## Prerequisites
 

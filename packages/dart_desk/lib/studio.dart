@@ -1,4 +1,4 @@
-/// Flutter CMS Studio - Complete CMS interface components
+/// Dart Desk Studio - Complete CMS interface components
 ///
 /// This module provides the full CMS studio UI including:
 /// - Document management screens
