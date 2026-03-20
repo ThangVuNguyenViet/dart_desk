@@ -1,4 +1,5 @@
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:zenrouter/zenrouter.dart';
 
 import '../../data/cms_data_source.dart';
@@ -13,6 +14,7 @@ class StudioCoordinator extends Coordinator<StudioRoute> {
   final List<CmsDocumentType> documentTypes;
   final CmsDataSource dataSource;
   final List<CmsDocumentTypeDecoration> documentTypeDecorations;
+  final VoidCallback? onSignOut;
 
   String get defaultDocumentTypeSlug =>
       documentTypes.isNotEmpty ? documentTypes.first.name : '';
@@ -26,6 +28,7 @@ class StudioCoordinator extends Coordinator<StudioRoute> {
     required this.documentTypes,
     required this.dataSource,
     this.documentTypeDecorations = const [],
+    this.onSignOut,
   });
 
   @override

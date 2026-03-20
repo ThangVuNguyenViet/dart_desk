@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:dart_desk_be_client/dart_desk_be_client.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -197,7 +196,7 @@ class _TopBar extends StatelessWidget {
 
           // User avatar with sign-out
           GestureDetector(
-            onTap: () => context.signOut(),
+            onTap: () => coordinator.onSignOut?.call(),
             child: MouseRegion(
               cursor: SystemMouseCursors.click,
               child: Container(

@@ -25,6 +25,7 @@ class CmsStudioApp extends StatefulWidget {
     this.subtitle,
     this.icon,
     this.onDashboardPressed,
+    this.onSignOut,
     this.theme,
   });
 
@@ -35,6 +36,7 @@ class CmsStudioApp extends StatefulWidget {
   final String? subtitle;
   final IconData? icon;
   final VoidCallback? onDashboardPressed;
+  final VoidCallback? onSignOut;
   final ShadThemeData? theme;
 
   @override
@@ -52,6 +54,7 @@ class _CmsStudioAppState extends State<CmsStudioApp> {
       documentTypes: widget.documentTypes,
       dataSource: widget.dataSource,
       documentTypeDecorations: widget.documentTypeDecorations,
+      onSignOut: widget.onSignOut,
     );
     _loadPersistedTheme();
   }

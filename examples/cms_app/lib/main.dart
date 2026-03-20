@@ -58,6 +58,7 @@ class MyApp extends StatelessWidget {
           title: 'Honeygrow CMS',
           subtitle: 'Content Management',
           icon: Icons.dashboard,
+          onSignOut: () => context.signOut(),
         ),
       ),
     );
