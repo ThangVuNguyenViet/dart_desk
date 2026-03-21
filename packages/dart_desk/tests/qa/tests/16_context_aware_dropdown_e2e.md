@@ -22,6 +22,8 @@ resolves options reactively in the running app.
 
 **Expected:** The dropdown resolved its options from `documentsContainer('test_all_fields').watch(context)`.
 
+**Result:** PASS (2026-03-22)
+
 ---
 
 ## TC-16-02: Selecting a document reference persists to preview
@@ -29,9 +31,11 @@ resolves options reactively in the running app.
 **Steps:**
 1. With the "Document Reference" dropdown open, select "Test Document Beta"
 2. Verify the dropdown now shows "Test Document Beta"
-3. Check the preview panel shows `preview:document_ref_dropdown: 2` (Beta's ID)
+3. Check the preview panel shows `preview:document_ref_dropdown: 2 (Test Document Beta)`
 
 **Expected:** Selection persists to editedData and preview updates reactively.
+
+**Result:** PASS (2026-03-22)
 
 ---
 
@@ -48,6 +52,8 @@ resolves options reactively in the running app.
 **Expected:** The context-aware dropdown reactively picks up the new document
 because `documentsContainer('test_all_fields')` was reloaded after create.
 
+**Result:** PASS (2026-03-22)
+
 ---
 
 ## TC-16-04: Deleting a document removes it from the context-aware dropdown
@@ -59,3 +65,5 @@ because `documentsContainer('test_all_fields')` was reloaded after create.
 4. Verify only 3 options remain (Delta is gone)
 
 **Expected:** The dropdown reactively updates when the backing document list changes.
+
+**Result:** PASS (2026-03-22)
