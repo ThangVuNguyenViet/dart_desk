@@ -47,6 +47,7 @@ export 'src/inputs/color_input.dart';
 export 'src/inputs/date_input.dart' hide preview;
 export 'src/inputs/datetime_input.dart' hide preview;
 export 'src/inputs/dropdown_input.dart' hide preview;
+export 'src/inputs/multi_dropdown_input.dart';
 export 'src/inputs/file_input.dart' hide preview;
 export 'src/inputs/geopoint_input.dart' hide preview;
 export 'src/inputs/image_input.dart' hide preview;

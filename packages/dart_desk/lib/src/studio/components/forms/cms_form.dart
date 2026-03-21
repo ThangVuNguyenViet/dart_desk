@@ -10,6 +10,7 @@ import '../../../inputs/color_input.dart';
 import '../../../inputs/date_input.dart';
 import '../../../inputs/datetime_input.dart';
 import '../../../inputs/dropdown_input.dart';
+import '../../../inputs/multi_dropdown_input.dart';
 import '../../../inputs/file_input.dart';
 import '../../../inputs/geopoint_input.dart';
 import '../../../inputs/image_input.dart';
@@ -101,6 +102,13 @@ class CmsFieldInputRegistry {
         );
       case CmsDropdownField():
         return (_, data, onChanged) => CmsDropdownInput(
+          key: ValueKey(field.name),
+          field: field,
+          data: data,
+          onChanged: (value) => onChanged(field.name, value),
+        );
+      case CmsMultiDropdownField():
+        return (_, data, onChanged) => CmsMultiDropdownInput(
           key: ValueKey(field.name),
           field: field,
           data: data,
