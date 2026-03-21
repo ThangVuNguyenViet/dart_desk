@@ -10,11 +10,11 @@ import '../data/models/media_asset.dart';
 import '../data/models/media_page.dart';
 import 'test_document_types.dart';
 
-/// In-memory mock implementation of [CmsDataSource] for testing.
+/// In-memory mock implementation of [DataSource] for testing.
 ///
 /// Pre-seeded with 3 documents from [testDocumentSeedData].
 /// All operations are synchronous in-memory. No network calls.
-class MockCmsDataSource implements CmsDataSource {
+class MockDataSource implements DataSource {
   final Map<int, CmsDocument> _documents = {};
   final Map<int, Map<int, DocumentVersion>> _versions = {};
   final Map<int, Map<String, dynamic>> _versionData = {};
@@ -23,7 +23,7 @@ class MockCmsDataSource implements CmsDataSource {
   int _nextVersionId = 1;
   int _nextMediaId = 1;
 
-  MockCmsDataSource() {
+  MockDataSource() {
     _seed();
   }
 
@@ -78,6 +78,64 @@ class MockCmsDataSource implements CmsDataSource {
       ...testDocumentSeedData[0]['data'] as Map<String, dynamic>,
       'string_field': 'Hello World (v2)',
     };
+
+    // Seed media assets for testing
+    _media['asset-hero'] = MediaAsset(
+      id: _nextMediaId++,
+      assetId: 'asset-hero',
+      fileName: 'hero-banner.jpg',
+      mimeType: 'image/jpeg',
+      fileSize: 245000,
+      publicUrl: 'https://picsum.photos/seed/hero/800/400',
+      width: 800,
+      height: 400,
+      hasAlpha: false,
+      blurHash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj',
+      createdAt: DateTime(2026, 3, 1),
+      metadataStatus: MediaAssetMetadataStatus.complete,
+    );
+    _media['asset-profile'] = MediaAsset(
+      id: _nextMediaId++,
+      assetId: 'asset-profile',
+      fileName: 'profile-photo.png',
+      mimeType: 'image/png',
+      fileSize: 128000,
+      publicUrl: 'https://picsum.photos/seed/profile/400/400',
+      width: 400,
+      height: 400,
+      hasAlpha: true,
+      blurHash: 'LGF5]+Yk^6#M@-5c,1J5@[or[Q6.',
+      createdAt: DateTime(2026, 3, 5),
+      metadataStatus: MediaAssetMetadataStatus.complete,
+    );
+    _media['asset-landscape'] = MediaAsset(
+      id: _nextMediaId++,
+      assetId: 'asset-landscape',
+      fileName: 'mountain-landscape.jpg',
+      mimeType: 'image/jpeg',
+      fileSize: 512000,
+      publicUrl: 'https://picsum.photos/seed/landscape/1200/800',
+      width: 1200,
+      height: 800,
+      hasAlpha: false,
+      blurHash: 'LdKBt%j[WBay~qj[j[j[WBayfQfQ',
+      createdAt: DateTime(2026, 3, 10),
+      metadataStatus: MediaAssetMetadataStatus.complete,
+    );
+    _media['asset-icon'] = MediaAsset(
+      id: _nextMediaId++,
+      assetId: 'asset-icon',
+      fileName: 'app-icon.png',
+      mimeType: 'image/png',
+      fileSize: 24000,
+      publicUrl: 'https://picsum.photos/seed/icon/128/128',
+      width: 128,
+      height: 128,
+      hasAlpha: true,
+      blurHash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4',
+      createdAt: DateTime(2026, 3, 15),
+      metadataStatus: MediaAssetMetadataStatus.complete,
+    );
   }
 
   /// Reset to initial seed state.
