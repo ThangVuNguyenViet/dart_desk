@@ -49,7 +49,7 @@ Remove from ALL files (including .md):
 - `thangvnv0806@gmail.com` — replace with `<your-email>` or remove
 - `1234567890` — remove (password references)
 - `thangvnv0806/1234567890` — remove (credential pairs)
-- Seed data in `test_e2e/setup/seed_data.sh` — replace real values with placeholders
+- Seed data in `packages/dart_desk/tests/e2e/setup/seed_data.sh` — replace real values with placeholders
 - Any other hardcoded credentials or tokens
 
 ## User-Level Claude Config Updates

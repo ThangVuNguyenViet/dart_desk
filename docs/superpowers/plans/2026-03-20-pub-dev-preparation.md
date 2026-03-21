@@ -430,12 +430,11 @@ CLAUDE.md
 *.iml
 .specify/
 devtools_options.yaml
-test_automation/
+tests/
 app.log
 flutter_*.log
 sanity-fields-example.json
 docs/
-test_e2e/
 packages/
 lib/src/studio/core/marionette_config.dart
 ```

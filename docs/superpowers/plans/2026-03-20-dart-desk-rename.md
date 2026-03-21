@@ -28,10 +28,8 @@
 Remove any credential or seed data references before they get carried into the renamed repo.
 
 **Files:**
-- Modify: `docs/superpowers/plans/2026-03-18-integration-testing-execution.md`
-- Modify: `test_e2e/setup/seed_data.sh`
-- Modify: `test_e2e/README.md`
-- Modify: `test_e2e/tests/06_cloud_deployment.md`
+- Modify: `packages/dart_desk/tests/e2e/setup/seed_data.sh`
+- Modify: `packages/dart_desk/tests/e2e/tests/06_cloud_deployment.md`
 - Modify: any other file containing `thangvnv0806` or `1234567890`
 
 - [ ] **Step 1: Find all credential references**
