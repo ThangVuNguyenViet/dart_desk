@@ -54,7 +54,7 @@ void main() {
   }
   runApp(
     CmsStudioApp(
-      dataSource: MockCmsDataSource(),
+      dataSource: MockDataSource(),
       documentTypes: [allFieldsDocumentType],
       documentTypeDecorations: [
         DocumentTypeDecoration(

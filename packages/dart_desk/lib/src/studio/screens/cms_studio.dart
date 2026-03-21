@@ -6,7 +6,9 @@ import 'package:signals/signals_flutter.dart';
 
 import '../core/view_models/cms_view_model.dart';
 import '../providers/studio_provider.dart';
+import '../../media/browser/media_browser.dart';
 import '../routes/document_route.dart';
+import '../routes/media_route.dart';
 import '../routes/studio_coordinator.dart';
 import '../components/common/cms_collapse_bar.dart';
 import '../theme/spacing.dart';
@@ -238,6 +240,26 @@ class _CmsStudioState extends State<CmsStudio> {
 
     final isListVisible = viewModel.documentListVisible.watch(context);
     final docType = viewModel.currentDocumentType.watch(context);
+
+    // When on the media route, render standalone MediaBrowser
+    final isMediaRoute =
+        widget.coordinator.studioStack.activeRoute is MediaRoute;
+    if (isMediaRoute) {
+      return Scaffold(
+        backgroundColor: theme.colorScheme.background,
+        body: Row(
+          children: [
+            widget.sidebar,
+            Expanded(
+              child: MediaBrowser(
+                dataSource: widget.coordinator.dataSource,
+                mode: MediaBrowserMode.standalone,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: theme.colorScheme.background,
