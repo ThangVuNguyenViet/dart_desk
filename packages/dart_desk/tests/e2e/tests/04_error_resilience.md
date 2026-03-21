@@ -8,11 +8,11 @@
 ## TC-E2E-04-01: Backend down during save
 **Steps:**
 1. Open a document and make an edit
-2. Stop the backend server: `test_e2e/setup/server_manager.sh stop`
+2. Stop the backend server: `packages/dart_desk/tests/e2e/setup/server_manager.sh stop`
 3. Attempt to save the document in the UI
 4. Use `get_interactive_elements` to check for error indicators
 5. Take a screenshot of the error state
-6. Restart the backend: `test_e2e/setup/server_manager.sh start`
+6. Restart the backend: `packages/dart_desk/tests/e2e/setup/server_manager.sh start`
 
 **Expected:**
 - UI shows an error message (not a crash or blank screen)
@@ -47,9 +47,9 @@
 ## TC-E2E-04-04: Backend restart recovery
 **Steps:**
 1. Open a document and verify it loads correctly
-2. Stop the backend: `test_e2e/setup/server_manager.sh stop`
+2. Stop the backend: `packages/dart_desk/tests/e2e/setup/server_manager.sh stop`
 3. Wait 3 seconds
-4. Restart the backend: `test_e2e/setup/server_manager.sh start`
+4. Restart the backend: `packages/dart_desk/tests/e2e/setup/server_manager.sh start`
 5. Navigate to the document list
 6. Open the same document
 
