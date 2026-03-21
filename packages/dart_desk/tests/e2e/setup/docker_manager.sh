@@ -2,7 +2,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-BACKEND_DIR="$SCRIPT_DIR/../../../dart_desk_be/dart_desk_be_server"
+BACKEND_DIR="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel)/../dart_desk_be/dart_desk_be_server"
 
 if [ ! -f "$BACKEND_DIR/docker-compose.yaml" ]; then
   echo "ERROR: Backend docker-compose.yaml not found at $BACKEND_DIR"

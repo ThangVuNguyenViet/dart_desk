@@ -26,8 +26,8 @@ User says one of:
 
 For each test file to execute:
 
-1. **Read** the test file from `packages/dart_desk/test_automation/tests/`
-2. **Check** if a replay file exists in `packages/dart_desk/test_automation/replays/` and is newer than the test file. If so, use Phase 2 instead.
+1. **Read** the test file from `packages/dart_desk/tests/qa/tests/`
+2. **Check** if a replay file exists in `packages/dart_desk/tests/qa/replays/` and is newer than the test file. If so, use Phase 2 instead.
 3. **For each test case in the file:**
    a. Log the test case ID and title
    b. Execute each step using marionette tools:
@@ -36,16 +36,16 @@ For each test file to execute:
       - `scroll_to` for scrolling to elements
    c. After each action, call `get_interactive_elements` to verify expected state
    d. Compare actual elements against the **Expected** section
-   e. Take a screenshot and save to `results/screenshots/{test_case_id}.png`
+   e. Take a screenshot and save to `packages/dart_desk/tests/results/screenshots/{test_case_id}.png`
    f. Record PASS if all expectations met, FAIL with notes if not
    g. Record the marionette commands (tap, enter_text, scroll_to only -- NOT get_interactive_elements or take_screenshots) into the replay action list
-4. **After all test cases in a file pass**, write the replay JSON to `replays/{test_file_name}.json`
+4. **After all test cases in a file pass**, write the replay JSON to `packages/dart_desk/tests/qa/replays/{test_file_name}.json`
 5. **Reset app state** by calling `mcp__dart__hot_restart` (requires DTD connection)
 6. **Wait** 3 seconds after hot restart for the app to stabilize, then reconnect marionette
 
 ### Phase 2: Replay Run
 
-1. **Read** the replay JSON from `packages/dart_desk/test_automation/replays/{test_file_name}.json`
+1. **Read** the replay JSON from `packages/dart_desk/tests/qa/replays/{test_file_name}.json`
 2. **For each test case:**
    a. Execute the stored `actions` sequentially (tap, enter_text, scroll_to)
    b. At each `verify` checkpoint, call `get_interactive_elements` and check `expect_text`
@@ -76,7 +76,7 @@ For each test file to execute:
 
 ### Results Report
 
-After all test files complete, write a markdown report to `results/reports/YYYY-MM-DD-HHmm.md`:
+After all test files complete, write a markdown report to `packages/dart_desk/tests/reports/YYYY-MM-DD-HHmm.md`:
 
 ```markdown
 # CMS QA Test Report - {date}
