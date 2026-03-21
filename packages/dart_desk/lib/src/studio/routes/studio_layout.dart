@@ -7,6 +7,7 @@ import 'package:zenrouter/zenrouter.dart';
 
 import '../../../studio.dart';
 import '../providers/studio_provider.dart';
+import 'media_route.dart';
 
 /// The root layout for all studio routes.
 ///
@@ -29,6 +30,17 @@ class StudioLayout extends StudioRoute with RouteLayout<StudioRoute> {
           sidebar: CmsDocumentTypeSidebar(
             documentTypeDecorations: coordinator.documentTypeDecorations,
             coordinator: coordinator,
+            footer: ShadButton.ghost(
+              key: const ValueKey('sidebar_media_button'),
+              onPressed: () => coordinator.pushOrMoveToTop(MediaRoute()),
+              child: const Row(
+                children: [
+                  FaIcon(FontAwesomeIcons.images, size: 14),
+                  SizedBox(width: 8),
+                  Text('Media Library'),
+                ],
+              ),
+            ),
           ),
         ),
       ),
