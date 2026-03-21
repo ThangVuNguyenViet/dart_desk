@@ -18,7 +18,7 @@ import 'models/media_page.dart';
 /// Implement this interface to create a custom data source:
 ///
 /// ```dart
-/// class MyDataSource implements CmsDataSource {
+/// class MyDataSource implements DataSource {
 ///   @override
 ///   Future<DocumentList> getDocuments(...) async {
 ///     // Your implementation
@@ -36,7 +36,7 @@ import 'models/media_page.dart';
 /// - [CmsDataSourceException] - Base exception for data source errors
 /// - [CmsAuthenticationException] - Authentication required or failed
 /// - [CmsNotFoundException] - Resource not found
-abstract class CmsDataSource {
+abstract class DataSource {
   // ============================================================
   // Document Operations
   // ============================================================

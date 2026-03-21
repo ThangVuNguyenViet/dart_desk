@@ -20,7 +20,7 @@ import 'media_toolbar.dart';
 enum MediaBrowserMode { standalone, picker }
 
 class MediaBrowser extends StatefulWidget {
-  final CmsDataSource dataSource;
+  final DataSource dataSource;
   final MediaBrowserMode mode;
   final ValueChanged<MediaAsset>? onAssetSelected;
   final VoidCallback? onClose;
@@ -77,19 +77,23 @@ class _MediaBrowserState extends State<MediaBrowser> {
     if (reader == null) return;
 
     final completer = Completer<void>();
-    reader.getFile(null, (file) async {
-      try {
-        final bytes = await file.readAll();
-        final name = file.fileName ?? 'dropped_file';
-        await _uploadBytes(name, bytes);
-      } catch (e) {
-        _state.error.value = 'Drop upload failed: $e';
-      }
-      completer.complete();
-    }, onError: (error) {
-      _state.error.value = 'Failed to read dropped file: $error';
-      completer.complete();
-    });
+    reader.getFile(
+      null,
+      (file) async {
+        try {
+          final bytes = await file.readAll();
+          final name = file.fileName ?? 'dropped_file';
+          await _uploadBytes(name, bytes);
+        } catch (e) {
+          _state.error.value = 'Drop upload failed: $e';
+        }
+        completer.complete();
+      },
+      onError: (error) {
+        _state.error.value = 'Failed to read dropped file: $error';
+        completer.complete();
+      },
+    );
     await completer.future;
   }
 
@@ -114,8 +118,7 @@ class _MediaBrowserState extends State<MediaBrowser> {
         children: [
           // Header
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
                 Text(
@@ -166,9 +169,12 @@ class _MediaBrowserState extends State<MediaBrowser> {
                 color: theme.colorScheme.destructive.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text(error,
-                  style: theme.textTheme.small
-                      .copyWith(color: theme.colorScheme.destructive)),
+              child: Text(
+                error,
+                style: theme.textTheme.small.copyWith(
+                  color: theme.colorScheme.destructive,
+                ),
+              ),
             );
           }),
 
@@ -210,15 +216,13 @@ class _MediaBrowserState extends State<MediaBrowser> {
                     child: Container(
                       decoration: BoxDecoration(
                         border: Border(
-                          left:
-                              BorderSide(color: theme.colorScheme.border),
+                          left: BorderSide(color: theme.colorScheme.border),
                         ),
                       ),
                       child: AssetDetailPanel(
                         asset: asset,
                         dataSource: widget.dataSource,
-                        onDelete: () =>
-                            _state.deleteAsset(asset.assetId),
+                        onDelete: () => _state.deleteAsset(asset.assetId),
                       ),
                     ),
                   );
@@ -229,8 +233,7 @@ class _MediaBrowserState extends State<MediaBrowser> {
 
           // Footer: pagination + picker select button
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
                 // Pagination
@@ -249,8 +252,10 @@ class _MediaBrowserState extends State<MediaBrowser> {
                                 _state.loadAssets();
                               }
                             : null,
-                        child:
-                            const FaIcon(FontAwesomeIcons.chevronLeft, size: 12),
+                        child: const FaIcon(
+                          FontAwesomeIcons.chevronLeft,
+                          size: 12,
+                        ),
                       ),
                       Text(
                         'Page ${currentPage + 1} of $totalPages ($total items)',
@@ -264,8 +269,10 @@ class _MediaBrowserState extends State<MediaBrowser> {
                                 _state.loadAssets();
                               }
                             : null,
-                        child: const FaIcon(FontAwesomeIcons.chevronRight,
-                            size: 12),
+                        child: const FaIcon(
+                          FontAwesomeIcons.chevronRight,
+                          size: 12,
+                        ),
                       ),
                     ],
                   );
@@ -274,13 +281,12 @@ class _MediaBrowserState extends State<MediaBrowser> {
                 // Picker mode: Select button
                 if (widget.mode == MediaBrowserMode.picker)
                   Watch((context) {
-                    final selectedId =
-                        _state.selectedAssetId.watch(context);
+                    final selectedId = _state.selectedAssetId.watch(context);
                     final assets = _state.assets.watch(context);
                     final asset = selectedId != null
                         ? assets
-                            .where((a) => a.assetId == selectedId)
-                            .firstOrNull
+                              .where((a) => a.assetId == selectedId)
+                              .firstOrNull
                         : null;
 
                     return ShadButton(

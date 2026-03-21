@@ -9,14 +9,14 @@ import '../../theme/spacing.dart';
 ///
 /// Supports expanded mode (icon + label) and collapsed mode (icon only with tooltip).
 /// Uses solid Font Awesome icons when selected, regular when not.
-class CmsDocumentTypeItem extends StatelessWidget {
-  final CmsDocumentType documentType;
+class DocumentTypeItem extends StatelessWidget {
+  final DocumentType documentType;
   final bool isSelected;
   final bool isCollapsed;
   final VoidCallback? onTap;
   final IconData? icon;
 
-  const CmsDocumentTypeItem({
+  const DocumentTypeItem({
     super.key,
     required this.documentType,
     this.isSelected = false,

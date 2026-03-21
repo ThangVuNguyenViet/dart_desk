@@ -13,7 +13,7 @@
 /// final dataSource = ServerpodDataSource(client);
 ///
 /// // Or implement your own data source
-/// class MyDataSource implements CmsDataSource {
+/// class MyDataSource implements DataSource {
 ///   // ... implementation
 /// }
 /// ```

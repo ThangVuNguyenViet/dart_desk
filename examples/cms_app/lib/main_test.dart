@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 
 void main() {
@@ -13,9 +13,11 @@ void main() {
       name: 'scrollByKey',
       description: 'Scroll to make a widget with the given key visible',
       callback: (params) async {
-        final keyValue = params['key'] as String?;
+        final keyValue = params['key'];
         if (keyValue == null) {
-          return const MarionetteExtensionResult.invalidParams('key is required');
+          return const MarionetteExtensionResult.invalidParams(
+            'key is required',
+          );
         }
 
         // Find the element with the key
@@ -29,11 +31,12 @@ void main() {
           }
           element.visitChildren(findElement);
         }
+
         WidgetsBinding.instance.rootElement?.visitChildren(findElement);
 
         if (targetElement == null) {
           return MarionetteExtensionResult.error(
-            -1,
+            2,
             'Element with key "$keyValue" not found',
           );
         }
@@ -49,17 +52,19 @@ void main() {
       },
     );
   }
-  runApp(CmsStudioApp(
-    dataSource: MockCmsDataSource(),
-    documentTypes: [allFieldsDocumentType],
-    documentTypeDecorations: [
-      CmsDocumentTypeDecoration(
-        documentType: allFieldsDocumentType,
-        icon: Icons.science,
-      ),
-    ],
-    title: 'CMS QA Test',
-    subtitle: 'Test Automation',
-    icon: Icons.bug_report,
-  ));
+  runApp(
+    CmsStudioApp(
+      dataSource: MockCmsDataSource(),
+      documentTypes: [allFieldsDocumentType],
+      documentTypeDecorations: [
+        DocumentTypeDecoration(
+          documentType: allFieldsDocumentType,
+          icon: Icons.science,
+        ),
+      ],
+      title: 'CMS QA Test',
+      subtitle: 'Test Automation',
+      icon: Icons.bug_report,
+    ),
+  );
 }

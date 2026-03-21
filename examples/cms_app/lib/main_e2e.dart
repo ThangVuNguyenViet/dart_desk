@@ -31,14 +31,12 @@ class E2eApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShadApp(
       theme: cmsStudioTheme,
-      home: FlutterCmsAuth(
+      home: DartDeskBuiltInApp(
         serverUrl: serverUrl,
-        title: 'CMS E2E Test',
-        builder: (context, client) => CmsStudioApp(
-          dataSource: CloudDataSource(client),
+        config: DartDeskConfig(
           documentTypes: [homeScreenConfigDocumentType],
           documentTypeDecorations: [
-            CmsDocumentTypeDecoration(
+            DocumentTypeDecoration(
               documentType: homeScreenConfigDocumentType,
               icon: Icons.home,
             ),

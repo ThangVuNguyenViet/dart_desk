@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signals/signals_flutter.dart';
@@ -24,18 +24,16 @@ class CmsStudioApp extends StatefulWidget {
     this.title = 'CMS Studio',
     this.subtitle,
     this.icon,
-    this.onDashboardPressed,
     this.onSignOut,
     this.theme,
   });
 
-  final CmsDataSource dataSource;
-  final List<CmsDocumentType> documentTypes;
-  final List<CmsDocumentTypeDecoration> documentTypeDecorations;
+  final DataSource dataSource;
+  final List<DocumentType> documentTypes;
+  final List<DocumentTypeDecoration> documentTypeDecorations;
   final String title;
   final String? subtitle;
   final IconData? icon;
-  final VoidCallback? onDashboardPressed;
   final VoidCallback? onSignOut;
   final ShadThemeData? theme;
 
@@ -74,7 +72,8 @@ class _CmsStudioAppState extends State<CmsStudioApp> {
   @override
   Widget build(BuildContext context) {
     final currentMode = _themeMode.watch(context);
-    final resolvedTheme = widget.theme ??
+    final resolvedTheme =
+        widget.theme ??
         (currentMode == ThemeMode.dark ? cmsStudioTheme : cmsStudioLightTheme);
 
     return CmsThemeModeProvider(
@@ -83,7 +82,6 @@ class _CmsStudioAppState extends State<CmsStudioApp> {
         title: widget.title,
         subtitle: widget.subtitle,
         icon: widget.icon,
-        onDashboardPressed: widget.onDashboardPressed,
         child: ShadApp.router(
           theme: resolvedTheme,
           routeInformationParser: coordinator.routeInformationParser,

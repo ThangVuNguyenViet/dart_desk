@@ -24,7 +24,7 @@ class BlogPost with Serializable<BlogPost> {
 }
 
 // Define the CMS document type with field configurations
-final blogPostType = CmsDocumentType<BlogPost>(
+final blogPostType = DocumentType<BlogPost>(
   name: 'blogPost',
   title: 'Blog Post',
   description: 'A blog post with title, body text, and publish status.',

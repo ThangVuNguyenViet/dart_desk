@@ -8,11 +8,11 @@ import '../../../data/models/document_version.dart';
 import 'cms_document_view_model.dart';
 
 class CmsViewModel {
-  final CmsDataSource dataSource;
+  final DataSource dataSource;
   final CmsDocumentViewModel _documentViewModel;
 
   /// The registered document types (injected from coordinator/app config).
-  final List<CmsDocumentType> documentTypes;
+  final List<DocumentType> documentTypes;
 
   // ============================================================
   // Route Param Signals (set by coordinator via setRouteParams)
@@ -31,8 +31,8 @@ class CmsViewModel {
     debugLabel: 'currentVersionId',
   );
 
-  /// Computed: resolves the slug to a CmsDocumentType object.
-  late final currentDocumentType = Computed<CmsDocumentType?>(() {
+  /// Computed: resolves the slug to a DocumentType object.
+  late final currentDocumentType = Computed<DocumentType?>(() {
     final slug = currentDocumentTypeSlug.value;
     if (slug == null) return null;
     try {

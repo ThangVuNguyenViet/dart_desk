@@ -15,7 +15,7 @@ import '../common/cms_document_type_item.dart';
 /// Supports expanded (icon + label + count) and collapsed (icon-only rail) modes.
 /// Collapse state is driven by [CmsViewModel.sidebarCollapsed].
 class CmsDocumentTypeSidebar extends StatelessWidget {
-  final List<CmsDocumentTypeDecoration> documentTypeDecorations;
+  final List<DocumentTypeDecoration> documentTypeDecorations;
   final StudioCoordinator coordinator;
   final Widget? header;
   final Widget? footer;
@@ -77,7 +77,7 @@ class CmsDocumentTypeSidebar extends StatelessWidget {
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 2),
-                  child: CmsDocumentTypeItem(
+                  child: DocumentTypeItem(
                     documentType: decoration.documentType,
                     isSelected: isSelected,
                     icon: decoration.icon,

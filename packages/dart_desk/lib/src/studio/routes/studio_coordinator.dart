@@ -12,9 +12,9 @@ import 'media_route.dart';
 import 'version_route.dart';
 
 class StudioCoordinator extends Coordinator<StudioRoute> {
-  final List<CmsDocumentType> documentTypes;
-  final CmsDataSource dataSource;
-  final List<CmsDocumentTypeDecoration> documentTypeDecorations;
+  final List<DocumentType> documentTypes;
+  final DataSource dataSource;
+  final List<DocumentTypeDecoration> documentTypeDecorations;
   final VoidCallback? onSignOut;
 
   String get defaultDocumentTypeSlug =>

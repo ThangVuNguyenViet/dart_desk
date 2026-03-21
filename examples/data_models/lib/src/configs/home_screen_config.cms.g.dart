@@ -147,7 +147,7 @@ final homeScreenConfigFields = [
 ];
 
 /// Generated document type for HomeScreenConfig
-final homeScreenConfigDocumentType = CmsDocumentType<HomeScreenConfig>(
+final homeScreenConfigDocumentType = DocumentType<HomeScreenConfig>(
   name: 'homeScreenConfig',
   title: 'Home Screen',
   description:

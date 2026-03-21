@@ -11,7 +11,7 @@ import '../../data/models/media_asset.dart';
 
 class AssetDetailPanel extends StatefulWidget {
   final MediaAsset asset;
-  final CmsDataSource dataSource;
+  final DataSource dataSource;
   final VoidCallback? onDelete;
 
   const AssetDetailPanel({

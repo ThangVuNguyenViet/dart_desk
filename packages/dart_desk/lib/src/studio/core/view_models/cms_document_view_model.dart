@@ -10,7 +10,7 @@ import '../../../data/models/cms_document.dart';
 /// - Document data updates via CRDT
 /// - Version management
 class CmsDocumentViewModel {
-  final CmsDataSource dataSource;
+  final DataSource dataSource;
 
   /// Signal for the document ID
   final documentId = Signal<int?>(null, debugLabel: 'documentId');

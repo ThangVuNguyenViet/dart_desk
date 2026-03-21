@@ -14,8 +14,8 @@ class StudioProvider extends StatelessWidget {
   });
 
   final Widget child;
-  final CmsDataSource dataSource;
-  final List<CmsDocumentType> documentTypes;
+  final DataSource dataSource;
+  final List<DocumentType> documentTypes;
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +30,11 @@ class StudioProvider extends StatelessWidget {
 }
 
 final documentViewModelProvider = Provider.withArgument(
-  (context, CmsDataSource dataSource) => CmsDocumentViewModel(dataSource),
+  (context, DataSource dataSource) => CmsDocumentViewModel(dataSource),
 );
 
 final cmsViewModelProvider = Provider.withArgument(
-  (context, (CmsDataSource, List<CmsDocumentType>) args) => CmsViewModel(
+  (context, (DataSource, List<DocumentType>) args) => CmsViewModel(
     dataSource: args.$1,
     documentViewModel: documentViewModelProvider.of(context),
     documentTypes: args.$2,

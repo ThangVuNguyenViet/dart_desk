@@ -42,7 +42,7 @@ class CmsImageInput extends StatefulWidget {
   final CmsImageField field;
   final CmsData? data;
   final ValueChanged<Map<String, dynamic>?>? onChanged;
-  final CmsDataSource? dataSource;
+  final DataSource? dataSource;
   final TransformUrlBuilder? transformUrl;
 
   const CmsImageInput({
@@ -230,6 +230,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     showShadDialog(
       context: context,
       builder: (context) => ShadDialog(
+        scrollable: false,
         constraints: const BoxConstraints(maxWidth: 900, maxHeight: 600),
         child: MediaBrowser(
           dataSource: widget.dataSource!,

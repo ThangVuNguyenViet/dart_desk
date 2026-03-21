@@ -356,7 +356,7 @@ final $fieldsListName = [
 ];
 
 /// Generated document type for $className
-final $documentTypeName = CmsDocumentType<$className>(
+final $documentTypeName = DocumentType<$className>(
   $idField
   title: '$title',
   description: '$description',

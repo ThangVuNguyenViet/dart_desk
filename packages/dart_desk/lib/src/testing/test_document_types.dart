@@ -3,7 +3,7 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 
 /// Test document type that exercises all 16 CMS field types.
 /// Use this in test apps to get full field coverage.
-final allFieldsDocumentType = CmsDocumentType(
+final allFieldsDocumentType = DocumentType(
   name: 'test_all_fields',
   title: 'Test All Fields',
   description: 'Document type with all 16 field types for QA testing',

@@ -7,7 +7,7 @@ import '../../data/models/image_types.dart';
 import '../../data/models/media_asset.dart';
 
 class MediaBrowserState {
-  final CmsDataSource dataSource;
+  final DataSource dataSource;
 
   // Filter/search state
   final search = signal('');

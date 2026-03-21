@@ -18,7 +18,7 @@ import '../theme/spacing.dart';
 
 /// Document list view for browsing multiple documents of a type
 class CmsDocumentListView extends StatefulWidget {
-  final CmsDocumentType selectedDocumentType;
+  final DocumentType selectedDocumentType;
   final IconData? icon;
   final String? filter;
   final void Function(String documentId)? onOpenDocument;

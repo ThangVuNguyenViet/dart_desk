@@ -135,7 +135,7 @@ class _CmsStudioState extends State<CmsStudio> {
     BuildContext context,
     ShadThemeData theme,
     CmsViewModel viewModel,
-    CmsDocumentType docType,
+    DocumentType docType,
   ) {
     final documentViewModel = documentViewModelProvider.of(context);
     final edited = documentViewModel.editedData.watch(context);
