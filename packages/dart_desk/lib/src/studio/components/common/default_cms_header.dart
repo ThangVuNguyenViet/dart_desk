@@ -69,7 +69,6 @@ class DefaultCmsHeaderConfig extends InheritedWidget {
   final String? subtitle;
   final IconData? icon;
   final String? dashboardUrl;
-  final VoidCallback? onDashboardPressed;
 
   const DefaultCmsHeaderConfig({
     super.key,
@@ -77,7 +76,6 @@ class DefaultCmsHeaderConfig extends InheritedWidget {
     this.subtitle,
     this.icon,
     this.dashboardUrl,
-    this.onDashboardPressed,
     required super.child,
   });
 
@@ -90,7 +88,6 @@ class DefaultCmsHeaderConfig extends InheritedWidget {
     return title != oldWidget.title ||
         subtitle != oldWidget.subtitle ||
         icon != oldWidget.icon ||
-        dashboardUrl != oldWidget.dashboardUrl ||
-        onDashboardPressed != oldWidget.onDashboardPressed;
+        dashboardUrl != oldWidget.dashboardUrl;
   }
 }

@@ -94,11 +94,10 @@ class HomeScreen extends StatelessWidget {
 
                   // Downloads section
                   if (config.downloadableResource != null &&
-                      config.downloadableResource!.isNotEmpty)
-                    ...[
-                      _buildDownloadCard(theme),
-                      const SizedBox(height: 24),
-                    ],
+                      config.downloadableResource!.isNotEmpty) ...[
+                    _buildDownloadCard(theme),
+                    const SizedBox(height: 24),
+                  ],
 
                   // Footer
                   if (config.showFooter) _buildFooter(context, theme),
@@ -225,9 +224,7 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: config.accentColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: config.accentColor.withValues(alpha: 0.3)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -238,7 +235,11 @@ class HomeScreen extends StatelessWidget {
               color: config.accentColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(Icons.campaign_rounded, color: config.accentColor, size: 20),
+            child: Icon(
+              Icons.campaign_rounded,
+              color: config.accentColor,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -297,10 +298,7 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         _formatPromoDateRange(),
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey[500],
-                        ),
+                        style: TextStyle(fontSize: 11, color: Colors.grey[500]),
                       ),
                     ],
                   ),
@@ -314,8 +312,9 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildFeaturedItems() {
-    final displayItems =
-        config.featuredItems.take(config.maxFeaturedItems).toList();
+    final displayItems = config.featuredItems
+        .take(config.maxFeaturedItems)
+        .toList();
 
     switch (config.layoutStyle.toLowerCase()) {
       case 'grid':
@@ -396,9 +395,7 @@ class HomeScreen extends StatelessWidget {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(
-          color: Colors.grey.withValues(alpha: 0.12),
-        ),
+        border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
       ),
       child: Row(
         children: [
@@ -496,8 +493,10 @@ class HomeScreen extends StatelessWidget {
               ),
               child: Text(
                 config.primaryButtonLabel,
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -521,8 +520,10 @@ class HomeScreen extends StatelessWidget {
               ),
               child: Text(
                 config.secondaryButtonLabel,
-                style:
-                    const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),
@@ -537,9 +538,7 @@ class HomeScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: config.primaryColor.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: config.primaryColor.withValues(alpha: 0.15),
-        ),
+        border: Border.all(color: config.primaryColor.withValues(alpha: 0.15)),
       ),
       child: Row(
         children: [
@@ -549,8 +548,10 @@ class HomeScreen extends StatelessWidget {
               color: config.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child:
-                Icon(Icons.file_download_outlined, color: config.primaryColor),
+            child: Icon(
+              Icons.file_download_outlined,
+              color: config.primaryColor,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -596,7 +597,7 @@ class HomeScreen extends StatelessWidget {
               child: Image.network(
                 config.footerLogoUrl!,
                 height: 40,
-                errorBuilder: (_, __, _) => const SizedBox.shrink(),
+                errorBuilder: (_, _, _) => const SizedBox.shrink(),
               ),
             ),
             const SizedBox(height: 16),
@@ -629,8 +630,12 @@ class HomeScreen extends StatelessWidget {
           if (config.externalLink != null &&
               config.externalLink!.isNotEmpty) ...[
             const SizedBox(height: 10),
-            _buildInfoRow('Learn More', config.externalLink!, Icons.link,
-                isLink: true),
+            _buildInfoRow(
+              'Learn More',
+              config.externalLink!,
+              Icons.link,
+              isLink: true,
+            ),
           ],
 
           const SizedBox(height: 10),

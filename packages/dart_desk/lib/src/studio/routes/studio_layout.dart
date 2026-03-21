@@ -7,7 +7,6 @@ import 'package:zenrouter/zenrouter.dart';
 
 import '../../../studio.dart';
 import '../providers/studio_provider.dart';
-import 'media_route.dart';
 
 /// The root layout for all studio routes.
 ///

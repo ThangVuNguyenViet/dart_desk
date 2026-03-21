@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:typed_data';
 
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -13,28 +14,27 @@ import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import '../data/cms_data_source.dart';
 import '../data/models/image_reference.dart';
 import '../data/models/image_types.dart';
-import '../data/models/media_asset.dart';
-import '../media/quick_metadata_extractor.dart';
-import '../media/image_url.dart';
-import '../media/image_transform_params.dart';
 import '../media/browser/media_browser.dart';
+import '../media/image_transform_params.dart';
+import '../media/image_url.dart';
+import '../media/quick_metadata_extractor.dart';
 import 'hotspot/image_hotspot_editor.dart';
 
 @Preview(name: 'CmsImageInput')
 Widget preview() => ShadApp(
-      home: Scaffold(
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: CmsImageInput(
-            field: const CmsImageField(
-              name: 'avatar',
-              title: 'Profile Image',
-              option: CmsImageOption(hotspot: false),
-            ),
-          ),
+  home: Scaffold(
+    body: Padding(
+      padding: const EdgeInsets.all(16),
+      child: CmsImageInput(
+        field: const CmsImageField(
+          name: 'avatar',
+          title: 'Profile Image',
+          option: CmsImageOption(hotspot: false),
         ),
       ),
-    );
+    ),
+  ),
+);
 
 enum _UploadState { idle, extractingMetadata, uploading, done, error }
 
@@ -89,8 +89,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     // but we handle it gracefully by ignoring it.
   }
 
-  Future<void> _tryLoadImageReferenceFromData(
-      Map<String, dynamic> json) async {
+  Future<void> _tryLoadImageReferenceFromData(Map<String, dynamic> json) async {
     final assetId = json['assetId'] as String?;
     if (assetId == null || widget.dataSource == null) return;
 
@@ -106,8 +105,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
 
   Future<void> _handlePickImage() async {
     try {
-      final XFile? image =
-          await _picker.pickImage(source: ImageSource.gallery);
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image == null) return;
 
       final bytes = await image.readAsBytes();
@@ -116,6 +114,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     } catch (e) {
       _uploadState.value = _UploadState.error;
       _errorMessage.value = 'Failed to pick image: $e';
+      log('Error occurred while picking image: $e');
     }
   }
 
@@ -172,21 +171,25 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
 
     // Try to read as an image file
     final completer = Completer<void>();
-    reader.getFile(null, (file) async {
-      try {
-        final bytes = await file.readAll();
-        final name = file.fileName ?? 'dropped_image';
-        await _uploadBytes(name, bytes);
-      } catch (e) {
+    reader.getFile(
+      null,
+      (file) async {
+        try {
+          final bytes = await file.readAll();
+          final name = file.fileName ?? 'dropped_image';
+          await _uploadBytes(name, bytes);
+        } catch (e) {
+          _uploadState.value = _UploadState.error;
+          _errorMessage.value = 'Failed to read dropped file: $e';
+        }
+        completer.complete();
+      },
+      onError: (error) {
         _uploadState.value = _UploadState.error;
-        _errorMessage.value = 'Failed to read dropped file: $e';
-      }
-      completer.complete();
-    }, onError: (error) {
-      _uploadState.value = _UploadState.error;
-      _errorMessage.value = 'Failed to read dropped file: $error';
-      completer.complete();
-    });
+        _errorMessage.value = 'Failed to read dropped file: $error';
+        completer.complete();
+      },
+    );
     await completer.future;
   }
 
@@ -319,8 +322,9 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       final url = widget.transformUrl != null
           ? (widget.transformUrl!(
                   ref.asset.publicUrl,
-                  const ImageTransformParams(width: 600, fit: FitMode.clip)) ??
-              ref.asset.publicUrl)
+                  const ImageTransformParams(width: 600, fit: FitMode.clip),
+                ) ??
+                ref.asset.publicUrl)
           : ref.asset.publicUrl;
 
       return Image.network(
@@ -429,7 +433,8 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     final error = _errorMessage.watch(context);
     final hasImage = ref != null;
     final hotspotEnabled = widget.field.option?.hotspot ?? false;
-    final isUploading = state == _UploadState.extractingMetadata ||
+    final isUploading =
+        state == _UploadState.extractingMetadata ||
         state == _UploadState.uploading;
 
     return DropRegion(
@@ -453,8 +458,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           // Title label
           Text(
             widget.field.title,
-            style:
-                theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
 
