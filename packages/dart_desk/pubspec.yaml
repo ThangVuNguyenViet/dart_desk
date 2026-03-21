@@ -28,6 +28,9 @@ dependencies:
     path: ../../../../marionette_mcp/packages/marionette_flutter
   font_awesome_flutter: ^10.8.0
   collection: ^1.19.1
+  blurhash_dart: ^1.2.1
+  crypto: ^3.0.6
+  image: ^4.5.0
 
 dev_dependencies:
   flutter_test:

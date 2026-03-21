@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  archive:
+    dependency: transitive
+    description:
+      name: archive
+      sha256: a96e8b390886ee8abb49b7bd3ac8df6f451c621619f52a26e815fdcf568959ff
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.9"
   args:
     dependency: transitive
     description:
@@ -49,6 +57,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.4.5"
+  blurhash_dart:
+    dependency: transitive
+    description:
+      name: blurhash_dart
+      sha256: "43955b6c2e30a7d440028d1af0fa185852f3534b795cc6eb81fbf397b464409f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -226,9 +242,9 @@ packages:
     source: hosted
     version: "1.0.2"
   dart_desk_be_client:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      path: "../dart_desk_be/dart_desk_be_client"
+      path: "../../../../dart_desk_be/dart_desk_be_client"
       relative: true
     source: path
     version: "0.0.0"
@@ -692,6 +708,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.2"
+  image:
+    dependency: transitive
+    description:
+      name: image
+      sha256: f9881ff4998044947ec38d098bc7c8316ae1186fa786eddffdb867b9bc94dfce
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.8.0"
   image_picker:
     dependency: transitive
     description:
@@ -845,9 +869,9 @@ packages:
     source: hosted
     version: "3.1.7"
   marionette_flutter:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      path: "../../marionette_mcp/packages/marionette_flutter"
+      path: "../../../../../marionette_mcp/packages/marionette_flutter"
       relative: true
     source: path
     version: "0.4.0"
@@ -1043,6 +1067,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.2"
+  posix:
+    dependency: transitive
+    description:
+      name: posix
+      sha256: "185ef7606574f789b40f289c233efa52e96dead518aed988e040a10737febb07"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.5.0"
   preact_signals:
     dependency: transitive
     description:
