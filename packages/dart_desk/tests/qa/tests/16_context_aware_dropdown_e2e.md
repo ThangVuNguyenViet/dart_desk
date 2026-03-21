@@ -1,45 +1,46 @@
-# 16 — Context-Aware Dropdown E2E (Marionette)
+# 16 — Context-Aware Multi-Select Dropdown E2E (Marionette)
 
-Validates that a `CmsDropdownOption` subclass using `documentsContainer.watch(context)`
-resolves options reactively in the running app.
+Validates that a `CmsMultiDropdownOption` subclass using `documentsContainer.watch(context)`
+resolves options reactively in the running app with multi-select support.
 
 ## Prerequisites
 
 - CMS QA Test app running (`main_test.dart`) with MockDataSource
 - Marionette connected
-- `allFieldsDocumentType` loaded with `TestDocumentRefDropdownOption` field
+- `allFieldsDocumentType` loaded with `TestDocumentRefDropdownOption` field (multi-select)
 
 ---
 
-## TC-16-01: Context-aware dropdown loads document titles as options
+## TC-16-01: Context-aware multi-dropdown loads document titles as options
 
 **Steps:**
 1. Tap "Test Document Alpha" to open it in the editor
 2. Scroll to "Document Reference" field
-3. Verify the dropdown shows placeholder "Select a document..."
+3. Verify the dropdown shows placeholder "Select documents..."
 4. Open the dropdown
 5. Verify 3 options appear: "Test Document Alpha", "Test Document Beta", "Test Document Gamma"
+6. Verify dropdown stays open after selection (closeOnSelect: false)
 
-**Expected:** The dropdown resolved its options from `documentsContainer('test_all_fields').watch(context)`.
+**Expected:** The multi-dropdown resolved its options from `documentsContainer('test_all_fields').watch(context)`.
 
-**Result:** PASS (2026-03-22)
+**Result:** Needs re-run (updated to multi-select)
 
 ---
 
-## TC-16-02: Selecting a document reference persists to preview
+## TC-16-02: Selecting multiple document references persists to preview
 
 **Steps:**
-1. With the "Document Reference" dropdown open, select "Test Document Beta"
-2. Verify the dropdown now shows "Test Document Beta"
-3. Check the preview panel shows `preview:document_ref_dropdown: 2 (Test Document Beta)`
+1. With the "Document Reference" dropdown open, select "Test Document Alpha" and "Test Document Beta"
+2. Verify the dropdown shows "Test Document Alpha, Test Document Beta"
+3. Check the preview panel shows `preview:document_ref_dropdown: [1, 2] (Test Document Alpha, Test Document Beta)`
 
-**Expected:** Selection persists to editedData and preview updates reactively.
+**Expected:** Multi-selection persists to editedData as List and preview updates reactively with all titles.
 
-**Result:** PASS (2026-03-22)
+**Result:** Needs re-run (updated to multi-select)
 
 ---
 
-## TC-16-03: Creating a document adds it to the context-aware dropdown
+## TC-16-03: Creating a document adds it to the context-aware multi-dropdown
 
 **Steps:**
 1. Discard unsaved changes
@@ -49,14 +50,14 @@ resolves options reactively in the running app.
 5. Scroll to "Document Reference" and open the dropdown
 6. Verify 4 options now appear, including "Test Document Delta"
 
-**Expected:** The context-aware dropdown reactively picks up the new document
+**Expected:** The context-aware multi-dropdown reactively picks up the new document
 because `documentsContainer('test_all_fields')` was reloaded after create.
 
-**Result:** PASS (2026-03-22)
+**Result:** Needs re-run (updated to multi-select)
 
 ---
 
-## TC-16-04: Deleting a document removes it from the context-aware dropdown
+## TC-16-04: Deleting a document removes it from the context-aware multi-dropdown
 
 **Steps:**
 1. Close the dropdown
@@ -64,6 +65,6 @@ because `documentsContainer('test_all_fields')` was reloaded after create.
 3. Re-open the "Document Reference" dropdown on Alpha
 4. Verify only 3 options remain (Delta is gone)
 
-**Expected:** The dropdown reactively updates when the backing document list changes.
+**Expected:** The multi-dropdown reactively updates when the backing document list changes.
 
-**Result:** PASS (2026-03-22)
+**Result:** Needs re-run (updated to multi-select)
