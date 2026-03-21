@@ -52,6 +52,14 @@ dependencies:
   marionette_flutter:
     path: ../../../../marionette_mcp/packages/marionette_flutter
 
+dependency_overrides:
+  dart_desk:
+    path: ../../packages/dart_desk
+  marionette_flutter:
+    path: ../../../../marionette_mcp/packages/marionette_flutter
+  dart_desk_be_client:
+    path: ../../../dart_desk_be/dart_desk_be_client
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
