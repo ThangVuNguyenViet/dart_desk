@@ -60,12 +60,95 @@ Hotspot { x, y, width, height }    // all 0.0–1.0
 CropRect { top, bottom, left, right }  // all 0.0–1.0
 ```
 
+### ImageReference JSON serialization (in document data)
+
+When stored in a document's `data: Map<String, dynamic>`, an image field value is serialized as:
+
+```json
+{
+  "_type": "imageReference",
+  "assetId": "image-a1b2c3-1920x1080-jpg",
+  "hotspot": { "x": 0.5, "y": 0.3, "width": 0.4, "height": 0.3 },
+  "crop": { "top": 0.0, "bottom": 0.1, "left": 0.0, "right": 0.05 },
+  "altText": "A sunset over the ocean"
+}
+```
+
+`CmsImageInput.onChanged` changes from `ValueChanged<String?>` (plain URL) to `ValueChanged<Map<String, dynamic>?>` (serialized ImageReference). This is a **breaking change** to the existing API.
+
 ### Key decisions
 
 - `assetId` uses content-hash so the same file uploaded twice is deduplicated
 - Hotspot/crop live on `ImageReference`, not `MediaAsset` — same image, different crops per usage
 - `metadataStatus` tracks async enrichment so the UI knows when palette/EXIF are ready
 - `altText` lives on the reference (per-usage), not the asset
+- Deduplication: `assetId` has a **unique constraint** at the database level. On conflict (race condition), the server catches the constraint violation, re-fetches the existing record, and returns it
+
+## Updated CmsDataSource Interface
+
+The existing `CmsDataSource` interface is updated to reflect the new model. `MediaFile` is replaced by `MediaAsset`, and the upload signature accepts quick metadata.
+
+```dart
+// Replaces the old MediaFile-based methods
+abstract class CmsDataSource {
+  // ... existing document methods unchanged ...
+
+  // --- Media (updated) ---
+
+  /// Upload an image with client-extracted quick metadata.
+  /// Returns the MediaAsset (existing if deduplicated, new otherwise).
+  Future<MediaAsset> uploadImage(
+    String fileName,
+    Uint8List fileData,
+    QuickImageMetadata metadata,
+  );
+
+  /// Upload a non-image file.
+  Future<MediaAsset> uploadFile(String fileName, Uint8List fileData);
+
+  /// Delete a media asset. Fails if asset is still referenced by documents.
+  Future<bool> deleteMedia(String assetId);
+
+  /// Get a single asset by ID.
+  Future<MediaAsset?> getMediaAsset(String assetId);
+
+  /// List/search media assets with filtering and sorting.
+  Future<MediaPage> listMedia({
+    String? search,          // filename, alt text
+    MediaTypeFilter? type,   // image, video, file, all
+    MediaSort sort = MediaSort.dateDesc,
+    int limit = 50,
+    int offset = 0,
+  });
+
+  /// Update mutable asset fields (alt text on the asset level is not used,
+  /// but fileName can be renamed).
+  Future<MediaAsset> updateMediaAsset(String assetId, {String? fileName});
+
+  /// Get usage count: how many documents reference this asset.
+  Future<int> getMediaUsageCount(String assetId);
+}
+
+class QuickImageMetadata {
+  final int width;
+  final int height;
+  final bool hasAlpha;
+  final String blurHash;
+  final String contentHash;  // SHA-256 hex string
+}
+
+class MediaPage {
+  final List<MediaAsset> items;
+  final int total;
+}
+
+enum MediaTypeFilter { image, video, file, all }
+enum MediaSort { dateDesc, dateAsc, nameAsc, nameDesc, sizeDesc, sizeAsc }
+```
+
+### Migration from MediaFile
+
+`MediaFile` and `MediaUploadResult` are deprecated and replaced by `MediaAsset`. Existing `CmsDataSource` implementations (including `MockCmsDataSource`) must be updated.
 
 ## Upload Flow
 
@@ -90,6 +173,13 @@ CropRect { top, bottom, left, right }  // all 0.0–1.0
    - Extract: palette, LQIP, EXIF, geolocation
    - Update MediaAsset, set metadataStatus: complete
 ```
+
+### Platform considerations
+
+- **Isolate usage**: Client-side metadata extraction (decode + blurHash + SHA-256) runs in a **separate isolate** via `compute()` to avoid UI jank on large images (>2-3 MB)
+- **HEIC/HEIF**: iOS `image_picker` returns HEIC by default. The `image` package cannot decode HEIC. Mitigation: set `image_picker`'s `requestFullMetadata: false` and request JPEG output, or accept that HEIC files skip client-side dimension extraction and let the server handle it
+- **Web**: `image_picker` on web returns blob URLs. Reading full bytes for SHA-256 is memory-intensive for large files. For web, compute hash from the first 1MB + file size as a fast fingerprint, with full-hash dedup as a server-side fallback
+- **BlurHash on web**: `blurhash_dart` requires FFI. Use a pure-Dart BlurHash encoder (e.g., `blurhash` package) or fall back to server-side generation for web platform
 
 ### Abstract interface (dart_desk_be)
 
@@ -166,10 +256,17 @@ Client request → CloudFront (transforms.dartdesk.dev)
 
 ### Client-side URL builder (dart_desk)
 
+The `ImageUrl` builder lives in dart_desk and depends on a **client-side interface** (`TransformUrlBuilder`), not the server-side `ImageStorageProvider` directly. This avoids a cross-package dependency.
+
+```dart
+/// Defined in dart_desk — client-side only
+typedef TransformUrlBuilder = String? Function(String publicUrl, ImageTransformParams params);
+```
+
 ```dart
 class ImageUrl {
   final ImageReference imageRef;
-  final ImageStorageProvider provider;
+  final TransformUrlBuilder? transformUrl;
 
   String url({int? width, int? height, FitMode? fit, String? format, int? quality}) {
     final params = ImageTransformParams(
@@ -177,7 +274,7 @@ class ImageUrl {
       fpX: imageRef.hotspot?.x, fpY: imageRef.hotspot?.y,
       crop: imageRef.crop,
     );
-    return provider.transformUrl(imageRef.asset.publicUrl, params)
+    return transformUrl?.call(imageRef.asset.publicUrl, params)
         ?? imageRef.asset.publicUrl;
   }
 
@@ -307,6 +404,33 @@ Shows on thumbnail click: preview, dimensions, file size, format, upload date, a
 
 Everything in dart_desk and dart_desk_be works without transforms. The `ImageUrl` builder gracefully falls back to the original URL.
 
+## Edge Cases & Safety
+
+### Async metadata completion notification
+
+The client learns about metadata enrichment completion via **polling on the asset detail panel**. When a user opens the detail panel for an asset with `metadataStatus: pending`, the panel polls `getMediaAsset()` every 2 seconds until status is `complete` or `failed`. No WebSocket/streaming needed — enrichment typically completes within seconds, and the palette/EXIF data is only shown in the detail panel (not latency-sensitive).
+
+### Delete safety / referential integrity
+
+- `deleteMedia()` calls `getMediaUsageCount()` first. If usage > 0, the delete is **blocked** and returns an error with the count.
+- The media browser UI shows "Used in N documents" and disables the delete button when N > 0, with a tooltip explaining why.
+- No soft-delete or cascading — assets are either in use (protected) or unused (deletable).
+
+### Server-side validation
+
+The upload endpoint validates before storing:
+- **Max file size**: 10 MB (configurable via Serverpod config, already set in production.yaml)
+- **Accepted MIME types**: `image/jpeg`, `image/png`, `image/webp`, `image/gif`, `image/svg+xml`, `image/avif`, `image/heic`, `image/heif`, `image/tiff`, `image/bmp` for image uploads. Configurable.
+- **Rejection**: returns a typed error with reason (file too large, unsupported type)
+
+### Processing order clarification
+
+CropRect and Hotspot serve different roles in the transform pipeline:
+1. **CropRect** trims the source image (absolute edge removal based on 0-1 fractions)
+2. **Hotspot** is passed as a **focal point** (`fpX`/`fpY`) to guide the resize step's smart-crop — it is not a sequential crop operation
+3. **Resize** applies with the focal point as the center of attention
+4. **Effects** (format, quality, blur, sharpen) applied last
+
 ## E2E Testing with Marionette
 
 ### Test coverage
@@ -348,6 +472,13 @@ Using Marionette MCP to test the full image workflow in the running studio app.
 | Test | Steps |
 |---|---|
 | Drag from media browser to field | Open media browser + image field → drag thumbnail to field → verify ImageReference set |
+
+#### Async metadata tests
+
+| Test | Steps |
+|---|---|
+| Metadata enrichment | Upload image → open asset detail → verify metadataStatus shows pending → wait → verify palette and EXIF appear once complete |
+| Metadata failure | Upload corrupted file → verify metadataStatus shows failed → verify detail panel shows graceful fallback |
 
 #### Transform URL tests
 
@@ -398,10 +529,10 @@ dart_desk_cloud (closed-source)
 | Package | Where | Purpose |
 |---|---|---|
 | `super_drag_and_drop` | dart_desk | OS + in-app drag and drop |
-| `blurhash_dart` (or similar) | dart_desk | Client-side blurHash generation |
+| `blurhash` (pure Dart, web-compatible) | dart_desk | Client-side blurHash generation |
 | `crypto` | dart_desk | SHA-256 content hashing |
-| `image` (dart) | dart_desk_be | Server-side metadata extraction (palette, LQIP) |
-| `exif` (dart) | dart_desk_be | EXIF data extraction |
+| `image` (`pub.dev/packages/image`) | dart_desk_be | Server-side metadata extraction (palette, LQIP) |
+| `exif` (`pub.dev/packages/exif`) | dart_desk_be | EXIF data extraction (pure Dart, works server-side) |
 
 ### Existing packages (already in use)
 
