@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:signals/signals_flutter.dart';
+import '../studio/providers/studio_provider.dart';
 
 /// Test document type that exercises all 16 CMS field types.
 /// Use this in test apps to get full field coverage.
@@ -90,6 +94,12 @@ final allFieldsDocumentType = DocumentType(
         placeholder: 'Select an option',
       ),
     ),
+    CmsDropdownField<String>(
+      name: 'document_ref_dropdown',
+      title: 'Document Reference',
+      description: 'Context-aware dropdown that loads documents reactively',
+      option: TestDocumentRefDropdownOption(),
+    ),
     CmsArrayField(
       name: 'array_field',
       title: 'Array Field',
@@ -145,6 +155,7 @@ Widget _testAllFieldsBuilder(Map<String, dynamic> data) {
           Text('preview:datetime_field: ${data['datetime_field'] ?? ''}'),
           Text('preview:color_field: ${data['color_field'] ?? ''}'),
           Text('preview:dropdown_field: ${data['dropdown_field'] ?? ''}'),
+          Text('preview:document_ref_dropdown: ${data['document_ref_dropdown'] ?? ''}'),
           Text('preview:text_field: ${data['text_field'] ?? ''}'),
           Text('preview:image_field: ${data['image_field'] ?? ''}'),
           Text('preview:file_field: ${data['file_field'] ?? ''}'),
@@ -167,6 +178,34 @@ class TestStringArrayOption extends CmsArrayOption {
       (context, value) => Text(value?.toString() ?? '');
 }
 
+/// Context-aware dropdown option that resolves options reactively from
+/// the documents of type 'test_all_fields' via CmsViewModel signals.
+class TestDocumentRefDropdownOption extends CmsDropdownOption<String> {
+  const TestDocumentRefDropdownOption();
+
+  @override
+  List<DropdownOption<String>> options(BuildContext context) {
+    final viewModel = cmsViewModelProvider.of(context);
+    final state = viewModel.documentsContainer('test_all_fields').watch(context);
+    return state.map(
+      data: (list) => list.documents
+          .map((d) => DropdownOption(value: d.id.toString(), label: d.title))
+          .toList(),
+      loading: () => [],
+      error: (_, __) => [],
+    );
+  }
+
+  @override
+  FutureOr<String?>? get defaultValue => null;
+
+  @override
+  String? get placeholder => 'Select a document...';
+
+  @override
+  bool get allowNull => true;
+}
+
 /// Seed data for 3 test documents with known values.
 const testDocumentSeedData = [
   {
@@ -182,9 +221,13 @@ const testDocumentSeedData = [
       'date_field': '2026-03-01',
       'datetime_field': '2026-03-01T10:30:00',
       'color_field': '#FF5733',
-      'image_field': 'https://picsum.photos/200',
+      'image_field': {
+        '_type': 'imageReference',
+        'assetId': 'asset-hero',
+      },
       'file_field': null,
       'dropdown_field': 'option_a',
+      'document_ref_dropdown': null,
       'array_field': ['Item 1', 'Item 2', 'Item 3'],
       'object_field': {'nested_title': 'Nested Value', 'nested_count': 10},
       'block_field': null,
@@ -207,6 +250,7 @@ const testDocumentSeedData = [
       'image_field': null,
       'file_field': null,
       'dropdown_field': 'option_b',
+      'document_ref_dropdown': null,
       'array_field': ['Alpha', 'Beta'],
       'object_field': {'nested_title': 'Beta Nested', 'nested_count': 5},
       'block_field': null,
@@ -226,9 +270,13 @@ const testDocumentSeedData = [
       'date_field': null,
       'datetime_field': null,
       'color_field': '#4CAF50',
-      'image_field': 'https://picsum.photos/300',
+      'image_field': {
+        '_type': 'imageReference',
+        'assetId': 'asset-landscape',
+      },
       'file_field': null,
       'dropdown_field': null,
+      'document_ref_dropdown': null,
       'array_field': [],
       'object_field': {'nested_title': '', 'nested_count': 0},
       'block_field': null,
