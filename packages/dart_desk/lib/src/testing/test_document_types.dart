@@ -68,7 +68,7 @@ final allFieldsDocumentType = CmsDocumentType(
       name: 'image_field',
       title: 'Image Field',
       description: 'An image upload/URL field',
-      option: CmsImageOption(hotspot: false),
+      option: CmsImageOption(hotspot: true),
     ),
     const CmsFileField(
       name: 'file_field',

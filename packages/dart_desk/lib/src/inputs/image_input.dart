@@ -13,9 +13,12 @@ import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import '../data/cms_data_source.dart';
 import '../data/models/image_reference.dart';
 import '../data/models/image_types.dart';
+import '../data/models/media_asset.dart';
 import '../media/quick_metadata_extractor.dart';
 import '../media/image_url.dart';
 import '../media/image_transform_params.dart';
+import '../media/browser/media_browser.dart';
+import 'hotspot/image_hotspot_editor.dart';
 
 @Preview(name: 'CmsImageInput')
 Widget preview() => ShadApp(
@@ -196,11 +199,52 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
   }
 
   void _editCrop() {
-    // TODO: Open ImageHotspotEditor in a dialog (Task 10)
+    final ref = _imageRef.value;
+    if (ref == null) return;
+
+    showShadDialog(
+      context: context,
+      builder: (context) => ShadDialog(
+        constraints: const BoxConstraints(maxWidth: 640),
+        child: ImageHotspotEditor(
+          imageUrl: ref.asset.publicUrl,
+          initialHotspot: ref.hotspot,
+          initialCrop: ref.crop,
+          onChanged: (result) {
+            final updated = ref.copyWith(
+              hotspot: result.hotspot,
+              crop: result.crop,
+            );
+            _imageRef.value = updated;
+            widget.onChanged?.call(updated.toDocumentJson());
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+    );
   }
 
   void _browseMedia() {
-    // TODO: Open media browser in picker mode (Task 11)
+    if (widget.dataSource == null) return;
+
+    showShadDialog(
+      context: context,
+      builder: (context) => ShadDialog(
+        constraints: const BoxConstraints(maxWidth: 900, maxHeight: 600),
+        child: MediaBrowser(
+          dataSource: widget.dataSource!,
+          mode: MediaBrowserMode.picker,
+          onAssetSelected: (asset) {
+            final imageRef = ImageReference(asset: asset);
+            _imageRef.value = imageRef;
+            _uploadState.value = _UploadState.done;
+            widget.onChanged?.call(imageRef.toDocumentJson());
+            Navigator.of(context).pop();
+          },
+          onClose: () => Navigator.of(context).pop(),
+        ),
+      ),
+    );
   }
 
   Widget _buildImagePreviewArea(ShadThemeData theme) {
