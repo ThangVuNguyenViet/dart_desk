@@ -384,23 +384,23 @@ void main() {
       await tester.pumpWidget(buildEditorPreviewTestApp(
         dataSource: dataSource,
         docType: allFieldsDocumentType,
-        seedData: {'document_ref_dropdown': null},
+        seedData: {'document_ref_dropdown': <String>[]},
       ));
       await tester.pumpAndSettle();
 
-      expect(find.text('preview:document_ref_dropdown: '), findsOneWidget);
+      expect(find.text('preview:document_ref_dropdown: []'), findsOneWidget);
     });
 
     testWidgets('shows resolved title in document_ref_dropdown preview', (tester) async {
       await tester.pumpWidget(buildEditorPreviewTestApp(
         dataSource: dataSource,
         docType: allFieldsDocumentType,
-        seedData: {'document_ref_dropdown': '2'},
+        seedData: {'document_ref_dropdown': ['2']},
       ));
       await tester.pumpAndSettle();
 
       expect(
-        find.text('preview:document_ref_dropdown: 2 (Test Document Beta)'),
+        find.text('preview:document_ref_dropdown: [2] (Test Document Beta)'),
         findsOneWidget,
       );
     });
@@ -409,23 +409,23 @@ void main() {
       await tester.pumpWidget(buildEditorPreviewTestApp(
         dataSource: dataSource,
         docType: allFieldsDocumentType,
-        seedData: {'document_ref_dropdown': '1'},
+        seedData: {'document_ref_dropdown': ['1']},
       ));
       await tester.pumpAndSettle();
 
       expect(
-        find.text('preview:document_ref_dropdown: 1 (Test Document Alpha)'),
+        find.text('preview:document_ref_dropdown: [1] (Test Document Alpha)'),
         findsOneWidget,
       );
 
       // Programmatically update editedData to simulate selection change
       final context = tester.element(find.byType(_PreviewPanel));
       final editedData = documentViewModelProvider.of(context).editedData;
-      editedData.value = {...editedData.value, 'document_ref_dropdown': '3'};
+      editedData.value = {...editedData.value, 'document_ref_dropdown': ['3']};
       await tester.pumpAndSettle();
 
       expect(
-        find.text('preview:document_ref_dropdown: 3 (Test Document Gamma)'),
+        find.text('preview:document_ref_dropdown: [3] (Test Document Gamma)'),
         findsOneWidget,
       );
     });

@@ -94,10 +94,10 @@ final allFieldsDocumentType = DocumentType(
         placeholder: 'Select an option',
       ),
     ),
-    CmsDropdownField<String>(
+    CmsMultiDropdownField<String>(
       name: 'document_ref_dropdown',
       title: 'Document Reference',
-      description: 'Context-aware dropdown that loads documents reactively',
+      description: 'Context-aware multi-select dropdown that loads documents reactively',
       option: TestDocumentRefDropdownOption(),
     ),
     CmsArrayField(
@@ -141,18 +141,21 @@ final allFieldsDocumentType = DocumentType(
 
 Widget _testAllFieldsBuilder(Map<String, dynamic> data) {
   return Builder(builder: (context) {
-    // Resolve the selected document title from the context-aware dropdown
-    final selectedId = data['document_ref_dropdown'];
-    String? selectedDocTitle;
-    if (selectedId != null) {
+    // Resolve selected document titles from the context-aware multi-dropdown
+    final selectedIds = data['document_ref_dropdown'];
+    String? selectedDocTitles;
+    if (selectedIds is List && selectedIds.isNotEmpty) {
       final viewModel = cmsViewModelProvider.of(context);
       final state =
           viewModel.documentsContainer('test_all_fields').watch(context);
-      selectedDocTitle = state.map(
-        data: (list) => list.documents
-            .where((d) => d.id.toString() == selectedId)
-            .firstOrNull
-            ?.title,
+      selectedDocTitles = state.map(
+        data: (list) => selectedIds
+            .map((id) => list.documents
+                .where((d) => d.id.toString() == id)
+                .firstOrNull
+                ?.title)
+            .whereType<String>()
+            .join(', '),
         loading: () => null,
         error: (_, __) => null,
       );
@@ -174,8 +177,8 @@ Widget _testAllFieldsBuilder(Map<String, dynamic> data) {
             Text('preview:color_field: ${data['color_field'] ?? ''}'),
             Text('preview:dropdown_field: ${data['dropdown_field'] ?? ''}'),
             Text(
-              'preview:document_ref_dropdown: ${data['document_ref_dropdown'] ?? ''}'
-              '${selectedDocTitle != null ? ' ($selectedDocTitle)' : ''}',
+              'preview:document_ref_dropdown: ${data['document_ref_dropdown'] ?? '[]'}'
+              '${selectedDocTitles != null ? ' ($selectedDocTitles)' : ''}',
             ),
             Text('preview:text_field: ${data['text_field'] ?? ''}'),
             Text('preview:image_field: ${data['image_field'] ?? ''}'),
@@ -200,9 +203,9 @@ class TestStringArrayOption extends CmsArrayOption {
       (context, value) => Text(value?.toString() ?? '');
 }
 
-/// Context-aware dropdown option that resolves options reactively from
+/// Context-aware multi-dropdown option that resolves options reactively from
 /// the documents of type 'test_all_fields' via CmsViewModel signals.
-class TestDocumentRefDropdownOption extends CmsDropdownOption<String> {
+class TestDocumentRefDropdownOption extends CmsMultiDropdownOption<String> {
   const TestDocumentRefDropdownOption();
 
   @override
@@ -219,13 +222,16 @@ class TestDocumentRefDropdownOption extends CmsDropdownOption<String> {
   }
 
   @override
-  FutureOr<String?>? get defaultValue => null;
+  List<String>? get defaultValues => null;
 
   @override
-  String? get placeholder => 'Select a document...';
+  String? get placeholder => 'Select documents...';
 
   @override
-  bool get allowNull => true;
+  int? get minSelected => null;
+
+  @override
+  int? get maxSelected => null;
 }
 
 /// Seed data for 3 test documents with known values.
@@ -249,7 +255,7 @@ const testDocumentSeedData = [
       },
       'file_field': null,
       'dropdown_field': 'option_a',
-      'document_ref_dropdown': null,
+      'document_ref_dropdown': <String>[],
       'array_field': ['Item 1', 'Item 2', 'Item 3'],
       'object_field': {'nested_title': 'Nested Value', 'nested_count': 10},
       'block_field': null,
@@ -272,7 +278,7 @@ const testDocumentSeedData = [
       'image_field': null,
       'file_field': null,
       'dropdown_field': 'option_b',
-      'document_ref_dropdown': null,
+      'document_ref_dropdown': <String>[],
       'array_field': ['Alpha', 'Beta'],
       'object_field': {'nested_title': 'Beta Nested', 'nested_count': 5},
       'block_field': null,
@@ -298,7 +304,7 @@ const testDocumentSeedData = [
       },
       'file_field': null,
       'dropdown_field': null,
-      'document_ref_dropdown': null,
+      'document_ref_dropdown': <String>[],
       'array_field': [],
       'object_field': {'nested_title': '', 'nested_count': 0},
       'block_field': null,
