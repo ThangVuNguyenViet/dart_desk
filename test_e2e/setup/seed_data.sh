@@ -11,41 +11,14 @@ fi
 
 echo "=== Seeding E2E Test Data ==="
 
-# Test tokens (deterministic, safe for E2E only)
-TOKEN_A="cms_ad_e2eTestTokenClientA000000000000000aaaa"
-TOKEN_B="cms_ad_e2eTestTokenClientB000000000000000bbbb"
+# Test API token (deterministic, safe for E2E only)
+TOKEN="cms_ad_e2eTestTokenSingleTenant00000000aaaa"
 
-# Pre-computed bcrypt hashes of the tokens above
-HASH_A='$2b$10$Z0kp3lgBwCTj.bhCovYR6uztc7xOZ3HradOvzOlp1eBPBOaMJE3BC'
-HASH_B='$2b$10$I3p3Gw9cGKGSFbr8qDU2kuskI/T.8CAi5QpIOIOEZx04CZiHPzLcC'
-
-docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
-  psql -U postgres -d dart_desk_be -c "
-    -- Seed Client A
-    INSERT INTO cms_clients (name, slug, \"apiTokenHash\", \"apiTokenPrefix\", \"isActive\", \"createdAt\", \"updatedAt\")
-    VALUES ('E2E Client A', 'e2e-client-a', '$HASH_A', 'cms_ad_', true, NOW(), NOW())
-    ON CONFLICT (slug) DO NOTHING;
-
-    -- Seed Client B
-    INSERT INTO cms_clients (name, slug, \"apiTokenHash\", \"apiTokenPrefix\", \"isActive\", \"createdAt\", \"updatedAt\")
-    VALUES ('E2E Client B', 'e2e-client-b', '$HASH_B', 'cms_ad_', true, NOW(), NOW())
-    ON CONFLICT (slug) DO NOTHING;
-
-    -- Seed API token for Client A
-    INSERT INTO cms_api_tokens (\"clientId\", name, \"tokenHash\", \"tokenPrefix\", \"tokenSuffix\", role, \"isActive\", \"createdAt\")
-    SELECT id, 'E2E Admin Token', '$HASH_A', 'cms_ad_', 'aaaa', 'admin', true, NOW()
-    FROM cms_clients WHERE slug = 'e2e-client-a'
-    ON CONFLICT (\"clientId\", \"tokenPrefix\", \"tokenSuffix\") DO NOTHING;
-
-    -- Seed API token for Client B
-    INSERT INTO cms_api_tokens (\"clientId\", name, \"tokenHash\", \"tokenPrefix\", \"tokenSuffix\", role, \"isActive\", \"createdAt\")
-    SELECT id, 'E2E Admin Token', '$HASH_B', 'cms_ad_', 'bbbb', 'admin', true, NOW()
-    FROM cms_clients WHERE slug = 'e2e-client-b'
-    ON CONFLICT (\"clientId\", \"tokenPrefix\", \"tokenSuffix\") DO NOTHING;
-  "
+# Pre-computed bcrypt hash of the token above
+TOKEN_HASH='$2b$10$Z0kp3lgBwCTj.bhCovYR6uztc7xOZ3HradOvzOlp1eBPBOaMJE3BC'
 
 # -----------------------------------------------------------------------
-# Manage App E2E auth user (email: e2e@dartdesk.dev, password: e2e-password-123)
+# Serverpod auth user for E2E login
 # -----------------------------------------------------------------------
 E2E_AUTH_USER_ID="00000000-0000-7000-8000-e2e000000001"
 # Pre-computed bcrypt hash of "e2e-password-123"
@@ -53,21 +26,30 @@ E2E_PWD_HASH='$2b$10$E6ICM474gY5FtSV2mLwaK.qLuz1F9RfVWEgzjT.oeDKdPDjUM3TJS'
 
 docker compose -f "$BACKEND_DIR/docker-compose.yaml" exec -T postgres \
   psql -U postgres -d dart_desk_be -c "
-    -- Seed Serverpod core auth user first (FK parent)
+    -- Seed Serverpod core auth user (FK parent)
     INSERT INTO serverpod_auth_core_user (id, \"createdAt\", \"scopeNames\", blocked)
-    VALUES ('$E2E_AUTH_USER_ID', NOW(), '[]', false)
+    VALUES ('$E2E_AUTH_USER_ID', NOW(), '[\"admin\"]', false)
     ON CONFLICT (id) DO NOTHING;
 
-    -- Seed Serverpod auth email account for E2E manage app login
+    -- Seed Serverpod auth email account for E2E login
     INSERT INTO serverpod_auth_idp_email_account (\"authUserId\", \"createdAt\", email, \"passwordHash\")
     VALUES ('$E2E_AUTH_USER_ID', NOW(), 'e2e@dartdesk.dev', '$E2E_PWD_HASH')
     ON CONFLICT (email) DO NOTHING;
+
+    -- Seed User record (single-tenant: tenantId = NULL)
+    INSERT INTO users (\"tenantId\", email, name, role, \"isActive\", \"serverpodUserId\", \"createdAt\", \"updatedAt\")
+    VALUES (NULL, 'e2e@dartdesk.dev', 'E2E Admin', 'admin', true, '$E2E_AUTH_USER_ID', NOW(), NOW())
+    ON CONFLICT (\"tenantId\", email) DO NOTHING;
+
+    -- Seed API token (single-tenant: tenantId = NULL)
+    INSERT INTO api_tokens (\"tenantId\", name, \"tokenHash\", \"tokenPrefix\", \"tokenSuffix\", role, \"isActive\", \"createdAt\")
+    VALUES (NULL, 'E2E Admin Token', '$TOKEN_HASH', 'cms_ad_', 'aaaa', 'admin', true, NOW())
+    ON CONFLICT (\"tenantId\", \"tokenPrefix\", \"tokenSuffix\") DO NOTHING;
   "
 
 echo ""
 echo "E2E seed data ready."
-echo "  Manage app login: email=e2e@dartdesk.dev password=e2e-password-123"
-echo "  Client A: slug=e2e-client-a token=$TOKEN_A"
-echo "  Client B: slug=e2e-client-b token=$TOKEN_B"
+echo "  Login: email=e2e@dartdesk.dev password=e2e-password-123"
+echo "  API Token: $TOKEN"
 echo ""
 echo "=== Seed complete ==="

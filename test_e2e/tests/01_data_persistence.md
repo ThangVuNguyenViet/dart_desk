@@ -3,7 +3,7 @@
 ## Prerequisites
 - E2E server running on port 8080 (via `setup/server_manager.sh start`)
 - Docker test services running (via `setup/docker_manager.sh up`)
-- Test client and API token seeded (via `setup/seed_data.sh`)
+- Test user and API token seeded (via `setup/seed_data.sh`)
 - Flutter app running with CloudDataSource pointing at http://localhost:8080/
 - Marionette connected to Flutter VM service URI
 - At least one document type registered

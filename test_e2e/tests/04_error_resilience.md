@@ -19,10 +19,10 @@
 - Unsaved changes are preserved in the form (not lost)
 - No unhandled exception or app freeze
 
-## TC-E2E-04-02: Invalid API token
+## TC-E2E-04-02: Invalid credentials / token
 **Steps:**
 1. Stop the Flutter app
-2. Relaunch the Flutter app with an invalid API token (e.g., "invalid_token_123")
+2. Relaunch the Flutter app with invalid credentials or attempt API calls with an invalid token
 3. Connect marionette to the new app instance
 4. Attempt to navigate to a document type
 5. Use `get_interactive_elements` to check for auth error indicators

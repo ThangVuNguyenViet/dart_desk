@@ -12,7 +12,6 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 /// ```bash
 /// flutter run -d chrome -t lib/main_e2e.dart
 /// ```
-/// Defaults: server=localhost:8080, client=e2e-client-a. Override via --dart-define if needed.
 void main() {
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized(CmsMarionetteConfig.configuration);
@@ -27,21 +26,12 @@ class E2eApp extends StatelessWidget {
     'SERVER_URL',
     defaultValue: 'http://localhost:8080/',
   );
-  static const clientId = String.fromEnvironment(
-    'CMS_CLIENT_ID',
-    defaultValue: 'e2e-client-a',
-  );
-  static const apiToken = String.fromEnvironment(
-    'CMS_API_TOKEN',
-    defaultValue: 'cms_ad_e2eTestTokenClientA000000000000000aaaa',
-  );
+
   @override
   Widget build(BuildContext context) {
     return ShadApp(
       theme: cmsStudioTheme,
       home: FlutterCmsAuth(
-        clientId: clientId,
-        apiToken: apiToken,
         serverUrl: serverUrl,
         title: 'CMS E2E Test',
         builder: (context, client) => CmsStudioApp(
