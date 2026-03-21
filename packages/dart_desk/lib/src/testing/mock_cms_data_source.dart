@@ -1,11 +1,13 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import '../data/cms_data_source.dart';
 import '../data/models/cms_document.dart';
 import '../data/models/document_list.dart';
 import '../data/models/document_version.dart';
-import '../data/models/media_file.dart';
-import '../data/models/media_upload_result.dart';
+import '../data/models/image_types.dart';
+import '../data/models/media_asset.dart';
+import '../data/models/media_page.dart';
 import 'test_document_types.dart';
 
 /// In-memory mock implementation of [CmsDataSource] for testing.
@@ -16,7 +18,7 @@ class MockCmsDataSource implements CmsDataSource {
   final Map<int, CmsDocument> _documents = {};
   final Map<int, Map<int, DocumentVersion>> _versions = {};
   final Map<int, Map<String, dynamic>> _versionData = {};
-  final Map<int, MediaFile> _media = {};
+  final Map<String, MediaAsset> _media = {};
   int _nextDocId = 1;
   int _nextVersionId = 1;
   int _nextMediaId = 1;
@@ -319,34 +321,180 @@ class MockCmsDataSource implements CmsDataSource {
   }
 
   @override
-  Future<MediaUploadResult> uploadImage(
+  Future<MediaAsset> uploadImage(
+    String fileName,
+    Uint8List fileData,
+    QuickImageMetadata metadata,
+  ) async {
+    final ext = fileName.contains('.') ? fileName.split('.').last.toLowerCase() : 'bin';
+    final assetId = '${metadata.contentHash}-${metadata.width}x${metadata.height}.$ext';
+
+    // Deduplication: return existing if found
+    if (_media.containsKey(assetId)) {
+      return _media[assetId]!;
+    }
+
+    final mimeType = switch (ext) {
+      'jpg' || 'jpeg' => 'image/jpeg',
+      'png' => 'image/png',
+      'gif' => 'image/gif',
+      'webp' => 'image/webp',
+      'svg' => 'image/svg+xml',
+      _ => 'image/$ext',
+    };
+
+    final id = _nextMediaId++;
+    final asset = MediaAsset(
+      id: id,
+      assetId: assetId,
+      fileName: fileName,
+      mimeType: mimeType,
+      fileSize: fileData.length,
+      publicUrl: 'https://mock-cdn.test/media/$assetId/$fileName',
+      width: metadata.width,
+      height: metadata.height,
+      hasAlpha: metadata.hasAlpha,
+      blurHash: metadata.blurHash,
+      createdAt: DateTime.now(),
+      metadataStatus: MediaAssetMetadataStatus.complete,
+    );
+    _media[assetId] = asset;
+    return asset;
+  }
+
+  @override
+  Future<MediaAsset> uploadFile(
     String fileName,
     Uint8List fileData,
   ) async {
-    return _uploadMedia(fileName, fileData, isImage: true);
+    final ext = fileName.contains('.') ? fileName.split('.').last.toLowerCase() : 'bin';
+    final hash = fileData.length.toRadixString(16); // simple mock hash
+    final assetId = 'file-$hash-$ext';
+
+    if (_media.containsKey(assetId)) {
+      return _media[assetId]!;
+    }
+
+    final mimeType = switch (ext) {
+      'pdf' => 'application/pdf',
+      'doc' => 'application/msword',
+      'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'txt' => 'text/plain',
+      'csv' => 'text/csv',
+      'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      _ => 'application/octet-stream',
+    };
+
+    final id = _nextMediaId++;
+    final asset = MediaAsset(
+      id: id,
+      assetId: assetId,
+      fileName: fileName,
+      mimeType: mimeType,
+      fileSize: fileData.length,
+      publicUrl: 'https://mock-cdn.test/media/$assetId/$fileName',
+      width: 0,
+      height: 0,
+      hasAlpha: false,
+      blurHash: '',
+      createdAt: DateTime.now(),
+      metadataStatus: MediaAssetMetadataStatus.complete,
+    );
+    _media[assetId] = asset;
+    return asset;
   }
 
   @override
-  Future<MediaUploadResult> uploadFile(
-    String fileName,
-    Uint8List fileData,
-  ) async {
-    return _uploadMedia(fileName, fileData, isImage: false);
+  Future<bool> deleteMedia(String assetId) async {
+    final usageCount = await getMediaUsageCount(assetId);
+    if (usageCount > 0) {
+      throw const CmsValidationException(
+        'Cannot delete media asset that is still referenced by documents',
+      );
+    }
+    return _media.remove(assetId) != null;
   }
 
   @override
-  Future<bool> deleteMedia(int fileId) async {
-    return _media.remove(fileId) != null;
+  Future<MediaAsset?> getMediaAsset(String assetId) async {
+    return _media[assetId];
   }
 
   @override
-  Future<MediaFile?> getMedia(int fileId) async {
-    return _media[fileId];
+  Future<MediaPage> listMedia({
+    String? search,
+    MediaTypeFilter? type,
+    MediaSort sort = MediaSort.dateDesc,
+    int limit = 50,
+    int offset = 0,
+  }) async {
+    var items = _media.values.toList();
+
+    // Filter by search
+    if (search != null && search.isNotEmpty) {
+      final query = search.toLowerCase();
+      items = items.where((a) => a.fileName.toLowerCase().contains(query)).toList();
+    }
+
+    // Filter by type
+    if (type != null && type != MediaTypeFilter.all) {
+      items = items.where((a) {
+        return switch (type) {
+          MediaTypeFilter.image => a.mimeType.startsWith('image/'),
+          MediaTypeFilter.video => a.mimeType.startsWith('video/'),
+          MediaTypeFilter.file => !a.mimeType.startsWith('image/') && !a.mimeType.startsWith('video/'),
+          MediaTypeFilter.all => true,
+        };
+      }).toList();
+    }
+
+    // Sort
+    items.sort((a, b) {
+      return switch (sort) {
+        MediaSort.dateDesc => b.createdAt.compareTo(a.createdAt),
+        MediaSort.dateAsc => a.createdAt.compareTo(b.createdAt),
+        MediaSort.nameAsc => a.fileName.toLowerCase().compareTo(b.fileName.toLowerCase()),
+        MediaSort.nameDesc => b.fileName.toLowerCase().compareTo(a.fileName.toLowerCase()),
+        MediaSort.sizeDesc => b.fileSize.compareTo(a.fileSize),
+        MediaSort.sizeAsc => a.fileSize.compareTo(b.fileSize),
+      };
+    });
+
+    final total = items.length;
+    final paged = items.skip(offset).take(limit).toList();
+    return MediaPage(items: paged, total: total);
   }
 
   @override
-  Future<List<MediaFile>> listMedia({int limit = 50, int offset = 0}) async {
-    return _media.values.skip(offset).take(limit).toList();
+  Future<MediaAsset> updateMediaAsset(String assetId, {String? fileName}) async {
+    final existing = _media[assetId];
+    if (existing == null) {
+      throw CmsNotFoundException(resourceType: 'MediaAsset', resourceId: assetId);
+    }
+
+    if (fileName != null) {
+      final json = existing.toJson();
+      json['fileName'] = fileName;
+      final updated = MediaAsset.fromJson(json);
+      _media[assetId] = updated;
+      return updated;
+    }
+    return existing;
+  }
+
+  @override
+  Future<int> getMediaUsageCount(String assetId) async {
+    int count = 0;
+    for (final doc in _documents.values) {
+      final data = doc.activeVersionData;
+      if (data != null) {
+        final jsonStr = jsonEncode(data);
+        if (jsonStr.contains(assetId)) {
+          count++;
+        }
+      }
+    }
+    return count;
   }
 
   String _generateSlug(String title) {
@@ -386,25 +534,4 @@ class MockCmsDataSource implements CmsDataSource {
     return null;
   }
 
-  MediaUploadResult _uploadMedia(
-    String fileName,
-    Uint8List fileData, {
-    required bool isImage,
-  }) {
-    final id = _nextMediaId++;
-    final file = MediaFile(
-      id: id,
-      fileName: fileName,
-      publicUrl: 'https://mock-cdn.test/$fileName',
-      fileSize: fileData.length,
-      fileType: isImage ? 'png' : 'bin',
-      createdAt: DateTime.now(),
-    );
-    _media[id] = file;
-    return MediaUploadResult(
-      id: id.toString(),
-      url: 'https://mock-cdn.test/$fileName',
-      fileName: fileName,
-    );
-  }
 }

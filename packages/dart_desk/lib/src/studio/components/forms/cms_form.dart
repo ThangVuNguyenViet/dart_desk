@@ -14,6 +14,7 @@ import '../../../inputs/file_input.dart';
 import '../../../inputs/geopoint_input.dart';
 import '../../../inputs/image_input.dart';
 import '../../../inputs/number_input.dart';
+import '../../providers/studio_provider.dart';
 import '../../../inputs/object_input.dart';
 import '../../../inputs/string_input.dart';
 import '../../../inputs/text_input.dart';
@@ -201,11 +202,23 @@ class _CmsFormState extends State<CmsForm> {
     widget.onFieldChanged?.call(fieldName, value);
   }
 
-  Widget _buildFieldInput(CmsField field) {
+  Widget _buildFieldInput(BuildContext context, CmsField field) {
     final fieldName = field.name;
     final data = widget.data[fieldName] != null
         ? CmsData(value: widget.data[fieldName], path: fieldName)
         : null;
+
+    // Special case: CmsImageField needs dataSource from the provider
+    if (field is CmsImageField) {
+      final dataSource = cmsViewModelProvider.of(context).dataSource;
+      return CmsImageInput(
+        key: ValueKey(field.name),
+        field: field,
+        data: data,
+        dataSource: dataSource,
+        onChanged: (value) => _handleFieldChange(field.name, value),
+      );
+    }
 
     // Look up the builder for this field type in the registry
     final builder = CmsFieldInputRegistry.getBuilder(field);
@@ -242,7 +255,7 @@ class _CmsFormState extends State<CmsForm> {
                     ...widget.fields.map((field) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 20),
-                        child: _buildFieldInput(field),
+                        child: _buildFieldInput(context, field),
                       );
                     }),
                   ],

@@ -8,6 +8,7 @@ import 'studio_route.dart';
 import 'studio_layout.dart';
 import 'document_type_route.dart';
 import 'document_route.dart';
+import 'media_route.dart';
 import 'version_route.dart';
 
 class StudioCoordinator extends Coordinator<StudioRoute> {
@@ -61,6 +62,10 @@ class StudioCoordinator extends Coordinator<StudioRoute> {
 
     if (segments.isEmpty) {
       return DocumentTypeRoute(defaultDocumentTypeSlug);
+    }
+
+    if (segments.length == 1 && segments.first == 'media') {
+      return MediaRoute();
     }
 
     return switch (segments) {

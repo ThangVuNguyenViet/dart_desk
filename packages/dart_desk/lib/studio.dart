@@ -46,6 +46,7 @@ export 'src/studio/routes/studio_route.dart';
 export 'src/studio/routes/document_type_route.dart';
 export 'src/studio/routes/document_route.dart';
 export 'src/studio/routes/version_route.dart';
+export 'src/studio/routes/media_route.dart';
 // Theme
 export 'src/studio/theme/theme.dart';
 export 'src/studio/theme/spacing.dart';
@@ -54,3 +55,8 @@ export 'src/studio/components/common/cms_breadcrumbs.dart';
 export 'src/studio/components/common/cms_status_pill.dart';
 export 'src/studio/components/common/cms_theme_toggle.dart';
 export 'src/studio/components/common/cms_button.dart';
+// Media system
+export 'src/media/browser/media_browser.dart';
+export 'src/media/image_url.dart';
+export 'src/media/image_transform_params.dart';
+export 'src/inputs/hotspot/image_hotspot_editor.dart';
