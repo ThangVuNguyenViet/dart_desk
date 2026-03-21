@@ -95,8 +95,9 @@ Widget behavior:
 - `selectedOptionsBuilder`: shows comma-joined labels of selected options
 - Controller initialized from `List<T>` data → `Set<T>`
 - `onChanged` receives `Set<T>`, calls back with `List<T>`
-- When `minSelected` is set: disable deselection when at minimum
-- When `maxSelected` is set: prevent selection when at maximum
+- `minSelected` enforcement: `allowDeselection` is rebuilt dynamically via `setState` — set to `false` when current selection count equals `minSelected`. If incoming data violates `minSelected` (e.g., `[]` with `minSelected: 1`), allow it — the widget doesn't auto-correct, it just prevents further deselection once at minimum.
+- `maxSelected` enforcement: In `onChanged`, if a new selection would exceed `maxSelected`, ignore the addition (don't update controller). `ShadSelect.multiple` has no built-in max, so this is handled in the `onChanged` callback.
+- `didUpdateWidget`: When `data` changes externally, update the controller to match (same pattern as single-select).
 
 **File:** `lib/dart_desk.dart` — add export for `multi_dropdown_input.dart`.
 
@@ -108,14 +109,14 @@ Add case after `CmsDropdownField` (line ~108):
 
 ```dart
 case CmsMultiDropdownField<dynamic>():
-  return (context, field, data, onChanged) => CmsMultiDropdownInput(
+  return (_, data, onChanged) => CmsMultiDropdownInput(
         field: field as CmsMultiDropdownField,
         data: data,
-        onChanged: onChanged != null
-            ? (value) => onChanged(field.name, value)
-            : null,
+        onChanged: (value) => onChanged(field.name, value),
       );
 ```
+
+Note: `FieldInputBuilder` typedef is `Widget Function(CmsField?, CmsData?, OnFieldChanged)` — 3 params, no context. `OnFieldChanged` is non-nullable. The raw type cast (`CmsMultiDropdownField` without type param) is intentional, matching existing `CmsDropdownField` pattern.
 
 ### 4. Test Document Types Update
 
@@ -130,8 +131,8 @@ case CmsMultiDropdownField<dynamic>():
 ### 5. Test Updates
 
 **Files to update:**
-- `test/studio/editor_preview_widget_test.dart` — update `document_ref_dropdown` tests to use `List<T>` values
-- `test/studio/context_aware_dropdown_test.dart` — update `_ContextAwareDropdownOption` to use multi-dropdown, verify multi-select behavior
+- `test/studio/editor_preview_widget_test.dart` — update the 3 `document_ref_dropdown` preview tests (lines ~383-431) to seed `List<String>` values instead of `String`. Preview text changes from `preview:document_ref_dropdown: 2 (Test Document Beta)` to `preview:document_ref_dropdown: [2] (Test Document Beta)` format (comma-joined titles for multiple).
+- `test/studio/context_aware_dropdown_test.dart` — only the `_ContextAwareDropdownOption` class and tests in the "Context-aware CmsDropdownOption" group (4 tests) need updating to use `CmsMultiDropdownOption`. The "Simplified documentsContainer" group (5 tests) and "CmsDocumentListView" group (3 tests) are unaffected — they don't use the dropdown option class.
 
 **New test file:** `test/inputs/multi_dropdown_input_test.dart`
 - Static options render correctly
@@ -139,6 +140,7 @@ case CmsMultiDropdownField<dynamic>():
 - `minSelected` / `maxSelected` enforcement
 - Empty options shows "No options available"
 - Async options load correctly
+- `didUpdateWidget`: controller updates when data changes externally
 
 ### 6. QA Test Plan Update
 
