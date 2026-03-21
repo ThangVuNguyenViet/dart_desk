@@ -140,33 +140,55 @@ final allFieldsDocumentType = DocumentType(
 );
 
 Widget _testAllFieldsBuilder(Map<String, dynamic> data) {
-  return SingleChildScrollView(
-    child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('preview:string_field: ${data['string_field'] ?? ''}'),
-          Text('preview:number_field: ${data['number_field'] ?? ''}'),
-          Text('preview:boolean_field: ${data['boolean_field'] ?? ''}'),
-          Text('preview:checkbox_field: ${data['checkbox_field'] ?? ''}'),
-          Text('preview:url_field: ${data['url_field'] ?? ''}'),
-          Text('preview:date_field: ${data['date_field'] ?? ''}'),
-          Text('preview:datetime_field: ${data['datetime_field'] ?? ''}'),
-          Text('preview:color_field: ${data['color_field'] ?? ''}'),
-          Text('preview:dropdown_field: ${data['dropdown_field'] ?? ''}'),
-          Text('preview:document_ref_dropdown: ${data['document_ref_dropdown'] ?? ''}'),
-          Text('preview:text_field: ${data['text_field'] ?? ''}'),
-          Text('preview:image_field: ${data['image_field'] ?? ''}'),
-          Text('preview:file_field: ${data['file_field'] ?? ''}'),
-          Text('preview:array_field: ${data['array_field'] ?? ''}'),
-          Text('preview:object_field: ${data['object_field'] ?? ''}'),
-          Text('preview:block_field: ${data['block_field'] ?? ''}'),
-          Text('preview:geopoint_field: ${data['geopoint_field'] ?? ''}'),
-        ],
+  return Builder(builder: (context) {
+    // Resolve the selected document title from the context-aware dropdown
+    final selectedId = data['document_ref_dropdown'];
+    String? selectedDocTitle;
+    if (selectedId != null) {
+      final viewModel = cmsViewModelProvider.of(context);
+      final state =
+          viewModel.documentsContainer('test_all_fields').watch(context);
+      selectedDocTitle = state.map(
+        data: (list) => list.documents
+            .where((d) => d.id.toString() == selectedId)
+            .firstOrNull
+            ?.title,
+        loading: () => null,
+        error: (_, __) => null,
+      );
+    }
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('preview:string_field: ${data['string_field'] ?? ''}'),
+            Text('preview:number_field: ${data['number_field'] ?? ''}'),
+            Text('preview:boolean_field: ${data['boolean_field'] ?? ''}'),
+            Text('preview:checkbox_field: ${data['checkbox_field'] ?? ''}'),
+            Text('preview:url_field: ${data['url_field'] ?? ''}'),
+            Text('preview:date_field: ${data['date_field'] ?? ''}'),
+            Text('preview:datetime_field: ${data['datetime_field'] ?? ''}'),
+            Text('preview:color_field: ${data['color_field'] ?? ''}'),
+            Text('preview:dropdown_field: ${data['dropdown_field'] ?? ''}'),
+            Text(
+              'preview:document_ref_dropdown: ${data['document_ref_dropdown'] ?? ''}'
+              '${selectedDocTitle != null ? ' ($selectedDocTitle)' : ''}',
+            ),
+            Text('preview:text_field: ${data['text_field'] ?? ''}'),
+            Text('preview:image_field: ${data['image_field'] ?? ''}'),
+            Text('preview:file_field: ${data['file_field'] ?? ''}'),
+            Text('preview:array_field: ${data['array_field'] ?? ''}'),
+            Text('preview:object_field: ${data['object_field'] ?? ''}'),
+            Text('preview:block_field: ${data['block_field'] ?? ''}'),
+            Text('preview:geopoint_field: ${data['geopoint_field'] ?? ''}'),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  });
 }
 
 /// Concrete CmsArrayOption for testing string arrays.
