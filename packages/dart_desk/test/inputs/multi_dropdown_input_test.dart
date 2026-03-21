@@ -1,0 +1,153 @@
+import 'package:dart_desk/dart_desk.dart';
+import 'package:dart_desk/src/inputs/multi_dropdown_input.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
+
+import '../helpers/input_test_helpers.dart';
+
+void main() {
+  const field = CmsMultiDropdownField<String>(
+    name: 'tags',
+    title: 'Tags',
+    option: CmsMultiDropdownSimpleOption(
+      options: [
+        DropdownOption(value: 'a', label: 'Option A'),
+        DropdownOption(value: 'b', label: 'Option B'),
+        DropdownOption(value: 'c', label: 'Option C'),
+      ],
+      placeholder: 'Select tags',
+    ),
+  );
+
+  group('CmsMultiDropdownInput', () {
+    testWidgets('static options render correctly — shows placeholder and all 3 options on tap', (tester) async {
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsMultiDropdownInput<String>(field: field),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Placeholder is visible before opening
+      expect(find.text('Select tags'), findsOneWidget);
+
+      // Tap to open
+      await tester.tap(find.text('Select tags'));
+      await tester.pumpAndSettle();
+
+      // All 3 options should be visible
+      expect(find.text('Option A'), findsWidgets);
+      expect(find.text('Option B'), findsWidgets);
+      expect(find.text('Option C'), findsWidgets);
+    });
+
+    testWidgets('multi-select: selecting two options shows comma-joined labels and fires onChanged', (tester) async {
+      List<String>? received;
+
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsMultiDropdownInput<String>(
+            field: field,
+            onChanged: (v) => received = v,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Open dropdown
+      await tester.tap(find.text('Select tags'));
+      await tester.pumpAndSettle();
+
+      // Select Option A
+      await tester.tap(find.text('Option A').last);
+      await tester.pumpAndSettle();
+
+      // Select Option B (dropdown stays open due to closeOnSelect: false)
+      await tester.tap(find.text('Option B').last);
+      await tester.pumpAndSettle();
+
+      // Both values should have been emitted
+      expect(received, containsAll(['a', 'b']));
+      expect(received, hasLength(2));
+
+      // Close the dropdown and check selected display
+      await tester.tapAt(const Offset(10, 10));
+      await tester.pumpAndSettle();
+
+      // The selected options display should show comma-joined labels
+      expect(find.textContaining('Option A'), findsWidgets);
+      expect(find.textContaining('Option B'), findsWidgets);
+    });
+
+    testWidgets('empty options list shows "No options available"', (tester) async {
+      const emptyField = CmsMultiDropdownField<String>(
+        name: 'empty',
+        title: 'Empty',
+        option: CmsMultiDropdownSimpleOption(options: []),
+      );
+
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsMultiDropdownInput<String>(field: emptyField),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('No options available'), findsOneWidget);
+    });
+
+    testWidgets('didUpdateWidget updates controller when data changes', (tester) async {
+      Widget buildWithData(CmsData? data) => buildInputApp(
+            CmsMultiDropdownInput<String>(
+              field: field,
+              data: data,
+            ),
+          );
+
+      // Build with initial data ['a']
+      await tester.pumpWidget(
+        buildWithData(const CmsData(value: ['a'], path: 'tags')),
+      );
+      await tester.pumpAndSettle();
+
+      // 'Option A' should be shown as selected
+      expect(find.text('Option A'), findsOneWidget);
+
+      // Update to data ['b']
+      await tester.pumpWidget(
+        buildWithData(const CmsData(value: ['b'], path: 'tags')),
+      );
+      await tester.pumpAndSettle();
+
+      // Now 'Option B' should be shown as selected
+      expect(find.text('Option B'), findsOneWidget);
+    });
+
+    testWidgets('deselection works: selecting an already-selected option removes it', (tester) async {
+      List<String>? received;
+
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsMultiDropdownInput<String>(
+            field: field,
+            data: const CmsData(value: ['a'], path: 'tags'),
+            onChanged: (v) => received = v,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // 'Option A' is already selected — open dropdown
+      await tester.tap(find.text('Option A'));
+      await tester.pumpAndSettle();
+
+      // Tap 'Option A' again to deselect it
+      await tester.tap(find.text('Option A').last);
+      await tester.pumpAndSettle();
+
+      // onChanged should have been called with an empty list
+      expect(received, isEmpty);
+    });
+  });
+}
