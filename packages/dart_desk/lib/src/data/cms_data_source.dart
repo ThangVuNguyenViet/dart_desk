@@ -3,8 +3,9 @@ import 'dart:typed_data';
 import 'models/cms_document.dart';
 import 'models/document_list.dart';
 import 'models/document_version.dart';
-import 'models/media_file.dart';
-import 'models/media_upload_result.dart';
+import 'models/image_types.dart';
+import 'models/media_asset.dart';
+import 'models/media_page.dart';
 
 /// Abstract interface for CMS data operations.
 ///
@@ -239,60 +240,37 @@ abstract class CmsDataSource {
   // Media Operations
   // ============================================================
 
-  /// Uploads an image file.
-  ///
-  /// [fileName] - The original filename (used for extension detection)
-  /// [fileData] - The raw file bytes
-  ///
-  /// Supported formats: jpg, jpeg, png, gif, webp
-  ///
-  /// Returns a [MediaUploadResult] with the file ID and public URL.
-  ///
-  /// Throws [CmsDataSourceException] if the upload fails.
-  /// Throws [CmsAuthenticationException] if authentication is required.
-  Future<MediaUploadResult> uploadImage(String fileName, Uint8List fileData);
+  /// Upload an image with client-extracted quick metadata.
+  /// Returns the MediaAsset (existing if deduplicated, new otherwise).
+  Future<MediaAsset> uploadImage(
+    String fileName,
+    Uint8List fileData,
+    QuickImageMetadata metadata,
+  );
 
-  /// Uploads a general file (documents, PDFs, etc.).
-  ///
-  /// [fileName] - The original filename
-  /// [fileData] - The raw file bytes
-  ///
-  /// Supported formats: pdf, doc, docx, txt, csv, xlsx
-  ///
-  /// Returns a [MediaUploadResult] with the file ID and public URL.
-  ///
-  /// Throws [CmsDataSourceException] if the upload fails.
-  /// Throws [CmsAuthenticationException] if authentication is required.
-  Future<MediaUploadResult> uploadFile(String fileName, Uint8List fileData);
+  /// Upload a non-image file.
+  Future<MediaAsset> uploadFile(String fileName, Uint8List fileData);
 
-  /// Deletes a media file.
-  ///
-  /// [fileId] - The ID of the file to delete
-  ///
-  /// Returns true if the file was deleted, false if it was not found.
-  ///
-  /// Throws [CmsDataSourceException] if the operation fails.
-  /// Throws [CmsAuthenticationException] if authentication is required.
-  Future<bool> deleteMedia(int fileId);
+  /// Delete a media asset. Fails if asset is still referenced by documents.
+  Future<bool> deleteMedia(String assetId);
 
-  /// Retrieves metadata for a media file.
-  ///
-  /// [fileId] - The ID of the file
-  ///
-  /// Returns the [MediaFile] if found, or null if not found.
-  ///
-  /// Throws [CmsDataSourceException] if the operation fails.
-  Future<MediaFile?> getMedia(int fileId);
+  /// Get a single asset by assetId.
+  Future<MediaAsset?> getMediaAsset(String assetId);
 
-  /// Retrieves a paginated list of media files.
-  ///
-  /// [limit] - Maximum number of files to return (default: 50)
-  /// [offset] - Number of files to skip for pagination (default: 0)
-  ///
-  /// Returns a list of [MediaFile].
-  ///
-  /// Throws [CmsDataSourceException] if the operation fails.
-  Future<List<MediaFile>> listMedia({int limit = 50, int offset = 0});
+  /// List/search media assets with filtering and sorting.
+  Future<MediaPage> listMedia({
+    String? search,
+    MediaTypeFilter? type,
+    MediaSort sort = MediaSort.dateDesc,
+    int limit = 50,
+    int offset = 0,
+  });
+
+  /// Update mutable asset fields.
+  Future<MediaAsset> updateMediaAsset(String assetId, {String? fileName});
+
+  /// Get usage count: how many documents reference this asset.
+  Future<int> getMediaUsageCount(String assetId);
 }
 
 // ============================================================
