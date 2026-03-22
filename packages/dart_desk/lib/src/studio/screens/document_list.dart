@@ -63,39 +63,13 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     final theme = ShadTheme.of(context);
     final viewModel = cmsViewModelProvider.of(context);
 
-    final params = viewModel.queryParams.watch(
-      context,
-      debugLabel: 'documentListParams',
-    );
-    if (params.documentType == null) {
-      return _buildEmpty(theme);
-    }
-
-    final resourceState = viewModel.documentsContainer(params).watch(context);
+    final resourceState = viewModel
+        .documentsContainer(widget.selectedDocumentType.name)
+        .watch(context);
     return resourceState.map<Widget>(
       data: (result) => _buildContent(context, theme, result),
       loading: () => _buildLoading(theme),
       error: (error, stackTrace) => _buildError(theme, error),
-    );
-  }
-
-  Widget _buildEmpty(ShadThemeData theme) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          FaIcon(
-            FontAwesomeIcons.folderOpen,
-            size: 40,
-            color: theme.colorScheme.mutedForeground,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Select a document type',
-            style: theme.textTheme.muted.copyWith(fontSize: 14),
-          ),
-        ],
-      ),
     );
   }
 

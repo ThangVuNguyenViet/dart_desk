@@ -36,7 +36,7 @@ final documentViewModelProvider = Provider.withArgument(
 final cmsViewModelProvider = Provider.withArgument(
   (context, (DataSource, List<DocumentType>) args) => CmsViewModel(
     dataSource: args.$1,
-    documentViewModel: documentViewModelProvider.of(context),
     documentTypes: args.$2,
+    documentViewModel: documentViewModelProvider.of(context),
   ),
 );

@@ -3,7 +3,6 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../../data/cms_data_source.dart';
 import '../../../data/models/cms_document.dart';
-import '../../../data/models/document_list.dart';
 import '../../../data/models/document_version.dart';
 import 'cms_document_view_model.dart';
 
@@ -43,11 +42,9 @@ class CmsViewModel {
   }, debugLabel: 'currentDocumentType');
 
   // ============================================================
-  // Pagination & Search Signals
+  // Search Signal
   // ============================================================
 
-  final page = Signal<int>(1, debugLabel: 'page');
-  final pageSize = Signal<int>(20, debugLabel: 'pageSize');
   final searchQuery = Signal<String?>(null, debugLabel: 'searchQuery');
 
   // ============================================================
@@ -67,25 +64,12 @@ class CmsViewModel {
   );
 
   // ============================================================
-  // Computed Signals
-  // ============================================================
-
-  late final queryParams = Computed(() {
-    return _DocumentQueryParams(
-      documentType: currentDocumentType.value?.name,
-      page: page.value,
-      pageSize: pageSize.value,
-      search: searchQuery.value,
-    );
-  }, debugLabel: 'queryParams');
-
-  // ============================================================
   // Signal Containers for Dynamic Data Fetching
   // ============================================================
 
   late final documentsContainer = SignalContainer(
-    (_DocumentQueryParams params) => FutureSignal(
-      () => _fetchDocumentsWithParams(params),
+    (String documentType) => FutureSignal(
+      () => dataSource.getDocuments(documentType, limit: 200),
       debugLabel: 'documents',
     ),
     cache: true,
@@ -134,21 +118,6 @@ class CmsViewModel {
     final data = results[1] as Map<String, dynamic>?;
     if (version == null) return null;
     return version.copyWith(data: data);
-  }
-
-  Future<DocumentList> _fetchDocumentsWithParams(
-    _DocumentQueryParams params,
-  ) async {
-    final documentType = params.documentType;
-    if (documentType == null) return DocumentList.empty();
-
-    final offset = (params.page - 1) * params.pageSize;
-    return await dataSource.getDocuments(
-      documentType,
-      search: params.search,
-      limit: params.pageSize,
-      offset: offset,
-    );
   }
 
   // ============================================================
@@ -253,7 +222,7 @@ class CmsViewModel {
         selectedVersionId.value = versions.versions.first.id;
       }
 
-      documentsContainer(queryParams.value).reload();
+      documentsContainer(currentDocumentType.value?.name ?? '').reload();
 
       return document;
     } finally {
@@ -268,7 +237,7 @@ class CmsViewModel {
         _documentViewModel.documentId.value = null;
         selectedVersionId.value = null;
       }
-      documentsContainer(queryParams.value).reload();
+      documentsContainer(currentDocumentType.value?.name ?? '').reload();
     }
     return result;
   }
@@ -280,14 +249,7 @@ class CmsViewModel {
     isSaving.value = true;
     try {
       final result = await dataSource.updateDocumentData(documentId, data);
-
-      final params = _DocumentQueryParams(
-        documentType: currentDocumentType.value?.name,
-        page: page.value,
-        pageSize: pageSize.value,
-      );
-      documentsContainer(params).reload();
-
+      documentsContainer(currentDocumentType.value?.name ?? '').reload();
       return result;
     } finally {
       isSaving.value = false;
@@ -354,19 +316,11 @@ class CmsViewModel {
   }
 
   // ============================================================
-  // Pagination & Search
+  // Search
   // ============================================================
 
   void setSearchQuery(String? query) {
     searchQuery.value = query;
-  }
-
-  void setPage(int value) {
-    page.value = value;
-  }
-
-  void setPageSize(int value) {
-    pageSize.value = value;
   }
 
   // ============================================================
@@ -374,9 +328,9 @@ class CmsViewModel {
   // ============================================================
 
   void refreshDocuments() {
-    final params = queryParams.value;
-    if (params.documentType != null) {
-      documentsContainer(params).reload();
+    final docType = currentDocumentType.value?.name;
+    if (docType != null) {
+      documentsContainer(docType).reload();
     }
   }
 
@@ -399,15 +353,12 @@ class CmsViewModel {
   // ============================================================
 
   void dispose() {
-    queryParams.dispose();
     currentDocumentType.dispose();
     currentDocumentTypeSlug.dispose();
     currentDocumentId.dispose();
     currentVersionId.dispose();
     selectedVersionId.dispose();
     _documentViewModel.dispose();
-    page.dispose();
-    pageSize.dispose();
     searchQuery.dispose();
     sidebarCollapsed.dispose();
     documentListVisible.dispose();
@@ -415,28 +366,3 @@ class CmsViewModel {
   }
 }
 
-class _DocumentQueryParams {
-  final String? documentType;
-  final int page;
-  final int pageSize;
-  final String? search;
-
-  const _DocumentQueryParams({
-    this.documentType,
-    required this.page,
-    required this.pageSize,
-    this.search,
-  });
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is _DocumentQueryParams &&
-          documentType == other.documentType &&
-          page == other.page &&
-          pageSize == other.pageSize &&
-          search == other.search;
-
-  @override
-  int get hashCode => Object.hash(documentType, page, pageSize, search);
-}
