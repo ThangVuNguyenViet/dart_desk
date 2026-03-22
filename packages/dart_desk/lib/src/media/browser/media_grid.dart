@@ -24,15 +24,12 @@ class MediaGrid extends StatelessWidget {
 
     if (assets.isEmpty) {
       return Center(
-        child: Text(
-          'No media found',
-          style: theme.textTheme.muted,
-        ),
+        child: Text('No media found', style: theme.textTheme.muted),
       );
     }
 
     return GridView.builder(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 160,
         mainAxisSpacing: 8,
@@ -46,8 +43,9 @@ class MediaGrid extends StatelessWidget {
         return GestureDetector(
           key: ValueKey('media_grid_item_${asset.assetId}'),
           onTap: () => state.selectedAssetId.value = asset.assetId,
-          onDoubleTap:
-              onDoubleClick != null ? () => onDoubleClick!(asset) : null,
+          onDoubleTap: onDoubleClick != null
+              ? () => onDoubleClick!(asset)
+              : null,
           child: Container(
             decoration: BoxDecoration(
               border: Border.all(
@@ -109,7 +107,9 @@ class MediaGrid extends StatelessWidget {
                       bottom: 0,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 2),
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
                         color: Colors.black54,
                         child: Text(
                           asset.fileName,
@@ -145,7 +145,11 @@ class MediaGrid extends StatelessWidget {
         value = value * 83 + idx;
       }
       return Color.fromARGB(
-          255, (value >> 16) & 0xFF, (value >> 8) & 0xFF, value & 0xFF);
+        255,
+        (value >> 16) & 0xFF,
+        (value >> 8) & 0xFF,
+        value & 0xFF,
+      );
     } catch (_) {
       return Colors.grey;
     }

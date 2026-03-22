@@ -29,6 +29,7 @@ class MediaListView extends StatelessWidget {
     }
 
     return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       itemCount: assets.length,
       itemBuilder: (context, index) {
         final asset = assets[index];
@@ -37,8 +38,9 @@ class MediaListView extends StatelessWidget {
         return GestureDetector(
           key: ValueKey('media_list_item_${asset.assetId}'),
           onTap: () => state.selectedAssetId.value = asset.assetId,
-          onDoubleTap:
-              onDoubleClick != null ? () => onDoubleClick!(asset) : null,
+          onDoubleTap: onDoubleClick != null
+              ? () => onDoubleClick!(asset)
+              : null,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
@@ -68,8 +70,10 @@ class MediaListView extends StatelessWidget {
                           )
                         : Container(
                             color: theme.colorScheme.muted,
-                            child: const Icon(Icons.insert_drive_file,
-                                size: 20),
+                            child: const Icon(
+                              Icons.insert_drive_file,
+                              size: 20,
+                            ),
                           ),
                   ),
                 ),
@@ -83,8 +87,9 @@ class MediaListView extends StatelessWidget {
                         asset.fileName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.small
-                            .copyWith(fontWeight: FontWeight.w500),
+                        style: theme.textTheme.small.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       Text(
                         '${asset.mimeType}  ·  ${asset.fileSizeFormatted}  ·  ${asset.width}×${asset.height}',
