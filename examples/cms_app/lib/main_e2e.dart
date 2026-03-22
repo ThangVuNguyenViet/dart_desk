@@ -1,9 +1,10 @@
 import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
-import 'package:data_models/example_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
+
+import 'document_types.dart';
 
 /// E2E entry point — uses real CloudDataSource. Auth is handled via marionette.
 ///
@@ -32,10 +33,10 @@ class E2eApp extends StatelessWidget {
     return DartDeskApp(
       serverUrl: serverUrl,
       config: DartDeskConfig(
-        documentTypes: [homeScreenConfigDocumentType],
+        documentTypes: [homeScreenDocumentType],
         documentTypeDecorations: [
           DocumentTypeDecoration(
-            documentType: homeScreenConfigDocumentType,
+            documentType: homeScreenDocumentType,
             icon: Icons.home,
           ),
         ],
