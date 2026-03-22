@@ -35,7 +35,6 @@ export 'src/studio/cms_studio_app.dart';
 export 'src/studio/dart_desk.dart';
 export 'src/studio/dart_desk_app.dart';
 // Cloud (built-in Serverpod IDP auth)
-export 'src/cloud/dart_desk_app.dart';
 export 'src/cloud/dart_desk_auth.dart';
 export 'src/studio/dart_desk_config.dart';
 // Core studio functionality

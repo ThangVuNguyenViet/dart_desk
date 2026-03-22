@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShadApp(
       theme: cmsStudioTheme,
-      home: DartDeskBuiltInApp(
+      home: DartDeskApp(
         serverUrl: serverUrl,
         config: DartDeskConfig(
           documentTypes: [homeScreenConfigDocumentType],

@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../cloud/cloud_data_source.dart';
+import '../cloud/dart_desk_auth.dart';
 import '../data/cms_data_source.dart';
 import 'cms_studio_app.dart';
 import 'dart_desk.dart';
 import 'dart_desk_config.dart';
 
-/// Unified entry point for Dart Desk CMS applications with external auth.
+/// Entry point for Dart Desk CMS applications.
 ///
-/// Use this when your app handles authentication externally
-/// (Firebase, Clerk, Auth0, etc.) and provides its own [DataSource].
+/// Two constructors for different auth strategies:
 ///
-/// For built-in Serverpod IDP authentication, use `DartDeskApp` from the
-/// `dart_desk_be_client` package instead.
+/// **Built-in Serverpod IDP auth** (Google + email/password):
+/// ```dart
+/// DartDeskApp(
+///   serverUrl: 'http://localhost:8080/',
+///   config: DartDeskConfig(
+///     documentTypes: [...],
+///     documentTypeDecorations: [...],
+///   ),
+/// )
+/// ```
 ///
+/// **External auth** (Firebase, Clerk, Auth0, etc.):
 /// ```dart
 /// DartDeskApp.withDataSource(
 ///   dataSource: myDataSource,
@@ -25,10 +35,26 @@ import 'dart_desk_config.dart';
 /// )
 /// ```
 class DartDeskApp extends StatelessWidget {
-  final DataSource _dataSource;
-  final VoidCallback _onSignOut;
+  final String? _serverUrl;
+  final DataSource? _dataSource;
+  final VoidCallback? _onSignOut;
   final DartDeskConfig _config;
   final ShadThemeData? _theme;
+
+  /// Creates a DartDeskApp with built-in Serverpod IDP authentication.
+  ///
+  /// Handles client creation, sign-in UI (Google + email/password),
+  /// and wraps the studio UI with auth context.
+  const DartDeskApp({
+    super.key,
+    required String serverUrl,
+    required DartDeskConfig config,
+    ShadThemeData? theme,
+  })  : _serverUrl = serverUrl,
+        _dataSource = null,
+        _onSignOut = null,
+        _config = config,
+        _theme = theme;
 
   /// Creates a DartDeskApp with an external data source and auth.
   ///
@@ -40,26 +66,43 @@ class DartDeskApp extends StatelessWidget {
     required VoidCallback onSignOut,
     required DartDeskConfig config,
     ShadThemeData? theme,
-  })  : _dataSource = dataSource,
+  })  : _serverUrl = null,
+        _dataSource = dataSource,
         _onSignOut = onSignOut,
         _config = config,
         _theme = theme;
 
   @override
   Widget build(BuildContext context) {
+    if (_serverUrl != null) {
+      return DartDeskAuth(
+        serverUrl: _serverUrl,
+        title: _config.title,
+        subtitle: _config.subtitle,
+        builder: (context, client, signOut) {
+          final dataSource = CloudDataSource(client);
+          return _buildStudio(dataSource, signOut);
+        },
+      );
+    }
+
+    return _buildStudio(_dataSource!, _onSignOut!);
+  }
+
+  Widget _buildStudio(DataSource dataSource, VoidCallback signOut) {
     return DartDesk(
-      dataSource: _dataSource,
-      signOut: _onSignOut,
+      dataSource: dataSource,
+      signOut: signOut,
       config: _config,
       child: CmsStudioApp(
-        dataSource: _dataSource,
+        dataSource: dataSource,
         documentTypes: _config.documentTypes,
         documentTypeDecorations: _config.documentTypeDecorations,
         title: _config.title,
         subtitle: _config.subtitle,
         icon: _config.icon,
         theme: _theme,
-        onSignOut: _onSignOut,
+        onSignOut: signOut,
       ),
     );
   }
