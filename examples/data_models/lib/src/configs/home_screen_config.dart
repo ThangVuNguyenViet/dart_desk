@@ -303,12 +303,10 @@ class LayoutStyleDropdownOption extends CmsDropdownOption<String> {
   bool get allowNull => false;
 
   @override
-  FutureOr<String?>? get defaultValue async {
-    return (await options).firstOrNull?.value;
-  }
+  FutureOr<String?>? get defaultValue => 'grid';
 
   @override
-  FutureOr<List<DropdownOption<String>>> get options => Future.value([
+  FutureOr<List<DropdownOption<String>>> options(BuildContext context) => Future.value([
     DropdownOption(value: 'grid', label: 'Grid Layout'),
     DropdownOption(value: 'list', label: 'List Layout'),
     DropdownOption(value: 'masonry', label: 'Masonry Layout'),

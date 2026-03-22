@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 @Preview(name: 'CmsDropdownInput')
@@ -36,7 +36,7 @@ class CmsDropdownInput<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final options = field.option.options;
+    final options = field.option.options(context);
 
     // If options is a Future, use FutureBuilder to handle async loading
     if (options is Future<List<DropdownOption<T>>>) {
@@ -192,6 +192,7 @@ class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
             widget.placeholder ?? 'Select an option...',
             style: theme.textTheme.muted,
           ),
+          allowDeselection: true,
           options: selectOptions,
           selectedOptionBuilder: (context, T value) {
             final option = options.firstWhereOrNull(
