@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:dart_mappable/dart_mappable.dart';
-import 'package:example_app/screens/homes_creen.dart';
 import 'package:flutter/material.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -256,22 +254,6 @@ class HomeScreenConfig
     metaDescription: null,
   );
 
-  static Widget configBuilder(Map<String, dynamic> config) {
-    final mergedConfig = {...defaultValue.toMap(), ...config};
-
-    // Normalize fields that may be stored as JSON strings instead of Lists
-    final featuredItems = mergedConfig['featuredItems'];
-    if (featuredItems is String) {
-      try {
-        mergedConfig['featuredItems'] = jsonDecode(featuredItems);
-      } catch (_) {
-        mergedConfig['featuredItems'] = <String>[];
-      }
-    }
-
-    final homeScreenConfig = HomeScreenConfigMapper.fromMap(mergedConfig);
-    return HomeScreen(config: homeScreenConfig);
-  }
 }
 
 class ColorMapper extends SimpleMapper<Color> {

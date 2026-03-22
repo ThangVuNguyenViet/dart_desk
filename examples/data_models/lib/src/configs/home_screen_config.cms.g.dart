@@ -146,14 +146,14 @@ final homeScreenConfigFields = [
   ),
 ];
 
-/// Generated document type for HomeScreenConfig
-final homeScreenConfigDocumentType = DocumentType<HomeScreenConfig>(
+/// Generated document type spec for HomeScreenConfig.
+/// Call .build(builder: ...) in your cms_app to produce a DocumentType.
+final homeScreenConfigTypeSpec = DocumentTypeSpec<HomeScreenConfig>(
   name: 'homeScreenConfig',
   title: 'Home Screen',
   description:
       'Configuration for the mobile app home screen with hero section, features, and actions',
   fields: homeScreenConfigFields,
-  builder: HomeScreenConfig.configBuilder,
   defaultValue: HomeScreenConfig.defaultValue,
 );
 
