@@ -306,8 +306,8 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
 
     final fieldsListName =
         '${className.substring(0, 1).toLowerCase()}${className.substring(1)}Fields';
-    final documentTypeName =
-        '${className.substring(0, 1).toLowerCase()}${className.substring(1)}DocumentType';
+    final typeSpecName =
+        '${className.substring(0, 1).toLowerCase()}${className.substring(1)}TypeSpec';
 
     final fields = element.fields.where(
       (f) => !f.isStatic && f.name != 'defaultValue',
@@ -355,13 +355,13 @@ final $fieldsListName = [
   ${fieldConfigs.join(',\n  ')},
 ];
 
-/// Generated document type for $className
-final $documentTypeName = DocumentType<$className>(
+/// Generated document type spec for $className.
+/// Call .build(builder: ...) in your cms_app to produce a DocumentType.
+final $typeSpecName = DocumentTypeSpec<$className>(
   $idField
   title: '$title',
   description: '$description',
   fields: $fieldsListName,
-  builder: $className.configBuilder,
   defaultValue: $className.defaultValue,
 );\n''';
   }
