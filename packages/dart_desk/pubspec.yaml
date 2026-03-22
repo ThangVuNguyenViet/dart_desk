@@ -13,8 +13,8 @@ environment:
   sdk: ^3.8.0
 
 dependencies:
-  dart_desk_annotation:
-    path: ../dart_desk_annotation
+  dart_desk_be_client: ^0.1.0
+  dart_desk_annotation: ^0.1.0
   flutter:
     sdk: flutter
   shadcn_ui: ^0.52.1
@@ -22,6 +22,9 @@ dependencies:
   file_picker: ^8.1.4
   shared_preferences: ^2.2.2
   connectivity_plus: ^6.0.0
+  serverpod_flutter: ^3.3.1
+  serverpod_auth_core_flutter: ^3.3.1
+  serverpod_auth_idp_flutter: ^3.3.1
   signals: ^6.3.0
   flutter_resizable_container: ^4.2.0
   super_editor: ^0.3.0-dev.50
@@ -33,6 +36,8 @@ dependencies:
   blurhash_dart: ^1.2.1
   crypto: ^3.0.6
   image: ^4.5.0
+  image_picker_platform_interface: ^2.10.0
+  plugin_platform_interface: ^2.1.8
   super_drag_and_drop: ^0.9.1
 
 dev_dependencies:

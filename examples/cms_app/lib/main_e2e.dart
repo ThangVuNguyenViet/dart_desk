@@ -1,8 +1,8 @@
+import 'package:dart_desk/testing.dart';
 import 'package:data_models/example_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:dart_desk/studio.dart';
-import 'package:dart_desk_be_client/dart_desk_be_client.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -15,6 +15,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 void main() {
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized(CmsMarionetteConfig.configuration);
+    FakeImagePickerPlatform.install();
   }
   runApp(const E2eApp());
 }

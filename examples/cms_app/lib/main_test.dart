@@ -7,6 +7,7 @@ import 'package:marionette_flutter/marionette_flutter.dart';
 void main() {
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized(CmsMarionetteConfig.configuration);
+    FakeImagePickerPlatform.install();
 
     // Register custom scroll extension for testing
     registerMarionetteExtension(

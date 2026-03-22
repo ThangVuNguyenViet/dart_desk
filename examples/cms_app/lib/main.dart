@@ -1,5 +1,4 @@
 import 'package:dart_desk/studio.dart';
-import 'package:dart_desk_be_client/dart_desk_be_client.dart';
 import 'package:data_models/example_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
