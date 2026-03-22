@@ -196,10 +196,14 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            ShadButton(
-              onPressed: _saveItem,
-              size: ShadButtonSize.sm,
-              child: const Text('Save'),
+            Tooltip(
+              message: 'Save array item',
+              child: ShadButton(
+                key: const ValueKey('array_item_save'),
+                onPressed: _saveItem,
+                size: ShadButtonSize.sm,
+                child: const Text('Save'),
+              ),
             ),
             const SizedBox(width: 8),
             ShadButton.outline(
@@ -233,12 +237,14 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
 
     // Default shadcn text editor
     return ShadInputFormField(
+      key: const ValueKey('array_item_editor'),
       initialValue: _editingValue?.toString() ?? '',
       onChanged: (value) {
         setState(() {
           _editingValue = value;
         });
       },
+      onSubmitted: (_) => _saveItem(),
       placeholder: const Text('Enter value...'),
     );
   }

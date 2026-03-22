@@ -10,6 +10,7 @@ abstract final class CmsMarionetteConfig {
   static const configuration = MarionetteConfiguration(
     isInteractiveWidget: _isInteractiveWidget,
     extractText: _extractText,
+    extractProperties: _extractProperties,
     shouldStopTraversal: _shouldStopTraversal,
   );
 
@@ -51,6 +52,62 @@ abstract final class CmsMarionetteConfig {
 
   static bool _shouldStopTraversal(Type type) {
     return type == ShadInput || type == ShadInputFormField;
+  }
+
+  static Map<String, Object>? _extractProperties(Element element) {
+    final widget = element.widget;
+
+    if (widget is ShadButton) {
+      return {
+        'enabled': widget.enabled,
+        'variant': widget.variant.name,
+        if (widget.size != null) 'size': widget.size!.name,
+      };
+    }
+    if (widget is ShadIconButton) {
+      return {
+        'enabled': widget.enabled,
+        'variant': widget.variant.name,
+        if (widget.iconSize != null) 'iconSize': widget.iconSize!,
+      };
+    }
+    if (widget is ShadInput) {
+      return {
+        'enabled': widget.enabled,
+        'readOnly': widget.readOnly,
+        'obscureText': widget.obscureText,
+      };
+    }
+    if (widget is ShadFormBuilderField) {
+      if (element is StatefulElement) {
+        final state = element.state;
+        if (state is ShadFormBuilderFieldState) {
+          final props = <String, Object>{
+            'enabled': state.enabled,
+            'readOnly': widget.readOnly,
+          };
+          final value = state.value;
+          if (value != null) props['value'] = value;
+          return props;
+        }
+      }
+    }
+    if (widget is ShadSelect) {
+      final props = <String, Object>{'enabled': widget.enabled};
+      if (element is StatefulElement) {
+        final state = element.state;
+        if (state is ShadSelectState) {
+          final selected = state.controller.value;
+          if (selected.isNotEmpty) {
+            props['value'] = selected.length == 1
+                ? selected.first.toString()
+                : selected.map((v) => v.toString()).toList();
+          }
+        }
+      }
+      return props;
+    }
+    return null;
   }
 
   /// Extracts text for [ShadInputFormField] by finding the

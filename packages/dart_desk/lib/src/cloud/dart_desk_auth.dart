@@ -1,11 +1,10 @@
 import 'dart:developer' as developer;
 
-import 'package:flutter/material.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
-
 import 'package:dart_desk_be_client/dart_desk_be_client.dart';
-import 'package:serverpod_flutter/serverpod_flutter.dart';
+import 'package:flutter/material.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+import 'package:serverpod_flutter/serverpod_flutter.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// A widget that provides authentication guard functionality using Serverpod's
 /// IDP authentication system with Google Sign-In and email/password support.
@@ -24,10 +23,16 @@ import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 /// ```
 class DartDeskAuth extends StatefulWidget {
   final String serverUrl;
-  final Widget Function(BuildContext context, Client client, VoidCallback signOut) builder;
+  final Widget Function(
+    BuildContext context,
+    Client client,
+    VoidCallback signOut,
+  )
+  builder;
   final String title;
   final String? subtitle;
   final Widget? logo;
+  final ShadThemeData? theme;
 
   const DartDeskAuth({
     super.key,
@@ -36,6 +41,7 @@ class DartDeskAuth extends StatefulWidget {
     this.title = 'Welcome to Dart Desk',
     this.subtitle,
     this.logo,
+    this.theme,
   });
 
   @override
@@ -68,25 +74,26 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
         _errorMessage = null;
       });
 
-      _client = Client(
-        widget.serverUrl,
-        onFailedCall: (context, error, stackTrace) {
-          developer.log(
-            'API call failed: ${context.endpointName}.${context.methodName}',
-            name: 'ServerpodClient',
-            error: error,
-            stackTrace: stackTrace,
-          );
-        },
-        onSucceededCall: (context) {
-          developer.log(
-            'API call succeeded: ${context.endpointName}.${context.methodName}',
-            name: 'ServerpodClient',
-          );
-        },
-      )
-        ..connectivityMonitor = FlutterConnectivityMonitor()
-        ..authSessionManager = FlutterAuthSessionManager();
+      _client =
+          Client(
+              widget.serverUrl,
+              onFailedCall: (context, error, stackTrace) {
+                developer.log(
+                  'API call failed: ${context.endpointName}.${context.methodName}',
+                  name: 'ServerpodClient',
+                  error: error,
+                  stackTrace: stackTrace,
+                );
+              },
+              onSucceededCall: (context) {
+                developer.log(
+                  'API call succeeded: ${context.endpointName}.${context.methodName}',
+                  name: 'ServerpodClient',
+                );
+              },
+            )
+            ..connectivityMonitor = FlutterConnectivityMonitor()
+            ..authSessionManager = FlutterAuthSessionManager();
 
       await _client.auth.initialize();
       await _client.auth.initializeGoogleSignIn();
@@ -140,8 +147,10 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
     });
 
     try {
-      final authSuccess =
-          await _client.emailIdp.login(email: email, password: password);
+      final authSuccess = await _client.emailIdp.login(
+        email: email,
+        password: password,
+      );
       await _auth.updateSignedInUser(authSuccess);
       // _onAuthChanged will handle ensureUser
     } catch (e) {
@@ -205,17 +214,15 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
   }
 
   Widget _buildLoadingScreen() {
-    return Scaffold(
-      body: Center(
+    return ShadApp(
+      theme: widget.theme,
+      home: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
-            Text(
-              'Loading...',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
+            Text('Loading...', style: Theme.of(context).textTheme.bodyLarge),
           ],
         ),
       ),
@@ -223,8 +230,9 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
   }
 
   Widget _buildSignInScreen() {
-    return Scaffold(
-      body: Builder(
+    return ShadApp(
+      theme: widget.theme,
+      home: Builder(
         builder: (context) {
           final theme = ShadTheme.of(context);
           return Center(
@@ -295,12 +303,10 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
                             children: [
                               const Expanded(child: Divider()),
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 12),
-                                child: Text(
-                                  'or',
-                                  style: theme.textTheme.muted,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
                                 ),
+                                child: Text('or', style: theme.textTheme.muted),
                               ),
                               const Expanded(child: Divider()),
                             ],
@@ -320,7 +326,8 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
                             obscureText: _obscurePassword,
                             trailing: GestureDetector(
                               onTap: () => setState(
-                                  () => _obscurePassword = !_obscurePassword),
+                                () => _obscurePassword = !_obscurePassword,
+                              ),
                               child: Icon(
                                 _obscurePassword
                                     ? LucideIcons.eyeOff
@@ -333,14 +340,16 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
                           const SizedBox(height: 16),
                           // Sign-in button
                           ShadButton(
-                            onPressed:
-                                _isEmailSigningIn ? null : _handleEmailSubmit,
+                            onPressed: _isEmailSigningIn
+                                ? null
+                                : _handleEmailSubmit,
                             child: _isEmailSigningIn
                                 ? const SizedBox(
                                     width: 16,
                                     height: 16,
                                     child: CircularProgressIndicator(
-                                        strokeWidth: 2),
+                                      strokeWidth: 2,
+                                    ),
                                   )
                                 : const Text('Sign in with email'),
                           ),
@@ -350,9 +359,7 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
                     const SizedBox(height: 24),
                     Text(
                       'By signing in, you agree to our Terms of Service and Privacy Policy.',
-                      style: theme.textTheme.muted.copyWith(
-                        fontSize: 12,
-                      ),
+                      style: theme.textTheme.muted.copyWith(fontSize: 12),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -365,4 +372,3 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
     );
   }
 }
-

@@ -5,7 +5,6 @@ import '../cloud/cloud_data_source.dart';
 import '../cloud/dart_desk_auth.dart';
 import '../data/cms_data_source.dart';
 import 'cms_studio_app.dart';
-import 'dart_desk.dart';
 import 'dart_desk_config.dart';
 
 /// Entry point for Dart Desk CMS applications.
@@ -50,11 +49,11 @@ class DartDeskApp extends StatelessWidget {
     required String serverUrl,
     required DartDeskConfig config,
     ShadThemeData? theme,
-  })  : _serverUrl = serverUrl,
-        _dataSource = null,
-        _onSignOut = null,
-        _config = config,
-        _theme = theme;
+  }) : _serverUrl = serverUrl,
+       _dataSource = null,
+       _onSignOut = null,
+       _config = config,
+       _theme = theme;
 
   /// Creates a DartDeskApp with an external data source and auth.
   ///
@@ -66,11 +65,11 @@ class DartDeskApp extends StatelessWidget {
     required VoidCallback onSignOut,
     required DartDeskConfig config,
     ShadThemeData? theme,
-  })  : _serverUrl = null,
-        _dataSource = dataSource,
-        _onSignOut = onSignOut,
-        _config = config,
-        _theme = theme;
+  }) : _serverUrl = null,
+       _dataSource = dataSource,
+       _onSignOut = onSignOut,
+       _config = config,
+       _theme = theme;
 
   @override
   Widget build(BuildContext context) {
@@ -90,20 +89,15 @@ class DartDeskApp extends StatelessWidget {
   }
 
   Widget _buildStudio(DataSource dataSource, VoidCallback signOut) {
-    return DartDesk(
+    return CmsStudioApp(
       dataSource: dataSource,
-      signOut: signOut,
-      config: _config,
-      child: CmsStudioApp(
-        dataSource: dataSource,
-        documentTypes: _config.documentTypes,
-        documentTypeDecorations: _config.documentTypeDecorations,
-        title: _config.title,
-        subtitle: _config.subtitle,
-        icon: _config.icon,
-        theme: _theme,
-        onSignOut: signOut,
-      ),
+      documentTypes: _config.documentTypes,
+      documentTypeDecorations: _config.documentTypeDecorations,
+      title: _config.title,
+      subtitle: _config.subtitle,
+      icon: _config.icon,
+      theme: _theme,
+      onSignOut: signOut,
     );
   }
 }

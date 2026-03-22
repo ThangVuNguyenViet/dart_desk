@@ -55,6 +55,8 @@ dependencies:
 dependency_overrides:
   dart_desk:
     path: ../../packages/dart_desk
+  dart_desk_annotation:
+    path: ../../packages/dart_desk_annotation
   marionette_flutter:
     path: ../../../../marionette_mcp/packages/marionette_flutter
   dart_desk_be_client:
@@ -62,6 +64,8 @@ dependency_overrides:
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  flutter_driver:
     sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to

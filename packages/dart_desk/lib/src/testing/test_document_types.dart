@@ -109,16 +109,40 @@ final allFieldsDocumentType = DocumentType(
       title: 'Object Field',
       description: 'A nested object with sub-fields',
       option: CmsObjectOption(
-        fields: [
-          CmsStringField(
-            name: 'nested_title',
-            title: 'Nested Title',
-            option: CmsStringOption(),
-          ),
-          CmsNumberField(
-            name: 'nested_count',
-            title: 'Nested Count',
-            option: CmsNumberOption(),
+        children: [
+          ColumnFields(children: [
+            CmsStringField(
+              name: 'nested_title',
+              title: 'Nested Title',
+              option: CmsStringOption(),
+            ),
+          ]),
+          RowFields(children: [
+            CmsNumberField(
+              name: 'nested_count',
+              title: 'Nested Count',
+              option: CmsNumberOption(),
+            ),
+            CmsStringField(
+              name: 'nested_tag',
+              title: 'Nested Tag',
+              option: CmsStringOption(),
+            ),
+          ]),
+          GroupFields(
+            title: 'Extra Details',
+            description: 'Optional metadata',
+            collapsible: true,
+            collapsed: true,
+            children: [
+              ColumnFields(children: [
+                CmsStringField(
+                  name: 'nested_notes',
+                  title: 'Nested Notes',
+                  option: CmsStringOption(),
+                ),
+              ]),
+            ],
           ),
         ],
       ),
@@ -255,7 +279,7 @@ const testDocumentSeedData = [
       'dropdown_field': 'option_a',
       'document_ref_dropdown': <String>[],
       'array_field': ['Item 1', 'Item 2', 'Item 3'],
-      'object_field': {'nested_title': 'Nested Value', 'nested_count': 10},
+      'object_field': {'nested_title': 'Nested Value', 'nested_count': 10, 'nested_tag': 'alpha', 'nested_notes': 'Some notes'},
       'block_field': null,
       'geopoint_field': {'lat': 37.7749, 'lng': -122.4194},
     },
@@ -278,7 +302,7 @@ const testDocumentSeedData = [
       'dropdown_field': 'option_b',
       'document_ref_dropdown': <String>[],
       'array_field': ['Alpha', 'Beta'],
-      'object_field': {'nested_title': 'Beta Nested', 'nested_count': 5},
+      'object_field': {'nested_title': 'Beta Nested', 'nested_count': 5, 'nested_tag': 'beta', 'nested_notes': ''},
       'block_field': null,
       'geopoint_field': {'lat': 40.7128, 'lng': -74.0060},
     },
@@ -304,7 +328,7 @@ const testDocumentSeedData = [
       'dropdown_field': null,
       'document_ref_dropdown': <String>[],
       'array_field': [],
-      'object_field': {'nested_title': '', 'nested_count': 0},
+      'object_field': {'nested_title': '', 'nested_count': 0, 'nested_tag': '', 'nested_notes': null},
       'block_field': null,
       'geopoint_field': null,
     },

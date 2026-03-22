@@ -1,9 +1,10 @@
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'string_input.dart';
+import '../studio/components/forms/cms_form.dart';
 
 @Preview(name: 'CmsObjectInput')
 Widget preview() => ShadApp(
@@ -12,21 +13,50 @@ Widget preview() => ShadApp(
       name: 'address',
       title: 'Address',
       option: CmsObjectOption(
-        fields: [
-          CmsStringField(
-            name: 'street',
-            title: 'Street',
-            option: CmsStringOption(),
+        children: [
+          ColumnFields(
+            children: [
+              CmsStringField(
+                name: 'street',
+                title: 'Street',
+                option: CmsStringOption(),
+              ),
+            ],
           ),
-          CmsStringField(
-            name: 'city',
-            title: 'City',
-            option: CmsStringOption(),
+          RowFields(
+            children: [
+              CmsStringField(
+                name: 'city',
+                title: 'City',
+                option: CmsStringOption(),
+              ),
+              CmsStringField(
+                name: 'zipCode',
+                title: 'Zip Code',
+                option: CmsStringOption(),
+              ),
+            ],
           ),
-          CmsStringField(
-            name: 'zipCode',
-            title: 'Zip Code',
-            option: CmsStringOption(),
+          GroupFields(
+            title: 'Coordinates',
+            collapsible: true,
+            collapsed: true,
+            children: [
+              RowFields(
+                children: [
+                  CmsNumberField(
+                    name: 'lat',
+                    title: 'Latitude',
+                    option: CmsNumberOption(),
+                  ),
+                  CmsNumberField(
+                    name: 'lng',
+                    title: 'Longitude',
+                    option: CmsNumberOption(),
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
@@ -34,7 +64,7 @@ Widget preview() => ShadApp(
   ),
 );
 
-class CmsObjectInput extends StatelessWidget {
+class CmsObjectInput extends StatefulWidget {
   final CmsObjectField field;
   final CmsData? data;
   final ValueChanged<Map<String, dynamic>?>? onChanged;
@@ -46,46 +76,270 @@ class CmsObjectInput extends StatelessWidget {
     this.onChanged,
   });
 
-  Widget _buildFieldInput(CmsField field) {
-    // For now, we only support string fields in objects
-    // TODO: Support all field types recursively
-    if (field is CmsStringField) {
-      return CmsStringInput(field: field);
-    }
+  @override
+  State<CmsObjectInput> createState() => _CmsObjectInputState();
+}
 
+class _CmsObjectInputState extends State<CmsObjectInput> {
+  late Map<String, dynamic> _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = Map<String, dynamic>.from(
+      (widget.data?.value as Map<String, dynamic>?) ?? {},
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant CmsObjectInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.data?.value != widget.data?.value) {
+      _value = Map<String, dynamic>.from(
+        (widget.data?.value as Map<String, dynamic>?) ?? {},
+      );
+    }
+  }
+
+  void _onChildChanged(String fieldName, dynamic childValue) {
+    setState(() {
+      _value[fieldName] = childValue;
+    });
+    widget.onChanged?.call(_value);
+  }
+
+  Widget _buildField(CmsField field) {
+    final path = widget.data?.path ?? widget.field.name;
+    final data = _value[field.name] != null
+        ? CmsData(value: _value[field.name], path: '$path.${field.name}')
+        : null;
+
+    final builder = CmsFieldInputRegistry.getBuilder(field);
+    if (builder != null) {
+      return builder(field, data, _onChildChanged);
+    }
     return const SizedBox.shrink();
+  }
+
+  Widget _buildLayout(CmsFieldLayout layout) {
+    return switch (layout) {
+      RowFields() => _buildRow(layout),
+      ColumnFields() => _buildColumn(layout),
+      GroupFields() => _GroupSection(
+        group: layout,
+        buildLayout: _buildLayout,
+        buildField: _buildField,
+      ),
+    };
+  }
+
+  Widget _buildRow(RowFields row) {
+    final content = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: row.children
+          .map(
+            (f) => Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+                child: _buildField(f),
+              ),
+            ),
+          )
+          .toList(),
+    );
+
+    if (row.collapsible) {
+      return _CollapsibleWrapper(
+        initiallyCollapsed: row.collapsed,
+        child: content,
+      );
+    }
+    return content;
+  }
+
+  Widget _buildColumn(ColumnFields col) {
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: col.children
+          .map(
+            (f) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildField(f),
+            ),
+          )
+          .toList(),
+    );
+
+    if (col.collapsible) {
+      return _CollapsibleWrapper(
+        initiallyCollapsed: col.collapsed,
+        child: content,
+      );
+    }
+    return content;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (field.option.hidden) {
+    if (widget.field.option.hidden) {
       return const SizedBox.shrink();
     }
 
     final theme = ShadTheme.of(context);
 
-    return Container(
+    return ShadCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.border),
-        borderRadius: BorderRadius.circular(8),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            field.title,
+            widget.field.title,
             style: theme.textTheme.large.copyWith(fontWeight: FontWeight.bold),
           ),
+          if (widget.field.description != null) ...[
+            const SizedBox(height: 4),
+            Text(widget.field.description!, style: theme.textTheme.muted),
+          ],
           const SizedBox(height: 16),
-          ...field.option.fields.map((f) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: _buildFieldInput(f),
-            );
-          }),
+          ...widget.field.option.children.map(
+            (layout) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _buildLayout(layout),
+            ),
+          ),
         ],
       ),
+    );
+  }
+}
+
+/// A stateful wrapper that manages collapse state for [RowFields]/[ColumnFields].
+class _CollapsibleWrapper extends StatefulWidget {
+  final bool initiallyCollapsed;
+  final Widget child;
+
+  const _CollapsibleWrapper({
+    required this.initiallyCollapsed,
+    required this.child,
+  });
+
+  @override
+  State<_CollapsibleWrapper> createState() => _CollapsibleWrapperState();
+}
+
+class _CollapsibleWrapperState extends State<_CollapsibleWrapper> {
+  late bool _isCollapsed;
+
+  @override
+  void initState() {
+    super.initState();
+    _isCollapsed = widget.initiallyCollapsed;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () => setState(() => _isCollapsed = !_isCollapsed),
+          child: Row(
+            children: [
+              FaIcon(
+                _isCollapsed
+                    ? FontAwesomeIcons.chevronRight
+                    : FontAwesomeIcons.chevronDown,
+                size: 12,
+                color: theme.colorScheme.mutedForeground,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                _isCollapsed ? 'Show fields' : 'Hide fields',
+                style: theme.textTheme.small.copyWith(
+                  color: theme.colorScheme.mutedForeground,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (!_isCollapsed) ...[const SizedBox(height: 8), widget.child],
+      ],
+    );
+  }
+}
+
+/// Renders a [GroupFields] with a titled, optionally collapsible section.
+class _GroupSection extends StatefulWidget {
+  final GroupFields group;
+  final Widget Function(CmsFieldLayout) buildLayout;
+  final Widget Function(CmsField) buildField;
+
+  const _GroupSection({
+    required this.group,
+    required this.buildLayout,
+    required this.buildField,
+  });
+
+  @override
+  State<_GroupSection> createState() => _GroupSectionState();
+}
+
+class _GroupSectionState extends State<_GroupSection> {
+  late bool _isCollapsed;
+
+  @override
+  void initState() {
+    super.initState();
+    _isCollapsed = widget.group.collapsed;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    final group = widget.group;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: group.collapsible
+              ? () => setState(() => _isCollapsed = !_isCollapsed)
+              : null,
+          child: Row(
+            children: [
+              if (group.collapsible) ...[
+                FaIcon(
+                  _isCollapsed
+                      ? FontAwesomeIcons.chevronRight
+                      : FontAwesomeIcons.chevronDown,
+                  size: 12,
+                  color: theme.colorScheme.mutedForeground,
+                ),
+                const SizedBox(width: 6),
+              ],
+              Text(
+                group.title,
+                style: theme.textTheme.p.copyWith(fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+        if (group.description != null && !_isCollapsed) ...[
+          const SizedBox(height: 2),
+          Text(group.description!, style: theme.textTheme.muted),
+        ],
+        if (!_isCollapsed) ...[
+          const SizedBox(height: 12),
+          ...group.children.map(
+            (layout) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: widget.buildLayout(layout),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

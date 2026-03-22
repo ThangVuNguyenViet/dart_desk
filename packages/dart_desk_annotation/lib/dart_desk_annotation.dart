@@ -15,6 +15,7 @@ export 'src/fields/complex/array_field.dart';
 export 'src/fields/complex/block_field.dart';
 export 'src/fields/complex/dropdown_field.dart';
 export 'src/fields/complex/geopoint_field.dart';
+export 'src/fields/complex/field_layout.dart';
 export 'src/fields/complex/object_field.dart';
 // Media field configurations
 export 'src/fields/media/color_field.dart';

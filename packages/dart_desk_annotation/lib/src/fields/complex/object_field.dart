@@ -1,9 +1,13 @@
 import '../base/field.dart';
+import 'field_layout.dart';
 
 class CmsObjectOption extends CmsOption {
-  final List<CmsField> fields;
+  final List<CmsFieldLayout> children;
 
-  const CmsObjectOption({required this.fields, super.hidden});
+  const CmsObjectOption({required this.children, super.hidden});
+
+  /// Walk the layout tree to collect all leaf [CmsField] instances.
+  List<CmsField> get fields => children.expand((c) => c.flatFields).toList();
 }
 
 class CmsObjectField extends CmsField {
@@ -24,10 +28,10 @@ class CmsObjectFieldConfig extends CmsFieldConfig {
     super.title,
     super.description,
     CmsObjectOption super.option = const CmsObjectOption(
-      fields: [],
-    ), // Default empty list
+      children: [],
+    ),
   });
 
   @override
-  List<Type> get supportedFieldTypes => [Object]; // Represents a generic object
+  List<Type> get supportedFieldTypes => [Object];
 }

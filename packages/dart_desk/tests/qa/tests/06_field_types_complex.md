@@ -38,16 +38,59 @@
 - "Item 3" is removed from the list
 - Remaining items are still visible
 
-## TC-06-04: Object field displays nested fields
+## TC-06-04: Object field displays nested fields in layout
 **Steps:**
 1. Scroll to "Object Field"
 2. Call get_interactive_elements
 
 **Expected:**
 - "Object Field" label is visible
-- Nested fields are visible:
-  - "Nested Title" with value "Nested Value"
-  - "Nested Count" with value "10"
+- "A nested object with sub-fields" description is visible
+- ColumnFields section: "Nested Title" with value "Nested Value"
+- RowFields section (side by side): "Nested Count" with value "10", "Nested Tag" with value "alpha"
+- GroupFields section: "Extra Details" header is visible
+- "Extra Details" group is collapsed (chevron-right icon visible, "Nested Notes" is NOT visible)
+
+## TC-06-04a: Object field — expand collapsible group
+**Steps:**
+1. Scroll to "Object Field"
+2. Tap "Extra Details" group header
+3. Call get_interactive_elements
+
+**Expected:**
+- "Nested Notes" field is now visible with value "Some notes"
+- "Optional metadata" description is visible
+- Chevron-down icon is visible (expanded state)
+
+## TC-06-04b: Object field — collapse expanded group
+**Steps:**
+1. Tap "Extra Details" group header again
+2. Call get_interactive_elements
+
+**Expected:**
+- "Nested Notes" field is hidden
+- Chevron-right icon is visible (collapsed state)
+
+## TC-06-04c: Object field — edit nested field in RowFields
+**Steps:**
+1. Find the "Nested Tag" input (in the RowFields row)
+2. Clear the input and enter "updated"
+3. Call get_interactive_elements
+
+**Expected:**
+- "Nested Tag" input now shows "updated"
+- Preview panel shows updated object_field data including nested_tag: "updated"
+
+## TC-06-04d: Object field — edit nested field in collapsible group
+**Steps:**
+1. Tap "Extra Details" to expand the group
+2. Find the "Nested Notes" input
+3. Clear the input and enter "New notes"
+4. Call get_interactive_elements
+
+**Expected:**
+- "Nested Notes" input now shows "New notes"
+- Preview panel shows updated object_field data including nested_notes: "New notes"
 
 ## TC-06-05: Geopoint field displays coordinates
 **Steps:**
