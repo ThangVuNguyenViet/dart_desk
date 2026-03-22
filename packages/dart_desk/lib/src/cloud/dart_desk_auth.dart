@@ -14,20 +14,22 @@ import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 ///
 /// Example usage:
 /// ```dart
-/// FlutterCmsAuth(
-///   clientId: 'default',
+/// DartDeskAuth(
 ///   serverUrl: 'http://localhost:8080/',
-///   builder: (context, client) => MyAuthenticatedApp(client: client),
+///   builder: (context, client, signOut) => MyAuthenticatedApp(
+///     client: client,
+///     onSignOut: signOut,
+///   ),
 /// )
 /// ```
-class FlutterCmsAuth extends StatefulWidget {
+class DartDeskAuth extends StatefulWidget {
   final String serverUrl;
-  final Widget Function(BuildContext context, Client client) builder;
+  final Widget Function(BuildContext context, Client client, VoidCallback signOut) builder;
   final String title;
   final String? subtitle;
   final Widget? logo;
 
-  const FlutterCmsAuth({
+  const DartDeskAuth({
     super.key,
     required this.serverUrl,
     required this.builder,
@@ -37,10 +39,10 @@ class FlutterCmsAuth extends StatefulWidget {
   });
 
   @override
-  State<FlutterCmsAuth> createState() => _FlutterCmsAuthState();
+  State<DartDeskAuth> createState() => _DartDeskAuthState();
 }
 
-class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
+class _DartDeskAuthState extends State<DartDeskAuth> {
   late final Client _client;
   bool _isLoading = true;
   bool _isEnsuringUser = false;
@@ -196,13 +198,7 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
     }
 
     if (_auth.isAuthenticated) {
-      return _FlutterCmsAuthProvider(
-        client: _client,
-        authSessionManager: _auth,
-        authSuccess: _auth.authInfo!,
-        onSignOut: _handleSignOut,
-        child: widget.builder(context, _client),
-      );
+      return widget.builder(context, _client, _handleSignOut);
     }
 
     return _buildSignInScreen();
@@ -370,58 +366,3 @@ class _FlutterCmsAuthState extends State<FlutterCmsAuth> {
   }
 }
 
-/// InheritedWidget that provides authentication data to descendant widgets
-class _FlutterCmsAuthProvider extends InheritedWidget {
-  final Client client;
-  final FlutterAuthSessionManager authSessionManager;
-  final AuthSuccess authSuccess;
-  final VoidCallback onSignOut;
-
-  const _FlutterCmsAuthProvider({
-    required this.client,
-    required this.authSessionManager,
-    required this.authSuccess,
-    required this.onSignOut,
-    required super.child,
-  });
-
-  static _FlutterCmsAuthProvider? of(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<_FlutterCmsAuthProvider>();
-  }
-
-  @override
-  bool updateShouldNotify(_FlutterCmsAuthProvider oldWidget) {
-    return authSuccess != oldWidget.authSuccess ||
-        authSessionManager != oldWidget.authSessionManager ||
-        client != oldWidget.client;
-  }
-}
-
-/// Extension on BuildContext to easily access authentication data
-extension FlutterCmsAuthContext on BuildContext {
-  /// Get the CMS Client instance
-  Client? get cmsClient {
-    return _FlutterCmsAuthProvider.of(this)?.client;
-  }
-
-  /// Get the current auth success info
-  AuthSuccess? get currentAuthInfo {
-    return _FlutterCmsAuthProvider.of(this)?.authSuccess;
-  }
-
-  /// Get the current user ID (UUID)
-  UuidValue? get currentUserId {
-    return _FlutterCmsAuthProvider.of(this)?.authSuccess.authUserId;
-  }
-
-  /// Get the auth session manager
-  FlutterAuthSessionManager? get authSessionManager {
-    return _FlutterCmsAuthProvider.of(this)?.authSessionManager;
-  }
-
-  /// Sign out the current user
-  void signOut() {
-    _FlutterCmsAuthProvider.of(this)?.onSignOut();
-  }
-}

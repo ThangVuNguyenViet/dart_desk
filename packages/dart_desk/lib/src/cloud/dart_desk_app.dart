@@ -38,15 +38,15 @@ class DartDeskBuiltInApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterCmsAuth(
+    return DartDeskAuth(
       serverUrl: serverUrl,
       title: config.title,
       subtitle: config.subtitle,
-      builder: (context, client) {
+      builder: (context, client, signOut) {
         final dataSource = CloudDataSource(client);
         return DartDesk(
           dataSource: dataSource,
-          signOut: () => context.signOut(),
+          signOut: signOut,
           config: config,
           child: CmsStudioApp(
             dataSource: dataSource,
@@ -56,7 +56,7 @@ class DartDeskBuiltInApp extends StatelessWidget {
             subtitle: config.subtitle,
             icon: config.icon,
             theme: theme,
-            onSignOut: () => context.signOut(),
+            onSignOut: signOut,
           ),
         );
       },
