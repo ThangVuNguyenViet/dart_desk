@@ -1,8 +1,6 @@
 import 'package:dart_desk/dart_desk.dart';
-import 'package:dart_desk/src/inputs/multi_dropdown_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../helpers/input_test_helpers.dart';
 
