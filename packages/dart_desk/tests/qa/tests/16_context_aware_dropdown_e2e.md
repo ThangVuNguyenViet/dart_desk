@@ -23,7 +23,7 @@ resolves options reactively in the running app with multi-select support.
 
 **Expected:** The multi-dropdown resolved its options from `documentsContainer('test_all_fields').watch(context)`.
 
-**Result:** Needs re-run (updated to multi-select)
+**Result:** PASS (2026-03-22) — Placeholder "Select documents..." confirmed, 3 options loaded, dropdown stays open after selection.
 
 ---
 
@@ -36,7 +36,7 @@ resolves options reactively in the running app with multi-select support.
 
 **Expected:** Multi-selection persists to editedData as List and preview updates reactively with all titles.
 
-**Result:** Needs re-run (updated to multi-select)
+**Result:** PASS (2026-03-22) — Selected Alpha and Beta, preview shows `[1, 2] (Test Document Alpha, Test Document Beta)`. Dropdown remained open between selections.
 
 ---
 
@@ -53,7 +53,7 @@ resolves options reactively in the running app with multi-select support.
 **Expected:** The context-aware multi-dropdown reactively picks up the new document
 because `documentsContainer('test_all_fields')` was reloaded after create.
 
-**Result:** Needs re-run (updated to multi-select)
+**Result:** PASS (2026-03-22) — Created "Test Document Delta", dropdown showed 4 options including Delta.
 
 ---
 
@@ -67,4 +67,4 @@ because `documentsContainer('test_all_fields')` was reloaded after create.
 
 **Expected:** The multi-dropdown reactively updates when the backing document list changes.
 
-**Result:** Needs re-run (updated to multi-select)
+**Result:** PASS (2026-03-22) — Deleted Delta, dropdown back to 3 options (Alpha, Beta, Gamma).
