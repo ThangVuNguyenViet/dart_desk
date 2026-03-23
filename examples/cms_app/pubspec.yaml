@@ -46,6 +46,8 @@ dependencies:
 
   serverpod_flutter: ^3.3.1
 
+  http: ^1.2.0
+
   # Cloud data source
   dart_desk_be_client:
     path: ../../../dart_desk_be/dart_desk_be_client

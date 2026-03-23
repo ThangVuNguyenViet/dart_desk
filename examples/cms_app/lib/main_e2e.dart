@@ -1,7 +1,9 @@
+import 'package:dart_desk/src/cloud/api_key_http_client.dart';
 import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:marionette_flutter/marionette_flutter.dart';
 
 import 'document_types.dart';
@@ -13,11 +15,19 @@ import 'document_types.dart';
 /// flutter run -d chrome -t lib/main_e2e.dart
 /// ```
 void main() {
+  const apiKey = String.fromEnvironment('API_KEY');
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized(CmsMarionetteConfig.configuration);
     FakeImagePickerPlatform.install();
   }
-  runApp(const E2eApp());
+  if (apiKey.isNotEmpty) {
+    runWithClient(
+      () => runApp(const E2eApp()),
+      () => ApiKeyHttpClient(http.Client(), apiKey),
+    );
+  } else {
+    runApp(const E2eApp());
+  }
 }
 
 class E2eApp extends StatelessWidget {
@@ -28,10 +38,13 @@ class E2eApp extends StatelessWidget {
     defaultValue: 'http://localhost:8080/',
   );
 
+  static const apiKey = String.fromEnvironment('API_KEY');
+
   @override
   Widget build(BuildContext context) {
     return DartDeskApp(
       serverUrl: serverUrl,
+      apiKey: apiKey.isNotEmpty ? apiKey : null,
       config: DartDeskConfig(
         documentTypes: [homeScreenDocumentType],
         documentTypeDecorations: [
