@@ -1,9 +1,7 @@
-import 'package:dart_desk/src/cloud/api_key_http_client.dart';
 import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:marionette_flutter/marionette_flutter.dart';
 
 import 'document_types.dart';
@@ -21,10 +19,6 @@ void main() {
     FakeImagePickerPlatform.install();
   }
   if (apiKey.isNotEmpty) {
-    runWithClient(
-      () => runApp(const E2eApp()),
-      () => ApiKeyHttpClient(http.Client(), apiKey),
-    );
   } else {
     runApp(const E2eApp());
   }

@@ -123,7 +123,7 @@ dependencies:
 
 dev_dependencies:
   dart_desk_generator: ^0.1.0
-  build_runner: ^2.4.0
+  build_runner: ^2.13.1
 ```
 
 ## Quick Start

@@ -57,7 +57,7 @@ dependencies:
   dart_mappable: ^4.6.1
 
 dev_dependencies:
-  build_runner: ^2.10.4
+  build_runner: ^2.13.1
   dart_mappable_builder: ^4.6.1
   dart_desk_generator: # from pub.dev or path
 ```
