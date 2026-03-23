@@ -38,6 +38,7 @@ class DartDeskApp extends StatelessWidget {
   final DataSource? _dataSource;
   final VoidCallback? _onSignOut;
   final DartDeskConfig _config;
+  final String? _apiKey;
   final ShadThemeData? _theme;
 
   /// Creates a DartDeskApp with built-in Serverpod IDP authentication.
@@ -48,11 +49,13 @@ class DartDeskApp extends StatelessWidget {
     super.key,
     required String serverUrl,
     required DartDeskConfig config,
+    String? apiKey,
     ShadThemeData? theme,
   }) : _serverUrl = serverUrl,
        _dataSource = null,
        _onSignOut = null,
        _config = config,
+       _apiKey = apiKey,
        _theme = theme;
 
   /// Creates a DartDeskApp with an external data source and auth.
@@ -64,11 +67,13 @@ class DartDeskApp extends StatelessWidget {
     required DataSource dataSource,
     required VoidCallback onSignOut,
     required DartDeskConfig config,
+    String? apiKey,
     ShadThemeData? theme,
   }) : _serverUrl = null,
        _dataSource = dataSource,
        _onSignOut = onSignOut,
        _config = config,
+       _apiKey = apiKey,
        _theme = theme;
 
   @override
@@ -76,6 +81,7 @@ class DartDeskApp extends StatelessWidget {
     if (_serverUrl != null) {
       return DartDeskAuth(
         serverUrl: _serverUrl,
+        apiKey: _apiKey,
         title: _config.title,
         subtitle: _config.subtitle,
         builder: (context, client, signOut) {

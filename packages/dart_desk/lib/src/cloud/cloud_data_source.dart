@@ -464,7 +464,7 @@ class CloudDataSource implements DataSource {
 
     return CmsDocument(
       id: doc.id,
-      clientId: doc.tenantId ?? 0,
+      clientId: doc.clientId ?? 0,
       documentType: doc.documentType,
       title: doc.title,
       slug: doc.slug,

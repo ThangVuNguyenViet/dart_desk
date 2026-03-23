@@ -29,6 +29,7 @@ class DartDeskAuth extends StatefulWidget {
     VoidCallback signOut,
   )
   builder;
+  final String? apiKey;
   final String title;
   final String? subtitle;
   final Widget? logo;
@@ -38,6 +39,7 @@ class DartDeskAuth extends StatefulWidget {
     super.key,
     required this.serverUrl,
     required this.builder,
+    this.apiKey,
     this.title = 'Welcome to Dart Desk',
     this.subtitle,
     this.logo,
