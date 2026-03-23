@@ -2,7 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:dart_desk_annotation/dart_desk_annotation_generator.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -60,11 +60,15 @@ class CmsConfigGenerator extends GeneratorForAnnotation<CmsConfig> {
           final fieldElement = field.type.element;
 
           // Determine the CmsData generic type
+          // Strip trailing '?' for nullability — we'll re-add it after the suffix
+          final isNullable = fieldType.endsWith('?');
+          final baseType = isNullable ? fieldType.substring(0, fieldType.length - 1) : fieldType;
+          final nullSuffix = isNullable ? '?' : '';
           String cmsDataType;
           if (fieldElement is ClassElement &&
               typeChecker.hasAnnotationOfExact(fieldElement)) {
             // If the field's type also has @CmsConfig, append CmsConfig suffix
-            cmsDataType = 'CmsData<${fieldType}CmsConfig>';
+            cmsDataType = 'CmsData<${baseType}CmsConfig$nullSuffix>';
           } else {
             // Otherwise, use the field type as-is
             cmsDataType = 'CmsData<$fieldType>';

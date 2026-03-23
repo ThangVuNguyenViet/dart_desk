@@ -4,7 +4,7 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:dart_desk_annotation/dart_desk_annotation_generator.dart';
 
 import 'utils.dart';
 

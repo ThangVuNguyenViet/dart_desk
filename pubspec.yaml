@@ -9,14 +9,17 @@ environment:
 # Workspace configuration
 workspace:
   - packages/dart_desk
-  - packages/dart_desk_annotation
-  - packages/dart_desk_generator
+  - examples/data_models
 
 dependencies: 
   collection: ^1.19.1
   shadcn_ui: ^0.52.1
 
 dependency_overrides:
+  dart_desk_annotation:
+    path: packages/dart_desk_annotation
+  dart_desk_generator:
+    path: packages/dart_desk_generator
   marionette_flutter:
     path: ../../marionette_mcp/packages/marionette_flutter
   dart_desk_be_client:

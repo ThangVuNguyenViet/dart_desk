@@ -10,7 +10,6 @@ topics:
 
 environment:
   sdk: ^3.8.0
-resolution: workspace
 
 dependencies:
   meta: ^1.9.1
