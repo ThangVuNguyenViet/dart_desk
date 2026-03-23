@@ -100,7 +100,7 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) {
+    if (widget.field.option?.hidden ?? false) {
       return const SizedBox.shrink();
     }
 
@@ -226,7 +226,7 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
       return const SizedBox.shrink();
     }
 
-    final itemEditor = widget.field.option.itemEditor;
+    final itemEditor = widget.field.option?.itemEditor;
     if (itemEditor != null) {
       return itemEditor(context, _editingValue, (value) {
         setState(() {
@@ -275,7 +275,7 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: widget.field.option.itemBuilder(context, _items[index]),
+              child: widget.field.option!.itemBuilder(context, _items[index]),
             ),
             const SizedBox(width: 8),
             if (showEditButton) ...[

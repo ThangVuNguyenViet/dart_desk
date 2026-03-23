@@ -4,7 +4,7 @@ import 'fields/base/field.dart';
 import 'serializable.dart';
 
 /// Represents a document type (schema) in the CMS.
-class DocumentType<T> {
+class DocumentType<T extends Serializable<dynamic>> {
   /// Unique identifier for this document type
   final String name;
 
@@ -44,7 +44,7 @@ class DocumentType<T> {
 ///   builder: (data) => MyScreen(config: MyConfigMapper.fromMap(data)),
 /// );
 /// ```
-class DocumentTypeSpec<T> {
+class DocumentTypeSpec<T extends Serializable<dynamic>> {
   /// Unique identifier for this document type
   final String name;
 
