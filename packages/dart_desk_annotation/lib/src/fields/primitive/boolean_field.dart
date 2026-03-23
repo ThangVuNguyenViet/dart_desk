@@ -9,7 +9,7 @@ class CmsBooleanField extends CmsField {
     required super.name,
     required super.title,
     super.description,
-    required CmsBooleanOption super.option,
+    CmsBooleanOption super.option = const CmsBooleanOption(),
   });
 
   @override

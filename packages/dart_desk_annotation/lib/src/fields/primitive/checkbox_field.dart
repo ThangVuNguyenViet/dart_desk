@@ -16,7 +16,7 @@ class CmsCheckboxField extends CmsField {
     required super.name,
     required super.title,
     super.description,
-    required CmsCheckboxOption super.option,
+    CmsCheckboxOption super.option = const CmsCheckboxOption(),
   });
 
   @override

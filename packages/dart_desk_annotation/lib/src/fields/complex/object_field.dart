@@ -15,7 +15,7 @@ class CmsObjectField extends CmsField {
     required super.name,
     required super.title,
     super.description,
-    required CmsObjectOption super.option,
+    CmsObjectOption super.option = const CmsObjectOption(children: []),
   });
 
   @override

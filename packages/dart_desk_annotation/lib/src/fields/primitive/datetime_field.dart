@@ -9,7 +9,7 @@ class CmsDateTimeField extends CmsField {
     required super.name,
     required super.title,
     super.description,
-    required CmsDateTimeOption super.option,
+    CmsDateTimeOption super.option = const CmsDateTimeOption(),
   });
 
   @override

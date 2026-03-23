@@ -9,7 +9,7 @@ class CmsStringField extends CmsField {
     required super.name,
     required super.title,
     super.description,
-    required CmsStringOption super.option,
+    CmsStringOption super.option = const CmsStringOption(),
   });
 
   @override

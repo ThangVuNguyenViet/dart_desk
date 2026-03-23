@@ -9,7 +9,7 @@ class CmsUrlField extends CmsField {
     required super.name,
     required super.title,
     super.description,
-    required CmsUrlOption super.option,
+    CmsUrlOption super.option = const CmsUrlOption(),
   });
 
   @override

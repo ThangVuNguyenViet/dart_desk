@@ -14,7 +14,7 @@ class CmsNumberField extends CmsField {
     required super.name,
     required super.title,
     super.description,
-    required CmsNumberOption super.option,
+    CmsNumberOption super.option = const CmsNumberOption(),
   });
 
   @override

@@ -18,11 +18,11 @@ class CmsArrayField extends CmsField {
     required super.name,
     required super.title,
     super.description,
-    required CmsArrayOption super.option,
+    CmsArrayOption? super.option,
   });
 
   @override
-  CmsArrayOption get option => super.option as CmsArrayOption;
+  CmsArrayOption? get option => super.option as CmsArrayOption?;
 }
 
 class CmsArrayFieldConfig<T extends Object?> extends CmsFieldConfig {

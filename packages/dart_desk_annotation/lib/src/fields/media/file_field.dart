@@ -9,7 +9,7 @@ class CmsFileField extends CmsField {
     required super.name,
     required super.title,
     super.description,
-    required CmsFileOption super.option,
+    CmsFileOption super.option = const CmsFileOption(),
   });
 
   @override

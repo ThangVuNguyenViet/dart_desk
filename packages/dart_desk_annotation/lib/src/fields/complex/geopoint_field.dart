@@ -8,7 +8,7 @@ class CmsGeopointField extends CmsField {
   const CmsGeopointField({
     required super.name,
     required super.title,
-    required CmsGeopointOption super.option,
+    CmsGeopointOption super.option = const CmsGeopointOption(),
   });
 
   @override

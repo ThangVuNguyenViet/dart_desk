@@ -11,7 +11,7 @@ class CmsImageField extends CmsField {
     required super.name,
     required super.title,
     super.description,
-    required CmsImageOption? super.option,
+    CmsImageOption? super.option,
   });
 
   @override

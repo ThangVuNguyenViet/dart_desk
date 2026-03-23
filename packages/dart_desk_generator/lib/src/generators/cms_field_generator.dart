@@ -55,7 +55,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsTextField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsStringFieldConfig': (
@@ -67,7 +67,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsStringField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsNumberFieldConfig': (
@@ -79,7 +79,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsNumberField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsBooleanFieldConfig': (
@@ -91,7 +91,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsBooleanField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsCheckboxFieldConfig': (
@@ -104,7 +104,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsCheckboxField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsDateFieldConfig': (
@@ -116,7 +116,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsDateField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsDateTimeFieldConfig': (
@@ -128,7 +128,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsDateTimeField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsUrlFieldConfig': (
@@ -140,7 +140,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsUrlField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsSlugFieldConfig': (
@@ -153,7 +153,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsSlugField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsImageFieldConfig': (
@@ -166,7 +166,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsImageField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsFileFieldConfig': (
@@ -178,7 +178,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsFileField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsArrayFieldConfig': (
@@ -191,7 +191,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsArrayField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsBlockFieldConfig': (
@@ -203,7 +203,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsBlockField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsReferenceFieldConfig': (
@@ -215,7 +215,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsReferenceField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsCrossDatasetReferenceFieldConfig': (
@@ -227,7 +227,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsCrossDatasetReferenceField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsGeopointFieldConfig': (
@@ -239,7 +239,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsGeopointField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsColorFieldConfig': (
@@ -251,7 +251,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsColorField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
     'CmsDropdownFieldConfig': (
@@ -271,7 +271,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       return '''CmsDropdownField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    option: $optionSource,
+    ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
   };
