@@ -32,6 +32,7 @@ dependencies:
   zenrouter: ^2.0.3
   marionette_flutter: ^0.4.0
   font_awesome_flutter: ^10.8.0
+  http: ^1.2.0
   collection: ^1.19.1
   blurhash_dart: ^1.2.1
   crypto: ^3.0.6
