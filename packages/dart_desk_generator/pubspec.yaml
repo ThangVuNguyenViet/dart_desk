@@ -12,7 +12,10 @@ environment:
   sdk: ^3.8.0
 
 dependencies:
-  dart_desk_annotation: ^0.1.0
+  dart_desk_annotation:
+    git:
+      url: https://github.com/ThangVuNguyenViet/dart_desk.git
+      path: packages/dart_desk_annotation
   source_gen: ^4.1.1
   build: ^4.0.3
   code_builder: ^4.10.0
