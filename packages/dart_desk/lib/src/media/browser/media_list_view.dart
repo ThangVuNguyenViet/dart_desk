@@ -63,7 +63,7 @@ class MediaListView extends StatelessWidget {
                         ? Image.network(
                             asset.publicUrl,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
+                            errorBuilder: (_, _, _) => Container(
                               color: theme.colorScheme.muted,
                               child: const Icon(Icons.broken_image, size: 20),
                             ),

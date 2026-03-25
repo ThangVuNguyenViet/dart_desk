@@ -1,7 +1,7 @@
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widget_previews.dart';
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:super_editor/super_editor.dart';
@@ -232,7 +232,7 @@ class _BlockEditorToolbarState extends State<_BlockEditorToolbar> {
       editor.execute([
         ConvertListItemToParagraphRequest(
           nodeId: node.id,
-          paragraphMetadata: {if (blockType != null) 'blockType': blockType},
+          paragraphMetadata: {'blockType': ?blockType},
         ),
       ]);
     } else if (node is ParagraphNode) {
@@ -363,7 +363,8 @@ class _BlockEditorToolbarState extends State<_BlockEditorToolbar> {
                 icon: FontAwesomeIcons.textHeight,
                 tooltip: 'Paragraph',
                 iconColor: iconColor,
-                isActive: blockAttr == paragraphAttribution ||
+                isActive:
+                    blockAttr == paragraphAttribution ||
                     blockAttr == null && listType == null,
                 onPressed: () => _setBlockType(null),
               ),
@@ -437,9 +438,7 @@ class _ToolbarButton extends StatelessWidget {
           icon: FaIcon(
             icon,
             size: 18,
-            color: isActive
-                ? theme.colorScheme.primary
-                : iconColor,
+            color: isActive ? theme.colorScheme.primary : iconColor,
           ),
           splashRadius: 16,
           padding: EdgeInsets.zero,

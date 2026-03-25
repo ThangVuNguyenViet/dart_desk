@@ -28,11 +28,10 @@ class _ContextAwareDropdownOption extends CmsMultiDropdownOption<String> {
     final state = viewModel.documentsContainer(documentType).watch(context);
     return state.map(
       data: (list) => list.documents
-          .map((d) => DropdownOption(
-              value: d.id.toString(), label: d.title))
+          .map((d) => DropdownOption(value: d.id.toString(), label: d.title))
           .toList(),
       loading: () => [],
-      error: (_, __) => [],
+      error: (_, _) => [],
     );
   }
 
@@ -93,38 +92,41 @@ void main() {
   // ==========================================================================
 
   group('Context-aware CmsDropdownOption', () {
-    testWidgets('CmsDropdownSimpleOption ignores context and returns static options',
-        (tester) async {
-      const field = CmsDropdownField<String>(
-        name: 'simple',
-        title: 'Simple',
-        option: CmsDropdownSimpleOption(
-          options: [
-            DropdownOption(value: 'a', label: 'Alpha'),
-            DropdownOption(value: 'b', label: 'Beta'),
-          ],
-          placeholder: 'Pick one',
-        ),
-      );
+    testWidgets(
+      'CmsDropdownSimpleOption ignores context and returns static options',
+      (tester) async {
+        const field = CmsDropdownField<String>(
+          name: 'simple',
+          title: 'Simple',
+          option: CmsDropdownSimpleOption(
+            options: [
+              DropdownOption(value: 'a', label: 'Alpha'),
+              DropdownOption(value: 'b', label: 'Beta'),
+            ],
+            placeholder: 'Pick one',
+          ),
+        );
 
-      await tester.pumpWidget(buildInputApp(
-        CmsDropdownInput<String>(field: field),
-      ));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          buildInputApp(CmsDropdownInput<String>(field: field)),
+        );
+        await tester.pumpAndSettle();
 
-      // Placeholder visible
-      expect(find.text('Pick one'), findsOneWidget);
+        // Placeholder visible
+        expect(find.text('Pick one'), findsOneWidget);
 
-      // Open dropdown — both options should appear
-      await tester.tap(find.text('Pick one'));
-      await tester.pumpAndSettle();
+        // Open dropdown — both options should appear
+        await tester.tap(find.text('Pick one'));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Alpha'), findsWidgets);
-      expect(find.text('Beta'), findsWidgets);
-    });
+        expect(find.text('Alpha'), findsWidgets);
+        expect(find.text('Beta'), findsWidgets);
+      },
+    );
 
-    testWidgets('context-aware option resolves documents from CmsViewModel',
-        (tester) async {
+    testWidgets('context-aware option resolves documents from CmsViewModel', (
+      tester,
+    ) async {
       // MockDataSource seeds 3 documents of type 'test_all_fields'.
       // We use that type so documentsContainer returns real data.
       final field = CmsMultiDropdownField<String>(
@@ -133,18 +135,20 @@ void main() {
         option: _ContextAwareDropdownOption(documentType: 'test_all_fields'),
       );
 
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType],
-        builder: (context) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: CmsMultiDropdownInput<String>(field: field),
-            ),
-          );
-        },
-      ));
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType],
+          builder: (context) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: CmsMultiDropdownInput<String>(field: field),
+              ),
+            );
+          },
+        ),
+      );
 
       // FutureSignal needs time to resolve
       await tester.pumpAndSettle();
@@ -158,8 +162,9 @@ void main() {
       expect(find.text('Test Document Gamma'), findsWidgets);
     });
 
-    testWidgets('context-aware option shows empty when no documents exist',
-        (tester) async {
+    testWidgets('context-aware option shows empty when no documents exist', (
+      tester,
+    ) async {
       // Use a document type that has no seeded documents
       final field = CmsMultiDropdownField<String>(
         name: 'ref_doc',
@@ -167,18 +172,20 @@ void main() {
         option: _ContextAwareDropdownOption(documentType: 'nonexistent_type'),
       );
 
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [_testDocType],
-        builder: (context) {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: CmsMultiDropdownInput<String>(field: field),
-            ),
-          );
-        },
-      ));
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [_testDocType],
+          builder: (context) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: CmsMultiDropdownInput<String>(field: field),
+              ),
+            );
+          },
+        ),
+      );
 
       await tester.pumpAndSettle();
 
@@ -186,8 +193,9 @@ void main() {
       expect(find.text('No options available'), findsOneWidget);
     });
 
-    testWidgets('context-aware option rebuilds when documents change',
-        (tester) async {
+    testWidgets('context-aware option rebuilds when documents change', (
+      tester,
+    ) async {
       final field = CmsMultiDropdownField<String>(
         name: 'ref_doc',
         title: 'Reference Document',
@@ -196,19 +204,21 @@ void main() {
 
       late CmsViewModel viewModel;
 
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType],
-        builder: (context) {
-          viewModel = cmsViewModelProvider.of(context);
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: CmsMultiDropdownInput<String>(field: field),
-            ),
-          );
-        },
-      ));
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType],
+          builder: (context) {
+            viewModel = cmsViewModelProvider.of(context);
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: CmsMultiDropdownInput<String>(field: field),
+              ),
+            );
+          },
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Open dropdown — 3 seeded docs
@@ -221,11 +231,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Create a new document via the data source directly
-      await dataSource.createDocument(
-        'test_all_fields',
-        'Delta Document',
-        {},
-      );
+      await dataSource.createDocument('test_all_fields', 'Delta Document', {});
 
       // Reload the container
       viewModel.documentsContainer('test_all_fields').reload();
@@ -244,21 +250,26 @@ void main() {
   // ==========================================================================
 
   group('Simplified documentsContainer', () {
-    testWidgets('keys on String document type and fetches documents',
-        (tester) async {
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType],
-        builder: (context) {
-          final vm = cmsViewModelProvider.of(context);
-          final state = vm.documentsContainer('test_all_fields').watch(context);
-          return state.map(
-            data: (list) => Text('count: ${list.documents.length}'),
-            loading: () => const Text('loading'),
-            error: (e, _) => Text('error: $e'),
-          );
-        },
-      ));
+    testWidgets('keys on String document type and fetches documents', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType],
+          builder: (context) {
+            final vm = cmsViewModelProvider.of(context);
+            final state = vm
+                .documentsContainer('test_all_fields')
+                .watch(context);
+            return state.map(
+              data: (list) => Text('count: ${list.documents.length}'),
+              loading: () => const Text('loading'),
+              error: (e, _) => Text('error: $e'),
+            );
+          },
+        ),
+      );
 
       // Initially loading
       expect(find.text('loading'), findsOneWidget);
@@ -269,31 +280,35 @@ void main() {
       expect(find.text('count: 3'), findsOneWidget);
     });
 
-    testWidgets('different document types produce separate containers',
-        (tester) async {
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType, _testDocType],
-        builder: (context) {
-          final vm = cmsViewModelProvider.of(context);
-          final state1 =
-              vm.documentsContainer('test_all_fields').watch(context);
-          final state2 = vm.documentsContainer('test_type').watch(context);
+    testWidgets('different document types produce separate containers', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType, _testDocType],
+          builder: (context) {
+            final vm = cmsViewModelProvider.of(context);
+            final state1 = vm
+                .documentsContainer('test_all_fields')
+                .watch(context);
+            final state2 = vm.documentsContainer('test_type').watch(context);
 
-          final count1 = state1.map(
-            data: (list) => list.documents.length,
-            loading: () => -1,
-            error: (_, __) => -2,
-          );
-          final count2 = state2.map(
-            data: (list) => list.documents.length,
-            loading: () => -1,
-            error: (_, __) => -2,
-          );
+            final count1 = state1.map(
+              data: (list) => list.documents.length,
+              loading: () => -1,
+              error: (_, _) => -2,
+            );
+            final count2 = state2.map(
+              data: (list) => list.documents.length,
+              loading: () => -1,
+              error: (_, _) => -2,
+            );
 
-          return Text('counts: $count1, $count2');
-        },
-      ));
+            return Text('counts: $count1, $count2');
+          },
+        ),
+      );
 
       await tester.pumpAndSettle();
 
@@ -304,21 +319,23 @@ void main() {
     testWidgets('reload updates the container data', (tester) async {
       late CmsViewModel viewModel;
 
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType],
-        builder: (context) {
-          viewModel = cmsViewModelProvider.of(context);
-          final state = viewModel
-              .documentsContainer('test_all_fields')
-              .watch(context);
-          return state.map(
-            data: (list) => Text('count: ${list.documents.length}'),
-            loading: () => const Text('loading'),
-            error: (e, _) => Text('error: $e'),
-          );
-        },
-      ));
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType],
+          builder: (context) {
+            viewModel = cmsViewModelProvider.of(context);
+            final state = viewModel
+                .documentsContainer('test_all_fields')
+                .watch(context);
+            return state.map(
+              data: (list) => Text('count: ${list.documents.length}'),
+              loading: () => const Text('loading'),
+              error: (e, _) => Text('error: $e'),
+            );
+          },
+        ),
+      );
 
       await tester.pumpAndSettle();
       expect(find.text('count: 3'), findsOneWidget);
@@ -331,27 +348,30 @@ void main() {
       expect(find.text('count: 4'), findsOneWidget);
     });
 
-    testWidgets('CmsViewModel.refreshDocuments reloads current type',
-        (tester) async {
+    testWidgets('CmsViewModel.refreshDocuments reloads current type', (
+      tester,
+    ) async {
       late CmsViewModel viewModel;
 
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType],
-        builder: (context) {
-          viewModel = cmsViewModelProvider.of(context);
-          viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType],
+          builder: (context) {
+            viewModel = cmsViewModelProvider.of(context);
+            viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
 
-          final state = viewModel
-              .documentsContainer('test_all_fields')
-              .watch(context);
-          return state.map(
-            data: (list) => Text('count: ${list.documents.length}'),
-            loading: () => const Text('loading'),
-            error: (e, _) => Text('error: $e'),
-          );
-        },
-      ));
+            final state = viewModel
+                .documentsContainer('test_all_fields')
+                .watch(context);
+            return state.map(
+              data: (list) => Text('count: ${list.documents.length}'),
+              loading: () => const Text('loading'),
+              error: (e, _) => Text('error: $e'),
+            );
+          },
+        ),
+      );
 
       await tester.pumpAndSettle();
       expect(find.text('count: 3'), findsOneWidget);
@@ -364,27 +384,30 @@ void main() {
       expect(find.text('count: 4'), findsOneWidget);
     });
 
-    testWidgets('createDocument reloads the documents container',
-        (tester) async {
+    testWidgets('createDocument reloads the documents container', (
+      tester,
+    ) async {
       late CmsViewModel viewModel;
 
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType],
-        builder: (context) {
-          viewModel = cmsViewModelProvider.of(context);
-          viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType],
+          builder: (context) {
+            viewModel = cmsViewModelProvider.of(context);
+            viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
 
-          final state = viewModel
-              .documentsContainer('test_all_fields')
-              .watch(context);
-          return state.map(
-            data: (list) => Text('count: ${list.documents.length}'),
-            loading: () => const Text('loading'),
-            error: (e, _) => Text('error: $e'),
-          );
-        },
-      ));
+            final state = viewModel
+                .documentsContainer('test_all_fields')
+                .watch(context);
+            return state.map(
+              data: (list) => Text('count: ${list.documents.length}'),
+              loading: () => const Text('loading'),
+              error: (e, _) => Text('error: $e'),
+            );
+          },
+        ),
+      );
 
       await tester.pumpAndSettle();
       expect(find.text('count: 3'), findsOneWidget);
@@ -396,27 +419,30 @@ void main() {
       expect(find.text('count: 4'), findsOneWidget);
     });
 
-    testWidgets('deleteDocument reloads the documents container',
-        (tester) async {
+    testWidgets('deleteDocument reloads the documents container', (
+      tester,
+    ) async {
       late CmsViewModel viewModel;
 
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType],
-        builder: (context) {
-          viewModel = cmsViewModelProvider.of(context);
-          viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType],
+          builder: (context) {
+            viewModel = cmsViewModelProvider.of(context);
+            viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
 
-          final state = viewModel
-              .documentsContainer('test_all_fields')
-              .watch(context);
-          return state.map(
-            data: (list) => Text('count: ${list.documents.length}'),
-            loading: () => const Text('loading'),
-            error: (e, _) => Text('error: $e'),
-          );
-        },
-      ));
+            final state = viewModel
+                .documentsContainer('test_all_fields')
+                .watch(context);
+            return state.map(
+              data: (list) => Text('count: ${list.documents.length}'),
+              loading: () => const Text('loading'),
+              error: (e, _) => Text('error: $e'),
+            );
+          },
+        ),
+      );
 
       await tester.pumpAndSettle();
       expect(find.text('count: 3'), findsOneWidget);
@@ -435,18 +461,20 @@ void main() {
 
   group('CmsDocumentListView with simplified container', () {
     testWidgets('renders document list for a document type', (tester) async {
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType],
-        builder: (context) {
-          final vm = cmsViewModelProvider.of(context);
-          vm.currentDocumentTypeSlug.value = 'test_all_fields';
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType],
+          builder: (context) {
+            final vm = cmsViewModelProvider.of(context);
+            vm.currentDocumentTypeSlug.value = 'test_all_fields';
 
-          return CmsDocumentListView(
-            selectedDocumentType: allFieldsDocumentType,
-          );
-        },
-      ));
+            return CmsDocumentListView(
+              selectedDocumentType: allFieldsDocumentType,
+            );
+          },
+        ),
+      );
 
       await tester.pumpAndSettle();
 
@@ -457,18 +485,20 @@ void main() {
     });
 
     testWidgets('client-side search filters documents', (tester) async {
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType],
-        builder: (context) {
-          final vm = cmsViewModelProvider.of(context);
-          vm.currentDocumentTypeSlug.value = 'test_all_fields';
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType],
+          builder: (context) {
+            final vm = cmsViewModelProvider.of(context);
+            vm.currentDocumentTypeSlug.value = 'test_all_fields';
 
-          return CmsDocumentListView(
-            selectedDocumentType: allFieldsDocumentType,
-          );
-        },
-      ));
+            return CmsDocumentListView(
+              selectedDocumentType: allFieldsDocumentType,
+            );
+          },
+        ),
+      );
 
       await tester.pumpAndSettle();
 
@@ -491,18 +521,20 @@ void main() {
     });
 
     testWidgets('search with no matches shows empty state', (tester) async {
-      await tester.pumpWidget(buildStudioTestApp(
-        dataSource: dataSource,
-        documentTypes: [allFieldsDocumentType],
-        builder: (context) {
-          final vm = cmsViewModelProvider.of(context);
-          vm.currentDocumentTypeSlug.value = 'test_all_fields';
+      await tester.pumpWidget(
+        buildStudioTestApp(
+          dataSource: dataSource,
+          documentTypes: [allFieldsDocumentType],
+          builder: (context) {
+            final vm = cmsViewModelProvider.of(context);
+            vm.currentDocumentTypeSlug.value = 'test_all_fields';
 
-          return CmsDocumentListView(
-            selectedDocumentType: allFieldsDocumentType,
-          );
-        },
-      ));
+            return CmsDocumentListView(
+              selectedDocumentType: allFieldsDocumentType,
+            );
+          },
+        ),
+      );
 
       await tester.pumpAndSettle();
 

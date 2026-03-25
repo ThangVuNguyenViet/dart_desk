@@ -14,7 +14,9 @@ dependencies:
   flutter:
     sdk: flutter
   dart_desk_annotation:
-    path: ../../packages/dart_desk_annotation
+    git:
+      url: https://github.com/ThangVuNguyenViet/dart_desk.git
+      path: packages/dart_desk_annotation
   dart_mappable: ^4.6.1
   shadcn_ui: ^0.52.1
 
@@ -22,5 +24,7 @@ dev_dependencies:
   build_runner: ^2.13.1
   dart_mappable_builder: ^4.6.1
   dart_desk_generator:
-    path: ../../packages/dart_desk_generator
+    git:
+      url: https://github.com/ThangVuNguyenViet/dart_desk.git
+      path: packages/dart_desk_generator
   lints: ^6.0.0

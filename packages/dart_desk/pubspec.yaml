@@ -14,7 +14,10 @@ environment:
 
 dependencies:
   dart_desk_be_client: ^0.1.0
-  dart_desk_annotation: ^0.1.0
+  dart_desk_annotation:
+    git:
+      url: https://github.com/ThangVuNguyenViet/dart_desk.git
+      path: packages/dart_desk_annotation
   flutter:
     sdk: flutter
   shadcn_ui: ^0.52.1

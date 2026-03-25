@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
+
 import '../studio/providers/studio_provider.dart';
 
 /// Test document type that exercises all 16 CMS field types.
@@ -95,7 +96,8 @@ final allFieldsDocumentType = DocumentType(
     CmsMultiDropdownField<String>(
       name: 'document_ref_dropdown',
       title: 'Document Reference',
-      description: 'Context-aware multi-select dropdown that loads documents reactively',
+      description:
+          'Context-aware multi-select dropdown that loads documents reactively',
       option: TestDocumentRefDropdownOption(),
     ),
     CmsArrayField(
@@ -110,38 +112,44 @@ final allFieldsDocumentType = DocumentType(
       description: 'A nested object with sub-fields',
       option: CmsObjectOption(
         children: [
-          ColumnFields(children: [
-            CmsStringField(
-              name: 'nested_title',
-              title: 'Nested Title',
-              option: CmsStringOption(),
-            ),
-          ]),
-          RowFields(children: [
-            CmsNumberField(
-              name: 'nested_count',
-              title: 'Nested Count',
-              option: CmsNumberOption(),
-            ),
-            CmsStringField(
-              name: 'nested_tag',
-              title: 'Nested Tag',
-              option: CmsStringOption(),
-            ),
-          ]),
+          ColumnFields(
+            children: [
+              CmsStringField(
+                name: 'nested_title',
+                title: 'Nested Title',
+                option: CmsStringOption(),
+              ),
+            ],
+          ),
+          RowFields(
+            children: [
+              CmsNumberField(
+                name: 'nested_count',
+                title: 'Nested Count',
+                option: CmsNumberOption(),
+              ),
+              CmsStringField(
+                name: 'nested_tag',
+                title: 'Nested Tag',
+                option: CmsStringOption(),
+              ),
+            ],
+          ),
           GroupFields(
             title: 'Extra Details',
             description: 'Optional metadata',
             collapsible: true,
             collapsed: true,
             children: [
-              ColumnFields(children: [
-                CmsStringField(
-                  name: 'nested_notes',
-                  title: 'Nested Notes',
-                  option: CmsStringOption(),
-                ),
-              ]),
+              ColumnFields(
+                children: [
+                  CmsStringField(
+                    name: 'nested_notes',
+                    title: 'Nested Notes',
+                    option: CmsStringOption(),
+                  ),
+                ],
+              ),
             ],
           ),
         ],
@@ -162,58 +170,63 @@ final allFieldsDocumentType = DocumentType(
 );
 
 Widget _testAllFieldsBuilder(Map<String, dynamic> data) {
-  return Builder(builder: (context) {
-    // Resolve selected document titles from the context-aware multi-dropdown
-    final selectedIds = data['document_ref_dropdown'];
-    String? selectedDocTitles;
-    if (selectedIds is List && selectedIds.isNotEmpty) {
-      final viewModel = cmsViewModelProvider.of(context);
-      final state =
-          viewModel.documentsContainer('test_all_fields').watch(context);
-      selectedDocTitles = state.map(
-        data: (list) => selectedIds
-            .map((id) => list.documents
-                .where((d) => d.id.toString() == id)
-                .firstOrNull
-                ?.title)
-            .whereType<String>()
-            .join(', '),
-        loading: () => null,
-        error: (_, __) => null,
-      );
-    }
+  return Builder(
+    builder: (context) {
+      // Resolve selected document titles from the context-aware multi-dropdown
+      final selectedIds = data['document_ref_dropdown'];
+      String? selectedDocTitles;
+      if (selectedIds is List && selectedIds.isNotEmpty) {
+        final viewModel = cmsViewModelProvider.of(context);
+        final state = viewModel
+            .documentsContainer('test_all_fields')
+            .watch(context);
+        selectedDocTitles = state.map(
+          data: (list) => selectedIds
+              .map(
+                (id) => list.documents
+                    .where((d) => d.id.toString() == id)
+                    .firstOrNull
+                    ?.title,
+              )
+              .whereType<String>()
+              .join(', '),
+          loading: () => null,
+          error: (_, _) => null,
+        );
+      }
 
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('preview:string_field: ${data['string_field'] ?? ''}'),
-            Text('preview:number_field: ${data['number_field'] ?? ''}'),
-            Text('preview:boolean_field: ${data['boolean_field'] ?? ''}'),
-            Text('preview:checkbox_field: ${data['checkbox_field'] ?? ''}'),
-            Text('preview:url_field: ${data['url_field'] ?? ''}'),
-            Text('preview:date_field: ${data['date_field'] ?? ''}'),
-            Text('preview:datetime_field: ${data['datetime_field'] ?? ''}'),
-            Text('preview:color_field: ${data['color_field'] ?? ''}'),
-            Text('preview:dropdown_field: ${data['dropdown_field'] ?? ''}'),
-            Text(
-              'preview:document_ref_dropdown: ${data['document_ref_dropdown'] ?? '[]'}'
-              '${selectedDocTitles != null ? ' ($selectedDocTitles)' : ''}',
-            ),
-            Text('preview:text_field: ${data['text_field'] ?? ''}'),
-            Text('preview:image_field: ${data['image_field'] ?? ''}'),
-            Text('preview:file_field: ${data['file_field'] ?? ''}'),
-            Text('preview:array_field: ${data['array_field'] ?? ''}'),
-            Text('preview:object_field: ${data['object_field'] ?? ''}'),
-            Text('preview:block_field: ${data['block_field'] ?? ''}'),
-            Text('preview:geopoint_field: ${data['geopoint_field'] ?? ''}'),
-          ],
+      return SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('preview:string_field: ${data['string_field'] ?? ''}'),
+              Text('preview:number_field: ${data['number_field'] ?? ''}'),
+              Text('preview:boolean_field: ${data['boolean_field'] ?? ''}'),
+              Text('preview:checkbox_field: ${data['checkbox_field'] ?? ''}'),
+              Text('preview:url_field: ${data['url_field'] ?? ''}'),
+              Text('preview:date_field: ${data['date_field'] ?? ''}'),
+              Text('preview:datetime_field: ${data['datetime_field'] ?? ''}'),
+              Text('preview:color_field: ${data['color_field'] ?? ''}'),
+              Text('preview:dropdown_field: ${data['dropdown_field'] ?? ''}'),
+              Text(
+                'preview:document_ref_dropdown: ${data['document_ref_dropdown'] ?? '[]'}'
+                '${selectedDocTitles != null ? ' ($selectedDocTitles)' : ''}',
+              ),
+              Text('preview:text_field: ${data['text_field'] ?? ''}'),
+              Text('preview:image_field: ${data['image_field'] ?? ''}'),
+              Text('preview:file_field: ${data['file_field'] ?? ''}'),
+              Text('preview:array_field: ${data['array_field'] ?? ''}'),
+              Text('preview:object_field: ${data['object_field'] ?? ''}'),
+              Text('preview:block_field: ${data['block_field'] ?? ''}'),
+              Text('preview:geopoint_field: ${data['geopoint_field'] ?? ''}'),
+            ],
+          ),
         ),
-      ),
-    );
-  });
+      );
+    },
+  );
 }
 
 /// Concrete CmsArrayOption for testing string arrays.
@@ -233,13 +246,15 @@ class TestDocumentRefDropdownOption extends CmsMultiDropdownOption<String> {
   @override
   List<DropdownOption<String>> options(BuildContext context) {
     final viewModel = cmsViewModelProvider.of(context);
-    final state = viewModel.documentsContainer('test_all_fields').watch(context);
+    final state = viewModel
+        .documentsContainer('test_all_fields')
+        .watch(context);
     return state.map(
       data: (list) => list.documents
           .map((d) => DropdownOption(value: d.id.toString(), label: d.title))
           .toList(),
       loading: () => [],
-      error: (_, __) => [],
+      error: (_, _) => [],
     );
   }
 
@@ -271,15 +286,17 @@ const testDocumentSeedData = [
       'date_field': '2026-03-01',
       'datetime_field': '2026-03-01T10:30:00',
       'color_field': '#FF5733',
-      'image_field': {
-        '_type': 'imageReference',
-        'assetId': 'asset-hero',
-      },
+      'image_field': {'_type': 'imageReference', 'assetId': 'asset-hero'},
       'file_field': null,
       'dropdown_field': 'option_a',
       'document_ref_dropdown': <String>[],
       'array_field': ['Item 1', 'Item 2', 'Item 3'],
-      'object_field': {'nested_title': 'Nested Value', 'nested_count': 10, 'nested_tag': 'alpha', 'nested_notes': 'Some notes'},
+      'object_field': {
+        'nested_title': 'Nested Value',
+        'nested_count': 10,
+        'nested_tag': 'alpha',
+        'nested_notes': 'Some notes',
+      },
       'block_field': null,
       'geopoint_field': {'lat': 37.7749, 'lng': -122.4194},
     },
@@ -302,7 +319,12 @@ const testDocumentSeedData = [
       'dropdown_field': 'option_b',
       'document_ref_dropdown': <String>[],
       'array_field': ['Alpha', 'Beta'],
-      'object_field': {'nested_title': 'Beta Nested', 'nested_count': 5, 'nested_tag': 'beta', 'nested_notes': ''},
+      'object_field': {
+        'nested_title': 'Beta Nested',
+        'nested_count': 5,
+        'nested_tag': 'beta',
+        'nested_notes': '',
+      },
       'block_field': null,
       'geopoint_field': {'lat': 40.7128, 'lng': -74.0060},
     },
@@ -320,15 +342,17 @@ const testDocumentSeedData = [
       'date_field': null,
       'datetime_field': null,
       'color_field': '#4CAF50',
-      'image_field': {
-        '_type': 'imageReference',
-        'assetId': 'asset-landscape',
-      },
+      'image_field': {'_type': 'imageReference', 'assetId': 'asset-landscape'},
       'file_field': null,
       'dropdown_field': null,
       'document_ref_dropdown': <String>[],
       'array_field': [],
-      'object_field': {'nested_title': '', 'nested_count': 0, 'nested_tag': '', 'nested_notes': null},
+      'object_field': {
+        'nested_title': '',
+        'nested_count': 0,
+        'nested_tag': '',
+        'nested_notes': null,
+      },
       'block_field': null,
       'geopoint_field': null,
     },

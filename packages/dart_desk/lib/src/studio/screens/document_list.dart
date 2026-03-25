@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
@@ -9,10 +9,9 @@ import 'package:signals/signals_flutter.dart';
 import '../../data/models/cms_document.dart';
 import '../../data/models/document_list.dart';
 import '../../data/models/document_version.dart';
+import '../components/common/cms_collapse_bar.dart';
 import '../components/common/cms_status_pill.dart';
 import '../core/view_models/cms_view_model.dart';
-
-import '../components/common/cms_collapse_bar.dart';
 import '../providers/studio_provider.dart';
 import '../theme/spacing.dart';
 
@@ -543,12 +542,13 @@ class _DocumentStatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final versionsState =
-        viewModel.versionsContainer(documentId).watch(context);
+    final versionsState = viewModel
+        .versionsContainer(documentId)
+        .watch(context);
 
     final status = versionsState.map(
       loading: () => DocumentVersionStatus.draft,
-      error: (_, __) => DocumentVersionStatus.draft,
+      error: (_, _) => DocumentVersionStatus.draft,
       data: (versionList) {
         if (versionList.versions.isEmpty) return DocumentVersionStatus.draft;
         return versionList.versions.first.status;

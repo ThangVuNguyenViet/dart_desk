@@ -1,16 +1,16 @@
-import 'package:flutter/material.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
+import '../../media/browser/media_browser.dart';
+import '../components/common/cms_collapse_bar.dart';
 import '../core/view_models/cms_view_model.dart';
 import '../providers/studio_provider.dart';
-import '../../media/browser/media_browser.dart';
 import '../routes/document_route.dart';
 import '../routes/media_route.dart';
 import '../routes/studio_coordinator.dart';
-import '../components/common/cms_collapse_bar.dart';
 import '../theme/spacing.dart';
 import 'document_editor.dart';
 import 'document_list.dart';
@@ -64,9 +64,7 @@ class _CmsStudioState extends State<CmsStudio> {
       final result = await viewModel.deleteDocument(docId);
       if (mounted) {
         if (result) {
-          toaster.show(
-            const ShadToast(description: Text('Document deleted')),
-          );
+          toaster.show(const ShadToast(description: Text('Document deleted')));
         } else {
           toaster.show(
             ShadToast.destructive(
@@ -78,9 +76,7 @@ class _CmsStudioState extends State<CmsStudio> {
     } catch (e) {
       if (mounted) {
         toaster.show(
-          ShadToast.destructive(
-            description: Text('Failed to delete: $e'),
-          ),
+          ShadToast.destructive(description: Text('Failed to delete: $e')),
         );
       }
     }
@@ -155,7 +151,7 @@ class _CmsStudioState extends State<CmsStudio> {
         final versionState = viewModel.documentDataContainer(versionId).value;
         data = versionState.map<Map<String, dynamic>>(
           loading: () => defaultData,
-          error: (_, __) => defaultData,
+          error: (_, _) => defaultData,
           data: (version) => version?.data ?? defaultData,
         );
       }
@@ -216,8 +212,9 @@ class _CmsStudioState extends State<CmsStudio> {
               const SizedBox(height: CmsSpacing.md),
               Text(
                 title,
-                style:
-                    theme.textTheme.large.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.large.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: CmsSpacing.md - CmsSpacing.sm),
@@ -316,8 +313,7 @@ class _CmsStudioState extends State<CmsStudio> {
                 color: theme.colorScheme.card,
                 border: Border(
                   right: BorderSide(
-                    color:
-                        theme.colorScheme.border.withValues(alpha: 0.5),
+                    color: theme.colorScheme.border.withValues(alpha: 0.5),
                   ),
                 ),
               ),
@@ -326,8 +322,7 @@ class _CmsStudioState extends State<CmsStudio> {
                   const Spacer(),
                   CmsCollapseBar(
                     isCollapsed: true,
-                    onToggle: () =>
-                        viewModel.documentListVisible.value = true,
+                    onToggle: () => viewModel.documentListVisible.value = true,
                   ),
                 ],
               ),

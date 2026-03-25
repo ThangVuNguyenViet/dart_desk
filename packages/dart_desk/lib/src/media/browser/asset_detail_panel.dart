@@ -56,8 +56,7 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
   void _startPollingIfPending() {
     if (_asset.metadataStatus == MediaAssetMetadataStatus.pending) {
       _pollTimer = Timer.periodic(const Duration(seconds: 2), (_) async {
-        final refreshed =
-            await widget.dataSource.getMediaAsset(_asset.assetId);
+        final refreshed = await widget.dataSource.getMediaAsset(_asset.assetId);
         if (refreshed != null && mounted) {
           setState(() => _asset = refreshed);
           if (refreshed.metadataStatus != MediaAssetMetadataStatus.pending) {
@@ -69,8 +68,7 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
   }
 
   Future<void> _loadUsage() async {
-    final count =
-        await widget.dataSource.getMediaUsageCount(_asset.assetId);
+    final count = await widget.dataSource.getMediaUsageCount(_asset.assetId);
     if (mounted) setState(() => _usageCount = count);
   }
 
@@ -92,7 +90,7 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
                 fit: BoxFit.contain,
                 width: double.infinity,
                 height: 200,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   height: 200,
                   color: theme.colorScheme.muted,
                   child: const Center(child: Icon(Icons.broken_image)),
@@ -104,8 +102,7 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
           // Filename
           Text(
             _asset.fileName,
-            style:
-                theme.textTheme.small.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
 
@@ -114,9 +111,10 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
           _metadataRow(theme, 'File size', _asset.fileSizeFormatted),
           _metadataRow(theme, 'Type', _asset.mimeType),
           _metadataRow(
-              theme,
-              'Uploaded',
-              '${_asset.createdAt.year}-${_asset.createdAt.month.toString().padLeft(2, '0')}-${_asset.createdAt.day.toString().padLeft(2, '0')}'),
+            theme,
+            'Uploaded',
+            '${_asset.createdAt.year}-${_asset.createdAt.month.toString().padLeft(2, '0')}-${_asset.createdAt.day.toString().padLeft(2, '0')}',
+          ),
           _metadataRow(theme, 'Usage', '$_usageCount document(s)'),
 
           const SizedBox(height: 8),
@@ -124,9 +122,12 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
           // Metadata status indicator
           Row(
             children: [
-              Text('Metadata: ',
-                  style: theme.textTheme.small
-                      .copyWith(color: theme.colorScheme.mutedForeground)),
+              Text(
+                'Metadata: ',
+                style: theme.textTheme.small.copyWith(
+                  color: theme.colorScheme.mutedForeground,
+                ),
+              ),
               _metadataStatusBadge(theme),
             ],
           ),
@@ -134,9 +135,12 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
           // Palette colors
           if (_asset.palette != null) ...[
             const SizedBox(height: 12),
-            Text('Palette',
-                style: theme.textTheme.small
-                    .copyWith(fontWeight: FontWeight.w500)),
+            Text(
+              'Palette',
+              style: theme.textTheme.small.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             const SizedBox(height: 4),
             Row(
               children: [
@@ -154,8 +158,11 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
           // Location
           if (_asset.location != null) ...[
             const SizedBox(height: 8),
-            _metadataRow(theme, 'Location',
-                '${_asset.location!.lat.toStringAsFixed(4)}, ${_asset.location!.lng.toStringAsFixed(4)}'),
+            _metadataRow(
+              theme,
+              'Location',
+              '${_asset.location!.lat.toStringAsFixed(4)}, ${_asset.location!.lng.toStringAsFixed(4)}',
+            ),
           ],
 
           const SizedBox(height: 16),
@@ -202,13 +209,14 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
         children: [
           SizedBox(
             width: 80,
-            child: Text(label,
-                style: theme.textTheme.small
-                    .copyWith(color: theme.colorScheme.mutedForeground)),
+            child: Text(
+              label,
+              style: theme.textTheme.small.copyWith(
+                color: theme.colorScheme.mutedForeground,
+              ),
+            ),
           ),
-          Expanded(
-            child: Text(value, style: theme.textTheme.small),
-          ),
+          Expanded(child: Text(value, style: theme.textTheme.small)),
         ],
       ),
     );
@@ -217,42 +225,46 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
   Widget _metadataStatusBadge(ShadThemeData theme) {
     return switch (_asset.metadataStatus) {
       MediaAssetMetadataStatus.pending => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 12,
-              height: 12,
-              child: CircularProgressIndicator(
-                strokeWidth: 1.5,
-                color: theme.colorScheme.mutedForeground,
-              ),
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 12,
+            height: 12,
+            child: CircularProgressIndicator(
+              strokeWidth: 1.5,
+              color: theme.colorScheme.mutedForeground,
             ),
-            const SizedBox(width: 4),
-            Text('Processing...',
-                style: theme.textTheme.small
-                    .copyWith(color: theme.colorScheme.mutedForeground)),
-          ],
-        ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Processing...',
+            style: theme.textTheme.small.copyWith(
+              color: theme.colorScheme.mutedForeground,
+            ),
+          ),
+        ],
+      ),
       MediaAssetMetadataStatus.complete => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.check_circle,
-                size: 14, color: theme.colorScheme.primary),
-            const SizedBox(width: 4),
-            Text('Complete', style: theme.textTheme.small),
-          ],
-        ),
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_circle, size: 14, color: theme.colorScheme.primary),
+          const SizedBox(width: 4),
+          Text('Complete', style: theme.textTheme.small),
+        ],
+      ),
       MediaAssetMetadataStatus.failed => Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.warning,
-                size: 14, color: theme.colorScheme.destructive),
-            const SizedBox(width: 4),
-            Text('Failed',
-                style: theme.textTheme.small.copyWith(
-                    color: theme.colorScheme.destructive)),
-          ],
-        ),
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.warning, size: 14, color: theme.colorScheme.destructive),
+          const SizedBox(width: 4),
+          Text(
+            'Failed',
+            style: theme.textTheme.small.copyWith(
+              color: theme.colorScheme.destructive,
+            ),
+          ),
+        ],
+      ),
     };
   }
 

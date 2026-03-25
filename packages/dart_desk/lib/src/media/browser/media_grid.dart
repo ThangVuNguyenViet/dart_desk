@@ -68,7 +68,7 @@ class MediaGrid extends StatelessWidget {
                     Image.network(
                       asset.publicUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Center(
+                      errorBuilder: (_, _, _) => Center(
                         child: Icon(
                           Icons.broken_image,
                           color: theme.colorScheme.mutedForeground,

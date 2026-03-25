@@ -180,9 +180,11 @@ packages:
   dart_desk_annotation:
     dependency: "direct main"
     description:
-      path: "../dart_desk_annotation"
-      relative: true
-    source: path
+      path: "packages/dart_desk_annotation"
+      ref: HEAD
+      resolved-ref: "820d0678672667bf7f39b7ce29c518fee116a3ad"
+      url: "https://github.com/ThangVuNguyenViet/dart_desk.git"
+    source: git
     version: "0.1.0"
   dart_style:
     dependency: "direct main"
