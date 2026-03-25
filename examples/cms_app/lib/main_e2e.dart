@@ -13,15 +13,11 @@ import 'document_types.dart';
 /// flutter run -d chrome -t lib/main_e2e.dart
 /// ```
 void main() {
-  const apiKey = String.fromEnvironment('API_KEY');
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized(CmsMarionetteConfig.configuration);
     FakeImagePickerPlatform.install();
   }
-  if (apiKey.isNotEmpty) {
-  } else {
-    runApp(const E2eApp());
-  }
+  runApp(const E2eApp());
 }
 
 class E2eApp extends StatelessWidget {
@@ -38,7 +34,7 @@ class E2eApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return DartDeskApp(
       serverUrl: serverUrl,
-      apiKey: apiKey.isNotEmpty ? apiKey : null,
+      apiKey: apiKey,
       config: DartDeskConfig(
         documentTypes: [homeScreenDocumentType],
         documentTypeDecorations: [

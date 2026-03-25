@@ -29,7 +29,7 @@ class DartDeskAuth extends StatefulWidget {
     VoidCallback signOut,
   )
   builder;
-  final String? apiKey;
+  final String apiKey;
   final String title;
   final String? subtitle;
   final Widget? logo;
@@ -39,7 +39,7 @@ class DartDeskAuth extends StatefulWidget {
     super.key,
     required this.serverUrl,
     required this.builder,
-    this.apiKey,
+    required this.apiKey,
     this.title = 'Welcome to Dart Desk',
     this.subtitle,
     this.logo,
@@ -52,6 +52,7 @@ class DartDeskAuth extends StatefulWidget {
 
 class _DartDeskAuthState extends State<DartDeskAuth> {
   late final Client _client;
+  late final FlutterAuthSessionManager _sessionManager;
   bool _isLoading = true;
   bool _isEnsuringUser = false;
   bool _isEmailSigningIn = false;
@@ -61,7 +62,7 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
-  FlutterAuthSessionManager get _auth => _client.authSessionManager;
+  FlutterAuthSessionManager get _auth => _sessionManager;
 
   @override
   void initState() {
@@ -97,8 +98,17 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
             ..connectivityMonitor = FlutterConnectivityMonitor()
             ..authSessionManager = FlutterAuthSessionManager();
 
-      await _client.auth.initialize();
-      await _client.auth.initializeGoogleSignIn();
+      // Save reference before wrapping (auth getter checks type of authKeyProvider)
+      _sessionManager = _client.authSessionManager;
+
+      // Wrap auth with API key provider so every RPC call includes the key
+      _client.authKeyProvider = DartDeskAuthKeyProvider(
+        apiKey: widget.apiKey,
+        inner: _client.authKeyProvider,
+      );
+
+      await _sessionManager.initialize();
+      await _sessionManager.initializeGoogleSignIn();
 
       _auth.authInfoListenable.addListener(_onAuthChanged);
 

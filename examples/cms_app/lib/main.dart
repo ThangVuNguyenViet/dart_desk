@@ -9,14 +9,10 @@ import 'document_types.dart';
 const String _defaultServerUrl = 'http://localhost:8080/';
 
 void main() {
-  const apiKey = String.fromEnvironment('API_KEY');
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized(CmsMarionetteConfig.configuration);
   }
-  if (apiKey.isNotEmpty) {
-  } else {
-    runApp(const MyApp());
-  }
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -33,7 +29,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return DartDeskApp(
       serverUrl: serverUrl,
-      apiKey: apiKey.isNotEmpty ? apiKey : null,
+      apiKey: apiKey,
       config: DartDeskConfig(
         documentTypes: [homeScreenDocumentType],
         documentTypeDecorations: [

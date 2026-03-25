@@ -49,7 +49,7 @@ class DartDeskApp extends StatelessWidget {
     super.key,
     required String serverUrl,
     required DartDeskConfig config,
-    String? apiKey,
+    required String apiKey,
     ShadThemeData? theme,
   }) : _serverUrl = serverUrl,
        _dataSource = null,
@@ -67,13 +67,12 @@ class DartDeskApp extends StatelessWidget {
     required DataSource dataSource,
     required VoidCallback onSignOut,
     required DartDeskConfig config,
-    String? apiKey,
     ShadThemeData? theme,
   }) : _serverUrl = null,
        _dataSource = dataSource,
        _onSignOut = onSignOut,
        _config = config,
-       _apiKey = apiKey,
+       _apiKey = null,
        _theme = theme;
 
   @override
@@ -81,7 +80,7 @@ class DartDeskApp extends StatelessWidget {
     if (_serverUrl != null) {
       return DartDeskAuth(
         serverUrl: _serverUrl,
-        apiKey: _apiKey,
+        apiKey: _apiKey!,
         title: _config.title,
         subtitle: _config.subtitle,
         builder: (context, client, signOut) {
