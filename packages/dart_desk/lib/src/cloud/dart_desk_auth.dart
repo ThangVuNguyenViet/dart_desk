@@ -1,6 +1,6 @@
 import 'dart:developer' as developer;
 
-import 'package:dart_desk_be_client/dart_desk_be_client.dart';
+import 'package:dart_desk_client/dart_desk_client.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';

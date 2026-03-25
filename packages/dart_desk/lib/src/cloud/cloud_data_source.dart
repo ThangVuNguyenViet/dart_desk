@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import '../data/data.dart';
-import 'package:dart_desk_be_client/dart_desk_be_client.dart' as serverpod;
+import 'package:dart_desk_client/dart_desk_client.dart' as serverpod;
 
-/// Cloud data source implementation using the Serverpod dart_desk_be_client.
+/// Cloud data source implementation using the Serverpod dart_desk_client.
 ///
 /// This class wraps the Serverpod-generated client and converts between
 /// Serverpod models and platform-agnostic CMS data models.
@@ -12,7 +12,7 @@ import 'package:dart_desk_be_client/dart_desk_be_client.dart' as serverpod;
 /// ## Usage
 ///
 /// ```dart
-/// import 'package:dart_desk_be_client/dart_desk_be_client.dart';
+/// import 'package:dart_desk_client/dart_desk_client.dart';
 /// import 'package:dart_desk_cloud/dart_desk_cloud.dart';
 ///
 /// final client = Client('http://localhost:8080/');

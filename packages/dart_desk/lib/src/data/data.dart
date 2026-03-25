@@ -22,7 +22,7 @@ library;
 // Abstract interface
 export 'cms_data_source.dart';
 
-// Serverpod implementation is in dart_desk_be_client package
+// Serverpod implementation is in dart_desk_client package
 // export 'serverpod_data_source.dart';
 
 // Models

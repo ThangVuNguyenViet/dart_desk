@@ -248,10 +248,10 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
-  dart_desk_be_client:
+  dart_desk_client:
     dependency: "direct overridden"
     description:
-      path: "../dart_desk_be/dart_desk_be_client"
+      path: "../dart_desk_be/dart_desk_client"
       relative: true
     source: path
     version: "0.1.0"
