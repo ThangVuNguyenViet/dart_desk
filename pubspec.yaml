@@ -38,3 +38,13 @@ dependency_overrides:
     git:
       url: https://github.com/rodydavis/signals.dart.git
       path: packages/signals_flutter
+  serverpod_client:
+    git:
+      url: https://github.com/ThangVuNguyenViet/serverpod.git
+      ref: main
+      path: packages/serverpod_client
+  serverpod_serialization:
+    git:
+      url: https://github.com/ThangVuNguyenViet/serverpod.git
+      ref: main
+      path: packages/serverpod_serialization

@@ -1244,13 +1244,14 @@ packages:
     source: hosted
     version: "3.4.3"
   serverpod_client:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: serverpod_client
-      sha256: "08041dd5219c190443d5ab823ac4f1a9d910faff6b2dbfbd64782f6df26d2daf"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.4.3"
+      path: "packages/serverpod_client"
+      ref: main
+      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
+      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
+    source: git
+    version: "3.4.4"
   serverpod_flutter:
     dependency: transitive
     description:
@@ -1260,13 +1261,14 @@ packages:
     source: hosted
     version: "3.4.3"
   serverpod_serialization:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: serverpod_serialization
-      sha256: "1c774ee85229fb09ee72ebb183f823601b3c45ae40edc18f5e27f6e87e00dae6"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.4.3"
+      path: "packages/serverpod_serialization"
+      ref: main
+      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
+      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
+    source: git
+    version: "3.4.4"
   shadcn_ui:
     dependency: "direct main"
     description:

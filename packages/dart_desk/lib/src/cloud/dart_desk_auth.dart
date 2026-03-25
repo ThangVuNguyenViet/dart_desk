@@ -101,11 +101,8 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
       // Save reference before wrapping (auth getter checks type of authKeyProvider)
       _sessionManager = _client.authSessionManager;
 
-      // Wrap auth with API key provider so every RPC call includes the key
-      _client.authKeyProvider = DartDeskAuthKeyProvider(
-        apiKey: widget.apiKey,
-        inner: _client.authKeyProvider,
-      );
+      // Send API key as a custom header on every RPC call
+      _client.customHeaders = {'x-api-key': widget.apiKey};
 
       await _sessionManager.initialize();
       await _sessionManager.initializeGoogleSignIn();
