@@ -31,7 +31,7 @@ dependencies:
   signals: ^6.3.0
   flutter_resizable_container: ^4.2.0
   super_editor: ^0.3.0-dev.50
-  disco: ^1.0.3+1
+  get_it: ^9.2.1
   zenrouter: ^2.0.3
   marionette_flutter: ^0.4.0
   font_awesome_flutter: ^10.8.0

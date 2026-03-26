@@ -1,11 +1,11 @@
-import 'package:disco/disco.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../dart_desk.dart';
 import '../../../studio.dart';
 import '../core/view_models/cms_document_view_model.dart';
 
-class StudioProvider extends StatelessWidget {
+class StudioProvider extends StatefulWidget {
   const StudioProvider({
     super.key,
     required this.child,
@@ -18,25 +18,31 @@ class StudioProvider extends StatelessWidget {
   final List<DocumentType> documentTypes;
 
   @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      providers: [documentViewModelProvider(dataSource)],
-      child: ProviderScope(
-        providers: [cmsViewModelProvider((dataSource, documentTypes))],
-        child: child,
+  State<StudioProvider> createState() => _StudioProviderState();
+}
+
+class _StudioProviderState extends State<StudioProvider> {
+  @override
+  void initState() {
+    super.initState();
+    final docVM = CmsDocumentViewModel(widget.dataSource);
+    GetIt.I.registerSingleton<CmsDocumentViewModel>(docVM);
+    GetIt.I.registerSingleton<CmsViewModel>(
+      CmsViewModel(
+        dataSource: widget.dataSource,
+        documentTypes: widget.documentTypes,
+        documentViewModel: docVM,
       ),
     );
   }
+
+  @override
+  void dispose() {
+    GetIt.I.unregister<CmsViewModel>();
+    GetIt.I.unregister<CmsDocumentViewModel>();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
-
-final documentViewModelProvider = Provider.withArgument(
-  (context, DataSource dataSource) => CmsDocumentViewModel(dataSource),
-);
-
-final cmsViewModelProvider = Provider.withArgument(
-  (context, (DataSource, List<DocumentType>) args) => CmsViewModel(
-    dataSource: args.$1,
-    documentTypes: args.$2,
-    documentViewModel: documentViewModelProvider.of(context),
-  ),
-);
