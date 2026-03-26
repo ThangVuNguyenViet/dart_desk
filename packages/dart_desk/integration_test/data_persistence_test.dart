@@ -88,7 +88,7 @@ void main() {
       // the key lookup will gracefully fail or the test environment assigns known IDs.
       // In practice, the test env resets DB so the first created doc gets ID 1.
       // TC-E2E-01-01 creates doc id=1, TC-E2E-01-04 creates id=2.
-      await docList.deleteDocument(2);
+      await docList.deleteDocument('Doc To Delete');
 
       docList.expectDocumentNotVisible('Doc To Delete');
     });

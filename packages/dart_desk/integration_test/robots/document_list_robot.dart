@@ -46,9 +46,21 @@ class DocumentListRobot {
   }
 
   /// Opens the per-document popup menu and taps "Delete".
-  Future<void> deleteDocument(int documentId) async {
-    // Tap the three-dot menu for this document
-    await tester.tap(findByKey('document_menu_$documentId'));
+  Future<void> deleteDocument(String title) async {
+    // Scroll until the document title is visible
+    final titleFinder = find.text(title);
+    await tester.scrollUntilVisible(titleFinder, 200);
+    await tester.pumpAndSettle();
+
+    // Find the PopupMenuButton in the same GestureDetector ancestor as the title
+    final menuButton = find.descendant(
+      of: find.ancestor(
+        of: titleFinder,
+        matching: find.byType(GestureDetector),
+      ),
+      matching: find.byType(PopupMenuButton<String>),
+    );
+    await tester.tap(menuButton.first);
     await tester.pumpAndSettle();
     // Tap the "Delete" menu item
     await tester.tap(findByKey('delete_document_button'));
