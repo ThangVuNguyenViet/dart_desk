@@ -71,10 +71,16 @@ class DocumentEditorRobot {
     }
   }
 
-  /// Expects the version history panel to be visible.
-  /// Checks for the 'Version History' header rendered by CmsVersionHistory.
+  /// Expects the version history panel to be visible with at least one entry.
+  /// Checks for the 'Version History' header and at least one version item
+  /// rendered by CmsVersionHistory.
   void expectVersionHistoryShown() {
     expect(find.text('Version History'), findsOneWidget);
+    // At least one version entry exists (e.g. "Version 1", "Version 2")
+    expect(
+      find.textContaining(RegExp(r'Version \d+')),
+      findsAtLeastNWidgets(1),
+    );
   }
 
   /// Expects the "Published" status text to be visible (from CmsStatusPill).
