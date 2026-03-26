@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:dart_desk/dart_desk.dart';
+import 'package:dart_desk/src/studio/core/view_models/cms_document_view_model.dart';
 import 'package:dart_desk/src/studio/providers/studio_provider.dart';
+import 'package:get_it/get_it.dart';
 import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,7 @@ class _PreviewPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final edited = documentViewModelProvider.of(context).editedData.watch(context);
+    final edited = GetIt.I<CmsDocumentViewModel>().editedData.watch(context);
     return docType.builder(edited);
   }
 }
@@ -43,12 +45,12 @@ Widget buildEditorPreviewTestApp({
           documentTypes: [docType],
           child: Builder(builder: (context) {
             // Activate the document type so CmsForm's CmsImageField branch works.
-            final vm = cmsViewModelProvider.of(context);
+            final vm = GetIt.I<CmsViewModel>();
             vm.currentDocumentTypeSlug.value = docType.name;
 
             // Seed editedData if provided.
             if (seedData.isNotEmpty) {
-              final docVM = documentViewModelProvider.of(context);
+              final docVM = GetIt.I<CmsDocumentViewModel>();
               docVM.editedData.value = Map<String, dynamic>.from(seedData);
             }
 
@@ -86,7 +88,7 @@ Widget buildCmsFormTestApp({
           dataSource: dataSource,
           documentTypes: [docType],
           child: Builder(builder: (context) {
-            cmsViewModelProvider.of(context).currentDocumentTypeSlug.value =
+            GetIt.I<CmsViewModel>().currentDocumentTypeSlug.value =
                 docType.name;
             return CmsForm(
               fields: fields,
@@ -250,7 +252,7 @@ void main() {
 
       // Access editedData through the element tree.
       final context = tester.element(find.byType(_PreviewPanel));
-      final editedData = documentViewModelProvider.of(context).editedData;
+      final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       expect(editedData['string_field'], 'hello world');
     });
 
@@ -272,7 +274,7 @@ void main() {
       await tester.pump();
 
       final context = tester.element(find.byType(_PreviewPanel));
-      final editedData = documentViewModelProvider.of(context).editedData;
+      final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       expect(editedData['number_field'], 99);
     });
 
@@ -294,7 +296,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final context = tester.element(find.byType(_PreviewPanel));
-      final editedData = documentViewModelProvider.of(context).editedData;
+      final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       expect(editedData['boolean_field'], isNotNull);
     });
   });
@@ -420,7 +422,7 @@ void main() {
 
       // Programmatically update editedData to simulate selection change
       final context = tester.element(find.byType(_PreviewPanel));
-      final editedData = documentViewModelProvider.of(context).editedData;
+      final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       editedData.value = {...editedData.value, 'document_ref_dropdown': ['3']};
       await tester.pumpAndSettle();
 
@@ -478,7 +480,7 @@ void main() {
 
       // Verify editedData has the change.
       final context = tester.element(find.byType(_PreviewPanel));
-      final editedData = documentViewModelProvider.of(context).editedData;
+      final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       expect(editedData['string_field'], 'dirty');
 
       // Tap Discard.

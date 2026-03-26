@@ -1,6 +1,7 @@
 import 'package:dart_desk/src/inputs/dropdown_input.dart';
 import 'package:dart_desk/src/inputs/multi_dropdown_input.dart';
 import 'package:dart_desk/src/studio/providers/studio_provider.dart';
+import 'package:get_it/get_it.dart';
 import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
@@ -24,7 +25,7 @@ class _ContextAwareDropdownOption extends CmsMultiDropdownOption<String> {
 
   @override
   List<DropdownOption<String>> options(BuildContext context) {
-    final viewModel = cmsViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
     final state = viewModel.documentsContainer(documentType).watch(context);
     return state.map(
       data: (list) => list.documents
@@ -209,7 +210,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            viewModel = cmsViewModelProvider.of(context);
+            viewModel = GetIt.I<CmsViewModel>();
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -258,7 +259,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            final vm = cmsViewModelProvider.of(context);
+            final vm = GetIt.I<CmsViewModel>();
             final state = vm
                 .documentsContainer('test_all_fields')
                 .watch(context);
@@ -288,7 +289,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType, _testDocType],
           builder: (context) {
-            final vm = cmsViewModelProvider.of(context);
+            final vm = GetIt.I<CmsViewModel>();
             final state1 = vm
                 .documentsContainer('test_all_fields')
                 .watch(context);
@@ -324,7 +325,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            viewModel = cmsViewModelProvider.of(context);
+            viewModel = GetIt.I<CmsViewModel>();
             final state = viewModel
                 .documentsContainer('test_all_fields')
                 .watch(context);
@@ -358,7 +359,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            viewModel = cmsViewModelProvider.of(context);
+            viewModel = GetIt.I<CmsViewModel>();
             viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
 
             final state = viewModel
@@ -394,7 +395,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            viewModel = cmsViewModelProvider.of(context);
+            viewModel = GetIt.I<CmsViewModel>();
             viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
 
             final state = viewModel
@@ -429,7 +430,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            viewModel = cmsViewModelProvider.of(context);
+            viewModel = GetIt.I<CmsViewModel>();
             viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
 
             final state = viewModel
@@ -466,7 +467,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            final vm = cmsViewModelProvider.of(context);
+            final vm = GetIt.I<CmsViewModel>();
             vm.currentDocumentTypeSlug.value = 'test_all_fields';
 
             return CmsDocumentListView(
@@ -490,7 +491,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            final vm = cmsViewModelProvider.of(context);
+            final vm = GetIt.I<CmsViewModel>();
             vm.currentDocumentTypeSlug.value = 'test_all_fields';
 
             return CmsDocumentListView(
@@ -526,7 +527,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            final vm = cmsViewModelProvider.of(context);
+            final vm = GetIt.I<CmsViewModel>();
             vm.currentDocumentTypeSlug.value = 'test_all_fields';
 
             return CmsDocumentListView(
