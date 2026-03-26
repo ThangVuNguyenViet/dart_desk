@@ -6,8 +6,10 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../media/browser/media_browser.dart';
 import '../components/common/cms_collapse_bar.dart';
+import 'package:get_it/get_it.dart';
+
+import '../core/view_models/cms_document_view_model.dart';
 import '../core/view_models/cms_view_model.dart';
-import '../providers/studio_provider.dart';
 import '../routes/document_route.dart';
 import '../routes/media_route.dart';
 import '../routes/studio_coordinator.dart';
@@ -31,8 +33,8 @@ class CmsStudio extends StatefulWidget {
 
 class _CmsStudioState extends State<CmsStudio> {
   Future<void> _deleteDocument(BuildContext context, {int? docId}) async {
-    final viewModel = cmsViewModelProvider.of(context);
-    final documentViewModel = documentViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
+    final documentViewModel = GetIt.I<CmsDocumentViewModel>();
     final toaster = ShadToaster.of(context);
     docId ??= documentViewModel.documentId.value;
 
@@ -135,7 +137,7 @@ class _CmsStudioState extends State<CmsStudio> {
     CmsViewModel viewModel,
     DocumentType docType,
   ) {
-    final documentViewModel = documentViewModelProvider.of(context);
+    final documentViewModel = GetIt.I<CmsDocumentViewModel>();
     final edited = documentViewModel.editedData.watch(context);
 
     // Prefer live editedData; fall back to saved version data
@@ -233,7 +235,7 @@ class _CmsStudioState extends State<CmsStudio> {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final viewModel = cmsViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
 
     final isListVisible = viewModel.documentListVisible.watch(context);
     final docType = viewModel.currentDocumentType.watch(context);

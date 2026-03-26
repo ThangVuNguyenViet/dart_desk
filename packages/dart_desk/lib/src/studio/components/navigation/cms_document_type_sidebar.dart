@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../../providers/studio_provider.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../core/view_models/cms_view_model.dart';
 import '../../routes/document_type_route.dart';
 import '../../routes/studio_coordinator.dart';
 import '../../theme/spacing.dart';
@@ -31,7 +33,7 @@ class CmsDocumentTypeSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final viewModel = cmsViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
     final isCollapsed = viewModel.sidebarCollapsed.watch(context);
     final currentSlug = viewModel.currentDocumentTypeSlug.watch(context);
 

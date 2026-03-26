@@ -5,7 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:zenrouter/zenrouter.dart';
 
+import 'package:get_it/get_it.dart';
+
 import '../../../studio.dart';
+import '../core/view_models/cms_document_view_model.dart';
 import '../providers/studio_provider.dart';
 
 /// The root layout for all studio routes.
@@ -81,7 +84,7 @@ class _StudioShellState extends State<StudioShell> {
   }
 
   void _onRouteChanged() {
-    final vm = cmsViewModelProvider.of(context);
+    final vm = GetIt.I<CmsViewModel>();
 
     vm.setRouteParams(
       documentTypeSlug: widget.coordinator.currentDocumentTypeSlug,
@@ -115,7 +118,7 @@ class _TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     final headerConfig = DefaultCmsHeaderConfig.of(context);
-    final viewModel = cmsViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
 
     // Build breadcrumb segments reactively
     final docTypeSlug = viewModel.currentDocumentTypeSlug.watch(context);
@@ -143,7 +146,7 @@ class _TopBar extends StatelessWidget {
     }
 
     if (docId != null) {
-      final documentViewModel = documentViewModelProvider.of(context);
+      final documentViewModel = GetIt.I<CmsDocumentViewModel>();
       final title = documentViewModel.title.watch(context);
       segments.add(BreadcrumbSegment(label: title.isNotEmpty ? title : 'Document'));
     }

@@ -11,8 +11,10 @@ import '../../data/models/document_list.dart';
 import '../../data/models/document_version.dart';
 import '../components/common/cms_collapse_bar.dart';
 import '../components/common/cms_status_pill.dart';
+import 'package:get_it/get_it.dart';
+
+import '../core/view_models/cms_document_view_model.dart';
 import '../core/view_models/cms_view_model.dart';
-import '../providers/studio_provider.dart';
 import '../theme/spacing.dart';
 
 /// Document list view for browsing multiple documents of a type
@@ -60,7 +62,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final viewModel = cmsViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
 
     final resourceState = viewModel
         .documentsContainer(widget.selectedDocumentType.name)
@@ -123,7 +125,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     ShadThemeData theme,
     DocumentList result,
   ) {
-    final viewModel = cmsViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
     final documents = result.documents;
     final filteredDocuments = documents.where((doc) {
       if (_searchQuery.isEmpty) return true;
@@ -232,7 +234,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
         ),
         CmsCollapseBar(
           onToggle: () {
-            final viewModel = cmsViewModelProvider.of(context);
+            final viewModel = GetIt.I<CmsViewModel>();
             viewModel.documentListVisible.value = false;
           },
         ),
@@ -241,8 +243,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
   }
 
   Widget _buildInlineCreateForm(BuildContext context, ShadThemeData theme) {
-    final viewModel = cmsViewModelProvider.of(context);
-    final documentViewModel = documentViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
+    final documentViewModel = GetIt.I<CmsDocumentViewModel>();
 
     return Container(
       decoration: BoxDecoration(
@@ -376,7 +378,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     CmsDocument doc,
     CmsViewModel viewModel,
   ) {
-    final documentViewModel = documentViewModelProvider.of(context);
+    final documentViewModel = GetIt.I<CmsDocumentViewModel>();
     final isSelected = documentViewModel.documentId.watch(context) == doc.id;
 
     return GestureDetector(

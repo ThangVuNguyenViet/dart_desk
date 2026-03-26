@@ -4,8 +4,10 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../../data/models/document_version.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../core/view_models/cms_document_view_model.dart';
 import '../../core/view_models/cms_view_model.dart';
-import '../../providers/studio_provider.dart';
 
 /// A version history dropdown component that displays and manages document versions.
 ///
@@ -55,7 +57,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
 
-    final documentViewModel = documentViewModelProvider.of(context);
+    final documentViewModel = GetIt.I<CmsDocumentViewModel>();
     final docId = documentViewModel.documentId.watch(context);
 
     final versionsState = docId != null

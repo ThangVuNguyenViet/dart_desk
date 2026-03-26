@@ -15,7 +15,9 @@ import '../../../inputs/file_input.dart';
 import '../../../inputs/geopoint_input.dart';
 import '../../../inputs/image_input.dart';
 import '../../../inputs/number_input.dart';
-import '../../providers/studio_provider.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../core/view_models/cms_view_model.dart';
 import '../../../inputs/object_input.dart';
 import '../../../inputs/string_input.dart';
 import '../../../inputs/text_input.dart';
@@ -218,7 +220,7 @@ class _CmsFormState extends State<CmsForm> {
 
     // Special case: CmsImageField needs dataSource from the provider
     if (field is CmsImageField) {
-      final dataSource = cmsViewModelProvider.of(context).dataSource;
+      final dataSource = GetIt.I<CmsViewModel>().dataSource;
       return CmsImageInput(
         key: ValueKey(field.name),
         field: field,

@@ -6,7 +6,10 @@ import 'package:signals/signals_flutter.dart';
 import '../../data/models/document_version.dart';
 import '../components/common/cms_button.dart';
 import '../components/forms/cms_form.dart';
-import '../providers/studio_provider.dart';
+import 'package:get_it/get_it.dart';
+
+import '../core/view_models/cms_document_view_model.dart';
+import '../core/view_models/cms_view_model.dart';
 
 /// Document editor widget that dynamically generates forms based on fields
 class CmsDocumentEditor extends StatefulWidget {
@@ -23,11 +26,11 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
     with SignalsMixin {
   /// Shared edited data signal from the document view model.
   MapSignal<String, dynamic> get editedData =>
-      documentViewModelProvider.of(context).editedData;
+      GetIt.I<CmsDocumentViewModel>().editedData;
 
   @override
   void initState() {
-    final viewModel = cmsViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
     final docType = viewModel.currentDocumentType.value;
     final defaults = docType?.defaultValue?.toMap() ?? {};
     if (editedData.value.isEmpty && defaults.isNotEmpty) {
@@ -37,9 +40,9 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   }
 
   Future<void> _saveDocument() async {
-    final viewModel = cmsViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
     try {
-      final documentViewModel = documentViewModelProvider.of(context);
+      final documentViewModel = GetIt.I<CmsDocumentViewModel>();
       final docId = documentViewModel.documentId.value;
 
       final dataToSave = editedData.value;
@@ -48,7 +51,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
         // Update existing document data
         await viewModel.updateDocumentData(dataToSave);
       } else {
-        final documentViewModel = documentViewModelProvider.of(context);
+        final documentViewModel = GetIt.I<CmsDocumentViewModel>();
         final title = documentViewModel.title.value;
         final slug = documentViewModel.slug.value;
 
@@ -83,7 +86,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
 
   Future<void> _discardDocument() async {
     try {
-      final viewModel = cmsViewModelProvider.of(context);
+      final viewModel = GetIt.I<CmsViewModel>();
       final versionId = viewModel.selectedVersionId.value;
 
       if (versionId != null) {
@@ -117,7 +120,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = cmsViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
 
     final isSaving = viewModel.isSaving.watch(context);
     final versionId = viewModel.selectedVersionId.watch(context);

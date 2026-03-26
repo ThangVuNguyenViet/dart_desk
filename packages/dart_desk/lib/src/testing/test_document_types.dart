@@ -2,7 +2,9 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../studio/providers/studio_provider.dart';
+import 'package:get_it/get_it.dart';
+
+import '../studio/core/view_models/cms_view_model.dart';
 
 /// Test document type that exercises all 16 CMS field types.
 /// Use this in test apps to get full field coverage.
@@ -176,7 +178,7 @@ Widget _testAllFieldsBuilder(Map<String, dynamic> data) {
       final selectedIds = data['document_ref_dropdown'];
       String? selectedDocTitles;
       if (selectedIds is List && selectedIds.isNotEmpty) {
-        final viewModel = cmsViewModelProvider.of(context);
+        final viewModel = GetIt.I<CmsViewModel>();
         final state = viewModel
             .documentsContainer('test_all_fields')
             .watch(context);
@@ -245,7 +247,7 @@ class TestDocumentRefDropdownOption extends CmsMultiDropdownOption<String> {
 
   @override
   List<DropdownOption<String>> options(BuildContext context) {
-    final viewModel = cmsViewModelProvider.of(context);
+    final viewModel = GetIt.I<CmsViewModel>();
     final state = viewModel
         .documentsContainer('test_all_fields')
         .watch(context);
