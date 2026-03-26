@@ -6,8 +6,6 @@ import '../../../data/models/cms_document.dart';
 import '../../../data/models/document_version.dart';
 class CmsViewModel {
   final DataSource dataSource;
-  final Signal<int?> _documentId;
-  final MapSignal<String, dynamic> _editedData;
 
   /// The registered document types (injected from coordinator/app config).
   final List<DocumentType> documentTypes;
@@ -96,11 +94,8 @@ class CmsViewModel {
 
   CmsViewModel({
     required this.dataSource,
-    required Signal<int?> documentId,
-    required MapSignal<String, dynamic> editedData,
     required this.documentTypes,
-  })  : _documentId = documentId,
-        _editedData = editedData;
+  });
 
   // ============================================================
   // Internal Fetch Methods
@@ -134,57 +129,18 @@ class CmsViewModel {
   }) {
     currentDocumentTypeSlug.value = documentTypeSlug;
 
-    // Update document ID (and document view model)
     final docIdInt = documentId != null ? int.tryParse(documentId) : null;
-    final docChanged = _documentId.value != docIdInt;
-    if (docChanged) {
-      _documentId.value = docIdInt;
-      // Reset shared editedData when switching documents
-      _editedData.value = {};
-    }
+    selectedDocumentId.value = docIdInt;
     currentDocumentId.value = documentId;
 
     // Update version ID
     currentVersionId.value = versionId;
 
-    // If version ID changed, also set selectedVersionId for containers
     final versionIdInt = versionId != null ? int.tryParse(versionId) : null;
     selectedVersionId.value = versionIdInt;
-
-    // Auto-select latest version when document is opened without a version
-    if (docIdInt != null && versionIdInt == null) {
-      _autoSelectLatestVersion(docIdInt);
-    }
   }
 
-  /// Fetches versions for a document and auto-selects the latest one.
-  /// Pre-populates editedData so the preview and editor have data immediately.
-  Future<void> _autoSelectLatestVersion(int docId) async {
-    try {
-      final versions = await dataSource.getDocumentVersions(docId);
-      if (versions.versions.isNotEmpty) {
-        final versionId = versions.versions.first.id!;
-
-        // Use the document's activeVersionData which reflects the latest
-        // CRDT-merged state, rather than getDocumentVersionData which only
-        // reconstructs state up to the version's snapshot HLC.
-        final doc = await dataSource.getDocument(docId);
-        final docData = doc?.activeVersionData;
-        if (docData != null && docData.isNotEmpty) {
-          _editedData.value = Map<String, dynamic>.from(
-            docData,
-          );
-        }
-
-        // Set version ID after editedData so the editor's early-return
-        // path (editedData.isNotEmpty) prevents the loading→form transition.
-        selectedVersionId.value = versionId;
-      }
-    } catch (_) {
-      // Silently ignore — editor will show empty state
-    }
-  }
-
+  final selectedDocumentId = Signal<int?>(null, debugLabel: 'selectedDocumentId');
   final selectedVersionId = Signal<int?>(null, debugLabel: 'selectedVersionId');
 
   // ============================================================
@@ -216,7 +172,7 @@ class CmsViewModel {
         isDefault: isDefault,
       );
 
-      _documentId.value = document.id;
+      selectedDocumentId.value = document.id;
 
       final versions = await dataSource.getDocumentVersions(document.id!);
       if (versions.versions.isNotEmpty) {
@@ -234,8 +190,8 @@ class CmsViewModel {
   Future<bool> deleteDocument(int documentId) async {
     final result = await dataSource.deleteDocument(documentId);
     if (result) {
-      if (_documentId.value == documentId) {
-        _documentId.value = null;
+      if (selectedDocumentId.value == documentId) {
+        selectedDocumentId.value = null;
         selectedVersionId.value = null;
       }
       documentsContainer(currentDocumentType.value?.name ?? '').reload();
@@ -244,7 +200,7 @@ class CmsViewModel {
   }
 
   Future<CmsDocument?> updateDocumentData(Map<String, dynamic> data) async {
-    final documentId = _documentId.value;
+    final documentId = selectedDocumentId.value;
     if (documentId == null) return null;
 
     isSaving.value = true;
@@ -269,7 +225,7 @@ class CmsViewModel {
     try {
       final result = await dataSource.publishDocumentVersion(versionId);
 
-      final docId = _documentId.value;
+      final docId = selectedDocumentId.value;
       if (docId != null) {
         versionsContainer(docId).reload();
       }
@@ -289,7 +245,7 @@ class CmsViewModel {
     try {
       final result = await dataSource.archiveDocumentVersion(versionId);
 
-      final docId = _documentId.value;
+      final docId = selectedDocumentId.value;
       if (docId != null) {
         versionsContainer(docId).reload();
       }
@@ -308,7 +264,7 @@ class CmsViewModel {
         selectedVersionId.value = null;
       }
 
-      final docId = _documentId.value;
+      final docId = selectedDocumentId.value;
       if (docId != null) {
         versionsContainer(docId).reload();
       }
@@ -336,7 +292,7 @@ class CmsViewModel {
   }
 
   void refreshVersions() {
-    final docId = _documentId.value;
+    final docId = selectedDocumentId.value;
     if (docId != null) {
       versionsContainer(docId).reload();
     }
@@ -359,6 +315,7 @@ class CmsViewModel {
     currentDocumentId.dispose();
     currentVersionId.dispose();
     selectedVersionId.dispose();
+    selectedDocumentId.dispose();
     searchQuery.dispose();
     sidebarCollapsed.dispose();
     documentListVisible.dispose();
