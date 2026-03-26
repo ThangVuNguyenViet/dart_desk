@@ -1,10 +1,5 @@
 # 02 - Real Media Handling
 
-## Prerequisites
-- E2E environment fully set up and running
-- Marionette connected
-- A document type with image and file fields is registered
-
 ## TC-E2E-02-01: Upload image via UI
 **Steps:**
 1. Open a document with an image field

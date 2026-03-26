@@ -1,10 +1,5 @@
 # 03 - CRDT & Collaboration
 
-## Prerequisites
-- E2E environment fully set up and running
-- Marionette connected
-- Ability to open two browser tabs/windows to the same document
-
 **Note:** These tests require opening the same document in two separate browser sessions. This may require launching a second Chrome instance or using two tabs. Marionette can only connect to one Flutter app at a time, so verification may alternate between sessions.
 
 ## TC-E2E-03-01: Two sessions editing different fields

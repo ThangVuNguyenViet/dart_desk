@@ -2,13 +2,6 @@
 
 Context: FakeImagePickerPlatform is installed in main_e2e.dart, enabling image picker automation. The real CloudDataSource backend handles file storage.
 
-## Prerequisites
-- E2E environment: Serverpod backend running on localhost:8080
-- Docker containers up (database, Redis)
-- App launched via main_e2e.dart
-- Marionette connected
-- FakeImagePickerPlatform installed (returns a 1x1 test PNG)
-
 ## TC-E2E-07-01: Upload image → backend receives file with metadata
 **Steps:**
 1. Navigate to a document with an image field

@@ -39,6 +39,9 @@ class _StudioProviderState extends State<StudioProvider> {
 
   @override
   void dispose() {
+    GetIt.I<CmsViewModel>().dispose();
+    GetIt.I<CmsDocumentViewModel>().dispose();
+
     GetIt.I.unregister<CmsViewModel>();
     GetIt.I.unregister<CmsDocumentViewModel>();
     super.dispose();

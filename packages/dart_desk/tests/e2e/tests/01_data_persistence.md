@@ -1,13 +1,5 @@
 # 01 - Data Persistence & Consistency
 
-## Prerequisites
-- E2E server running on port 8080 (via `setup/server_manager.sh start`)
-- Docker test services running (via `setup/docker_manager.sh up`)
-- Test user and API token seeded (via `setup/seed_data.sh`)
-- Flutter app running with CloudDataSource pointing at http://localhost:8080/
-- Marionette connected to Flutter VM service URI
-- At least one document type registered
-
 ## TC-E2E-01-01: Create document persists to backend
 **Steps:**
 1. Navigate to a document type in the sidebar

@@ -1,10 +1,5 @@
 # 04 - Error Resilience
 
-## Prerequisites
-- E2E environment fully set up and running
-- Marionette connected
-- Access to `server_manager.sh` to stop/start the backend
-
 ## TC-E2E-04-01: Backend down during save
 **Steps:**
 1. Open a document and make an edit

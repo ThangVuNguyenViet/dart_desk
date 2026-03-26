@@ -24,6 +24,10 @@ stop_server() {
     done
     kill -9 "$PID" 2>/dev/null || true
     rm -f "$PID_FILE"
+    # Restore original test.yaml if backup exists
+    if [ -f "$BACKEND_DIR/config/test.yaml.bak" ]; then
+      mv "$BACKEND_DIR/config/test.yaml.bak" "$BACKEND_DIR/config/test.yaml"
+    fi
     echo "Server stopped."
   fi
 }
@@ -34,9 +38,13 @@ start_server() {
     return
   fi
 
-  echo "Starting Serverpod E2E server (mode=e2e, port 8080, test DB on 9090)..."
+  echo "Starting Serverpod E2E server (mode=test, port 8080, test DB on 9090)..."
   cd "$BACKEND_DIR"
-  dart run bin/main.dart --apply-migrations --role=monolith --mode=e2e > "$LOG_FILE" 2>&1 &
+  # Serverpod only allows development/test/staging/production modes.
+  # Swap test.yaml with e2e.yaml for fixed-port E2E testing.
+  cp config/test.yaml config/test.yaml.bak
+  cp config/e2e.yaml config/test.yaml
+  dart run bin/main.dart --apply-migrations --role=monolith --mode=test > "$LOG_FILE" 2>&1 &
   SERVER_PID=$!
   echo $SERVER_PID > "$PID_FILE"
 
@@ -61,7 +69,31 @@ start_server() {
 }
 
 reset_db() {
-  echo "Resetting test database to clean state..."
+  echo "Resetting test database (preserving auth + sessions)..."
+  if ! docker compose -f "$COMPOSE_FILE" exec -T postgres_test pg_isready -U postgres > /dev/null 2>&1; then
+    echo "ERROR: Test PostgreSQL is not running. Run '$0 up' first."
+    exit 1
+  fi
+  docker compose -f "$COMPOSE_FILE" exec -T postgres_test \
+    psql -U postgres -d dart_desk_be_test -c "
+      TRUNCATE
+        document_crdt_operations,
+        document_crdt_snapshots,
+        document_versions,
+        documents_data,
+        documents,
+        media_assets,
+        api_tokens,
+        users,
+        projects,
+        deployments
+      CASCADE;
+    "
+  echo "Done. App data cleared, auth + sessions preserved."
+}
+
+reset_all_db() {
+  echo "Resetting test database to fully clean state..."
   if ! docker compose -f "$COMPOSE_FILE" exec -T postgres_test pg_isready -U postgres > /dev/null 2>&1; then
     echo "ERROR: Test PostgreSQL is not running. Run '$0 up' first."
     exit 1
@@ -119,6 +151,9 @@ case "$1" in
   reset)
     reset_db
     ;;
+  reset-all)
+    reset_all_db
+    ;;
   restart)
     stop_server
     reset_db
@@ -129,13 +164,14 @@ case "$1" in
     bash "$SCRIPT_DIR/seed_data.sh"
     ;;
   *)
-    echo "Usage: $0 {up|down|reset|restart|seed}"
+    echo "Usage: $0 {up|down|reset|reset-all|restart|seed}"
     echo ""
-    echo "  up       Start test DB + Redis + Serverpod server"
-    echo "  down     Stop server + test DB + Redis"
-    echo "  reset    Truncate all test DB tables (clean slate)"
-    echo "  restart  Stop server, reset DB, start server"
-    echo "  seed     Seed auth user for tests that skip registration"
+    echo "  up        Start test DB + Redis + Serverpod server"
+    echo "  down      Stop server + test DB + Redis"
+    echo "  reset     Truncate app data, preserve auth users"
+    echo "  reset-all Truncate ALL data including auth users"
+    echo "  restart   Stop server, reset DB, start server"
+    echo "  seed      Seed auth user for tests that skip registration"
     exit 1
     ;;
 esac

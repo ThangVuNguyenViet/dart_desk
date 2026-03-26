@@ -1,10 +1,5 @@
 # 05 - Single-Tenant Authentication
 
-## Prerequisites
-- E2E environment fully set up and running
-- Test user seeded (via `setup/seed_data.sh`)
-- Marionette connected
-
 ## TC-E2E-05-01: Login creates User record
 **Steps:**
 1. Launch the Flutter app pointing at localhost:8080
