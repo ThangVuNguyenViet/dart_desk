@@ -26,15 +26,13 @@ class _StudioProviderState extends State<StudioProvider> {
   void initState() {
     super.initState();
     final docVM = CmsDocumentViewModel(widget.dataSource);
-    GetIt.I.registerSingleton<CmsDocumentViewModel>(docVM);
-    GetIt.I.registerSingleton<CmsViewModel>(
-      CmsViewModel(
-        dataSource: widget.dataSource,
-        documentTypes: widget.documentTypes,
-        documentId: docVM.documentId,
-        editedData: docVM.editedData,
-      ),
+    final cmsVM = CmsViewModel(
+      dataSource: widget.dataSource,
+      documentTypes: widget.documentTypes,
     );
+    GetIt.I.registerSingleton<CmsDocumentViewModel>(docVM);
+    GetIt.I.registerSingleton<CmsViewModel>(cmsVM);
+    docVM.listenTo(cmsVM);
   }
 
   @override
