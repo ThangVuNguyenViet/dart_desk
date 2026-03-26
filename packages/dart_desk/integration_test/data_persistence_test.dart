@@ -60,10 +60,7 @@ void main() {
       editor.expectSaveConfirmation();
 
       // Version history panel should show at least one version entry
-      expect(
-        find.textContaining('v'),
-        findsWidgets,
-      );
+      editor.expectVersionHistoryShown();
     });
 
     testWidgets('TC-E2E-01-04: Delete removes from backend', (tester) async {
