@@ -75,4 +75,15 @@ class DocumentEditorRobot {
   void expectPublishedStatus() {
     expect(find.text('PUBLISHED'), findsOneWidget);
   }
+
+  /// Navigates back using the back button or page back.
+  Future<void> navigateBack() async {
+    final backButton = find.byTooltip('Back');
+    if (backButton.evaluate().isNotEmpty) {
+      await tester.tap(backButton);
+    } else {
+      await tester.pageBack();
+    }
+    await tester.pumpAndSettle();
+  }
 }
