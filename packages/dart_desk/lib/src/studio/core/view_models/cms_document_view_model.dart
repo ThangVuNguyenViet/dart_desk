@@ -2,6 +2,8 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../../data/cms_data_source.dart';
 import '../../../data/models/cms_document.dart';
+import '../../../data/models/document_version.dart';
+import 'cms_view_model.dart';
 
 /// ViewModel for managing a single document's state.
 ///
@@ -37,7 +39,57 @@ class CmsDocumentViewModel {
   /// Shared edited data signal — written by the editor, read by the preview.
   final editedData = MapSignal<String, dynamic>({}, debugLabel: 'editedData');
 
+  EffectCleanup? _cleanup;
+
   CmsDocumentViewModel(this.dataSource);
+
+  /// Sets up a reactive effect that watches [cmsVM.selectedDocumentId].
+  /// When it changes, syncs [documentId], resets [editedData], and
+  /// auto-loads the latest version data.
+  void listenTo(CmsViewModel cmsVM) {
+    _cleanup = effect(() {
+      final newDocId = cmsVM.selectedDocumentId.value;
+      final currentDocId = untracked(() => documentId.value);
+
+      if (currentDocId != newDocId) {
+        batch(() {
+          documentId.value = newDocId;
+          editedData.value = {};
+        });
+
+        if (newDocId != null) {
+          _autoLoadLatestData(cmsVM, newDocId);
+        }
+      }
+    });
+  }
+
+  /// Fetches versions for a document and auto-loads the latest data.
+  /// Sets [editedData] from the document's active version data and
+  /// updates [cmsVM.selectedVersionId].
+  Future<void> _autoLoadLatestData(CmsViewModel cmsVM, int docId) async {
+    try {
+      final versions = await dataSource.getDocumentVersions(docId);
+      if (versions.versions.isNotEmpty) {
+        final versionId = versions.versions.first.id!;
+
+        // Use the document's activeVersionData which reflects the latest
+        // CRDT-merged state, rather than getDocumentVersionData which only
+        // reconstructs state up to the version's snapshot HLC.
+        final doc = await dataSource.getDocument(docId);
+        final docData = doc?.activeVersionData;
+        if (docData != null && docData.isNotEmpty) {
+          editedData.value = Map<String, dynamic>.from(docData);
+        }
+
+        // Set version ID after editedData so the editor's early-return
+        // path (editedData.isNotEmpty) prevents the loading→form transition.
+        cmsVM.selectedVersionId.value = versionId;
+      }
+    } catch (_) {
+      // Silently ignore — editor will show empty state
+    }
+  }
 
   /// Updates the document metadata (title, slug, isDefault).
   ///
@@ -119,6 +171,7 @@ class CmsDocumentViewModel {
 
   /// Disposes all signals
   void dispose() {
+    _cleanup?.call();
     documentId.dispose();
     title.dispose();
     slug.dispose();
