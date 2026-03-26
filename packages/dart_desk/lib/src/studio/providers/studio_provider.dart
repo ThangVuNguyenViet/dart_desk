@@ -31,7 +31,8 @@ class _StudioProviderState extends State<StudioProvider> {
       CmsViewModel(
         dataSource: widget.dataSource,
         documentTypes: widget.documentTypes,
-        documentViewModel: docVM,
+        documentId: docVM.documentId,
+        editedData: docVM.editedData,
       ),
     );
   }

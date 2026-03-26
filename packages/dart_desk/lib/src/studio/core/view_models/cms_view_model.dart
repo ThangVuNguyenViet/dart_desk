@@ -4,11 +4,10 @@ import 'package:signals/signals_flutter.dart';
 import '../../../data/cms_data_source.dart';
 import '../../../data/models/cms_document.dart';
 import '../../../data/models/document_version.dart';
-import 'cms_document_view_model.dart';
-
 class CmsViewModel {
   final DataSource dataSource;
-  final CmsDocumentViewModel _documentViewModel;
+  final Signal<int?> _documentId;
+  final MapSignal<String, dynamic> _editedData;
 
   /// The registered document types (injected from coordinator/app config).
   final List<DocumentType> documentTypes;
@@ -97,9 +96,11 @@ class CmsViewModel {
 
   CmsViewModel({
     required this.dataSource,
-    required CmsDocumentViewModel documentViewModel,
+    required Signal<int?> documentId,
+    required MapSignal<String, dynamic> editedData,
     required this.documentTypes,
-  }) : _documentViewModel = documentViewModel;
+  })  : _documentId = documentId,
+        _editedData = editedData;
 
   // ============================================================
   // Internal Fetch Methods
@@ -135,11 +136,11 @@ class CmsViewModel {
 
     // Update document ID (and document view model)
     final docIdInt = documentId != null ? int.tryParse(documentId) : null;
-    final docChanged = _documentViewModel.documentId.value != docIdInt;
+    final docChanged = _documentId.value != docIdInt;
     if (docChanged) {
-      _documentViewModel.documentId.value = docIdInt;
+      _documentId.value = docIdInt;
       // Reset shared editedData when switching documents
-      _documentViewModel.editedData.value = {};
+      _editedData.value = {};
     }
     currentDocumentId.value = documentId;
 
@@ -170,7 +171,7 @@ class CmsViewModel {
         final doc = await dataSource.getDocument(docId);
         final docData = doc?.activeVersionData;
         if (docData != null && docData.isNotEmpty) {
-          _documentViewModel.editedData.value = Map<String, dynamic>.from(
+          _editedData.value = Map<String, dynamic>.from(
             docData,
           );
         }
@@ -215,7 +216,7 @@ class CmsViewModel {
         isDefault: isDefault,
       );
 
-      _documentViewModel.documentId.value = document.id;
+      _documentId.value = document.id;
 
       final versions = await dataSource.getDocumentVersions(document.id!);
       if (versions.versions.isNotEmpty) {
@@ -233,8 +234,8 @@ class CmsViewModel {
   Future<bool> deleteDocument(int documentId) async {
     final result = await dataSource.deleteDocument(documentId);
     if (result) {
-      if (_documentViewModel.documentId.value == documentId) {
-        _documentViewModel.documentId.value = null;
+      if (_documentId.value == documentId) {
+        _documentId.value = null;
         selectedVersionId.value = null;
       }
       documentsContainer(currentDocumentType.value?.name ?? '').reload();
@@ -243,7 +244,7 @@ class CmsViewModel {
   }
 
   Future<CmsDocument?> updateDocumentData(Map<String, dynamic> data) async {
-    final documentId = _documentViewModel.documentId.value;
+    final documentId = _documentId.value;
     if (documentId == null) return null;
 
     isSaving.value = true;
@@ -268,7 +269,7 @@ class CmsViewModel {
     try {
       final result = await dataSource.publishDocumentVersion(versionId);
 
-      final docId = _documentViewModel.documentId.value;
+      final docId = _documentId.value;
       if (docId != null) {
         versionsContainer(docId).reload();
       }
@@ -288,7 +289,7 @@ class CmsViewModel {
     try {
       final result = await dataSource.archiveDocumentVersion(versionId);
 
-      final docId = _documentViewModel.documentId.value;
+      final docId = _documentId.value;
       if (docId != null) {
         versionsContainer(docId).reload();
       }
@@ -307,7 +308,7 @@ class CmsViewModel {
         selectedVersionId.value = null;
       }
 
-      final docId = _documentViewModel.documentId.value;
+      final docId = _documentId.value;
       if (docId != null) {
         versionsContainer(docId).reload();
       }
@@ -335,7 +336,7 @@ class CmsViewModel {
   }
 
   void refreshVersions() {
-    final docId = _documentViewModel.documentId.value;
+    final docId = _documentId.value;
     if (docId != null) {
       versionsContainer(docId).reload();
     }
@@ -358,7 +359,6 @@ class CmsViewModel {
     currentDocumentId.dispose();
     currentVersionId.dispose();
     selectedVersionId.dispose();
-    _documentViewModel.dispose();
     searchQuery.dispose();
     sidebarCollapsed.dispose();
     documentListVisible.dispose();
