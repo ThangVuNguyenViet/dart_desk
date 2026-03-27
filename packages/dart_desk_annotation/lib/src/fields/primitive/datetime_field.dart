@@ -13,7 +13,7 @@ class CmsDateTimeField extends CmsField {
   });
 
   @override
-  CmsDateTimeOption get option => super.option as CmsDateTimeOption;
+  CmsDateTimeOption get option => (super.option as CmsDateTimeOption?) ?? const CmsDateTimeOption();
 }
 
 class CmsDateTimeFieldConfig extends CmsFieldConfig {

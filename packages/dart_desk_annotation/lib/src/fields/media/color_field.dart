@@ -26,7 +26,7 @@ class CmsColorField extends CmsField {
   });
 
   @override
-  CmsColorOption get option => super.option as CmsColorOption;
+  CmsColorOption get option => (super.option as CmsColorOption?) ?? const CmsColorOption();
 }
 
 /// Configuration annotation for color fields

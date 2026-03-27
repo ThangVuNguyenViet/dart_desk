@@ -63,7 +63,7 @@ class CmsDropdownField<T> extends CmsField {
   });
 
   @override
-  CmsDropdownOption<T> get option => super.option as CmsDropdownOption<T>;
+  CmsDropdownOption<T>? get option => super.option as CmsDropdownOption<T>?;
 }
 
 class CmsDropdownFieldConfig<T> extends CmsFieldConfig {
@@ -125,6 +125,6 @@ class CmsMultiDropdownField<T> extends CmsField {
   });
 
   @override
-  CmsMultiDropdownOption<T> get option =>
-      super.option as CmsMultiDropdownOption<T>;
+  CmsMultiDropdownOption<T>? get option =>
+      super.option as CmsMultiDropdownOption<T>?;
 }

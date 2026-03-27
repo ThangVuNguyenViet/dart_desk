@@ -15,7 +15,7 @@ class CmsImageField extends CmsField {
   });
 
   @override
-  CmsImageOption? get option => super.option as CmsImageOption;
+  CmsImageOption? get option => super.option as CmsImageOption?;
 }
 
 class CmsImageFieldConfig extends CmsFieldConfig {

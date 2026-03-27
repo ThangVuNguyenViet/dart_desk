@@ -20,7 +20,7 @@ class CmsCheckboxField extends CmsField {
   });
 
   @override
-  CmsCheckboxOption get option => super.option as CmsCheckboxOption;
+  CmsCheckboxOption get option => (super.option as CmsCheckboxOption?) ?? const CmsCheckboxOption();
 }
 
 class CmsCheckboxFieldConfig extends CmsFieldConfig {

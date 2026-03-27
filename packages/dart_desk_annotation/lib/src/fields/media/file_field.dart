@@ -13,7 +13,7 @@ class CmsFileField extends CmsField {
   });
 
   @override
-  CmsFileOption get option => super.option as CmsFileOption;
+  CmsFileOption get option => (super.option as CmsFileOption?) ?? const CmsFileOption();
 }
 
 class CmsFileFieldConfig extends CmsFieldConfig {

@@ -13,7 +13,7 @@ class CmsUrlField extends CmsField {
   });
 
   @override
-  CmsUrlOption get option => super.option as CmsUrlOption;
+  CmsUrlOption get option => (super.option as CmsUrlOption?) ?? const CmsUrlOption();
 }
 
 class CmsUrlFieldConfig extends CmsFieldConfig {

@@ -12,7 +12,7 @@ class CmsBlockField extends CmsField {
   });
 
   @override
-  CmsBlockOption get option => super.option as CmsBlockOption;
+  CmsBlockOption get option => (super.option as CmsBlockOption?) ?? const CmsBlockOption();
 }
 
 class CmsBlockFieldConfig extends CmsFieldConfig {

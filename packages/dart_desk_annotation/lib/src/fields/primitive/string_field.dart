@@ -13,7 +13,7 @@ class CmsStringField extends CmsField {
   });
 
   @override
-  CmsStringOption get option => super.option as CmsStringOption;
+  CmsStringOption get option => (super.option as CmsStringOption?) ?? const CmsStringOption();
 }
 
 class CmsStringFieldConfig extends CmsFieldConfig {

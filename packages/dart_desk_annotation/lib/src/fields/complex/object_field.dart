@@ -19,7 +19,7 @@ class CmsObjectField extends CmsField {
   });
 
   @override
-  CmsObjectOption get option => super.option as CmsObjectOption;
+  CmsObjectOption get option => (super.option as CmsObjectOption?) ?? const CmsObjectOption(children: []);
 }
 
 class CmsObjectFieldConfig extends CmsFieldConfig {

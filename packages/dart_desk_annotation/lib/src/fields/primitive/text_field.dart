@@ -27,7 +27,7 @@ class CmsTextField extends CmsField {
   });
 
   @override
-  CmsTextOption get option => super.option as CmsTextOption;
+  CmsTextOption get option => (super.option as CmsTextOption?) ?? const CmsTextOption();
 }
 
 class CmsTextFieldConfig extends CmsFieldConfig {
