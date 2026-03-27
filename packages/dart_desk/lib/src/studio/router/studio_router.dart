@@ -1,8 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
-import '../config/studio_config.dart';
 import '../screens/document_screen.dart';
 import '../screens/document_type_screen.dart';
 import '../screens/media_screen.dart';
@@ -18,7 +16,6 @@ class StudioRouter extends RootStackRouter {
         AutoRoute(
           page: StudioShellScreenRoute.page,
           path: '/',
-          guards: [DefaultDocTypeGuard()],
           children: [
             AutoRoute(page: MediaScreenRoute.page, path: 'media'),
             AutoRoute(
@@ -33,20 +30,4 @@ class StudioRouter extends RootStackRouter {
           ],
         ),
       ];
-}
-
-/// Redirects the root path to the first document type slug.
-class DefaultDocTypeGuard extends AutoRouteGuard {
-  @override
-  void onNavigation(NavigationResolver resolver, StackRouter router) {
-    final config = GetIt.I<StudioConfig>();
-    if (config.documentTypes.isNotEmpty) {
-      resolver.redirectUntil(
-        DocumentTypeScreenRoute(
-            documentTypeSlug: config.documentTypes.first.name),
-      );
-    } else {
-      resolver.next(true);
-    }
-  }
 }

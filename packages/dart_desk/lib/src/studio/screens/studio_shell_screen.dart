@@ -47,8 +47,9 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
     final vm = GetIt.I<CmsViewModel>();
     final docId = params.optString('documentId');
     final versionId = params.optString('versionId');
+    final docTypeSlug = params.optString('documentTypeSlug');
     batch(() {
-      vm.currentDocumentTypeSlug.value = params.optString('documentTypeSlug');
+      vm.currentDocumentTypeSlug.value = docTypeSlug;
       vm.currentDocumentId.value = docId;
       vm.selectedDocumentId.value =
           docId != null ? int.tryParse(docId) : null;
@@ -56,6 +57,20 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
       vm.selectedVersionId.value =
           versionId != null ? int.tryParse(versionId) : null;
     });
+
+    // Redirect to first document type when landing at bare root
+    if (docTypeSlug == null) {
+      final config = GetIt.I<StudioConfig>();
+      if (config.documentTypes.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _router.navigate(DocumentTypeScreenRoute(
+              documentTypeSlug: config.documentTypes.first.name,
+            ));
+          }
+        });
+      }
+    }
   }
 
   @override
