@@ -33,7 +33,11 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
     _router = context.router;
     _router.removeListener(_onRouteChanged);
     _router.addListener(_onRouteChanged);
-    _onRouteChanged();
+    // StudioProvider registers CmsViewModel in its initState during build.
+    // Schedule after frame so CmsViewModel is available.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _onRouteChanged();
+    });
   }
 
   @override
@@ -43,6 +47,7 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
   }
 
   void _onRouteChanged() {
+    if (!GetIt.I.isRegistered<CmsViewModel>()) return;
     final params = _router.current.params;
     final vm = GetIt.I<CmsViewModel>();
     final docId = params.optString('documentId');
