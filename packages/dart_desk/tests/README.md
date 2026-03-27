@@ -44,7 +44,6 @@ Tests full-stack behavior against a real Serverpod backend with PostgreSQL.
    ```bash
    ./packages/dart_desk/tests/e2e/setup/docker_manager.sh up
    ./packages/dart_desk/tests/e2e/setup/server_manager.sh start
-   ./packages/dart_desk/tests/e2e/setup/seed_data.sh
    ```
 3. Launch the E2E app (`examples/cms_app`, target `lib/main_e2e.dart`) via `mcp__dart__launch_app`
 4. Connect Marionette

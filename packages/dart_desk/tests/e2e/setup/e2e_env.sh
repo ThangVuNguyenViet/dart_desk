@@ -7,11 +7,17 @@ COMPOSE_FILE="$BACKEND_DIR/docker-compose.yaml"
 PID_FILE="/tmp/dart_desk_e2e_server.pid"
 LOG_FILE="/tmp/dart_desk_e2e_server.log"
 
+DB_CMD="PGPASSWORD=dart_desk_be_test_password psql -h localhost -p 9090 -U postgres -d dart_desk_be_test"
+
 if [ ! -f "$COMPOSE_FILE" ]; then
   echo "ERROR: docker-compose.yaml not found at $BACKEND_DIR"
   echo "Expected workspace layout: dart_desk_workspace/{dart_desk, dart_desk_be}"
   exit 1
 fi
+
+# ---------------------------------------------------------------------------
+# Server lifecycle
+# ---------------------------------------------------------------------------
 
 stop_server() {
   if [ -f "$PID_FILE" ]; then
@@ -68,62 +74,173 @@ start_server() {
   echo "Server ready at http://localhost:8080"
 }
 
-reset_db() {
-  echo "Resetting test database (preserving auth + sessions)..."
+# ---------------------------------------------------------------------------
+# Database helpers
+# ---------------------------------------------------------------------------
+
+ensure_db_running() {
   if ! docker compose -f "$COMPOSE_FILE" exec -T postgres_test pg_isready -U postgres > /dev/null 2>&1; then
     echo "ERROR: Test PostgreSQL is not running. Run '$0 up' first."
     exit 1
   fi
-  docker compose -f "$COMPOSE_FILE" exec -T postgres_test \
-    psql -U postgres -d dart_desk_be_test -c "
-      TRUNCATE
-        document_crdt_operations,
-        document_crdt_snapshots,
-        document_versions,
-        documents_data,
-        documents,
-        media_assets,
-        api_tokens,
-        users,
-        projects,
-        deployments
-      CASCADE;
-    "
-  echo "Done. App data cleared, auth + sessions preserved."
 }
 
-reset_all_db() {
-  echo "Resetting test database to fully clean state..."
-  if ! docker compose -f "$COMPOSE_FILE" exec -T postgres_test pg_isready -U postgres > /dev/null 2>&1; then
-    echo "ERROR: Test PostgreSQL is not running. Run '$0 up' first."
+run_sql() {
+  docker compose -f "$COMPOSE_FILE" exec -T postgres_test \
+    psql -U postgres -d dart_desk_be_test -c "$1"
+}
+
+# ---------------------------------------------------------------------------
+# reset: Truncate CMS content tables ONLY (preserves users, projects, auth)
+# ---------------------------------------------------------------------------
+
+reset_db() {
+  echo "Resetting CMS content tables (preserving users, projects, auth)..."
+  ensure_db_running
+  run_sql "
+    TRUNCATE
+      document_crdt_operations,
+      document_crdt_snapshots,
+      document_versions,
+      documents_data,
+      documents,
+      media_assets
+    CASCADE;
+  "
+  echo "Done. CMS content cleared; users, projects, api_tokens, auth preserved."
+}
+
+# ---------------------------------------------------------------------------
+# seed: Idempotent — ensures E2E user, project, and API token exist
+# ---------------------------------------------------------------------------
+
+seed_db() {
+  echo "Seeding E2E data..."
+  ensure_db_running
+
+  local SERVER_URL="http://localhost:8080"
+  local E2E_EMAIL="e2e@dartdesk.dev"
+  local E2E_PASSWORD="e2e-password-123"
+
+  # API token: plaintext is "cms_w_e2eTestTokenForDartDeskIntegration00aaaa"
+  # Validated by ApiKeyValidator which uses SHA-256 hash + prefix/suffix lookup.
+  local E2E_TOKEN_PREFIX="cms_w_"
+  local E2E_TOKEN_SUFFIX="aaaa"
+  local E2E_TOKEN_HASH="2aa123a468fd6e4e815baf6883b4c09acb40f0899061f6e457fe1b9d0ecd7924"
+  local E2E_TOKEN_PLAINTEXT="cms_w_e2eTestTokenForDartDeskIntegration00aaaa"
+
+  # Check if the user already exists (idempotent)
+  local EXISTING
+  EXISTING=$(run_sql "SELECT count(*) FROM serverpod_auth_idp_email_account WHERE email = '$E2E_EMAIL'" 2>/dev/null | grep -oE '[0-9]+' | head -1)
+  if [ "$EXISTING" = "1" ]; then
+    echo "Auth user $E2E_EMAIL already exists, skipping registration."
+  else
+    echo "Registering $E2E_EMAIL via Serverpod email IDP..."
+
+    # Serverpod uses Argon2id with a server-side pepper, so we must register
+    # through the API rather than inserting a hash directly.
+    # Flow: startRegistration → grab verification code from server log → verifyRegistrationCode → finishRegistration
+
+    # Wait for server to be ready
+    if ! curl -s -o /dev/null "$SERVER_URL/" 2>/dev/null; then
+      echo "ERROR: Server not running at $SERVER_URL. Run '$0 up' first."
+      exit 1
+    fi
+
+    # Step 1: Start registration
+    local ACCOUNT_REQUEST_ID
+    ACCOUNT_REQUEST_ID=$(curl -sf -X POST "$SERVER_URL/emailIdp/startRegistration" \
+      -H "Content-Type: application/json" \
+      -d "{\"email\":\"$E2E_EMAIL\"}" | tr -d '"')
+
+    if [ -z "$ACCOUNT_REQUEST_ID" ]; then
+      echo "ERROR: startRegistration failed."
+      exit 1
+    fi
+    echo "  Account request: $ACCOUNT_REQUEST_ID"
+    sleep 1
+
+    # Step 2: Read verification code from server log
+    local VERIFICATION_CODE
+    VERIFICATION_CODE=$(tail -30 "$LOG_FILE" | grep "Registration code ($E2E_EMAIL)" | tail -1 | grep -oE '[0-9]{8}' | tail -1)
+
+    if [ -z "$VERIFICATION_CODE" ]; then
+      echo "ERROR: Could not find verification code in $LOG_FILE"
+      exit 1
+    fi
+    echo "  Verification code: $VERIFICATION_CODE"
+
+    # Step 3: Verify registration code → get registration token
+    local REGISTRATION_TOKEN
+    REGISTRATION_TOKEN=$(curl -sf -X POST "$SERVER_URL/emailIdp/verifyRegistrationCode" \
+      -H "Content-Type: application/json" \
+      -d "{\"accountRequestId\":\"$ACCOUNT_REQUEST_ID\",\"verificationCode\":\"$VERIFICATION_CODE\"}" | tr -d '"')
+
+    if [ -z "$REGISTRATION_TOKEN" ]; then
+      echo "ERROR: verifyRegistrationCode failed."
+      exit 1
+    fi
+
+    # Step 4: Finish registration with password
+    local FINISH_RESULT
+    FINISH_RESULT=$(curl -sf -X POST "$SERVER_URL/emailIdp/finishRegistration" \
+      -H "Content-Type: application/json" \
+      -d "{\"registrationToken\":\"$REGISTRATION_TOKEN\",\"password\":\"$E2E_PASSWORD\"}")
+
+    if [ -z "$FINISH_RESULT" ]; then
+      echo "ERROR: finishRegistration failed."
+      exit 1
+    fi
+    echo "  User registered successfully."
+  fi
+
+  # Ensure app-level user + API token exist (SQL, idempotent)
+  local AUTH_USER_ID
+  AUTH_USER_ID=$(run_sql "SELECT \"authUserId\" FROM serverpod_auth_idp_email_account WHERE email = '$E2E_EMAIL'" 2>/dev/null | grep -oE '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}' | head -1)
+
+  if [ -z "$AUTH_USER_ID" ]; then
+    echo "ERROR: Could not find auth user ID for $E2E_EMAIL"
     exit 1
   fi
-  docker compose -f "$COMPOSE_FILE" exec -T postgres_test \
-    psql -U postgres -d dart_desk_be_test -c "
-      TRUNCATE
-        document_crdt_operations,
-        document_crdt_snapshots,
-        document_versions,
-        documents_data,
-        documents,
-        media_assets,
-        api_tokens,
-        users,
-        projects,
-        deployments,
-        serverpod_auth_core_jwt_refresh_token,
-        serverpod_auth_core_profile,
-        serverpod_auth_core_profile_image,
-        serverpod_auth_core_session,
-        serverpod_auth_idp_email_account,
-        serverpod_auth_idp_email_account_password_reset_request,
-        serverpod_auth_idp_email_account_request,
-        serverpod_auth_idp_google_account,
-        serverpod_auth_core_user
-      CASCADE;
-    "
-  echo "Done. All app and auth data cleared."
+
+  run_sql "
+    -- App-level user (clientId=NULL for single-tenant mode)
+    INSERT INTO users (\"serverpodUserId\", email, name, role)
+    SELECT '$AUTH_USER_ID', '$E2E_EMAIL', 'E2E Test User', 'admin'
+    WHERE NOT EXISTS (
+      SELECT 1 FROM users WHERE \"clientId\" IS NULL AND email = '$E2E_EMAIL'
+    );
+
+    -- API token (clientId=NULL, write role, single-tenant)
+    INSERT INTO api_tokens (name, \"tokenHash\", \"tokenPrefix\", \"tokenSuffix\", role, \"isActive\",
+                            \"createdByUserId\", \"createdAt\")
+    SELECT 'E2E Write Token',
+           '$E2E_TOKEN_HASH',
+           '$E2E_TOKEN_PREFIX',
+           '$E2E_TOKEN_SUFFIX',
+           'write',
+           true,
+           u.id,
+           NOW()
+    FROM users u
+    WHERE u.email = '$E2E_EMAIL'
+      AND NOT EXISTS (
+        SELECT 1 FROM api_tokens t
+        WHERE t.\"clientId\" IS NULL
+          AND t.\"tokenPrefix\" = '$E2E_TOKEN_PREFIX'
+          AND t.\"tokenSuffix\" = '$E2E_TOKEN_SUFFIX'
+      );
+  "
+
+  echo "Seed complete."
+  echo "  Login : email=$E2E_EMAIL  password=$E2E_PASSWORD"
+  echo "  Token : $E2E_TOKEN_PLAINTEXT"
 }
+
+
+# ---------------------------------------------------------------------------
+# Commands
+# ---------------------------------------------------------------------------
 
 case "$1" in
   up)
@@ -151,27 +268,22 @@ case "$1" in
   reset)
     reset_db
     ;;
-  reset-all)
-    reset_all_db
+  seed)
+    seed_db
     ;;
   restart)
     stop_server
     reset_db
     start_server
     ;;
-  seed)
-    echo "Seeding E2E auth user..."
-    bash "$SCRIPT_DIR/seed_data.sh"
-    ;;
   *)
-    echo "Usage: $0 {up|down|reset|reset-all|restart|seed}"
+    echo "Usage: $0 {up|down|reset|seed|restart}"
     echo ""
-    echo "  up        Start test DB + Redis + Serverpod server"
-    echo "  down      Stop server + test DB + Redis"
-    echo "  reset     Truncate app data, preserve auth users"
-    echo "  reset-all Truncate ALL data including auth users"
-    echo "  restart   Stop server, reset DB, start server"
-    echo "  seed      Seed auth user for tests that skip registration"
+    echo "  up         Start test DB + Redis + Serverpod server"
+    echo "  down       Stop server + test DB + Redis"
+    echo "  reset      Truncate CMS content tables (preserves users/projects/auth)"
+    echo "  seed       Ensure E2E user, project, and API token exist (idempotent)"
+    echo "  restart    down + reset + up"
     exit 1
     ;;
 esac

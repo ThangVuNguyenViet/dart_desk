@@ -1,8 +1,12 @@
 // packages/dart_desk/integration_test/test_utils/test_app.dart
+import 'package:dart_desk/src/cloud/cloud_data_source.dart';
 import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
+import 'package:dart_desk_client/dart_desk_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+import 'package:serverpod_flutter/serverpod_flutter.dart';
 
 import 'test_document_type.dart';
 
@@ -11,7 +15,20 @@ const _testServerUrl = String.fromEnvironment(
   defaultValue: 'http://localhost:8080/',
 );
 
-const _testApiKey = String.fromEnvironment('TEST_API_KEY');
+const _testApiKey = String.fromEnvironment(
+  'TEST_API_KEY',
+  defaultValue: 'cms_w_e2eTestTokenForDartDeskIntegration00aaaa',
+);
+
+const _testEmail = String.fromEnvironment(
+  'TEST_EMAIL',
+  defaultValue: 'e2e@dartdesk.dev',
+);
+
+const _testPassword = String.fromEnvironment(
+  'TEST_PASSWORD',
+  defaultValue: 'e2e-password-123',
+);
 
 /// Call once at the top of each test file's `main()`.
 IntegrationTestWidgetsFlutterBinding ensureTestInitialized() {
@@ -20,18 +37,41 @@ IntegrationTestWidgetsFlutterBinding ensureTestInitialized() {
 
 /// Pumps the real DartDeskApp pointed at the test Serverpod backend.
 ///
+/// Authenticates via email/password upfront so tests start with an
+/// authenticated session, bypassing the login UI entirely.
+///
 /// [FakeImagePickerPlatform] is installed on every call so image-picker
 /// tests work without opening the system file picker.
 Future<void> pumpTestApp(WidgetTester tester) async {
   FakeImagePickerPlatform.install();
+
+  // Build a pre-authenticated client so we bypass the login screen.
+  final client = Client(_testServerUrl)
+    ..connectivityMonitor = FlutterConnectivityMonitor()
+    ..authSessionManager = FlutterAuthSessionManager()
+    ..customHeaders = {'x-api-key': _testApiKey};
+
+  final sessionManager = client.authSessionManager;
+  await sessionManager.initialize();
+
+  if (!sessionManager.isAuthenticated) {
+    final authSuccess = await client.emailIdp.login(
+      email: _testEmail,
+      password: _testPassword,
+    );
+    await sessionManager.updateSignedInUser(authSuccess);
+  }
+
+  final dataSource = CloudDataSource(client);
+
   await tester.pumpWidget(
-    DartDeskApp(
-      serverUrl: _testServerUrl,
-      apiKey: _testApiKey,
+    DartDeskApp.withDataSource(
+      dataSource: dataSource,
+      onSignOut: () async => sessionManager.signOutDevice(),
       config: DartDeskConfig(
         documentTypes: [integrationTestDocumentType],
         documentTypeDecorations: [integrationTestDocumentTypeDecoration],
-        title: 'Integration Test',
+        title: 'E2E Tests',
       ),
     ),
   );
