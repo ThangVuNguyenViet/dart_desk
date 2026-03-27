@@ -1,20 +1,22 @@
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signals/signals_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 
 import '../data/cms_data_source.dart';
 import 'components/common/cms_document_type_decoration.dart';
 import 'components/common/default_cms_header.dart';
-import 'routes/studio_coordinator.dart';
+import 'config/studio_config.dart';
+import 'router/studio_router.dart';
 import 'theme/theme.dart';
 
 /// The complete CMS Studio entry point.
 ///
-/// Creates the [StudioCoordinator] internally, wraps in [ShadApp.router]
-/// with dark theme, and provides [DefaultCmsHeaderConfig] for the top bar.
-/// The consuming app only needs to provide data and document type configuration.
+/// Creates [StudioConfig] and registers it in GetIt, instantiates [StudioRouter],
+/// and wires [ShadApp.router]. The consuming app only needs to provide data
+/// and document type configuration.
 class CmsStudioApp extends StatefulWidget {
   const CmsStudioApp({
     super.key,
@@ -42,18 +44,21 @@ class CmsStudioApp extends StatefulWidget {
 }
 
 class _CmsStudioAppState extends State<CmsStudioApp> {
-  late final StudioCoordinator coordinator;
+  late final StudioRouter _router;
   final _themeMode = Signal<ThemeMode>(ThemeMode.dark, debugLabel: 'themeMode');
 
   @override
   void initState() {
     super.initState();
-    coordinator = StudioCoordinator(
-      documentTypes: widget.documentTypes,
-      dataSource: widget.dataSource,
-      documentTypeDecorations: widget.documentTypeDecorations,
-      onSignOut: widget.onSignOut,
+    GetIt.I.registerSingleton<StudioConfig>(
+      StudioConfig(
+        documentTypes: widget.documentTypes,
+        dataSource: widget.dataSource,
+        documentTypeDecorations: widget.documentTypeDecorations,
+        onSignOut: widget.onSignOut,
+      ),
     );
+    _router = StudioRouter();
     _loadPersistedTheme();
   }
 
@@ -65,6 +70,7 @@ class _CmsStudioAppState extends State<CmsStudioApp> {
 
   @override
   void dispose() {
+    GetIt.I.unregister<StudioConfig>();
     _themeMode.dispose();
     super.dispose();
   }
@@ -84,8 +90,8 @@ class _CmsStudioAppState extends State<CmsStudioApp> {
         icon: widget.icon,
         child: ShadApp.router(
           theme: resolvedTheme,
-          routeInformationParser: coordinator.routeInformationParser,
-          routerDelegate: coordinator.routerDelegate,
+          routeInformationParser: _router.defaultRouteParser(),
+          routerDelegate: _router.delegate(),
         ),
       ),
     );
