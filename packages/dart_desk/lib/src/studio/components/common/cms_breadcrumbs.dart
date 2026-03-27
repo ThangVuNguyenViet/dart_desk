@@ -9,8 +9,9 @@ import '../../theme/spacing.dart';
 class BreadcrumbSegment {
   final String label;
   final VoidCallback? onTap;
+  final Key? key;
 
-  const BreadcrumbSegment({required this.label, this.onTap});
+  const BreadcrumbSegment({required this.label, this.onTap, this.key});
 }
 
 /// Breadcrumb navigation trail for the CMS top bar.
@@ -73,6 +74,7 @@ class _BreadcrumbItem extends StatelessWidget {
       return MouseRegion(
         cursor: SystemMouseCursors.click,
         child: GestureDetector(
+          key: segment.key,
           onTap: segment.onTap,
           child: Text(segment.label, style: style),
         ),

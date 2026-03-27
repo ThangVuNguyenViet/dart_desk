@@ -80,6 +80,7 @@ class CmsDocumentTypeSidebar extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 2),
                   child: DocumentTypeItem(
+                    key: ValueKey('doc_type_${decoration.documentType.title}'),
                     documentType: decoration.documentType,
                     isSelected: isSelected,
                     icon: decoration.icon,

@@ -7,18 +7,15 @@ class DocumentListRobot {
   final WidgetTester tester;
   DocumentListRobot(this.tester);
 
+  /// Scopes a finder to within the document list panel.
+  Finder _inList(Finder finder) => find.descendant(
+        of: find.byKey(const ValueKey('document_list_view')),
+        matching: finder,
+      );
+
   /// Taps the "+" icon button to open the inline create form.
   Future<void> tapCreateButton() async {
-    // The create button is a ShadIconButton.secondary with a FontAwesome plus icon.
-    // It toggles the inline create form.
-    final plusButtons = find.byIcon(Icons.add);
-    if (plusButtons.evaluate().isNotEmpty) {
-      await tester.tap(plusButtons.first);
-    } else {
-      // Fallback: the button uses FontAwesomeIcons.plus rendered as a FaIcon.
-      // We tap the first ShadIconButton in the header row.
-      await tester.tap(find.byType(IconButton).first);
-    }
+    await tester.tap(find.byKey(const ValueKey('create_document_button')));
     await tester.pumpAndSettle();
   }
 
@@ -41,15 +38,14 @@ class DocumentListRobot {
 
   /// Taps a document row by its title text.
   Future<void> tapDocument(String title) async {
-    await tester.tap(find.text(title));
+    await tester.tap(_inList(find.text(title)));
     await tester.pumpAndSettle();
   }
 
   /// Opens the per-document popup menu and taps "Delete".
   Future<void> deleteDocument(String title) async {
-    // Scroll until the document title is visible
-    final titleFinder = find.text(title);
-    await tester.scrollUntilVisible(titleFinder, 200);
+    // Find the document title within the list (use first match if briefly doubled).
+    final titleFinder = _inList(find.text(title)).first;
     await tester.pumpAndSettle();
 
     // Find the PopupMenuButton in the same GestureDetector ancestor as the title
@@ -65,14 +61,17 @@ class DocumentListRobot {
     // Tap the "Delete" menu item
     await tester.tap(findByKey('delete_document_button'));
     await tester.pumpAndSettle();
+    // Confirm in the delete confirmation dialog
+    await tester.tap(find.text('Delete').last);
+    await tester.pumpAndSettle();
   }
 
   void expectDocumentVisible(String title) {
-    expect(find.text(title), findsOneWidget);
+    expect(_inList(find.text(title)), findsOneWidget);
   }
 
   void expectDocumentNotVisible(String title) {
-    expect(find.text(title), findsNothing);
+    expect(_inList(find.text(title)), findsNothing);
   }
 
   void expectEmptyState() {

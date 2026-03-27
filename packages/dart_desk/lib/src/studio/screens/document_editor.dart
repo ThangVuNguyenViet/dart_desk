@@ -191,12 +191,14 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 CmsButton(
+                  key: const ValueKey('discard_document_button'),
                   text: 'Discard',
                   variant: ShadButtonVariant.outline,
                   onPressed: isSaving ? null : _discardDocument,
                 ),
                 const SizedBox(width: 8),
                 CmsButton(
+                  key: const ValueKey('save_document_button'),
                   text: 'Save',
                   loading: isSaving,
                   onPressed: isSaving ? null : _saveDocument,

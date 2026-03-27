@@ -134,6 +134,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     }).toList();
 
     return Column(
+      key: const ValueKey('document_list_view'),
       children: [
         // Header with search and create button
         Row(
@@ -152,6 +153,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
               ),
             ),
             ShadIconButton.secondary(
+              key: const ValueKey('create_document_button'),
               onPressed: () {
                 setState(() {
                   _isCreatingNew = !_isCreatingNew;
@@ -336,7 +338,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
               const SizedBox(width: 8),
               Expanded(
                 child: ShadButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_titleController.text.trim().isNotEmpty &&
                         _slugController.text.trim().isNotEmpty) {
                       // Save title and slug to the document view model signals
@@ -346,7 +348,15 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                       // Clear documentId to indicate this is a new document
                       documentViewModel.documentId.value = null;
 
-                      viewModel.createDocument(
+                      // Hide the form before the network call so the inline
+                      // form text field isn't visible during the list reload.
+                      setState(() {
+                        _isCreatingNew = false;
+                        _titleController.clear();
+                        _slugController.clear();
+                      });
+
+                      final document = await viewModel.createDocument(
                         title,
                         viewModel.currentDocumentType.value?.defaultValue
                                 ?.toMap() ??
@@ -354,11 +364,9 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                         slug: slug,
                       );
 
-                      setState(() {
-                        _isCreatingNew = false;
-                        _titleController.clear();
-                        _slugController.clear();
-                      });
+                      if (document?.id != null) {
+                        widget.onOpenDocument?.call(document!.id.toString());
+                      }
                     }
                   },
                   size: ShadButtonSize.sm,

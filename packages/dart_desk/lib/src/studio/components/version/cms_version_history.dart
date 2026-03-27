@@ -106,6 +106,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     final hasSelection = selectedVersion.versionNumber > 0;
 
     return ShadButton.outline(
+      key: const ValueKey('version_history_button'),
       onPressed: data.versions.isEmpty ? null : _popoverController.toggle,
       height: 28,
       padding: const EdgeInsets.symmetric(horizontal: 10),

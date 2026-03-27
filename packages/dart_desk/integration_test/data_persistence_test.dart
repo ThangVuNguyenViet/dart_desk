@@ -5,10 +5,11 @@ import 'robots/document_editor_robot.dart';
 import 'robots/document_list_robot.dart';
 import 'robots/sidebar_robot.dart';
 import 'test_utils/db_helper.dart';
+import 'test_utils/screenshot_helper.dart';
 import 'test_utils/test_app.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = ensureTestInitialized();
 
   setUpAll(() async => DbHelper.reset());
   tearDownAll(() async => DbHelper.reset());
@@ -16,18 +17,23 @@ void main() {
   group('01 - Data Persistence', () {
     testWidgets('TC-E2E-01-01: Create document persists to backend',
         (tester) async {
+      final ss = ScreenshotHelper(binding, 'tc_01_01');
       await pumpTestApp(tester);
+      await ss.take(tester, 'app_loaded');
 
       final sidebar = SidebarRobot(tester);
       final docList = DocumentListRobot(tester);
 
       await sidebar.tapDocumentType('Integration Test');
+      await ss.take(tester, 'doc_type_selected');
       await docList.createDocument('Persistence Test Doc');
+      await ss.take(tester, 'document_created');
 
       docList.expectDocumentVisible('Persistence Test Doc');
     });
 
     testWidgets('TC-E2E-01-02: Edit persists across reload', (tester) async {
+      final ss = ScreenshotHelper(binding, 'tc_01_02');
       await pumpTestApp(tester);
 
       final sidebar = SidebarRobot(tester);
@@ -36,17 +42,23 @@ void main() {
 
       await sidebar.tapDocumentType('Integration Test');
       await docList.tapDocument('Persistence Test Doc');
+      await ss.take(tester, 'document_opened');
       await editor.enterField('title', 'Updated Value');
       await editor.tapSave();
       editor.expectSaveConfirmation();
+      await ss.take(tester, 'after_save');
       await editor.navigateBack();
 
-      // Re-open the document to verify persisted value
-      await docList.tapDocument('Updated Value');
+      // Re-open the same document to verify the content field persisted.
+      // The list title stays 'Persistence Test Doc' — that's the document
+      // metadata title, not the 'title' content field.
+      await docList.tapDocument('Persistence Test Doc');
       editor.expectFieldValue('title', 'Updated Value');
+      await ss.take(tester, 'value_persisted');
     });
 
     testWidgets('TC-E2E-01-03: Version history is accurate', (tester) async {
+      final ss = ScreenshotHelper(binding, 'tc_01_03');
       await pumpTestApp(tester);
 
       final sidebar = SidebarRobot(tester);
@@ -54,16 +66,18 @@ void main() {
       final editor = DocumentEditorRobot(tester);
 
       await sidebar.tapDocumentType('Integration Test');
-      await docList.tapDocument('Updated Value');
+      await docList.tapDocument('Persistence Test Doc');
       await editor.enterField('body', 'Some body text for version history');
       await editor.tapSave();
       editor.expectSaveConfirmation();
 
       // Version history panel should show at least one version entry
-      editor.expectVersionHistoryShown();
+      await editor.expectVersionHistoryShown();
+      await ss.take(tester, 'version_history_visible');
     });
 
     testWidgets('TC-E2E-01-04: Delete removes from backend', (tester) async {
+      final ss = ScreenshotHelper(binding, 'tc_01_04');
       await pumpTestApp(tester);
 
       final sidebar = SidebarRobot(tester);
@@ -73,24 +87,16 @@ void main() {
       await sidebar.tapDocumentType('Integration Test');
       await docList.createDocument('Doc To Delete');
       docList.expectDocumentVisible('Doc To Delete');
+      await ss.take(tester, 'doc_created');
 
-      // Open the doc to get its ID via save, then navigate back to delete
-      await docList.tapDocument('Doc To Delete');
-      await editor.tapSave();
-      await editor.navigateBack();
-
-      // We don't have the document ID here, but deleteDocument(int id) requires one.
-      // Use the known pattern: after creation the doc appears at the top of the list.
-      // The robot's deleteDocument accepts an int ID — use 0 as a sentinel since
-      // the key lookup will gracefully fail or the test environment assigns known IDs.
-      // In practice, the test env resets DB so the first created doc gets ID 1.
-      // TC-E2E-01-01 creates doc id=1, TC-E2E-01-04 creates id=2.
       await docList.deleteDocument('Doc To Delete');
+      await ss.take(tester, 'doc_deleted');
 
       docList.expectDocumentNotVisible('Doc To Delete');
     });
 
     testWidgets('TC-E2E-01-05: Publish version via UI', (tester) async {
+      final ss = ScreenshotHelper(binding, 'tc_01_05');
       await pumpTestApp(tester);
 
       final sidebar = SidebarRobot(tester);
@@ -98,11 +104,12 @@ void main() {
       final editor = DocumentEditorRobot(tester);
 
       await sidebar.tapDocumentType('Integration Test');
-      await docList.tapDocument('Updated Value');
+      await docList.tapDocument('Persistence Test Doc');
       await editor.tapSave();
       editor.expectSaveConfirmation();
       await editor.tapPublish();
-      editor.expectPublishedStatus();
+      await editor.expectPublishedStatus();
+      await ss.take(tester, 'published');
     });
   });
 }

@@ -137,6 +137,7 @@ class _TopBar extends StatelessWidget {
       final docType = viewModel.currentDocumentType.value;
       segments.add(BreadcrumbSegment(
         label: docType?.title ?? docTypeSlug,
+        key: docId != null ? const ValueKey('breadcrumb_back') : null,
         onTap: docId != null
             ? () => coordinator.pushOrMoveToTop(
                   DocumentTypeRoute(docTypeSlug),

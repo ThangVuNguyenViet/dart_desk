@@ -24,26 +24,29 @@ class DocumentEditorRobot {
     await tester.pumpAndSettle();
   }
 
-  /// Taps the "Save" button (CmsButton with text 'Save').
+  /// Taps the "Save" button.
   Future<void> tapSave() async {
-    await tester.tap(findShadButton('Save'));
+    await tester.tap(find.byKey(const ValueKey('save_document_button')));
     await tester.pumpAndSettle();
   }
 
   /// Taps the "Discard" button.
   Future<void> tapDiscard() async {
-    await tester.tap(findShadButton('Discard'));
+    await tester.tap(find.byKey(const ValueKey('discard_document_button')));
     await tester.pumpAndSettle();
   }
 
-  /// Taps the "Publish" button in the version history popover,
-  /// then confirms in the publish dialog.
+  /// Opens the version history popover, taps "Publish", then confirms.
   Future<void> tapPublish() async {
-    await tester.tap(findShadButton('Publish'));
+    // Open the version history popover.
+    await tester.tap(find.byKey(const ValueKey('version_history_button')));
     await tester.pumpAndSettle();
-    // Confirm in the publish dialog
-    // The dialog has a "Publish" button as well
-    await tester.tap(findShadButton('Publish'));
+    // Tap the first "Publish" button in the popover.
+    await tester.tap(find.text('Publish').first);
+    await tester.pumpAndSettle();
+    // Confirm in the dialog. The dialog is layered on top so its "Publish"
+    // button is the last match in the widget tree.
+    await tester.tap(find.text('Publish').last);
     await tester.pumpAndSettle();
   }
 
@@ -71,25 +74,48 @@ class DocumentEditorRobot {
     }
   }
 
-  /// Expects the version history panel to be visible with at least one entry.
-  /// Checks for the 'Version History' header and at least one version item
-  /// rendered by CmsVersionHistory.
-  void expectVersionHistoryShown() {
+  /// Opens the version history popover and verifies it has at least one entry.
+  Future<void> expectVersionHistoryShown() async {
+    // Open the popover by tapping the version history trigger button.
+    await tester.tap(find.byKey(const ValueKey('version_history_button')));
+    await tester.pumpAndSettle();
+
     expect(find.text('Version History'), findsOneWidget);
-    // At least one version entry exists (e.g. "Version 1", "Version 2")
+    // At least one version entry exists (e.g. "v1", "v2")
     expect(
-      find.textContaining(RegExp(r'Version \d+')),
+      find.textContaining(RegExp(r'^v\d+$')),
       findsAtLeastNWidgets(1),
     );
+
+    // Close the popover.
+    await tester.tap(find.byKey(const ValueKey('version_history_button')));
+    await tester.pumpAndSettle();
   }
 
-  /// Expects the "Published" status text to be visible (from CmsStatusPill).
-  void expectPublishedStatus() {
-    expect(find.text('PUBLISHED'), findsOneWidget);
+  /// Opens the version history popover and verifies at least one version
+  /// shows the compact 'P' published status badge.
+  Future<void> expectPublishedStatus() async {
+    await tester.tap(find.byKey(const ValueKey('version_history_button')));
+    await tester.pumpAndSettle();
+    // The popover uses compact badges: 'P' = published, 'D' = draft.
+    // Verify at least one 'P' badge exists.
+    expect(find.text('P'), findsAtLeastNWidgets(1));
+    // Close popover
+    await tester.tap(find.byKey(const ValueKey('version_history_button')));
+    await tester.pumpAndSettle();
   }
 
-  /// Navigates back using the back button or page back.
+  /// Navigates back to the document list.
+  ///
+  /// On desktop (split-pane layout), uses the breadcrumb doc-type link.
+  /// Falls back to tooltip 'Back' for mobile/push-based navigation.
   Future<void> navigateBack() async {
+    final breadcrumbBack = find.byKey(const ValueKey('breadcrumb_back'));
+    if (breadcrumbBack.evaluate().isNotEmpty) {
+      await tester.tap(breadcrumbBack);
+      await tester.pumpAndSettle();
+      return;
+    }
     final backButton = find.byTooltip('Back');
     if (backButton.evaluate().isNotEmpty) {
       await tester.tap(backButton);

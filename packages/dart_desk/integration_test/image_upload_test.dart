@@ -6,10 +6,11 @@ import 'robots/document_list_robot.dart';
 import 'robots/image_field_robot.dart';
 import 'robots/sidebar_robot.dart';
 import 'test_utils/db_helper.dart';
+import 'test_utils/screenshot_helper.dart';
 import 'test_utils/test_app.dart';
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = ensureTestInitialized();
 
   setUpAll(() async => DbHelper.reset());
   tearDownAll(() async => DbHelper.reset());
@@ -17,6 +18,7 @@ void main() {
   group('07 - Image Upload E2E', () {
     testWidgets('TC-E2E-07-01: Upload image and verify preview',
         (tester) async {
+      final ss = ScreenshotHelper(binding, 'tc_07_01');
       await pumpTestApp(tester);
 
       final sidebar = SidebarRobot(tester);
@@ -29,10 +31,12 @@ void main() {
 
       await image.tapUpload('image_field');
       image.expectImagePreview('image_field');
+      await ss.take(tester, 'image_preview_shown');
     });
 
     testWidgets('TC-E2E-07-02: Uploaded image persists after save and reload',
         (tester) async {
+      final ss = ScreenshotHelper(binding, 'tc_07_02');
       await pumpTestApp(tester);
 
       final sidebar = SidebarRobot(tester);
@@ -48,17 +52,20 @@ void main() {
 
       await editor.tapSave();
       editor.expectSaveConfirmation();
+      await ss.take(tester, 'saved');
 
       await editor.navigateBack();
 
       // Re-open and verify image persists
       await docList.tapDocument('Upload Test Doc A');
       image.expectImagePreview('image_field');
+      await ss.take(tester, 'image_persisted');
     });
 
     testWidgets(
         'TC-E2E-07-03: Remove saved image, save, reload, verify field empty',
         (tester) async {
+      final ss = ScreenshotHelper(binding, 'tc_07_03');
       await pumpTestApp(tester);
 
       final sidebar = SidebarRobot(tester);
@@ -67,12 +74,12 @@ void main() {
       final image = ImageFieldRobot(tester);
 
       await sidebar.tapDocumentType('Integration Test');
-      // Open doc with saved image from TC-E2E-07-02
       await docList.tapDocument('Upload Test Doc A');
 
       image.expectImagePreview('image_field');
       await image.tapRemove('image_field');
       image.expectFieldEmpty('image_field');
+      await ss.take(tester, 'image_removed');
 
       await editor.tapSave();
       editor.expectSaveConfirmation();
@@ -82,17 +89,13 @@ void main() {
       // Re-open and verify field is still empty
       await docList.tapDocument('Upload Test Doc A');
       image.expectFieldEmpty('image_field');
+      await ss.take(tester, 'field_still_empty');
     });
 
     testWidgets(
         'TC-E2E-07-04: Same image uploaded to two docs — backend deduplicates by content hash',
         (tester) async {
-      // FakeImagePickerPlatform always returns the same test PNG bytes, so
-      // uploading to two separate documents exercises the backend's content-hash
-      // deduplication logic. The single asset entry can be confirmed via:
-      //   curl http://localhost:8080/api/media/list
-      // Both documents should reference the same assetId. This is verified at the
-      // backend level only; here we confirm both docs show an image preview.
+      final ss = ScreenshotHelper(binding, 'tc_07_04');
       await pumpTestApp(tester);
 
       final sidebar = SidebarRobot(tester);
@@ -117,11 +120,13 @@ void main() {
       image.expectImagePreview('image_field');
       await editor.tapSave();
       editor.expectSaveConfirmation();
+      await ss.take(tester, 'doc_b_saved');
       await editor.navigateBack();
 
       // Navigate back to doc A and confirm image preview is still present
       await docList.tapDocument('Upload Test Doc A');
       image.expectImagePreview('image_field');
+      await ss.take(tester, 'doc_a_image_still_present');
     });
   });
 }
