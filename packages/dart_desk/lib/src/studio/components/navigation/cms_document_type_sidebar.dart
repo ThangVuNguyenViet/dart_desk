@@ -1,12 +1,12 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
-
 import 'package:get_it/get_it.dart';
 
 import '../../core/view_models/cms_view_model.dart';
-import '../../routes/document_type_route.dart';
-import '../../routes/studio_coordinator.dart';
+import '../../router/studio_router.dart';
+import '../../screens/document_type_screen.dart';
 import '../../theme/spacing.dart';
 import '../common/cms_collapse_bar.dart';
 import '../common/cms_document_type_decoration.dart';
@@ -18,14 +18,12 @@ import '../common/cms_document_type_item.dart';
 /// Collapse state is driven by [CmsViewModel.sidebarCollapsed].
 class CmsDocumentTypeSidebar extends StatelessWidget {
   final List<DocumentTypeDecoration> documentTypeDecorations;
-  final StudioCoordinator coordinator;
   final Widget? header;
   final Widget? footer;
 
   const CmsDocumentTypeSidebar({
     super.key,
     required this.documentTypeDecorations,
-    required this.coordinator,
     this.header,
     this.footer,
   });
@@ -44,7 +42,8 @@ class CmsDocumentTypeSidebar extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.colorScheme.background,
         border: Border(
-          right: BorderSide(color: theme.colorScheme.border.withValues(alpha: 0.5)),
+          right: BorderSide(
+              color: theme.colorScheme.border.withValues(alpha: 0.5)),
         ),
       ),
       child: Column(
@@ -75,19 +74,23 @@ class CmsDocumentTypeSidebar extends StatelessWidget {
                 vertical: isCollapsed ? CmsSpacing.md : 0,
               ),
               children: documentTypeDecorations.map((decoration) {
-                final isSelected = currentSlug == decoration.documentType.name;
+                final isSelected =
+                    currentSlug == decoration.documentType.name;
 
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 2),
                   child: DocumentTypeItem(
-                    key: ValueKey('doc_type_${decoration.documentType.title}'),
+                    key: ValueKey(
+                        'doc_type_${decoration.documentType.title}'),
                     documentType: decoration.documentType,
                     isSelected: isSelected,
                     icon: decoration.icon,
                     isCollapsed: isCollapsed,
                     onTap: () {
-                      coordinator.pushOrMoveToTop(
-                        DocumentTypeRoute(decoration.documentType.name),
+                      context.router.navigate(
+                        DocumentTypeScreenRoute(
+                          documentTypeSlug: decoration.documentType.name,
+                        ),
                       );
                     },
                   ),
