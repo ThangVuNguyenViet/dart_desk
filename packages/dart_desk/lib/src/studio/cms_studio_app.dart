@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +9,7 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import '../data/cms_data_source.dart';
 import 'components/common/cms_document_type_decoration.dart';
 import 'components/common/default_cms_header.dart';
+import 'config/cms_breakpoints.dart';
 import 'config/studio_config.dart';
 import 'router/studio_router.dart';
 import 'theme/theme.dart';
@@ -92,6 +94,14 @@ class _CmsStudioAppState extends State<CmsStudioApp> {
           theme: resolvedTheme,
           routeInformationParser: _router.defaultRouteParser(),
           routerDelegate: _router.delegate(),
+          builder: (context, child) => ResponsiveBreakpoints.builder(
+            child: child!,
+            breakpoints: [
+              const Breakpoint(start: 0, end: CmsBreakpoints.mobile, name: CmsBreakpoints.mobileTag),
+              const Breakpoint(start: CmsBreakpoints.mobile, end: CmsBreakpoints.tablet, name: CmsBreakpoints.tabletTag),
+              const Breakpoint(start: CmsBreakpoints.tablet, end: double.infinity, name: CmsBreakpoints.desktopTag),
+            ],
+          ),
         ),
       ),
     );
