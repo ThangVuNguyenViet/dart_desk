@@ -5,7 +5,6 @@ import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../../data/cms_data_source.dart';
 import '../components/common/cms_top_bar.dart';
 import '../components/navigation/cms_document_type_sidebar.dart';
 import '../config/studio_config.dart';

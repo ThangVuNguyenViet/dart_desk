@@ -11,7 +11,6 @@ import '../../config/studio_config.dart';
 import '../../core/view_models/cms_document_view_model.dart';
 import '../../core/view_models/cms_view_model.dart';
 import '../../router/studio_router.dart';
-import '../../screens/document_type_screen.dart';
 import '../../theme/spacing.dart';
 import '../version/cms_version_history.dart';
 import 'cms_breadcrumbs.dart';

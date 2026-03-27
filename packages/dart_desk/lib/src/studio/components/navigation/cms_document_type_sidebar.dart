@@ -6,7 +6,6 @@ import 'package:get_it/get_it.dart';
 
 import '../../core/view_models/cms_view_model.dart';
 import '../../router/studio_router.dart';
-import '../../screens/document_type_screen.dart';
 import '../../theme/spacing.dart';
 import '../common/cms_collapse_bar.dart';
 import '../common/cms_document_type_decoration.dart';

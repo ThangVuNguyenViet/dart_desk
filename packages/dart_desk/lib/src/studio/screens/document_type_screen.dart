@@ -8,7 +8,6 @@ import 'package:signals/signals_flutter.dart';
 import '../components/common/cms_collapse_bar.dart';
 import '../core/view_models/cms_view_model.dart';
 import '../router/studio_router.dart';
-import '../screens/document_screen.dart';
 import '../theme/spacing.dart';
 import 'document_list.dart';
 
