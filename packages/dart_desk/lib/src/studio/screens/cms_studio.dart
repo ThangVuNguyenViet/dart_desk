@@ -1,13 +1,12 @@
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../media/browser/media_browser.dart';
 import '../components/common/cms_collapse_bar.dart';
-import 'package:get_it/get_it.dart';
-
 import '../core/view_models/cms_document_view_model.dart';
 import '../core/view_models/cms_view_model.dart';
 import '../routes/document_route.dart';
@@ -196,10 +195,10 @@ class _CmsStudioState extends State<CmsStudio> {
     required String description,
   }) {
     return Center(
-      child: ShadCard(
-        width: 320,
-        child: Padding(
-          padding: const EdgeInsets.all(CmsSpacing.xl),
+      child: Padding(
+        padding: const EdgeInsets.all(CmsSpacing.xl),
+        child: ShadCard(
+          width: 320,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

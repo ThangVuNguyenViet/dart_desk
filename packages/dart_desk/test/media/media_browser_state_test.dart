@@ -17,44 +17,45 @@ void main() {
       state.dispose();
     });
 
-    test('loadAssets populates assets signal', () async {
-      await state.loadAssets();
+    test('assetsData loads on first access', () async {
+      final page = await state.assetsData.future;
 
-      expect(state.assets.value, hasLength(4));
-      expect(state.totalCount.value, equals(4));
-      expect(state.isLoading.value, isFalse);
+      expect(page.items, hasLength(4));
+      expect(page.total, equals(4));
+      expect(state.assetsData.value.isLoading, isFalse);
     });
 
     test('search signal flows through', () async {
       state.search.value = 'hero';
 
-      await state.loadAssets();
+      final page = await state.assetsData.future;
 
-      expect(state.assets.value, hasLength(1));
-      expect(state.assets.value.first.fileName, contains('hero'));
+      expect(page.items, hasLength(1));
+      expect(page.items.first.fileName, contains('hero'));
     });
 
     test('sort signal flows through', () async {
       state.sort.value = MediaSort.nameAsc;
 
-      await state.loadAssets();
+      final page = await state.assetsData.future;
 
-      expect(state.assets.value, isNotEmpty);
-      expect(state.assets.value.first.fileName, equals('app-icon.png'));
+      expect(page.items, isNotEmpty);
+      expect(page.items.first.fileName, equals('app-icon.png'));
     });
 
     test('deleteAsset removes and reloads', () async {
-      await state.loadAssets();
-      expect(state.assets.value, hasLength(4));
+      await state.assetsData.future;
+      expect(state.assetsData.value.value?.items, hasLength(4));
 
       await state.deleteAsset('asset-icon');
+      await state.assetsData.future;
 
-      expect(state.assets.value, hasLength(3));
+      expect(state.assetsData.value.value?.items, hasLength(3));
     });
 
     test('deleteAsset clears selectedAssetId when deleted asset was selected',
         () async {
-      await state.loadAssets();
+      await state.assetsData.future;
       state.selectedAssetId.value = 'asset-icon';
 
       await state.deleteAsset('asset-icon');
@@ -63,7 +64,7 @@ void main() {
     });
 
     test('selectedAsset tracks selection', () async {
-      await state.loadAssets();
+      await state.assetsData.future;
 
       state.selectedAssetId.value = 'asset-hero';
       final selected = state.selectedAsset;

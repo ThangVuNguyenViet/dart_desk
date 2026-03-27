@@ -36,11 +36,21 @@ class CmsDropdownInput<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final options = field.option.options(context);
+    final fieldOption = field.option;
+    if (fieldOption == null) {
+      return _CmsDropdownInput<T>(
+        title: field.title,
+        description: field.description,
+        data: data,
+        onChanged: onChanged,
+      );
+    }
+
+    final options = fieldOption.options(context);
 
     // If options is a Future, use FutureBuilder to handle async loading
     if (options is Future<List<DropdownOption<T>>>) {
-      final defaultValue = field.option.defaultValue;
+      final defaultValue = fieldOption.defaultValue;
       return FutureBuilder(
         future: Future.wait([
           options,
@@ -60,7 +70,7 @@ class CmsDropdownInput<T> extends StatelessWidget {
           return _CmsDropdownInput<T>(
             title: field.title,
             description: field.description,
-            placeholder: field.option.placeholder,
+            placeholder: fieldOption.placeholder,
             options: loadedOptions,
             defaultValue: loadedDefaultValue,
             data: data,
@@ -73,9 +83,9 @@ class CmsDropdownInput<T> extends StatelessWidget {
     return _CmsDropdownInput<T>(
       title: field.title,
       description: field.description,
-      placeholder: field.option.placeholder,
+      placeholder: fieldOption.placeholder,
       options: options,
-      defaultValue: field.option.defaultValue as T?,
+      defaultValue: fieldOption.defaultValue as T?,
       data: data,
       onChanged: onChanged,
     );

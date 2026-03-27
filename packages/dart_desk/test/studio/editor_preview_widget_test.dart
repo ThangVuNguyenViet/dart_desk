@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_desk/src/studio/core/view_models/cms_document_view_model.dart';
 import 'package:dart_desk/src/studio/providers/studio_provider.dart';
-import 'package:get_it/get_it.dart';
 import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -43,29 +43,31 @@ Widget buildEditorPreviewTestApp({
         child: StudioProvider(
           dataSource: dataSource,
           documentTypes: [docType],
-          child: Builder(builder: (context) {
-            // Activate the document type so CmsForm's CmsImageField branch works.
-            final vm = GetIt.I<CmsViewModel>();
-            vm.currentDocumentTypeSlug.value = docType.name;
+          child: Builder(
+            builder: (context) {
+              // Activate the document type so CmsForm's CmsImageField branch works.
+              final vm = GetIt.I<CmsViewModel>();
+              vm.currentDocumentTypeSlug.value = docType.name;
 
-            // Seed editedData if provided.
-            if (seedData.isNotEmpty) {
-              final docVM = GetIt.I<CmsDocumentViewModel>();
-              docVM.editedData.value = Map<String, dynamic>.from(seedData);
-            }
+              // Seed editedData if provided.
+              if (seedData.isNotEmpty) {
+                final docVM = GetIt.I<CmsDocumentViewModel>();
+                docVM.editedData.value = Map<String, dynamic>.from(seedData);
+              }
 
-            return Row(
-              children: [
-                Expanded(child: _PreviewPanel(docType: docType)),
-                Expanded(
-                  child: CmsDocumentEditor(
-                    fields: docType.fields,
-                    title: docType.title,
+              return Row(
+                children: [
+                  Expanded(child: _PreviewPanel(docType: docType)),
+                  Expanded(
+                    child: CmsDocumentEditor(
+                      fields: docType.fields,
+                      title: docType.title,
+                    ),
                   ),
-                ),
-              ],
-            );
-          }),
+                ],
+              );
+            },
+          ),
         ),
       ),
     ),
@@ -87,15 +89,17 @@ Widget buildCmsFormTestApp({
         child: StudioProvider(
           dataSource: dataSource,
           documentTypes: [docType],
-          child: Builder(builder: (context) {
-            GetIt.I<CmsViewModel>().currentDocumentTypeSlug.value =
-                docType.name;
-            return CmsForm(
-              fields: fields,
-              data: data,
-              onFieldChanged: onFieldChanged,
-            );
-          }),
+          child: Builder(
+            builder: (context) {
+              GetIt.I<CmsViewModel>().currentDocumentTypeSlug.value =
+                  docType.name;
+              return CmsForm(
+                fields: fields,
+                data: data,
+                onFieldChanged: onFieldChanged,
+              );
+            },
+          ),
         ),
       ),
     ),
@@ -124,11 +128,13 @@ void main() {
 
   group('CmsForm field routing', () {
     testWidgets('renders all field inputs', (tester) async {
-      await tester.pumpWidget(buildCmsFormTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        fields: allFieldsDocumentType.fields,
-      ));
+      await tester.pumpWidget(
+        buildCmsFormTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          fields: allFieldsDocumentType.fields,
+        ),
+      );
       await tester.pump();
 
       // Spot-check several input types are present.
@@ -143,21 +149,23 @@ void main() {
       String? receivedName;
       dynamic receivedValue;
 
-      await tester.pumpWidget(buildCmsFormTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        fields: const [
-          CmsStringField(
-            name: 'string_field',
-            title: 'String Field',
-            option: CmsStringOption(),
-          ),
-        ],
-        onFieldChanged: (name, value) {
-          receivedName = name;
-          receivedValue = value;
-        },
-      ));
+      await tester.pumpWidget(
+        buildCmsFormTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          fields: const [
+            CmsStringField(
+              name: 'string_field',
+              title: 'String Field',
+              option: CmsStringOption(),
+            ),
+          ],
+          onFieldChanged: (name, value) {
+            receivedName = name;
+            receivedValue = value;
+          },
+        ),
+      );
       await tester.pump();
 
       await tester.enterText(find.byType(ShadInputFormField), 'typed text');
@@ -171,21 +179,23 @@ void main() {
       String? receivedName;
       dynamic receivedValue;
 
-      await tester.pumpWidget(buildCmsFormTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        fields: const [
-          CmsNumberField(
-            name: 'number_field',
-            title: 'Number Field',
-            option: CmsNumberOption(),
-          ),
-        ],
-        onFieldChanged: (name, value) {
-          receivedName = name;
-          receivedValue = value;
-        },
-      ));
+      await tester.pumpWidget(
+        buildCmsFormTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          fields: const [
+            CmsNumberField(
+              name: 'number_field',
+              title: 'Number Field',
+              option: CmsNumberOption(),
+            ),
+          ],
+          onFieldChanged: (name, value) {
+            receivedName = name;
+            receivedValue = value;
+          },
+        ),
+      );
       await tester.pump();
 
       await tester.enterText(find.byType(ShadInputFormField), '123');
@@ -199,21 +209,23 @@ void main() {
       String? receivedName;
       dynamic receivedValue;
 
-      await tester.pumpWidget(buildCmsFormTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        fields: const [
-          CmsBooleanField(
-            name: 'boolean_field',
-            title: 'Boolean Field',
-            option: CmsBooleanOption(),
-          ),
-        ],
-        onFieldChanged: (name, value) {
-          receivedName = name;
-          receivedValue = value;
-        },
-      ));
+      await tester.pumpWidget(
+        buildCmsFormTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          fields: const [
+            CmsBooleanField(
+              name: 'boolean_field',
+              title: 'Boolean Field',
+              option: CmsBooleanOption(),
+            ),
+          ],
+          onFieldChanged: (name, value) {
+            receivedName = name;
+            receivedValue = value;
+          },
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(ShadSwitch));
@@ -230,10 +242,12 @@ void main() {
 
   group('Editor writes to editedData', () {
     testWidgets('on string change', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-      ));
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+        ),
+      );
       await tester.pump();
 
       // The string field is the first ShadInputFormField in the form.
@@ -257,10 +271,12 @@ void main() {
     });
 
     testWidgets('on number change', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-      ));
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+        ),
+      );
       await tester.pump();
 
       final numberField = find.byKey(const ValueKey('number_field'));
@@ -279,10 +295,12 @@ void main() {
     });
 
     testWidgets('on boolean toggle', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-      ));
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+        ),
+      );
       await tester.pump();
 
       final boolField = find.byKey(const ValueKey('boolean_field'));
@@ -307,11 +325,13 @@ void main() {
 
   group('Preview rebuilds from editedData', () {
     testWidgets('shows seed data on load', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        seedData: {'string_field': 'Hello World', 'number_field': 42},
-      ));
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          seedData: {'string_field': 'Hello World', 'number_field': 42},
+        ),
+      );
       await tester.pump();
 
       expect(find.text('preview:string_field: Hello World'), findsOneWidget);
@@ -319,11 +339,13 @@ void main() {
     });
 
     testWidgets('updates when string edited', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        seedData: {'string_field': 'original'},
-      ));
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          seedData: {'string_field': 'original'},
+        ),
+      );
       await tester.pump();
 
       expect(find.text('preview:string_field: original'), findsOneWidget);
@@ -341,11 +363,13 @@ void main() {
     });
 
     testWidgets('updates when number edited', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        seedData: {'number_field': 10},
-      ));
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          seedData: {'number_field': 10},
+        ),
+      );
       await tester.pump();
 
       expect(find.text('preview:number_field: 10'), findsOneWidget);
@@ -362,11 +386,13 @@ void main() {
     });
 
     testWidgets('updates when boolean toggled', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        seedData: {'boolean_field': false},
-      ));
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          seedData: {'boolean_field': false},
+        ),
+      );
       await tester.pump();
 
       expect(find.text('preview:boolean_field: false'), findsOneWidget);
@@ -382,23 +408,33 @@ void main() {
       expect(find.text('preview:boolean_field: true'), findsOneWidget);
     });
 
-    testWidgets('shows empty document_ref_dropdown preview when null', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        seedData: {'document_ref_dropdown': <String>[]},
-      ));
+    testWidgets('shows empty document_ref_dropdown preview when null', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          seedData: {'document_ref_dropdown': <String>[]},
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('preview:document_ref_dropdown: []'), findsOneWidget);
     });
 
-    testWidgets('shows resolved title in document_ref_dropdown preview', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        seedData: {'document_ref_dropdown': ['2']},
-      ));
+    testWidgets('shows resolved title in document_ref_dropdown preview', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          seedData: {
+            'document_ref_dropdown': ['2'],
+          },
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(
@@ -407,12 +443,18 @@ void main() {
       );
     });
 
-    testWidgets('updates preview when document_ref_dropdown changes', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-        seedData: {'document_ref_dropdown': ['1']},
-      ));
+    testWidgets('updates preview when document_ref_dropdown changes', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          seedData: {
+            'document_ref_dropdown': ['1'],
+          },
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(
@@ -423,7 +465,10 @@ void main() {
       // Programmatically update editedData to simulate selection change
       final context = tester.element(find.byType(_PreviewPanel));
       final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
-      editedData.value = {...editedData.value, 'document_ref_dropdown': ['3']};
+      editedData.value = {
+        ...editedData.value,
+        'document_ref_dropdown': ['3'],
+      };
       await tester.pumpAndSettle();
 
       expect(
@@ -439,10 +484,12 @@ void main() {
 
   group('Save and Discard buttons', () {
     testWidgets('appear after edit', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-      ));
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+        ),
+      );
       await tester.pump();
 
       // Initially no Save/Discard.
@@ -463,10 +510,12 @@ void main() {
     });
 
     testWidgets('Discard resets editedData', (tester) async {
-      await tester.pumpWidget(buildEditorPreviewTestApp(
-        dataSource: dataSource,
-        docType: allFieldsDocumentType,
-      ));
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+        ),
+      );
       await tester.pump();
 
       // Make an edit.

@@ -14,11 +14,11 @@ class MediaGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final assets = state.assets.watch(context);
+    final asyncState = state.assetsData.watch(context);
+    final assets = asyncState.value?.items ?? [];
     final selectedId = state.selectedAssetId.watch(context);
-    final loading = state.isLoading.watch(context);
 
-    if (loading && assets.isEmpty) {
+    if (asyncState.isLoading && assets.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 

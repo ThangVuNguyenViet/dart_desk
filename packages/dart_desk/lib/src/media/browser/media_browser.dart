@@ -40,15 +40,12 @@ class MediaBrowser extends StatefulWidget {
 class _MediaBrowserState extends State<MediaBrowser> {
   late final _state = MediaBrowserState(dataSource: widget.dataSource);
   final ImagePicker _picker = ImagePicker();
-
-  @override
-  void initState() {
-    super.initState();
-    _state.loadAssets();
-  }
+  // Local error signal for upload/drop failures (separate from listMedia errors)
+  final _uploadError = signal<String?>(null, debugLabel: 'uploadError');
 
   @override
   void dispose() {
+    _uploadError.dispose();
     _state.dispose();
     super.dispose();
   }
@@ -60,7 +57,7 @@ class _MediaBrowserState extends State<MediaBrowser> {
       final bytes = await image.readAsBytes();
       await _uploadBytes(image.name, bytes);
     } catch (e) {
-      _state.error.value = 'Upload failed: $e';
+      _uploadError.value = 'Upload failed: $e';
     }
   }
 
@@ -85,12 +82,12 @@ class _MediaBrowserState extends State<MediaBrowser> {
           final name = file.fileName ?? 'dropped_file';
           await _uploadBytes(name, bytes);
         } catch (e) {
-          _state.error.value = 'Drop upload failed: $e';
+          _uploadError.value = 'Drop upload failed: $e';
         }
         completer.complete();
       },
       onError: (error) {
-        _state.error.value = 'Failed to read dropped file: $error';
+        _uploadError.value = 'Failed to read dropped file: $error';
         completer.complete();
       },
     );
@@ -158,10 +155,14 @@ class _MediaBrowserState extends State<MediaBrowser> {
             child: MediaToolbar(state: _state),
           ),
 
-          // Error banner
+          // Error banner (listMedia errors or upload/drop errors)
           Watch((context) {
-            final error = _state.error.watch(context);
-            if (error == null) return const SizedBox.shrink();
+            final asyncState = _state.assetsData.watch(context);
+            final uploadErr = _uploadError.watch(context);
+            final errorMsg = asyncState.hasError
+                ? 'Failed to load media'
+                : uploadErr;
+            if (errorMsg == null) return const SizedBox.shrink();
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               padding: const EdgeInsets.all(8),
@@ -170,7 +171,7 @@ class _MediaBrowserState extends State<MediaBrowser> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                error,
+                errorMsg,
                 style: theme.textTheme.small.copyWith(
                   color: theme.colorScheme.destructive,
                 ),
@@ -203,7 +204,8 @@ class _MediaBrowserState extends State<MediaBrowser> {
                 // Detail panel
                 Watch((context) {
                   final selected = _state.selectedAssetId.watch(context);
-                  final assets = _state.assets.watch(context);
+                  final asyncState = _state.assetsData.watch(context);
+                  final assets = asyncState.value?.items ?? [];
                   if (selected == null) return const SizedBox.shrink();
 
                   final asset = assets
@@ -239,7 +241,8 @@ class _MediaBrowserState extends State<MediaBrowser> {
                 // Pagination
                 Watch((context) {
                   final currentPage = _state.page.watch(context);
-                  final total = _state.totalCount.watch(context);
+                  final asyncState = _state.assetsData.watch(context);
+                  final total = asyncState.value?.total ?? 0;
                   final totalPages = _state.totalPages;
 
                   return Row(
@@ -247,10 +250,7 @@ class _MediaBrowserState extends State<MediaBrowser> {
                       ShadButton.ghost(
                         size: ShadButtonSize.sm,
                         onPressed: currentPage > 0
-                            ? () {
-                                _state.page.value = currentPage - 1;
-                                _state.loadAssets();
-                              }
+                            ? () => _state.page.value = currentPage - 1
                             : null,
                         child: const FaIcon(
                           FontAwesomeIcons.chevronLeft,
@@ -264,10 +264,7 @@ class _MediaBrowserState extends State<MediaBrowser> {
                       ShadButton.ghost(
                         size: ShadButtonSize.sm,
                         onPressed: currentPage < totalPages - 1
-                            ? () {
-                                _state.page.value = currentPage + 1;
-                                _state.loadAssets();
-                              }
+                            ? () => _state.page.value = currentPage + 1
                             : null,
                         child: const FaIcon(
                           FontAwesomeIcons.chevronRight,
@@ -282,7 +279,8 @@ class _MediaBrowserState extends State<MediaBrowser> {
                 if (widget.mode == MediaBrowserMode.picker)
                   Watch((context) {
                     final selectedId = _state.selectedAssetId.watch(context);
-                    final assets = _state.assets.watch(context);
+                    final asyncState = _state.assetsData.watch(context);
+                    final assets = asyncState.value?.items ?? [];
                     final asset = selectedId != null
                         ? assets
                               .where((a) => a.assetId == selectedId)

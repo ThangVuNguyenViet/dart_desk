@@ -32,9 +32,10 @@ class _MediaToolbarState extends State<MediaToolbar> {
   void _onSearchChanged(String value) {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
-      widget.state.search.value = value;
-      widget.state.page.value = 0;
-      widget.state.loadAssets();
+      batch(() {
+        widget.state.search.value = value;
+        widget.state.page.value = 0;
+      });
     });
   }
 
@@ -71,9 +72,10 @@ class _MediaToolbarState extends State<MediaToolbar> {
             initialValue: MediaTypeFilter.all,
             onChanged: (value) {
               if (value == null) return;
-              widget.state.typeFilter.value = value;
-              widget.state.page.value = 0;
-              widget.state.loadAssets();
+              batch(() {
+                widget.state.typeFilter.value = value;
+                widget.state.page.value = 0;
+              });
             },
             options: MediaTypeFilter.values
                 .map((t) => ShadOption(value: t, child: Text(_typeLabel(t))))
@@ -89,7 +91,6 @@ class _MediaToolbarState extends State<MediaToolbar> {
             onChanged: (value) {
               if (value == null) return;
               widget.state.sort.value = value;
-              widget.state.loadAssets();
             },
             options: MediaSort.values
                 .map(

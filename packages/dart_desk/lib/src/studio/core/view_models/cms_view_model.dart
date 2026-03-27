@@ -39,12 +39,6 @@ class CmsViewModel {
   }, debugLabel: 'currentDocumentType');
 
   // ============================================================
-  // Search Signal
-  // ============================================================
-
-  final searchQuery = Signal<String?>(null, debugLabel: 'searchQuery');
-
-  // ============================================================
   // Operation State Signals
   // ============================================================
 
@@ -273,14 +267,6 @@ class CmsViewModel {
   }
 
   // ============================================================
-  // Search
-  // ============================================================
-
-  void setSearchQuery(String? query) {
-    searchQuery.value = query;
-  }
-
-  // ============================================================
   // Refresh Methods
   // ============================================================
 
@@ -316,7 +302,6 @@ class CmsViewModel {
     currentVersionId.dispose();
     selectedVersionId.dispose();
     selectedDocumentId.dispose();
-    searchQuery.dispose();
     sidebarCollapsed.dispose();
     documentListVisible.dispose();
     isSaving.dispose();

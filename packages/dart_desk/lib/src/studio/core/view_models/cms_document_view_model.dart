@@ -2,7 +2,6 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../../data/cms_data_source.dart';
 import '../../../data/models/cms_document.dart';
-import '../../../data/models/document_version.dart';
 import 'cms_view_model.dart';
 
 /// ViewModel for managing a single document's state.

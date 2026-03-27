@@ -17,7 +17,17 @@ class CmsMultiDropdownInput<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final options = field.option.options(context);
+    final fieldOption = field.option;
+    if (fieldOption == null) {
+      return _CmsMultiDropdownInput<T>(
+        title: field.title,
+        description: field.description,
+        data: data,
+        onChanged: onChanged,
+      );
+    }
+
+    final options = fieldOption.options(context);
 
     // Handle async options (same pattern as CmsDropdownInput)
     if (options is Future<List<DropdownOption<T>>>) {
@@ -31,11 +41,11 @@ class CmsMultiDropdownInput<T> extends StatelessWidget {
           return _CmsMultiDropdownInput<T>(
             title: field.title,
             description: field.description,
-            placeholder: field.option.placeholder,
+            placeholder: fieldOption.placeholder,
             options: loadedOptions,
-            defaultValues: field.option.defaultValues,
-            minSelected: field.option.minSelected,
-            maxSelected: field.option.maxSelected,
+            defaultValues: fieldOption.defaultValues,
+            minSelected: fieldOption.minSelected,
+            maxSelected: fieldOption.maxSelected,
             data: data,
             onChanged: onChanged,
           );
@@ -46,11 +56,11 @@ class CmsMultiDropdownInput<T> extends StatelessWidget {
     return _CmsMultiDropdownInput<T>(
       title: field.title,
       description: field.description,
-      placeholder: field.option.placeholder,
+      placeholder: fieldOption.placeholder,
       options: options,
-      defaultValues: field.option.defaultValues,
-      minSelected: field.option.minSelected,
-      maxSelected: field.option.maxSelected,
+      defaultValues: fieldOption.defaultValues,
+      minSelected: fieldOption.minSelected,
+      maxSelected: fieldOption.maxSelected,
       data: data,
       onChanged: onChanged,
     );
