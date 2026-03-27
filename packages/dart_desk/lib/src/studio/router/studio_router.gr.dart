@@ -12,15 +12,15 @@ part of 'studio_router.dart';
 
 /// generated route for
 /// [DocumentScreen]
-class DocumentRoute extends PageRouteInfo<DocumentRouteArgs> {
-  DocumentRoute({
+class DocumentScreenRoute extends PageRouteInfo<DocumentScreenRouteArgs> {
+  DocumentScreenRoute({
     Key? key,
     required String documentTypeSlug,
     required String documentId,
     List<PageRouteInfo>? children,
   }) : super(
-         DocumentRoute.name,
-         args: DocumentRouteArgs(
+         DocumentScreenRoute.name,
+         args: DocumentScreenRouteArgs(
            key: key,
            documentTypeSlug: documentTypeSlug,
            documentId: documentId,
@@ -32,14 +32,14 @@ class DocumentRoute extends PageRouteInfo<DocumentRouteArgs> {
          initialChildren: children,
        );
 
-  static const String name = 'DocumentRoute';
+  static const String name = 'DocumentScreenRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
       final pathParams = data.inheritedPathParams;
-      final args = data.argsAs<DocumentRouteArgs>(
-        orElse: () => DocumentRouteArgs(
+      final args = data.argsAs<DocumentScreenRouteArgs>(
+        orElse: () => DocumentScreenRouteArgs(
           documentTypeSlug: pathParams.getString('documentTypeSlug'),
           documentId: pathParams.getString('documentId'),
         ),
@@ -53,8 +53,8 @@ class DocumentRoute extends PageRouteInfo<DocumentRouteArgs> {
   );
 }
 
-class DocumentRouteArgs {
-  const DocumentRouteArgs({
+class DocumentScreenRouteArgs {
+  const DocumentScreenRouteArgs({
     this.key,
     required this.documentTypeSlug,
     required this.documentId,
@@ -68,13 +68,13 @@ class DocumentRouteArgs {
 
   @override
   String toString() {
-    return 'DocumentRouteArgs{key: $key, documentTypeSlug: $documentTypeSlug, documentId: $documentId}';
+    return 'DocumentScreenRouteArgs{key: $key, documentTypeSlug: $documentTypeSlug, documentId: $documentId}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other is! DocumentRouteArgs) return false;
+    if (other is! DocumentScreenRouteArgs) return false;
     return key == other.key &&
         documentTypeSlug == other.documentTypeSlug &&
         documentId == other.documentId;
@@ -87,14 +87,15 @@ class DocumentRouteArgs {
 
 /// generated route for
 /// [DocumentTypeScreen]
-class DocumentTypeRoute extends PageRouteInfo<DocumentTypeRouteArgs> {
-  DocumentTypeRoute({
+class DocumentTypeScreenRoute
+    extends PageRouteInfo<DocumentTypeScreenRouteArgs> {
+  DocumentTypeScreenRoute({
     Key? key,
     required String documentTypeSlug,
     List<PageRouteInfo>? children,
   }) : super(
-         DocumentTypeRoute.name,
-         args: DocumentTypeRouteArgs(
+         DocumentTypeScreenRoute.name,
+         args: DocumentTypeScreenRouteArgs(
            key: key,
            documentTypeSlug: documentTypeSlug,
          ),
@@ -102,14 +103,14 @@ class DocumentTypeRoute extends PageRouteInfo<DocumentTypeRouteArgs> {
          initialChildren: children,
        );
 
-  static const String name = 'DocumentTypeRoute';
+  static const String name = 'DocumentTypeScreenRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
       final pathParams = data.inheritedPathParams;
-      final args = data.argsAs<DocumentTypeRouteArgs>(
-        orElse: () => DocumentTypeRouteArgs(
+      final args = data.argsAs<DocumentTypeScreenRouteArgs>(
+        orElse: () => DocumentTypeScreenRouteArgs(
           documentTypeSlug: pathParams.getString('documentTypeSlug'),
         ),
       );
@@ -121,8 +122,8 @@ class DocumentTypeRoute extends PageRouteInfo<DocumentTypeRouteArgs> {
   );
 }
 
-class DocumentTypeRouteArgs {
-  const DocumentTypeRouteArgs({this.key, required this.documentTypeSlug});
+class DocumentTypeScreenRouteArgs {
+  const DocumentTypeScreenRouteArgs({this.key, required this.documentTypeSlug});
 
   final Key? key;
 
@@ -130,13 +131,13 @@ class DocumentTypeRouteArgs {
 
   @override
   String toString() {
-    return 'DocumentTypeRouteArgs{key: $key, documentTypeSlug: $documentTypeSlug}';
+    return 'DocumentTypeScreenRouteArgs{key: $key, documentTypeSlug: $documentTypeSlug}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other is! DocumentTypeRouteArgs) return false;
+    if (other is! DocumentTypeScreenRouteArgs) return false;
     return key == other.key && documentTypeSlug == other.documentTypeSlug;
   }
 
@@ -146,11 +147,11 @@ class DocumentTypeRouteArgs {
 
 /// generated route for
 /// [MediaScreen]
-class MediaRoute extends PageRouteInfo<void> {
-  const MediaRoute({List<PageRouteInfo>? children})
-    : super(MediaRoute.name, initialChildren: children);
+class MediaScreenRoute extends PageRouteInfo<void> {
+  const MediaScreenRoute({List<PageRouteInfo>? children})
+    : super(MediaScreenRoute.name, initialChildren: children);
 
-  static const String name = 'MediaRoute';
+  static const String name = 'MediaScreenRoute';
 
   static PageInfo page = PageInfo(
     name,
@@ -162,11 +163,11 @@ class MediaRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [StudioShellScreen]
-class StudioShellRoute extends PageRouteInfo<void> {
-  const StudioShellRoute({List<PageRouteInfo>? children})
-    : super(StudioShellRoute.name, initialChildren: children);
+class StudioShellScreenRoute extends PageRouteInfo<void> {
+  const StudioShellScreenRoute({List<PageRouteInfo>? children})
+    : super(StudioShellScreenRoute.name, initialChildren: children);
 
-  static const String name = 'StudioShellRoute';
+  static const String name = 'StudioShellScreenRoute';
 
   static PageInfo page = PageInfo(
     name,
@@ -178,16 +179,16 @@ class StudioShellRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [VersionScreen]
-class VersionRoute extends PageRouteInfo<VersionRouteArgs> {
-  VersionRoute({
+class VersionScreenRoute extends PageRouteInfo<VersionScreenRouteArgs> {
+  VersionScreenRoute({
     Key? key,
     required String documentTypeSlug,
     required String documentId,
     required String versionId,
     List<PageRouteInfo>? children,
   }) : super(
-         VersionRoute.name,
-         args: VersionRouteArgs(
+         VersionScreenRoute.name,
+         args: VersionScreenRouteArgs(
            key: key,
            documentTypeSlug: documentTypeSlug,
            documentId: documentId,
@@ -201,14 +202,14 @@ class VersionRoute extends PageRouteInfo<VersionRouteArgs> {
          initialChildren: children,
        );
 
-  static const String name = 'VersionRoute';
+  static const String name = 'VersionScreenRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
       final pathParams = data.inheritedPathParams;
-      final args = data.argsAs<VersionRouteArgs>(
-        orElse: () => VersionRouteArgs(
+      final args = data.argsAs<VersionScreenRouteArgs>(
+        orElse: () => VersionScreenRouteArgs(
           documentTypeSlug: pathParams.getString('documentTypeSlug'),
           documentId: pathParams.getString('documentId'),
           versionId: pathParams.getString('versionId'),
@@ -224,8 +225,8 @@ class VersionRoute extends PageRouteInfo<VersionRouteArgs> {
   );
 }
 
-class VersionRouteArgs {
-  const VersionRouteArgs({
+class VersionScreenRouteArgs {
+  const VersionScreenRouteArgs({
     this.key,
     required this.documentTypeSlug,
     required this.documentId,
@@ -242,13 +243,13 @@ class VersionRouteArgs {
 
   @override
   String toString() {
-    return 'VersionRouteArgs{key: $key, documentTypeSlug: $documentTypeSlug, documentId: $documentId, versionId: $versionId}';
+    return 'VersionScreenRouteArgs{key: $key, documentTypeSlug: $documentTypeSlug, documentId: $documentId, versionId: $versionId}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    if (other is! VersionRouteArgs) return false;
+    if (other is! VersionScreenRouteArgs) return false;
     return key == other.key &&
         documentTypeSlug == other.documentTypeSlug &&
         documentId == other.documentId &&

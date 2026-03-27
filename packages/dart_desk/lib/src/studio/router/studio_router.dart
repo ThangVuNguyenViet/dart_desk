@@ -10,7 +10,7 @@ import '../screens/version_screen.dart';
 
 part 'studio_router.gr.dart';
 
-@AutoRouterConfig()
+@AutoRouterConfig(replaceInRouteName: 'Screen,ScreenRoute')
 class StudioRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
