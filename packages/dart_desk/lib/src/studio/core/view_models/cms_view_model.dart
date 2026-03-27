@@ -11,7 +11,7 @@ class CmsViewModel {
   final List<DocumentType> documentTypes;
 
   // ============================================================
-  // Route Param Signals (set by coordinator via setRouteParams)
+  // Route Param Signals (written by StudioShellScreen._onRouteChanged)
   // ============================================================
 
   final currentDocumentTypeSlug = Signal<String?>(
@@ -108,30 +108,6 @@ class CmsViewModel {
     final data = results[1] as Map<String, dynamic>?;
     if (version == null) return null;
     return version.copyWith(data: data);
-  }
-
-  // ============================================================
-  // Route Params (called by coordinator on route change)
-  // ============================================================
-
-  /// Called by the coordinator when the URL changes.
-  /// Sets all route param signals and updates the document view model.
-  void setRouteParams({
-    String? documentTypeSlug,
-    String? documentId,
-    String? versionId,
-  }) {
-    currentDocumentTypeSlug.value = documentTypeSlug;
-
-    final docIdInt = documentId != null ? int.tryParse(documentId) : null;
-    selectedDocumentId.value = docIdInt;
-    currentDocumentId.value = documentId;
-
-    // Update version ID
-    currentVersionId.value = versionId;
-
-    final versionIdInt = versionId != null ? int.tryParse(versionId) : null;
-    selectedVersionId.value = versionIdInt;
   }
 
   final selectedDocumentId = Signal<int?>(null, debugLabel: 'selectedDocumentId');
