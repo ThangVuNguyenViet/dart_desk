@@ -23,6 +23,7 @@ export 'src/studio/components/forms/cms_form.dart';
 export 'src/studio/components/navigation/cms_document_type_sidebar.dart';
 export 'src/studio/components/version/cms_version_history.dart';
 // Config
+export 'src/studio/config/cms_breakpoints.dart';
 export 'src/studio/config/studio_config.dart';
 // Core studio functionality
 export 'src/studio/core/marionette_config.dart';
@@ -38,6 +39,7 @@ export 'src/studio/screens/document_list.dart';
 export 'src/studio/screens/document_screen.dart';
 export 'src/studio/screens/document_type_screen.dart';
 export 'src/studio/screens/media_screen.dart';
+export 'src/studio/components/layout/cms_content_layout.dart';
 export 'src/studio/screens/studio_shell_screen.dart';
 export 'src/studio/screens/version_screen.dart';
 // Theme

@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -86,34 +87,41 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
       dataSource: config.dataSource,
       documentTypes: config.documentTypes,
       child: Builder(
-        builder: (context) => Column(
-          children: [
-            const CmsTopBar(),
-            const Divider(height: 1),
-            Expanded(
-              child: Row(
-                children: [
-                  CmsDocumentTypeSidebar(
-                    documentTypeDecorations: config.documentTypeDecorations,
-                    footer: ShadButton.ghost(
-                      key: const ValueKey('sidebar_media_button'),
-                      onPressed: () =>
-                          context.router.navigate(const MediaScreenRoute()),
-                      child: const Row(
+        builder: (context) {
+          final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+
+          return Column(
+            children: [
+              const CmsTopBar(),
+              const Divider(height: 1),
+              Expanded(
+                child: isMobile
+                    ? AutoRouter()
+                    : Row(
                         children: [
-                          FaIcon(FontAwesomeIcons.images, size: 14),
-                          SizedBox(width: CmsSpacing.sm),
-                          Text('Media Library'),
+                          CmsDocumentTypeSidebar(
+                            documentTypeDecorations:
+                                config.documentTypeDecorations,
+                            footer: ShadButton.ghost(
+                              key: const ValueKey('sidebar_media_button'),
+                              onPressed: () => context.router
+                                  .navigate(const MediaScreenRoute()),
+                              child: const Row(
+                                children: [
+                                  FaIcon(FontAwesomeIcons.images, size: 14),
+                                  SizedBox(width: CmsSpacing.sm),
+                                  Text('Media Library'),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(child: AutoRouter()),
                         ],
                       ),
-                    ),
-                  ),
-                  Expanded(child: AutoRouter()),
-                ],
               ),
-            ),
-          ],
-        ),
+            ],
+          );
+        },
       ),
     );
   }

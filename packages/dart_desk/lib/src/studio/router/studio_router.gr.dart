@@ -17,6 +17,7 @@ class DocumentScreenRoute extends PageRouteInfo<DocumentScreenRouteArgs> {
     Key? key,
     required String documentTypeSlug,
     required String documentId,
+    String? versionId,
     List<PageRouteInfo>? children,
   }) : super(
          DocumentScreenRoute.name,
@@ -24,10 +25,12 @@ class DocumentScreenRoute extends PageRouteInfo<DocumentScreenRouteArgs> {
            key: key,
            documentTypeSlug: documentTypeSlug,
            documentId: documentId,
+           versionId: versionId,
          ),
          rawPathParams: {
            'documentTypeSlug': documentTypeSlug,
            'documentId': documentId,
+           'versionId': versionId,
          },
          initialChildren: children,
        );
@@ -42,12 +45,14 @@ class DocumentScreenRoute extends PageRouteInfo<DocumentScreenRouteArgs> {
         orElse: () => DocumentScreenRouteArgs(
           documentTypeSlug: pathParams.getString('documentTypeSlug'),
           documentId: pathParams.getString('documentId'),
+          versionId: pathParams.optString('versionId'),
         ),
       );
       return DocumentScreen(
         key: args.key,
         documentTypeSlug: args.documentTypeSlug,
         documentId: args.documentId,
+        versionId: args.versionId,
       );
     },
   );
@@ -58,6 +63,7 @@ class DocumentScreenRouteArgs {
     this.key,
     required this.documentTypeSlug,
     required this.documentId,
+    this.versionId,
   });
 
   final Key? key;
@@ -66,9 +72,11 @@ class DocumentScreenRouteArgs {
 
   final String documentId;
 
+  final String? versionId;
+
   @override
   String toString() {
-    return 'DocumentScreenRouteArgs{key: $key, documentTypeSlug: $documentTypeSlug, documentId: $documentId}';
+    return 'DocumentScreenRouteArgs{key: $key, documentTypeSlug: $documentTypeSlug, documentId: $documentId, versionId: $versionId}';
   }
 
   @override
@@ -77,12 +85,16 @@ class DocumentScreenRouteArgs {
     if (other is! DocumentScreenRouteArgs) return false;
     return key == other.key &&
         documentTypeSlug == other.documentTypeSlug &&
-        documentId == other.documentId;
+        documentId == other.documentId &&
+        versionId == other.versionId;
   }
 
   @override
   int get hashCode =>
-      key.hashCode ^ documentTypeSlug.hashCode ^ documentId.hashCode;
+      key.hashCode ^
+      documentTypeSlug.hashCode ^
+      documentId.hashCode ^
+      versionId.hashCode;
 }
 
 /// generated route for
