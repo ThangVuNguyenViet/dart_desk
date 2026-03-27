@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -8,6 +9,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../core/view_models/cms_document_view_model.dart';
 import '../../core/view_models/cms_view_model.dart';
+import '../../router/studio_router.dart';
 
 /// A version history dropdown component that displays and manages document versions.
 ///
@@ -264,12 +266,16 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
                   isSelected: isSelected,
                   onTap: () {
                     if (version.id != null) {
-                      widget.viewModel.setRouteParams(
-                        documentTypeSlug:
-                            widget.viewModel.currentDocumentTypeSlug.value,
-                        documentId: widget.viewModel.currentDocumentId.value,
-                        versionId: version.id.toString(),
-                      );
+                      final docTypeSlug =
+                          widget.viewModel.currentDocumentTypeSlug.value;
+                      final docId = widget.viewModel.currentDocumentId.value;
+                      if (docTypeSlug != null && docId != null) {
+                        context.router.navigate(VersionScreenRoute(
+                          documentTypeSlug: docTypeSlug,
+                          documentId: docId,
+                          versionId: version.id.toString(),
+                        ));
+                      }
                       _popoverController.toggle();
                     }
                   },
