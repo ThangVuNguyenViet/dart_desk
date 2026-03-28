@@ -32,6 +32,7 @@ export 'src/studio/core/view_models/cms_view_model.dart';
 export 'src/studio/dart_desk_app.dart';
 export 'src/studio/dart_desk_config.dart';
 // Router
+export 'src/studio/router/studio_route_observer.dart';
 export 'src/studio/router/studio_router.dart';
 // Screens
 export 'src/studio/screens/document_editor.dart';
@@ -39,7 +40,6 @@ export 'src/studio/screens/document_list.dart';
 export 'src/studio/screens/document_screen.dart';
 export 'src/studio/screens/document_type_screen.dart';
 export 'src/studio/screens/media_screen.dart';
-export 'src/studio/components/layout/cms_content_layout.dart';
 export 'src/studio/screens/studio_shell_screen.dart';
 export 'src/studio/screens/version_screen.dart';
 // Theme

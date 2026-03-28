@@ -11,6 +11,7 @@ import 'components/common/cms_document_type_decoration.dart';
 import 'components/common/default_cms_header.dart';
 import 'config/cms_breakpoints.dart';
 import 'config/studio_config.dart';
+import 'router/studio_route_observer.dart';
 import 'router/studio_router.dart';
 import 'theme/theme.dart';
 
@@ -93,7 +94,12 @@ class _CmsStudioAppState extends State<CmsStudioApp> {
         child: ShadApp.router(
           theme: resolvedTheme,
           routeInformationParser: _router.defaultRouteParser(),
-          routerDelegate: _router.delegate(),
+          routerDelegate: _router.delegate(
+            // Builder called once per Navigator (root + each nested shell).
+            // NavigatorObserver can only be attached to one Navigator, so a
+            // fresh instance must be returned each time.
+            navigatorObservers: () => [StudioRouteObserver(_router)],
+          ),
           builder: (context, child) => ResponsiveBreakpoints.builder(
             child: child!,
             breakpoints: [

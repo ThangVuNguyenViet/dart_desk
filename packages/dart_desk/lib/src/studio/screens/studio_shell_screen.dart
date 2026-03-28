@@ -25,55 +25,24 @@ class StudioShellScreen extends StatefulWidget {
 }
 
 class _StudioShellScreenState extends State<StudioShellScreen> {
-  late final StackRouter _router;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _router = context.router;
-    _router.removeListener(_onRouteChanged);
-    _router.addListener(_onRouteChanged);
+  void initState() {
+    super.initState();
+    // Redirect to the first document type on initial bare-root load.
+    // Scheduled after the first frame so StudioProvider has registered
+    // CmsViewModel and the router has settled on its initial route.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _onRouteChanged();
-    });
-  }
-
-  @override
-  void dispose() {
-    _router.removeListener(_onRouteChanged);
-    super.dispose();
-  }
-
-  void _onRouteChanged() {
-    if (!GetIt.I.isRegistered<CmsViewModel>()) return;
-    final params = _router.topRoute.params;
-    final vm = GetIt.I<CmsViewModel>();
-    final docId = params.optString('documentId');
-    final versionId = params.optString('versionId');
-    final docTypeSlug = params.optString('documentTypeSlug');
-    batch(() {
-      vm.currentDocumentTypeSlug.value = docTypeSlug;
-      vm.currentDocumentId.value = docId;
-      vm.selectedDocumentId.value =
-          docId != null ? int.tryParse(docId) : null;
-      vm.currentVersionId.value = versionId;
-      vm.selectedVersionId.value =
-          versionId != null ? int.tryParse(versionId) : null;
-    });
-
-    // Redirect to first document type when landing at bare root
-    if (docTypeSlug == null) {
-      final config = GetIt.I<StudioConfig>();
-      if (config.documentTypes.isNotEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            _router.navigate(DocumentTypeScreenRoute(
-              documentTypeSlug: config.documentTypes.first.name,
-            ));
-          }
-        });
+      if (!mounted) return;
+      final params = context.router.topRoute.params;
+      if (params.optString('documentTypeSlug') == null) {
+        final config = GetIt.I<StudioConfig>();
+        if (config.documentTypes.isNotEmpty) {
+          context.router.navigate(DocumentTypeScreenRoute(
+            documentTypeSlug: config.documentTypes.first.name,
+          ));
+        }
       }
-    }
+    });
   }
 
   Future<void> _deleteDocument(BuildContext context, {int? docId}) async {
@@ -107,8 +76,7 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
       final result = await viewModel.deleteDocument(docId);
       if (mounted) {
         if (result) {
-          toaster
-              .show(const ShadToast(description: Text('Document deleted')));
+          toaster.show(const ShadToast(description: Text('Document deleted')));
         } else {
           toaster.show(ShadToast.destructive(
               description: const Text('Failed to delete document')));
@@ -193,15 +161,12 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
                   child: CmsDocumentListView(
                     selectedDocumentType: docType,
                     icon: FontAwesomeIcons.file,
-                    onOpenDocument: (documentId) async {
-                      await context.router.navigate(DocumentScreenRoute(
+                    onOpenDocument: (documentId) => context.router.navigate(
+                      DocumentScreenRoute(
                         documentTypeSlug: docTypeSlug ?? docType.name,
                         documentId: documentId,
-                      ));
-                      // _onRouteChanged may not fire after inner-router navigation,
-                      // so sync signals directly from the now-resolved topRoute.
-                      _onRouteChanged();
-                    },
+                      ),
+                    ),
                     onDeleteDocument: (docId) =>
                         _deleteDocument(context, docId: docId),
                   ),
