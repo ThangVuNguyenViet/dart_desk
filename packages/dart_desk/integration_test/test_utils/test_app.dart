@@ -8,12 +8,27 @@ import 'package:integration_test/integration_test.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
+import 'settle.dart';
 import 'test_document_type.dart';
+
+/// No-op connectivity monitor that doesn't hold a live stream subscription.
+/// [FlutterConnectivityMonitor] listens to `connectivity_plus` which keeps
+/// the event loop alive and prevents [WidgetTester.pumpAndSettle] from
+/// ever settling.
+class _TestConnectivityMonitor extends ConnectivityMonitor {
+  _TestConnectivityMonitor() {
+    // Immediately report connected so the client works normally.
+    notifyListeners(true);
+  }
+}
 
 const _testServerUrl = String.fromEnvironment(
   'TEST_SERVER_URL',
   defaultValue: 'http://localhost:8080/',
 );
+
+/// Exposed for [DbHelper] to verify backend reachability.
+String get testBackendUrl => _testServerUrl;
 
 const _testApiKey = String.fromEnvironment(
   'TEST_API_KEY',
@@ -47,7 +62,7 @@ Future<void> pumpTestApp(WidgetTester tester) async {
 
   // Build a pre-authenticated client so we bypass the login screen.
   final client = Client(_testServerUrl)
-    ..connectivityMonitor = FlutterConnectivityMonitor()
+    ..connectivityMonitor = _TestConnectivityMonitor()
     ..authSessionManager = FlutterAuthSessionManager()
     ..customHeaders = {'x-api-key': _testApiKey};
 
@@ -75,5 +90,5 @@ Future<void> pumpTestApp(WidgetTester tester) async {
       ),
     ),
   );
-  await tester.pumpAndSettle(const Duration(seconds: 2));
+  await tester.settle();
 }

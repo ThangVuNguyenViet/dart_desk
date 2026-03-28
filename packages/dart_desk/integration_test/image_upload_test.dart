@@ -30,7 +30,7 @@ void main() {
       await docList.tapDocument('Upload Test Doc A');
 
       await image.tapUpload('image_field');
-      image.expectImagePreview('image_field');
+      await image.expectImagePreview('image_field');
       await ss.take(tester, 'image_preview_shown');
     });
 
@@ -48,7 +48,7 @@ void main() {
       await docList.tapDocument('Upload Test Doc A');
 
       await image.tapUpload('image_field');
-      image.expectImagePreview('image_field');
+      await image.expectImagePreview('image_field');
 
       await editor.tapSave();
       editor.expectSaveConfirmation();
@@ -58,7 +58,7 @@ void main() {
 
       // Re-open and verify image persists
       await docList.tapDocument('Upload Test Doc A');
-      image.expectImagePreview('image_field');
+      await image.expectImagePreview('image_field');
       await ss.take(tester, 'image_persisted');
     });
 
@@ -76,7 +76,7 @@ void main() {
       await sidebar.tapDocumentType('Integration Test');
       await docList.tapDocument('Upload Test Doc A');
 
-      image.expectImagePreview('image_field');
+      await image.expectImagePreview('image_field');
       await image.tapRemove('image_field');
       image.expectFieldEmpty('image_field');
       await ss.take(tester, 'image_removed');
@@ -108,7 +108,7 @@ void main() {
       // Upload image to doc A
       await docList.tapDocument('Upload Test Doc A');
       await image.tapUpload('image_field');
-      image.expectImagePreview('image_field');
+      await image.expectImagePreview('image_field');
       await editor.tapSave();
       editor.expectSaveConfirmation();
       await editor.navigateBack();
@@ -117,7 +117,7 @@ void main() {
       await docList.createDocument('Upload Test Doc B');
       await docList.tapDocument('Upload Test Doc B');
       await image.tapUpload('image_field');
-      image.expectImagePreview('image_field');
+      await image.expectImagePreview('image_field');
       await editor.tapSave();
       editor.expectSaveConfirmation();
       await ss.take(tester, 'doc_b_saved');
@@ -125,7 +125,7 @@ void main() {
 
       // Navigate back to doc A and confirm image preview is still present
       await docList.tapDocument('Upload Test Doc A');
-      image.expectImagePreview('image_field');
+      await image.expectImagePreview('image_field');
       await ss.take(tester, 'doc_a_image_still_present');
     });
   });

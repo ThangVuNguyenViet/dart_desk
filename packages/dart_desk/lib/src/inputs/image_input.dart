@@ -75,6 +75,18 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     _initFromData();
   }
 
+  @override
+  void didUpdateWidget(CmsImageInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // When the data prop changes and we have no image yet, try to load from
+    // the new data. This handles the case where the widget is first rendered
+    // with empty data (editedData = {}), then the document loads and the
+    // field data is populated — without a full widget recreation.
+    if (oldWidget.data != widget.data && _imageRef.value == null) {
+      _initFromData();
+    }
+  }
+
   void _initFromData() {
     final value = widget.data?.value;
     if (value is Map<String, dynamic> &&
@@ -97,9 +109,11 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       final asset = await widget.dataSource!.getMediaAsset(assetId);
       if (asset != null && mounted) {
         _imageRef.value = ImageReference.fromDocumentJson(json, asset);
+      } else if (mounted) {
+        log('ImageInput: getMediaAsset($assetId) returned null');
       }
-    } catch (_) {
-      // Silently fail — the image just won't show a preview.
+    } catch (e) {
+      log('ImageInput: getMediaAsset($assetId) threw: $e');
     }
   }
 

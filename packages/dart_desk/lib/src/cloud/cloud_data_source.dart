@@ -584,9 +584,11 @@ class CloudDataSource implements DataSource {
     for (var op in operations) {
       if (op.operationType == serverpod.CrdtOperationType.put &&
           op.fieldValue != null) {
-        flatState[op.fieldPath] = jsonDecode(op.fieldValue!);
+        _applyPutToFlatState(
+            flatState, op.fieldPath, jsonDecode(op.fieldValue!));
       } else if (op.operationType == serverpod.CrdtOperationType.delete) {
         flatState.remove(op.fieldPath);
+        flatState.removeWhere((k, _) => k.startsWith('${op.fieldPath}.'));
       }
     }
 
@@ -707,6 +709,30 @@ class CloudDataSource implements DataSource {
   // ============================================================
   // CRDT Helpers (Internal)
   // ============================================================
+
+  /// Apply a put operation to flat state with parent/child conflict resolution.
+  ///
+  /// Invariants:
+  /// - Setting K = null removes all K.* sub-keys (null overrides a prior sub-map).
+  /// - Setting K.X = val removes any K = null ancestor (sub-key overrides a prior null).
+  void _applyPutToFlatState(
+    Map<String, dynamic> flatState,
+    String fieldPath,
+    dynamic value,
+  ) {
+    if (value == null) {
+      flatState.removeWhere((k, _) => k.startsWith('$fieldPath.'));
+    } else {
+      var path = fieldPath;
+      while (path.contains('.')) {
+        path = path.substring(0, path.lastIndexOf('.'));
+        if (flatState.containsKey(path) && flatState[path] == null) {
+          flatState.remove(path);
+        }
+      }
+    }
+    flatState[fieldPath] = value;
+  }
 
   /// Flatten nested map to dot-notation
   /// Example: {"user": {"name": "John"}} -> {"user.name": "John"}

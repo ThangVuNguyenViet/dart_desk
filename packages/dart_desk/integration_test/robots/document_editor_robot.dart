@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_utils/finders.dart';
+import '../test_utils/settle.dart';
 
 class DocumentEditorRobot {
   final WidgetTester tester;
@@ -21,33 +21,33 @@ class DocumentEditorRobot {
       // Fallback: try entering directly on the keyed widget
       await tester.enterText(fieldFinder, value);
     }
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 
   /// Taps the "Save" button.
   Future<void> tapSave() async {
     await tester.tap(find.byKey(const ValueKey('save_document_button')));
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 
   /// Taps the "Discard" button.
   Future<void> tapDiscard() async {
     await tester.tap(find.byKey(const ValueKey('discard_document_button')));
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 
   /// Opens the version history popover, taps "Publish", then confirms.
   Future<void> tapPublish() async {
     // Open the version history popover.
     await tester.tap(find.byKey(const ValueKey('version_history_button')));
-    await tester.pumpAndSettle();
+    await tester.settle();
     // Tap the first "Publish" button in the popover.
     await tester.tap(find.text('Publish').first);
-    await tester.pumpAndSettle();
+    await tester.settle();
     // Confirm in the dialog. The dialog is layered on top so its "Publish"
     // button is the last match in the widget tree.
     await tester.tap(find.text('Publish').last);
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 
   /// Expects the toast confirmation after saving.
@@ -78,7 +78,7 @@ class DocumentEditorRobot {
   Future<void> expectVersionHistoryShown() async {
     // Open the popover by tapping the version history trigger button.
     await tester.tap(find.byKey(const ValueKey('version_history_button')));
-    await tester.pumpAndSettle();
+    await tester.settle();
 
     expect(find.text('Version History'), findsOneWidget);
     // At least one version entry exists (e.g. "v1", "v2")
@@ -89,20 +89,20 @@ class DocumentEditorRobot {
 
     // Close the popover.
     await tester.tap(find.byKey(const ValueKey('version_history_button')));
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 
   /// Opens the version history popover and verifies at least one version
   /// shows the compact 'P' published status badge.
   Future<void> expectPublishedStatus() async {
     await tester.tap(find.byKey(const ValueKey('version_history_button')));
-    await tester.pumpAndSettle();
+    await tester.settle();
     // The popover uses compact badges: 'P' = published, 'D' = draft.
     // Verify at least one 'P' badge exists.
     expect(find.text('P'), findsAtLeastNWidgets(1));
     // Close popover
     await tester.tap(find.byKey(const ValueKey('version_history_button')));
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 
   /// Navigates back to the document list.
@@ -113,7 +113,7 @@ class DocumentEditorRobot {
     final breadcrumbBack = find.byKey(const ValueKey('breadcrumb_back'));
     if (breadcrumbBack.evaluate().isNotEmpty) {
       await tester.tap(breadcrumbBack);
-      await tester.pumpAndSettle();
+      await tester.settle();
       return;
     }
     final backButton = find.byTooltip('Back');
@@ -122,6 +122,6 @@ class DocumentEditorRobot {
     } else {
       await tester.pageBack();
     }
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 }

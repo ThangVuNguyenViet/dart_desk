@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_utils/finders.dart';
+import '../test_utils/settle.dart';
 
 class DocumentListRobot {
   final WidgetTester tester;
@@ -16,7 +17,7 @@ class DocumentListRobot {
   /// Taps the "+" icon button to open the inline create form.
   Future<void> tapCreateButton() async {
     await tester.tap(find.byKey(const ValueKey('create_document_button')));
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 
   /// Fills in the inline create form and submits it.
@@ -27,26 +28,26 @@ class DocumentListRobot {
       findShadInput('Document title'),
       title,
     );
-    await tester.pumpAndSettle();
+    await tester.settle();
     // Wait for slug auto-generation
     await tester.pump(const Duration(milliseconds: 600));
-    await tester.pumpAndSettle();
+    await tester.settle();
     // Tap the "Create" button
     await tester.tap(findShadButton('Create'));
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 
   /// Taps a document row by its title text.
   Future<void> tapDocument(String title) async {
     await tester.tap(_inList(find.text(title)));
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 
   /// Opens the per-document popup menu and taps "Delete".
   Future<void> deleteDocument(String title) async {
     // Find the document title within the list (use first match if briefly doubled).
     final titleFinder = _inList(find.text(title)).first;
-    await tester.pumpAndSettle();
+    await tester.settle();
 
     // Find the PopupMenuButton in the same GestureDetector ancestor as the title
     final menuButton = find.descendant(
@@ -57,13 +58,13 @@ class DocumentListRobot {
       matching: find.byType(PopupMenuButton<String>),
     );
     await tester.tap(menuButton.first);
-    await tester.pumpAndSettle();
+    await tester.settle();
     // Tap the "Delete" menu item
     await tester.tap(findByKey('delete_document_button'));
-    await tester.pumpAndSettle();
+    await tester.settle();
     // Confirm in the delete confirmation dialog
     await tester.tap(find.text('Delete').last);
-    await tester.pumpAndSettle();
+    await tester.settle();
   }
 
   void expectDocumentVisible(String title) {

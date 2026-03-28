@@ -85,8 +85,9 @@ class CmsDocumentViewModel {
         // path (editedData.isNotEmpty) prevents the loading→form transition.
         cmsVM.selectedVersionId.value = versionId;
       }
-    } catch (_) {
-      // Silently ignore — editor will show empty state
+    } catch (e) {
+      // ignore: avoid_print
+      print('[autoLoad] docId=$docId ERROR: $e');
     }
   }
 
