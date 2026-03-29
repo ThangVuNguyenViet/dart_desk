@@ -3,7 +3,7 @@ import 'package:dart_desk/src/media/image_url.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final resolvedJson = {
+  Map<String, dynamic> resolvedJson() => {
     '_type': 'imageReference',
     'assetId': 'image-abc-1920x1080-jpg',
     'publicUrl': 'https://cdn.example.com/image.jpg',
@@ -17,28 +17,28 @@ void main() {
 
   group('ImageUrl.fromJson', () {
     test('decodes publicUrl correctly', () {
-      final imageUrl = ImageUrl.fromJson(resolvedJson);
+      final imageUrl = ImageUrl.fromJson(resolvedJson());
       expect(imageUrl.url(), equals('https://cdn.example.com/image.jpg'));
     });
 
     test('decodes blurHash', () {
-      final imageUrl = ImageUrl.fromJson(resolvedJson);
+      final imageUrl = ImageUrl.fromJson(resolvedJson());
       expect(imageUrl.blurHash, equals('LGF5?xYk^6#M'));
     });
 
     test('decodes hotspot', () {
-      final imageUrl = ImageUrl.fromJson(resolvedJson);
+      final imageUrl = ImageUrl.fromJson(resolvedJson());
       expect(imageUrl.imageRef.hotspot?.x, equals(0.5));
       expect(imageUrl.imageRef.hotspot?.y, equals(0.3));
     });
 
     test('decodes altText', () {
-      final imageUrl = ImageUrl.fromJson(resolvedJson);
+      final imageUrl = ImageUrl.fromJson(resolvedJson());
       expect(imageUrl.imageRef.altText, equals('A hero image'));
     });
 
     test('url() returns raw publicUrl when no transform builder', () {
-      final imageUrl = ImageUrl.fromJson(resolvedJson);
+      final imageUrl = ImageUrl.fromJson(resolvedJson());
       expect(
         imageUrl.url(width: 800, fit: FitMode.crop),
         equals('https://cdn.example.com/image.jpg'),
@@ -48,7 +48,7 @@ void main() {
 
   group('ImageUrl.withTransform', () {
     test('applies transform builder to url()', () {
-      final imageUrl = ImageUrl.fromJson(resolvedJson);
+      final imageUrl = ImageUrl.fromJson(resolvedJson());
       final withTransform = imageUrl.withTransform(
         (publicUrl, params) => '$publicUrl?w=${params.width}',
       );
@@ -56,7 +56,7 @@ void main() {
     });
 
     test('original imageUrl is unchanged after withTransform', () {
-      final imageUrl = ImageUrl.fromJson(resolvedJson);
+      final imageUrl = ImageUrl.fromJson(resolvedJson());
       imageUrl.withTransform((url, _) => '$url?modified');
       expect(imageUrl.url(), equals('https://cdn.example.com/image.jpg'));
     });

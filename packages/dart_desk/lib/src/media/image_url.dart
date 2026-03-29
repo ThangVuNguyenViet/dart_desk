@@ -3,7 +3,7 @@ import '../data/models/image_types.dart';
 import '../data/models/media_asset.dart';
 import 'image_transform_params.dart';
 
-typedef TransformUrlBuilder = String? Function(
+typedef TransformUrlBuilder = String Function(
     String publicUrl, ImageTransformParams params);
 
 class ImageUrl {
