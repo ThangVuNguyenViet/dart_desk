@@ -27,5 +27,5 @@ class CmsImageFieldConfig extends CmsFieldConfig {
   });
 
   @override
-  List<Type> get supportedFieldTypes => [String]; // Assuming image is represented by a URL string
+  List<Type> get supportedFieldTypes => [Object]; // String (URL) or ImageUrl (resolved)
 }

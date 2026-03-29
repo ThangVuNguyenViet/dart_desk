@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dart_desk/dart_desk.dart' show ImageUrl, ImageUrlMapper;
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
@@ -13,7 +14,7 @@ part 'home_screen_config.mapper.dart';
   description:
       'Configuration for the mobile app home screen with hero section, features, and actions',
 )
-@MappableClass(ignoreNull: false, includeCustomMappers: [ColorMapper()])
+@MappableClass(ignoreNull: false, includeCustomMappers: [ColorMapper(), ImageUrlMapper()])
 class HomeScreenConfig
     with HomeScreenConfigMappable, Serializable<HomeScreenConfig> {
   // ── Hero Section ──────────────────────────────────────────────────────
@@ -33,7 +34,7 @@ class HomeScreenConfig
     description: 'Background image for the hero section',
     option: CmsImageOption(hotspot: false),
   )
-  final String backgroundImageUrl;
+  final ImageUrl? backgroundImage;
 
   @CmsBooleanFieldConfig(
     description: 'Enable dark overlay on background image',
@@ -127,7 +128,7 @@ class HomeScreenConfig
     description: 'Logo image shown in the footer',
     option: CmsImageOption(hotspot: false),
   )
-  final String? footerLogoUrl;
+  final ImageUrl? footerLogo;
 
   // ── Action Buttons ────────────────────────────────────────────────────
   @CmsStringFieldConfig(
@@ -189,7 +190,7 @@ class HomeScreenConfig
   const HomeScreenConfig({
     required this.heroTitle,
     required this.heroSubtitle,
-    required this.backgroundImageUrl,
+    this.backgroundImage,
     required this.enableDarkOverlay,
     required this.primaryColor,
     required this.accentColor,
@@ -204,7 +205,7 @@ class HomeScreenConfig
     required this.lastUpdated,
     this.externalLink,
     this.downloadableResource,
-    this.footerLogoUrl,
+    this.footerLogo,
     required this.primaryButtonLabel,
     this.primaryButtonUrl,
     required this.secondaryButtonLabel,
@@ -220,7 +221,7 @@ class HomeScreenConfig
     heroTitle: 'Welcome to Our App',
     heroSubtitle:
         'Discover amazing features and capabilities that will enhance your daily workflow and productivity.',
-    backgroundImageUrl: '',
+    backgroundImage: null,
     enableDarkOverlay: true,
     primaryColor: Colors.deepPurple,
     accentColor: Colors.amber,
@@ -242,7 +243,7 @@ class HomeScreenConfig
     lastUpdated: DateTime.now(),
     externalLink: 'https://example.com/learn-more',
     downloadableResource: null,
-    footerLogoUrl: null,
+    footerLogo: null,
     primaryButtonLabel: 'Get Started',
     primaryButtonUrl: null,
     secondaryButtonLabel: 'Learn More',

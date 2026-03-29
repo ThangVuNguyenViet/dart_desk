@@ -20,8 +20,8 @@ final homeScreenConfigFields = [
     option: CmsTextOption(rows: 3),
   ),
   CmsImageField(
-    name: 'backgroundImageUrl',
-    title: 'Background Image Url',
+    name: 'backgroundImage',
+    title: 'Background Image',
     option: CmsImageOption(hotspot: false),
   ),
   CmsBooleanField(
@@ -95,8 +95,8 @@ final homeScreenConfigFields = [
     option: CmsFileOption(),
   ),
   CmsImageField(
-    name: 'footerLogoUrl',
-    title: 'Footer Logo Url',
+    name: 'footerLogo',
+    title: 'Footer Logo',
     option: CmsImageOption(hotspot: false),
   ),
   CmsStringField(
@@ -165,7 +165,7 @@ class HomeScreenConfigCmsConfig {
   HomeScreenConfigCmsConfig({
     required this.heroTitle,
     required this.heroSubtitle,
-    required this.backgroundImageUrl,
+    required this.backgroundImage,
     required this.enableDarkOverlay,
     required this.primaryColor,
     required this.accentColor,
@@ -180,7 +180,7 @@ class HomeScreenConfigCmsConfig {
     required this.lastUpdated,
     required this.externalLink,
     required this.downloadableResource,
-    required this.footerLogoUrl,
+    required this.footerLogo,
     required this.primaryButtonLabel,
     required this.primaryButtonUrl,
     required this.secondaryButtonLabel,
@@ -196,7 +196,7 @@ class HomeScreenConfigCmsConfig {
 
   final CmsData<String> heroSubtitle;
 
-  final CmsData<String> backgroundImageUrl;
+  final CmsData<ImageUrl?> backgroundImage;
 
   final CmsData<bool> enableDarkOverlay;
 
@@ -226,7 +226,7 @@ class HomeScreenConfigCmsConfig {
 
   final CmsData<String?> downloadableResource;
 
-  final CmsData<String?> footerLogoUrl;
+  final CmsData<ImageUrl?> footerLogo;
 
   final CmsData<String> primaryButtonLabel;
 

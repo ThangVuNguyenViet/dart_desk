@@ -15,7 +15,7 @@ class HomeScreenConfigMapper extends ClassMapperBase<HomeScreenConfig> {
   static HomeScreenConfigMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = HomeScreenConfigMapper._());
-      MapperContainer.globals.useAll([ColorMapper()]);
+      MapperContainer.globals.useAll([ColorMapper(), ImageUrlMapper()]);
     }
     return _instance!;
   }
@@ -33,11 +33,11 @@ class HomeScreenConfigMapper extends ClassMapperBase<HomeScreenConfig> {
     'heroSubtitle',
     _$heroSubtitle,
   );
-  static String _$backgroundImageUrl(HomeScreenConfig v) =>
-      v.backgroundImageUrl;
-  static const Field<HomeScreenConfig, String> _f$backgroundImageUrl = Field(
-    'backgroundImageUrl',
-    _$backgroundImageUrl,
+  static ImageUrl? _$backgroundImage(HomeScreenConfig v) => v.backgroundImage;
+  static const Field<HomeScreenConfig, ImageUrl> _f$backgroundImage = Field(
+    'backgroundImage',
+    _$backgroundImage,
+    opt: true,
   );
   static bool _$enableDarkOverlay(HomeScreenConfig v) => v.enableDarkOverlay;
   static const Field<HomeScreenConfig, bool> _f$enableDarkOverlay = Field(
@@ -116,10 +116,10 @@ class HomeScreenConfigMapper extends ClassMapperBase<HomeScreenConfig> {
     _$downloadableResource,
     opt: true,
   );
-  static String? _$footerLogoUrl(HomeScreenConfig v) => v.footerLogoUrl;
-  static const Field<HomeScreenConfig, String> _f$footerLogoUrl = Field(
-    'footerLogoUrl',
-    _$footerLogoUrl,
+  static ImageUrl? _$footerLogo(HomeScreenConfig v) => v.footerLogo;
+  static const Field<HomeScreenConfig, ImageUrl> _f$footerLogo = Field(
+    'footerLogo',
+    _$footerLogo,
     opt: true,
   );
   static String _$primaryButtonLabel(HomeScreenConfig v) =>
@@ -177,7 +177,7 @@ class HomeScreenConfigMapper extends ClassMapperBase<HomeScreenConfig> {
   final MappableFields<HomeScreenConfig> fields = const {
     #heroTitle: _f$heroTitle,
     #heroSubtitle: _f$heroSubtitle,
-    #backgroundImageUrl: _f$backgroundImageUrl,
+    #backgroundImage: _f$backgroundImage,
     #enableDarkOverlay: _f$enableDarkOverlay,
     #primaryColor: _f$primaryColor,
     #accentColor: _f$accentColor,
@@ -192,7 +192,7 @@ class HomeScreenConfigMapper extends ClassMapperBase<HomeScreenConfig> {
     #lastUpdated: _f$lastUpdated,
     #externalLink: _f$externalLink,
     #downloadableResource: _f$downloadableResource,
-    #footerLogoUrl: _f$footerLogoUrl,
+    #footerLogo: _f$footerLogo,
     #primaryButtonLabel: _f$primaryButtonLabel,
     #primaryButtonUrl: _f$primaryButtonUrl,
     #secondaryButtonLabel: _f$secondaryButtonLabel,
@@ -208,7 +208,7 @@ class HomeScreenConfigMapper extends ClassMapperBase<HomeScreenConfig> {
     return HomeScreenConfig(
       heroTitle: data.dec(_f$heroTitle),
       heroSubtitle: data.dec(_f$heroSubtitle),
-      backgroundImageUrl: data.dec(_f$backgroundImageUrl),
+      backgroundImage: data.dec(_f$backgroundImage),
       enableDarkOverlay: data.dec(_f$enableDarkOverlay),
       primaryColor: data.dec(_f$primaryColor),
       accentColor: data.dec(_f$accentColor),
@@ -223,7 +223,7 @@ class HomeScreenConfigMapper extends ClassMapperBase<HomeScreenConfig> {
       lastUpdated: data.dec(_f$lastUpdated),
       externalLink: data.dec(_f$externalLink),
       downloadableResource: data.dec(_f$downloadableResource),
-      footerLogoUrl: data.dec(_f$footerLogoUrl),
+      footerLogo: data.dec(_f$footerLogo),
       primaryButtonLabel: data.dec(_f$primaryButtonLabel),
       primaryButtonUrl: data.dec(_f$primaryButtonUrl),
       secondaryButtonLabel: data.dec(_f$secondaryButtonLabel),
@@ -303,7 +303,7 @@ abstract class HomeScreenConfigCopyWith<$R, $In extends HomeScreenConfig, $Out>
   $R call({
     String? heroTitle,
     String? heroSubtitle,
-    String? backgroundImageUrl,
+    ImageUrl? backgroundImage,
     bool? enableDarkOverlay,
     Color? primaryColor,
     Color? accentColor,
@@ -318,7 +318,7 @@ abstract class HomeScreenConfigCopyWith<$R, $In extends HomeScreenConfig, $Out>
     DateTime? lastUpdated,
     String? externalLink,
     String? downloadableResource,
-    String? footerLogoUrl,
+    ImageUrl? footerLogo,
     String? primaryButtonLabel,
     String? primaryButtonUrl,
     String? secondaryButtonLabel,
@@ -353,7 +353,7 @@ class _HomeScreenConfigCopyWithImpl<$R, $Out>
   $R call({
     String? heroTitle,
     String? heroSubtitle,
-    String? backgroundImageUrl,
+    Object? backgroundImage = $none,
     bool? enableDarkOverlay,
     Color? primaryColor,
     Color? accentColor,
@@ -368,7 +368,7 @@ class _HomeScreenConfigCopyWithImpl<$R, $Out>
     DateTime? lastUpdated,
     Object? externalLink = $none,
     Object? downloadableResource = $none,
-    Object? footerLogoUrl = $none,
+    Object? footerLogo = $none,
     String? primaryButtonLabel,
     Object? primaryButtonUrl = $none,
     String? secondaryButtonLabel,
@@ -382,7 +382,7 @@ class _HomeScreenConfigCopyWithImpl<$R, $Out>
     FieldCopyWithData({
       if (heroTitle != null) #heroTitle: heroTitle,
       if (heroSubtitle != null) #heroSubtitle: heroSubtitle,
-      if (backgroundImageUrl != null) #backgroundImageUrl: backgroundImageUrl,
+      if (backgroundImage != $none) #backgroundImage: backgroundImage,
       if (enableDarkOverlay != null) #enableDarkOverlay: enableDarkOverlay,
       if (primaryColor != null) #primaryColor: primaryColor,
       if (accentColor != null) #accentColor: accentColor,
@@ -399,7 +399,7 @@ class _HomeScreenConfigCopyWithImpl<$R, $Out>
       if (externalLink != $none) #externalLink: externalLink,
       if (downloadableResource != $none)
         #downloadableResource: downloadableResource,
-      if (footerLogoUrl != $none) #footerLogoUrl: footerLogoUrl,
+      if (footerLogo != $none) #footerLogo: footerLogo,
       if (primaryButtonLabel != null) #primaryButtonLabel: primaryButtonLabel,
       if (primaryButtonUrl != $none) #primaryButtonUrl: primaryButtonUrl,
       if (secondaryButtonLabel != null)
@@ -416,10 +416,7 @@ class _HomeScreenConfigCopyWithImpl<$R, $Out>
   HomeScreenConfig $make(CopyWithData data) => HomeScreenConfig(
     heroTitle: data.get(#heroTitle, or: $value.heroTitle),
     heroSubtitle: data.get(#heroSubtitle, or: $value.heroSubtitle),
-    backgroundImageUrl: data.get(
-      #backgroundImageUrl,
-      or: $value.backgroundImageUrl,
-    ),
+    backgroundImage: data.get(#backgroundImage, or: $value.backgroundImage),
     enableDarkOverlay: data.get(
       #enableDarkOverlay,
       or: $value.enableDarkOverlay,
@@ -446,7 +443,7 @@ class _HomeScreenConfigCopyWithImpl<$R, $Out>
       #downloadableResource,
       or: $value.downloadableResource,
     ),
-    footerLogoUrl: data.get(#footerLogoUrl, or: $value.footerLogoUrl),
+    footerLogo: data.get(#footerLogo, or: $value.footerLogo),
     primaryButtonLabel: data.get(
       #primaryButtonLabel,
       or: $value.primaryButtonLabel,

@@ -117,9 +117,9 @@ class HomeScreen extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         // Background
-        if (config.backgroundImageUrl.isNotEmpty)
+        if (config.backgroundImage != null)
           Image.network(
-            config.backgroundImageUrl,
+            config.backgroundImage!.url(),
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) =>
                 _buildHeroFallbackBackground(),
@@ -590,12 +590,11 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Footer logo
-          if (config.footerLogoUrl != null &&
-              config.footerLogoUrl!.isNotEmpty) ...[
+          if (config.footerLogo != null) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                config.footerLogoUrl!,
+                config.footerLogo!.url(),
                 height: 40,
                 errorBuilder: (_, _, _) => const SizedBox.shrink(),
               ),
