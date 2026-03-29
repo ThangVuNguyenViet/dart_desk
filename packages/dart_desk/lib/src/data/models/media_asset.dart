@@ -91,6 +91,26 @@ class MediaAsset {
     );
   }
 
+  /// Decodes the subset of fields present in a resolved imageReference node.
+  /// Fields not present in the inline format use safe zero-value defaults.
+  factory MediaAsset.fromInlineJson(Map<String, dynamic> json) {
+    return MediaAsset(
+      id: 0,
+      assetId: json['assetId'] as String,
+      fileName: '',
+      mimeType: 'image/*',
+      fileSize: 0,
+      publicUrl: json['publicUrl'] as String,
+      width: json['width'] as int,
+      height: json['height'] as int,
+      hasAlpha: false,
+      blurHash: json['blurHash'] as String? ?? '',
+      lqip: json['lqip'] as String?,
+      createdAt: DateTime(0),
+      metadataStatus: MediaAssetMetadataStatus.complete,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
     'id': id,
     'assetId': assetId,
