@@ -270,7 +270,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
                           widget.viewModel.currentDocumentTypeSlug.value;
                       final docId = widget.viewModel.currentDocumentId.value;
                       if (docTypeSlug != null && docId != null) {
-                        context.router.navigate(VersionScreenRoute(
+                        context.router.navigate(DocumentScreenRoute(
                           documentTypeSlug: docTypeSlug,
                           documentId: docId,
                           versionId: version.id.toString(),

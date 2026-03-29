@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// Color picker input widget with full functionality
@@ -50,18 +50,17 @@ class _CmsColorInputState extends State<CmsColorInput> {
   void _showColorPicker() {
     showDialog(
       context: context,
-      builder:
-          (context) => _ColorPickerDialog(
-            initialColor: _selectedColor,
-            showAlpha: widget.field.option.showAlpha,
-            presetColors: widget.field.option.presetColors,
-            onColorSelected: (color) {
-              setState(() {
-                _selectedColor = color;
-              });
-              widget.onChanged?.call(_colorToHex(color));
-            },
-          ),
+      builder: (context) => _ColorPickerDialog(
+        initialColor: _selectedColor,
+        showAlpha: widget.field.option.showAlpha,
+        presetColors: widget.field.option.presetColors,
+        onColorSelected: (color) {
+          setState(() {
+            _selectedColor = color;
+          });
+          widget.onChanged?.call(_colorToHex(color));
+        },
+      ),
     );
   }
 
@@ -73,50 +72,55 @@ class _CmsColorInputState extends State<CmsColorInput> {
 
     final theme = ShadTheme.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.field.title,
-          style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            // Color preview box
-            InkWell(
-              onTap: _showColorPicker,
-              borderRadius: BorderRadius.circular(8),
-              child: Container(
-                width: 80,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: _selectedColor,
-                  border: Border.all(color: theme.colorScheme.border, width: 2),
-                  borderRadius: BorderRadius.circular(8),
+    return Material(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            widget.field.title,
+            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              // Color preview box
+              InkWell(
+                onTap: _showColorPicker,
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  width: 80,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: _selectedColor,
+                    border: Border.all(
+                      color: theme.colorScheme.border,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            // Hex value display and edit
-            Expanded(
-              child: ShadInput(
-                initialValue: _colorToHex(_selectedColor),
-                onChanged: (value) {
-                  final color = _parseColor(value);
-                  if (color != null) {
-                    setState(() {
-                      _selectedColor = color;
-                    });
-                    widget.onChanged?.call(value);
-                  }
-                },
-                placeholder: const Text('#RRGGBB'),
+              const SizedBox(width: 12),
+              // Hex value display and edit
+              Expanded(
+                child: ShadInput(
+                  initialValue: _colorToHex(_selectedColor),
+                  onChanged: (value) {
+                    final color = _parseColor(value);
+                    if (color != null) {
+                      setState(() {
+                        _selectedColor = color;
+                      });
+                      widget.onChanged?.call(value);
+                    }
+                  },
+                  placeholder: const Text('#RRGGBB'),
+                ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -255,26 +259,25 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children:
-                    widget.presetColors!.map((color) {
-                      return InkWell(
-                        onTap: () {
-                          _updateColor(HSVColor.fromColor(color));
-                        },
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: color,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: theme.colorScheme.border,
-                              width: 2,
-                            ),
-                          ),
+                children: widget.presetColors!.map((color) {
+                  return InkWell(
+                    onTap: () {
+                      _updateColor(HSVColor.fromColor(color));
+                    },
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: theme.colorScheme.border,
+                          width: 2,
                         ),
-                      );
-                    }).toList(),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
             ],
           ],

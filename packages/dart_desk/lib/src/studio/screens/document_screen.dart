@@ -5,7 +5,6 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../components/layout/cms_content_layout.dart';
 import '../config/cms_breakpoints.dart';
 import '../core/view_models/cms_view_model.dart';
 import 'document_editor.dart';
@@ -43,35 +42,27 @@ class DocumentScreen extends StatelessWidget {
       ),
     );
 
-    // Mobile: full-screen editor only (user pushed here from doc list)
-    if (isMobile) return editor;
+    // Mobile / Tablet: full-screen editor only
+    if (!isDesktop) return editor;
 
     // Desktop: preview + editor side by side
-    final editorArea = isDesktop
-        ? Row(
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.card,
-                    border: Border(
-                      right: BorderSide(
-                        color: theme.colorScheme.border.withValues(alpha: 0.5),
-                      ),
-                    ),
-                  ),
-                  child: DocumentPreview(docType: docType),
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.card,
+              border: Border(
+                right: BorderSide(
+                  color: theme.colorScheme.border.withValues(alpha: 0.5),
                 ),
               ),
-              Expanded(child: editor),
-            ],
-          )
-        // Tablet: editor only (no preview)
-        : editor;
-
-    return CmsContentLayout(
-      documentTypeSlug: documentTypeSlug,
-      child: editorArea,
+            ),
+            child: DocumentPreview(docType: docType),
+          ),
+        ),
+        Expanded(child: editor),
+      ],
     );
   }
 }

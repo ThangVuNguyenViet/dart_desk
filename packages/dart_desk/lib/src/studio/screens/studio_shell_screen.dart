@@ -26,23 +26,19 @@ class StudioShellScreen extends StatefulWidget {
 
 class _StudioShellScreenState extends State<StudioShellScreen> {
   @override
-  void initState() {
-    super.initState();
-    // Redirect to the first document type on initial bare-root load.
-    // Scheduled after the first frame so StudioProvider has registered
-    // CmsViewModel and the router has settled on its initial route.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final params = context.router.topRoute.params;
-      if (params.optString('documentTypeSlug') == null) {
-        final config = GetIt.I<StudioConfig>();
-        if (config.documentTypes.isNotEmpty) {
-          context.router.navigate(DocumentTypeScreenRoute(
+  void didChangeDependencies() {
+    final params = context.router.topRoute.params;
+    if (params.optString('documentTypeSlug') == null) {
+      final config = GetIt.I<StudioConfig>();
+      if (config.documentTypes.isNotEmpty) {
+        context.router.navigate(
+          DocumentTypeScreenRoute(
             documentTypeSlug: config.documentTypes.first.name,
-          ));
-        }
+          ),
+        );
       }
-    });
+    }
+    super.didChangeDependencies();
   }
 
   Future<void> _deleteDocument(BuildContext context, {int? docId}) async {
@@ -78,14 +74,18 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
         if (result) {
           toaster.show(const ShadToast(description: Text('Document deleted')));
         } else {
-          toaster.show(ShadToast.destructive(
-              description: const Text('Failed to delete document')));
+          toaster.show(
+            ShadToast.destructive(
+              description: const Text('Failed to delete document'),
+            ),
+          );
         }
       }
     } catch (e) {
       if (mounted) {
         toaster.show(
-            ShadToast.destructive(description: Text('Failed to delete: $e')));
+          ShadToast.destructive(description: Text('Failed to delete: $e')),
+        );
       }
     }
   }
@@ -130,8 +130,7 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
           documentTypeDecorations: config.documentTypeDecorations,
           footer: ShadButton.ghost(
             key: const ValueKey('sidebar_media_button'),
-            onPressed: () =>
-                context.router.navigate(const MediaScreenRoute()),
+            onPressed: () => context.router.navigate(const MediaScreenRoute()),
             child: const Row(
               children: [
                 FaIcon(FontAwesomeIcons.images, size: 14),
@@ -150,14 +149,19 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
             color: theme.colorScheme.card,
             border: Border(
               right: BorderSide(
-                  color: theme.colorScheme.border.withValues(alpha: 0.5)),
+                color: theme.colorScheme.border.withValues(alpha: 0.5),
+              ),
             ),
           ),
           child: docType == null
               ? const SizedBox.shrink()
               : Padding(
                   padding: const EdgeInsets.fromLTRB(
-                      CmsSpacing.md, CmsSpacing.sm, CmsSpacing.md, 0),
+                    CmsSpacing.md,
+                    CmsSpacing.sm,
+                    CmsSpacing.md,
+                    0,
+                  ),
                   child: CmsDocumentListView(
                     selectedDocumentType: docType,
                     icon: FontAwesomeIcons.file,
@@ -180,7 +184,8 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
               color: theme.colorScheme.card,
               border: Border(
                 right: BorderSide(
-                    color: theme.colorScheme.border.withValues(alpha: 0.5)),
+                  color: theme.colorScheme.border.withValues(alpha: 0.5),
+                ),
               ),
             ),
             child: Column(
@@ -188,8 +193,7 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
                 const Spacer(),
                 CmsCollapseBar(
                   isCollapsed: true,
-                  onToggle: () =>
-                      viewModel.documentListVisible.value = true,
+                  onToggle: () => viewModel.documentListVisible.value = true,
                 ),
               ],
             ),
