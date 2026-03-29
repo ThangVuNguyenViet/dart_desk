@@ -23,7 +23,10 @@ class MyApp extends StatelessWidget {
     defaultValue: _defaultServerUrl,
   );
 
-  static const apiKey = String.fromEnvironment('API_KEY');
+  static const apiKey = String.fromEnvironment(
+    'API_KEY',
+    defaultValue: 'cms_w_e2eTestTokenForDartDeskIntegration00aaaa',
+  );
 
   @override
   Widget build(BuildContext context) {

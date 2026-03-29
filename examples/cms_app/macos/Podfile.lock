@@ -139,7 +139,7 @@ SPEC CHECKSUMS:
   desktop_webview_window: 7e37af677d6d19294cb433d9b1d878ef78dffa4d
   device_info_plus: 4fb280989f669696856f8b129e4a5e3cd6c48f76
   file_picker: 7584aae6fa07a041af2b36a2655122d42f578c1a
-  file_selector_macos: 6280b52b459ae6c590af5d78fc35c7267a3c4b31
+  file_selector_macos: 9e9e068e90ebee155097d00e89ae91edb2374db7
   flutter_secure_storage_darwin: acdb3f316ed05a3e68f856e0353b133eec373a23
   flutter_web_auth_2: 7fe624ff12ddcb4c19e5dbcd56c9e9ea4899d967
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
@@ -149,9 +149,9 @@ SPEC CHECKSUMS:
   GTMAppAuth: 217a876b249c3c585a54fd6f73e6b58c4f5c4238
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   irondash_engine_context: 893c7d96d20ce361d7e996f39d360c4c2f9869ba
-  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  path_provider_foundation: bb55f6dbba17d0dccd6737fe6f7f34fbd0376880
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
   sign_in_with_apple: 6673c03c9e3643f6c8d33601943fbfa9ae99f94e
   super_native_extensions: c2795d6d9aedf4a79fae25cb6160b71b50549189
   url_launcher_macos: f87a979182d112f911de6820aefddaf56ee9fbfd
