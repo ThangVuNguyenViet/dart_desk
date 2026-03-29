@@ -30,7 +30,7 @@ dependencies:
   serverpod_auth_idp_flutter: ^3.3.1
   signals: ^6.3.0
   flutter_resizable_container: ^4.2.0
-  super_editor: ^0.3.0-dev.50
+  super_editor: 0.3.0-dev.50
   get_it: ^9.2.1
   auto_route: ^11.1.0
   marionette_flutter: ^0.4.0
