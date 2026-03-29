@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 
 import 'robots/document_editor_robot.dart';
 import 'robots/document_list_robot.dart';
@@ -15,8 +14,9 @@ void main() {
   tearDownAll(() async => DbHelper.reset());
 
   group('01 - Data Persistence', () {
-    testWidgets('TC-E2E-01-01: Create document persists to backend',
-        (tester) async {
+    testWidgets('TC-E2E-01-01: Create document persists to backend', (
+      tester,
+    ) async {
       final ss = ScreenshotHelper(binding, 'tc_01_01');
       await pumpTestApp(tester);
       await ss.take(tester, 'app_loaded');
