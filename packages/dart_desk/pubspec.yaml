@@ -44,6 +44,7 @@ dependencies:
   plugin_platform_interface: ^2.1.8
   super_drag_and_drop: ^0.9.1
   responsive_framework: ^1.5.1
+  dart_mappable: ^4.7.0
 
 dev_dependencies:
   flutter_test:

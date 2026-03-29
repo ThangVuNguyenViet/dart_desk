@@ -1,5 +1,4 @@
 import 'package:dart_desk/dart_desk.dart';
-import 'package:dart_desk/src/media/image_url.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
