@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../data/data.dart';
 import 'package:dart_desk_client/dart_desk_client.dart' as serverpod;
+
+import '../data/data.dart';
 
 /// Cloud data source implementation using the Serverpod dart_desk_client.
 ///
@@ -83,7 +84,7 @@ class CloudDataSource implements DataSource {
       final response = await _client.document.createDocument(
         documentType,
         title,
-        data,
+        jsonEncode(data),
         slug: slug,
         isDefault: isDefault,
       );
@@ -191,10 +192,9 @@ class CloudDataSource implements DataSource {
           initialState: accumulatedState,
         );
 
-        versions.add(_toDocumentVersionWithData(
-          versionWithOps.version,
-          accumulatedState,
-        ));
+        versions.add(
+          _toDocumentVersionWithData(versionWithOps.version, accumulatedState),
+        );
       }
 
       return DocumentVersionList(
@@ -223,8 +223,10 @@ class CloudDataSource implements DataSource {
   @override
   Future<Map<String, dynamic>?> getDocumentVersionData(int versionId) async {
     try {
-      final data = await _client.document.getDocumentVersionData(versionId);
-      return data;
+      final dataJson = await _client.document.getDocumentVersionData(versionId);
+      return dataJson != null
+          ? jsonDecode(dataJson) as Map<String, dynamic>
+          : null;
     } catch (e) {
       throw CmsDataSourceException('Failed to get document version data', e);
     }
@@ -418,8 +420,10 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<MediaAsset> updateMediaAsset(String assetId,
-      {String? fileName}) async {
+  Future<MediaAsset> updateMediaAsset(
+    String assetId, {
+    String? fileName,
+  }) async {
     try {
       final response = await _client.media.updateMediaAsset(
         assetId,
@@ -464,7 +468,7 @@ class CloudDataSource implements DataSource {
 
     return CmsDocument(
       id: doc.id,
-      clientId: doc.clientId ?? 0,
+      clientId: doc.projectId,
       documentType: doc.documentType,
       title: doc.title,
       slug: doc.slug,
@@ -585,7 +589,10 @@ class CloudDataSource implements DataSource {
       if (op.operationType == serverpod.CrdtOperationType.put &&
           op.fieldValue != null) {
         _applyPutToFlatState(
-            flatState, op.fieldPath, jsonDecode(op.fieldValue!));
+          flatState,
+          op.fieldPath,
+          jsonDecode(op.fieldValue!),
+        );
       } else if (op.operationType == serverpod.CrdtOperationType.delete) {
         flatState.remove(op.fieldPath);
         flatState.removeWhere((k, _) => k.startsWith('${op.fieldPath}.'));
@@ -624,7 +631,7 @@ class CloudDataSource implements DataSource {
     try {
       final response = await _client.document.updateDocumentData(
         documentId,
-        updates,
+        jsonEncode(updates),
         sessionId: sessionId,
       );
       return _toCmsDocument(response);
@@ -666,7 +673,7 @@ class CloudDataSource implements DataSource {
       final response = await _client.documentCollaboration.submitEdit(
         documentId,
         sessionId,
-        fieldUpdates,
+        jsonEncode(fieldUpdates),
       );
       return _toCmsDocument(response);
     } on serverpod.ServerpodClientException catch (e) {
@@ -682,7 +689,12 @@ class CloudDataSource implements DataSource {
   /// Get list of users currently editing this document
   Future<List<Map<String, dynamic>>> getActiveEditors(int documentId) async {
     try {
-      return await _client.documentCollaboration.getActiveEditors(documentId);
+      final response = await _client.documentCollaboration.getActiveEditors(
+        documentId,
+      );
+      return response
+          .map((e) => jsonDecode(e) as Map<String, dynamic>)
+          .toList();
     } catch (e) {
       throw CmsDataSourceException('Failed to get active editors', e);
     }

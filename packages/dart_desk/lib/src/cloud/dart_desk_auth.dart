@@ -77,6 +77,8 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
         _errorMessage = null;
       });
 
+      _sessionManager = FlutterAuthSessionManager();
+
       _client =
           Client(
               widget.serverUrl,
@@ -96,13 +98,11 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
               },
             )
             ..connectivityMonitor = FlutterConnectivityMonitor()
-            ..authSessionManager = FlutterAuthSessionManager();
-
-      // Save reference before wrapping (auth getter checks type of authKeyProvider)
-      _sessionManager = _client.authSessionManager;
-
-      // Send API key as a custom header on every RPC call
-      _client.customHeaders = {'x-api-key': widget.apiKey};
+            ..authSessionManager = _sessionManager
+            ..authKeyProvider = DartDeskAuthKeyProvider(
+              apiKey: widget.apiKey,
+              inner: _sessionManager,
+            );
 
       await _sessionManager.initialize();
       await _sessionManager.initializeGoogleSignIn();

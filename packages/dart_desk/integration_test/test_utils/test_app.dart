@@ -61,12 +61,14 @@ Future<void> pumpTestApp(WidgetTester tester) async {
   FakeImagePickerPlatform.install();
 
   // Build a pre-authenticated client so we bypass the login screen.
+  final sessionManager = FlutterAuthSessionManager();
   final client = Client(_testServerUrl)
     ..connectivityMonitor = _TestConnectivityMonitor()
-    ..authSessionManager = FlutterAuthSessionManager()
-    ..customHeaders = {'x-api-key': _testApiKey};
-
-  final sessionManager = client.authSessionManager;
+    ..authSessionManager = sessionManager
+    ..authKeyProvider = DartDeskAuthKeyProvider(
+      apiKey: _testApiKey,
+      inner: sessionManager,
+    );
   await sessionManager.initialize();
 
   if (!sessionManager.isAuthenticated) {
