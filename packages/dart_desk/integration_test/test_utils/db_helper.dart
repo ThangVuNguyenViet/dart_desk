@@ -25,22 +25,24 @@ class DbHelper {
     debugPrint('[db_helper] Resetting database via $e2eEnvScript reset');
     final result = await Process.run('bash', [e2eEnvScript, 'reset']);
     if (result.exitCode != 0) {
-      debugPrint('[db_helper] reset failed (exit ${result.exitCode}):');
-      debugPrint(result.stderr.toString());
-    } else {
-      debugPrint('[db_helper] reset complete');
+      throw Exception(
+        'e2e_env.sh reset failed (exit ${result.exitCode}):\n'
+        '${result.stderr}',
+      );
     }
+    debugPrint('[db_helper] reset complete');
   }
 
   static Future<void> seedDocuments() async {
     debugPrint('[db_helper] Seeding via $e2eEnvScript seed');
     final result = await Process.run('bash', [e2eEnvScript, 'seed']);
     if (result.exitCode != 0) {
-      debugPrint('[db_helper] seed failed (exit ${result.exitCode}):');
-      debugPrint(result.stderr.toString());
-    } else {
-      debugPrint('[db_helper] seed complete');
+      throw Exception(
+        'e2e_env.sh seed failed (exit ${result.exitCode}):\n'
+        '${result.stderr}',
+      );
     }
+    debugPrint('[db_helper] seed complete');
   }
 
   static String get e2eEnvScript => _e2eEnvScript;

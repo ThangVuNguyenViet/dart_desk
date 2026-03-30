@@ -1260,60 +1260,58 @@ packages:
     dependency: transitive
     description:
       name: serverpod_auth_core_client
-      sha256: "01d3ecc55200b1e6b777271ed2cac40b66e7ef57ff8239332f8f48fe3e09064d"
+      sha256: "7634a907eb4ee55ff527f4cf0cb148085c6e53bd4fdad121b96ac8ed3847cbe6"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.3"
+    version: "3.4.5"
   serverpod_auth_core_flutter:
     dependency: transitive
     description:
       name: serverpod_auth_core_flutter
-      sha256: c5d564d0459edfd5a84a7ba4ea9f8a0c96ca876a9fa09682c093e852ac6a0a30
+      sha256: "74cfceea3dcb429378d4b6bbd7311c65a6e42d7f325a71bce2aea2259b1c0bc9"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.3"
+    version: "3.4.5"
   serverpod_auth_idp_client:
     dependency: transitive
     description:
       name: serverpod_auth_idp_client
-      sha256: "0e216f99c4b55d4e12c66673f95c99f428c8b7b18deed5fe0b20626481d067ac"
+      sha256: "8057313bcb23932d5088d0ddc50cc9db820f7d252b9cd1fbc8139d6bfc5e30a1"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.3"
+    version: "3.4.5"
   serverpod_auth_idp_flutter:
     dependency: transitive
     description:
       name: serverpod_auth_idp_flutter
-      sha256: "2aa89aa6f7b5b40a5c59068c4a0fa928821d28a6573014b74271628927230fa5"
+      sha256: "7f633482c0ca63456c4c9bba24eab47d5971867708a9e07e396e3c9ffab905b4"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.3"
+    version: "3.4.5"
   serverpod_client:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "packages/serverpod_client"
-      ref: main
-      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
-      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
-    source: git
-    version: "3.4.4"
+      name: serverpod_client
+      sha256: bb927f4880cfb982c198426818d09cd3b07830f6232e25169dfc0ab443fc83a7
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.5"
   serverpod_flutter:
     dependency: transitive
     description:
       name: serverpod_flutter
-      sha256: "7b35c08d86e0857e8416b3a3dd6adc895372417cb417f8275222a99d050a1ebf"
+      sha256: c6257998b3e8bf5d5a33ec5cf3031165ea96d21c8eaf2af9d93db85bbf43af88
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.3"
+    version: "3.4.5"
   serverpod_serialization:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "packages/serverpod_serialization"
-      ref: main
-      resolved-ref: "7fdee2c484e60a5ac8431e6d055846c8a4687e72"
-      url: "https://github.com/ThangVuNguyenViet/serverpod.git"
-    source: git
-    version: "3.4.4"
+      name: serverpod_serialization
+      sha256: be8f84c9409bafe35d1ab65abeaa5c2f7d92116155059e489366c7fdedcca55f
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.5"
   shadcn_ui:
     dependency: "direct main"
     description:
@@ -1574,10 +1572,10 @@ packages:
     dependency: transitive
     description:
       name: super_keyboard
-      sha256: e3accebf33635f760efbd4d3c13f6484242a09e773ce8e711f4aa745d52b73b1
+      sha256: "47dfacfd617f7b704c3b9cc786930ced3b6e8698cb5ffd3b4a0cb705d42f679a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.0"
+    version: "0.3.1"
   super_native_extensions:
     dependency: transitive
     description:
@@ -1590,10 +1588,10 @@ packages:
     dependency: transitive
     description:
       name: super_text_layout
-      sha256: "166b0eb846d186b349986619ddcbf5227f33ee216b7758dfa1e37b1a26a785ef"
+      sha256: "316e446bb7e7ec21da77011c5880532d163259416de6997f83377154f8e0ae71"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.19"
+    version: "0.1.20"
   sync_http:
     dependency: transitive
     description:

@@ -1,10 +1,10 @@
 name: dart_desk_workspace
 description: "Dart Desk monorepo workspace"
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
-  sdk: ^3.10.1
+  sdk: "^3.10.1"
 
 # Workspace configuration
 workspace:
@@ -38,13 +38,3 @@ dependency_overrides:
     git:
       url: https://github.com/rodydavis/signals.dart.git
       path: packages/signals_flutter
-  serverpod_client:
-    git:
-      url: https://github.com/ThangVuNguyenViet/serverpod.git
-      ref: main
-      path: packages/serverpod_client
-  serverpod_serialization:
-    git:
-      url: https://github.com/ThangVuNguyenViet/serverpod.git
-      ref: main
-      path: packages/serverpod_serialization

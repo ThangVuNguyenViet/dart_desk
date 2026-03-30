@@ -121,6 +121,8 @@ seed_db() {
   local SERVER_URL="http://localhost:8080"
   local E2E_EMAIL="e2e@dartdesk.dev"
   local E2E_PASSWORD="e2e-password-123"
+  local E2E_CLIENT_SLUG="e2e-dart-desk-client"
+  local E2E_PROJECT_SLUG="e2e-dart-desk-project"
 
   # API token: plaintext is "cms_w_e2eTestTokenForDartDeskIntegration00aaaa"
   # Validated by ApiKeyValidator which uses SHA-256 hash + prefix/suffix lookup.
@@ -204,17 +206,50 @@ seed_db() {
   fi
 
   run_sql "
-    -- App-level user (clientId=NULL for single-tenant mode)
-    INSERT INTO users (\"serverpodUserId\", email, name, role)
-    SELECT '$AUTH_USER_ID', '$E2E_EMAIL', 'E2E Test User', 'admin'
+    INSERT INTO clients (name, slug, \"isActive\", \"createdAt\", \"updatedAt\")
+    SELECT 'Dart Desk E2E Client', '$E2E_CLIENT_SLUG', true, NOW(), NOW()
     WHERE NOT EXISTS (
-      SELECT 1 FROM users WHERE \"clientId\" IS NULL AND email = '$E2E_EMAIL'
+      SELECT 1 FROM clients WHERE slug = '$E2E_CLIENT_SLUG'
     );
 
-    -- API token (clientId=NULL, write role, single-tenant)
-    INSERT INTO api_tokens (name, \"tokenHash\", \"tokenPrefix\", \"tokenSuffix\", role, \"isActive\",
+    INSERT INTO projects (\"clientId\", name, slug, \"isActive\", \"createdAt\", \"updatedAt\")
+    SELECT c.id, 'Dart Desk E2E Project', '$E2E_PROJECT_SLUG', true, NOW(), NOW()
+    FROM clients c
+    WHERE c.slug = '$E2E_CLIENT_SLUG'
+      AND NOT EXISTS (
+        SELECT 1 FROM projects WHERE slug = '$E2E_PROJECT_SLUG'
+      );
+
+    UPDATE users
+    SET \"clientId\" = c.id,
+        email = '$E2E_EMAIL',
+        name = 'E2E Test User',
+        role = 'admin',
+        \"isActive\" = true,
+        \"updatedAt\" = NOW()
+    FROM clients c
+    WHERE c.slug = '$E2E_CLIENT_SLUG'
+      AND users.\"serverpodUserId\" = '$AUTH_USER_ID';
+
+    INSERT INTO users (\"clientId\", \"serverpodUserId\", email, name, role, \"isActive\", \"createdAt\", \"updatedAt\")
+    SELECT c.id, '$AUTH_USER_ID', '$E2E_EMAIL', 'E2E Test User', 'admin', true, NOW(), NOW()
+    FROM clients c
+    WHERE c.slug = '$E2E_CLIENT_SLUG'
+      AND NOT EXISTS (
+        SELECT 1 FROM users WHERE \"serverpodUserId\" = '$AUTH_USER_ID'
+      );
+
+    DELETE FROM api_tokens
+    WHERE \"tokenPrefix\" = '$E2E_TOKEN_PREFIX'
+      AND \"tokenSuffix\" = '$E2E_TOKEN_SUFFIX'
+      AND \"projectId\" <> (
+        SELECT id FROM projects WHERE slug = '$E2E_PROJECT_SLUG' LIMIT 1
+      );
+
+    INSERT INTO api_tokens (\"projectId\", name, \"tokenHash\", \"tokenPrefix\", \"tokenSuffix\", role, \"isActive\",
                             \"createdByUserId\", \"createdAt\")
-    SELECT 'E2E Write Token',
+    SELECT p.id,
+           'E2E Write Token',
            '$E2E_TOKEN_HASH',
            '$E2E_TOKEN_PREFIX',
            '$E2E_TOKEN_SUFFIX',
@@ -222,11 +257,12 @@ seed_db() {
            true,
            u.id,
            NOW()
-    FROM users u
-    WHERE u.email = '$E2E_EMAIL'
+    FROM projects p
+    JOIN users u ON u.\"serverpodUserId\" = '$AUTH_USER_ID'
+    WHERE p.slug = '$E2E_PROJECT_SLUG'
       AND NOT EXISTS (
         SELECT 1 FROM api_tokens t
-        WHERE t.\"clientId\" IS NULL
+        WHERE t.\"projectId\" = p.id
           AND t.\"tokenPrefix\" = '$E2E_TOKEN_PREFIX'
           AND t.\"tokenSuffix\" = '$E2E_TOKEN_SUFFIX'
       );
