@@ -10,6 +10,7 @@ LOG_FILE="/tmp/dart_desk_e2e_server.log"
 DB_CMD="PGPASSWORD=dart_desk_be_test_password psql -h localhost -p 9090 -U postgres -d dart_desk_be_test"
 
 E2E_PROJECT_SLUG="e2e-dart-desk-project"
+E2E_EMAIL="e2e@dartdesk.dev"
 
 if [ ! -f "$COMPOSE_FILE" ]; then
   echo "ERROR: docker-compose.yaml not found at $BACKEND_DIR"
@@ -113,11 +114,9 @@ reset_db() {
       AND p.slug = '$E2E_PROJECT_SLUG';
 
     DELETE FROM documents_data
-    USING document_versions dv, documents d, projects p
-    WHERE documents_data.\"documentVersionId\" = dv.id
-      AND dv.\"documentId\" = d.id
-      AND d.\"projectId\" = p.id
-      AND p.slug = '$E2E_PROJECT_SLUG';
+    USING users u
+    WHERE documents_data.\"createdByUserId\" = u.id
+      AND u.email = '$E2E_EMAIL';
 
     DELETE FROM document_versions
     USING documents d, projects p
