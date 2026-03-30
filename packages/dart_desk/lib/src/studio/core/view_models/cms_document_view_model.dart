@@ -2,6 +2,7 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../../data/cms_data_source.dart';
 import '../../../data/models/cms_document.dart';
+import '../../../extensions/awaitable_future_signal.dart';
 import 'cms_view_model.dart';
 
 /// ViewModel for managing a single document's state.
@@ -17,7 +18,7 @@ class CmsDocumentViewModel {
   final documentId = Signal<int?>(null, debugLabel: 'documentId');
 
   /// FutureSignal for the currently selected document
-  late final selectedDocument = FutureSignal<CmsDocument?>(() async {
+  late final selectedDocument = AwaitableFutureSignal<CmsDocument?>(() async {
     final docId = documentId.value;
     if (docId == null) return null;
     return await dataSource.getDocument(docId);

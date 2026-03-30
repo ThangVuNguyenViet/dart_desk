@@ -235,7 +235,7 @@ void main() {
       await dataSource.createDocument('test_all_fields', 'Delta Document', {});
 
       // Reload the container
-      viewModel.documentsContainer('test_all_fields').reload();
+      viewModel.documentsContainer('test_all_fields').awaitableReload();
       await tester.pumpAndSettle();
 
       // Open dropdown again — should now show 4 docs
@@ -343,7 +343,7 @@ void main() {
 
       // Add a document and reload
       await dataSource.createDocument('test_all_fields', 'New Doc', {});
-      viewModel.documentsContainer('test_all_fields').reload();
+      viewModel.documentsContainer('test_all_fields').awaitableReload();
 
       await tester.pumpAndSettle();
       expect(find.text('count: 4'), findsOneWidget);

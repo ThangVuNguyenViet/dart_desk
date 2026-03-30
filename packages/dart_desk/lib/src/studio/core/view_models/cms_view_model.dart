@@ -4,6 +4,8 @@ import 'package:signals/signals_flutter.dart';
 import '../../../data/cms_data_source.dart';
 import '../../../data/models/cms_document.dart';
 import '../../../data/models/document_version.dart';
+import '../../../extensions/awaitable_future_signal.dart';
+
 class CmsViewModel {
   final DataSource dataSource;
 
@@ -59,7 +61,7 @@ class CmsViewModel {
   // ============================================================
 
   late final documentsContainer = SignalContainer(
-    (String documentType) => FutureSignal(
+    (String documentType) => AwaitableFutureSignal(
       () => dataSource.getDocuments(documentType, limit: 200),
       debugLabel: 'documents',
     ),
@@ -67,7 +69,7 @@ class CmsViewModel {
   );
 
   late final versionsContainer = SignalContainer(
-    (int documentId) => FutureSignal(
+    (int documentId) => AwaitableFutureSignal(
       () => dataSource.getDocumentVersions(documentId),
       debugLabel: 'versions',
     ),
@@ -75,7 +77,7 @@ class CmsViewModel {
   );
 
   late final documentDataContainer = SignalContainer(
-    (int versionId) => FutureSignal(
+    (int versionId) => AwaitableFutureSignal(
       () => _fetchVersionWithData(versionId),
       debugLabel: 'documentData',
     ),
@@ -149,7 +151,7 @@ class CmsViewModel {
         selectedVersionId.value = versions.versions.first.id;
       }
 
-      documentsContainer(currentDocumentType.value?.name ?? '').reload();
+      documentsContainer(currentDocumentType.value?.name ?? '').awaitableReload();
 
       return document;
     } finally {
@@ -164,7 +166,7 @@ class CmsViewModel {
         selectedDocumentId.value = null;
         selectedVersionId.value = null;
       }
-      documentsContainer(currentDocumentType.value?.name ?? '').reload();
+      documentsContainer(currentDocumentType.value?.name ?? '').awaitableReload();
     }
     return result;
   }
@@ -176,7 +178,7 @@ class CmsViewModel {
     isSaving.value = true;
     try {
       final result = await dataSource.updateDocumentData(documentId, data);
-      documentsContainer(currentDocumentType.value?.name ?? '').reload();
+      documentsContainer(currentDocumentType.value?.name ?? '').awaitableReload();
       return result;
     } finally {
       isSaving.value = false;
@@ -197,9 +199,9 @@ class CmsViewModel {
 
       final docId = selectedDocumentId.value;
       if (docId != null) {
-        versionsContainer(docId).reload();
+        versionsContainer(docId).awaitableReload();
       }
-      documentDataContainer(versionId).reload();
+      documentDataContainer(versionId).awaitableReload();
 
       return result;
     } finally {
@@ -217,9 +219,9 @@ class CmsViewModel {
 
       final docId = selectedDocumentId.value;
       if (docId != null) {
-        versionsContainer(docId).reload();
+        versionsContainer(docId).awaitableReload();
       }
-      documentDataContainer(versionId).reload();
+      documentDataContainer(versionId).awaitableReload();
 
       return result;
     } finally {
@@ -236,7 +238,7 @@ class CmsViewModel {
 
       final docId = selectedDocumentId.value;
       if (docId != null) {
-        versionsContainer(docId).reload();
+        versionsContainer(docId).awaitableReload();
       }
     }
     return result;
@@ -249,21 +251,21 @@ class CmsViewModel {
   void refreshDocuments() {
     final docType = currentDocumentType.value?.name;
     if (docType != null) {
-      documentsContainer(docType).reload();
+      documentsContainer(docType).awaitableReload();
     }
   }
 
   void refreshVersions() {
     final docId = selectedDocumentId.value;
     if (docId != null) {
-      versionsContainer(docId).reload();
+      versionsContainer(docId).awaitableReload();
     }
   }
 
   void refreshSelectedData() {
     final versionId = selectedVersionId.value;
     if (versionId != null) {
-      documentDataContainer(versionId).reload();
+      documentDataContainer(versionId).awaitableReload();
     }
   }
 
