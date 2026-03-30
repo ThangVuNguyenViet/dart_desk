@@ -24,15 +24,15 @@ Context: FakeImagePickerPlatform is installed in main_test.dart, so image picker
 - Image preview area shows the uploaded image (not empty placeholder)
 - Upload state transitions visible if any loading indicator exists
 
-## TC-11-02: Remove and Edit crop buttons appear after upload
+## TC-11-02: Remove and Edit framing buttons appear after upload
 
 **Steps:**
 1. After TC-11-01, call get_interactive_elements in the image field area
-2. Look for "Remove" button and "Edit crop" button (hotspot is enabled on the test field)
+2. Look for "Remove" button and "Edit framing" button (hotspot is enabled on the test field)
 
 **Expected:**
 - "Remove" button is visible
-- "Edit crop" button is visible (since CmsImageOption has hotspot: true)
+- "Edit framing" button is visible (since CmsImageOption has hotspot: true)
 
 ## TC-11-03: Remove clears image
 
@@ -43,7 +43,7 @@ Context: FakeImagePickerPlatform is installed in main_test.dart, so image picker
 **Expected:**
 - Image preview is gone
 - Upload button/empty placeholder is visible again
-- "Remove" and "Edit crop" buttons are no longer visible
+- "Remove" and "Edit framing" buttons are no longer visible
 
 ## TC-11-04: Upload persists after navigation
 
@@ -72,26 +72,56 @@ Context: FakeImagePickerPlatform is installed in main_test.dart, so image picker
 - Image preview appears in the previously empty field
 - The document data now contains an ImageReference for image_field
 
-## TC-11-06: Open Edit crop dialog
+## TC-11-06: Open Edit framing dialog
 
 **Steps:**
 1. Ensure "Test Document Alpha" is selected and has an uploaded image, scroll to image_field
-2. Tap `edit_crop_button` (key)
-3. Call `get_interactive_elements` to check for `hotspot_editor`, `reset_button`, `done_button`
+2. Tap `edit_framing_button` (key)
+3. Call `get_interactive_elements` to check for `hotspot_editor`, `framing_mode_crop`, `framing_mode_focus`, `framing_mode_preview`, `reset_focus_button`, `reset_crop_button`, `reset_all_button`, `cancel_button`, `apply_button`
 
 **Expected:**
 - Hotspot editor elements visible in the dialog
 
-**ShadDialog fallback:** If elements not found after tapping edit_crop_button → mark SKIPPED with note "ShadDialog overlay not traversable by Marionette."
+**ShadDialog fallback:** If elements not found after tapping edit_framing_button → mark SKIPPED with note "ShadDialog overlay not traversable by Marionette."
 
-## TC-11-07: Edit crop Done saves
+## TC-11-07: Edit framing Apply saves
 
 **Prerequisites:** TC-11-06 passed (not skipped)
 
 **Steps:**
-1. Tap `done_button`
+1. Tap `apply_button`
 2. Call `get_interactive_elements` to verify dialog closed
 
 **Expected:**
 - Dialog is dismissed
-- Image field still shows the image preview and Edit crop button
+- Image field still shows the image preview and Edit framing button
+
+## TC-11-08: Reset focus preserves crop
+
+**Prerequisites:** TC-11-06 passed (not skipped)
+
+**Steps:**
+1. Reopen the framing dialog
+2. Adjust crop to a non-default value
+3. Tap `reset_focus_button`
+4. Tap `apply_button`
+5. Reopen the framing dialog
+
+**Expected:**
+- Crop remains customized
+- Focus returns to its default center/size
+
+## TC-11-09: Reset crop preserves focus
+
+**Prerequisites:** TC-11-06 passed (not skipped)
+
+**Steps:**
+1. Reopen the framing dialog
+2. Adjust focus to a non-default value
+3. Tap `reset_crop_button`
+4. Tap `apply_button`
+5. Reopen the framing dialog
+
+**Expected:**
+- Focus remains customized
+- Crop returns to the default uncropped bounds

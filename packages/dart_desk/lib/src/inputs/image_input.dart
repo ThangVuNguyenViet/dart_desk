@@ -18,7 +18,9 @@ import '../media/browser/media_browser.dart';
 import '../media/image_transform_params.dart';
 import '../media/image_url.dart';
 import '../media/quick_metadata_extractor.dart';
+import 'hotspot/framing_controller.dart';
 import 'hotspot/image_hotspot_editor.dart';
+import 'hotspot/framing_status.dart';
 
 @Preview(name: 'CmsImageInput')
 Widget preview() => ShadApp(
@@ -63,6 +65,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
   late final _uploadState = createSignal<_UploadState>(_UploadState.idle);
   late final _errorMessage = createSignal<String?>(null);
   late final _isDragOver = createSignal<bool>(false);
+  late final _lastFramingMode = createSignal<FramingMode>(FramingMode.focus);
 
   /// Temporary blurHash from the quick metadata extraction, used during upload.
   late final _uploadBlurHash = createSignal<String?>(null);
@@ -227,6 +230,8 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           imageUrl: ref.asset.publicUrl,
           initialHotspot: ref.hotspot,
           initialCrop: ref.crop,
+          initialMode: _lastFramingMode.value,
+          onModeChanged: (mode) => _lastFramingMode.value = mode,
           onChanged: (result) {
             final updated = ref.copyWith(
               hotspot: result.hotspot,
@@ -288,6 +293,17 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
         borderRadius: BorderRadius.circular(7),
         child: _buildPreviewContent(theme, ref, state, blurHash),
       ),
+    );
+  }
+
+  Widget _buildFramingStatusChip(ShadThemeData theme, ImageReference ref) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondary,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(FramingStatus.labelFor(ref), style: theme.textTheme.small),
     );
   }
 
@@ -482,6 +498,11 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
             child: _buildImagePreviewArea(theme),
           ),
 
+          if (ref != null && hotspotEnabled) ...[
+            const SizedBox(height: 8),
+            _buildFramingStatusChip(theme, ref),
+          ],
+
           // Error message
           if (error != null) ...[
             const SizedBox(height: 4),
@@ -530,10 +551,10 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
                 ),
               ),
 
-              // Edit crop button (only if hotspot enabled and image loaded)
+              // Edit framing button (only if hotspot enabled and image loaded)
               if (hotspotEnabled && hasImage)
                 ShadButton.outline(
-                  key: const ValueKey('edit_crop_button'),
+                  key: const ValueKey('edit_framing_button'),
                   onPressed: _editCrop,
                   size: ShadButtonSize.sm,
                   child: const Row(
@@ -541,7 +562,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
                     children: [
                       FaIcon(FontAwesomeIcons.cropSimple, size: 14),
                       SizedBox(width: 4),
-                      Text('Edit crop'),
+                      Text('Edit framing'),
                     ],
                   ),
                 ),

@@ -32,33 +32,31 @@ void main() {
 
   group('CmsImageInput', () {
     testWidgets('renders upload area when no data', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsImageInput(field: field),
-      ));
+      await tester.pumpWidget(buildInputApp(CmsImageInput(field: field)));
       await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(const ValueKey('upload_button')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const ValueKey('upload_button')), findsOneWidget);
     });
 
-    testWidgets('remove fires onChanged null (with pre-loaded image)',
-        (tester) async {
+    testWidgets('remove fires onChanged null (with pre-loaded image)', (
+      tester,
+    ) async {
       Map<String, dynamic>? received = {'sentinel': true};
       final dataSource = MockDataSource();
 
-      await tester.pumpWidget(buildInputApp(
-        CmsImageInput(
-          field: field,
-          data: const CmsData(
-            value: {'_type': 'imageReference', 'assetId': 'asset-hero'},
-            path: 'hero',
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsImageInput(
+            field: field,
+            data: const CmsData(
+              value: {'_type': 'imageReference', 'assetId': 'asset-hero'},
+              path: 'hero',
+            ),
+            dataSource: dataSource,
+            onChanged: (v) => received = v,
           ),
-          dataSource: dataSource,
-          onChanged: (v) => received = v,
         ),
-      ));
+      );
 
       // Pump multiple frames for async image load (avoid pumpAndSettle
       // since Image.network animation never settles)
@@ -76,42 +74,69 @@ void main() {
       }
     });
 
-    testWidgets('edit crop button appears with hotspot enabled',
-        (tester) async {
+    testWidgets('edit framing button appears with hotspot enabled', (
+      tester,
+    ) async {
       final dataSource = MockDataSource();
 
-      await tester.pumpWidget(buildInputApp(
-        CmsImageInput(
-          field: hotspotField,
-          data: const CmsData(
-            value: {'_type': 'imageReference', 'assetId': 'asset-hero'},
-            path: 'hero',
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsImageInput(
+            field: hotspotField,
+            data: const CmsData(
+              value: {'_type': 'imageReference', 'assetId': 'asset-hero'},
+              path: 'hero',
+            ),
+            dataSource: dataSource,
           ),
-          dataSource: dataSource,
         ),
-      ));
+      );
 
       // Pump multiple frames for async image load
       for (var i = 0; i < 10; i++) {
         await tester.pump(const Duration(milliseconds: 100));
       }
 
-      expect(
-        find.byKey(const ValueKey('edit_crop_button')),
-        findsOneWidget,
+      expect(find.byKey(const ValueKey('edit_framing_button')), findsOneWidget);
+      expect(find.text('Edit framing'), findsOneWidget);
+    });
+
+    testWidgets('framing status reflects custom hotspot and crop', (
+      tester,
+    ) async {
+      final dataSource = MockDataSource();
+
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsImageInput(
+            field: hotspotField,
+            data: const CmsData(
+              value: {
+                '_type': 'imageReference',
+                'assetId': 'asset-hero',
+                'crop': {'top': 0.1, 'bottom': 0.0, 'left': 0.0, 'right': 0.0},
+              },
+              path: 'hero',
+            ),
+            dataSource: dataSource,
+          ),
+        ),
       );
+
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      expect(find.text('Crop adjusted'), findsOneWidget);
     });
 
     testWidgets('tapping upload triggers pick without crash', (tester) async {
       final dataSource = MockDataSource();
       FakeImagePickerPlatform.install();
 
-      await tester.pumpWidget(buildInputApp(
-        CmsImageInput(
-          field: field,
-          dataSource: dataSource,
-        ),
-      ));
+      await tester.pumpWidget(
+        buildInputApp(CmsImageInput(field: field, dataSource: dataSource)),
+      );
       await tester.pumpAndSettle();
 
       // Tap the upload button — the full async pipeline (pick → metadata
