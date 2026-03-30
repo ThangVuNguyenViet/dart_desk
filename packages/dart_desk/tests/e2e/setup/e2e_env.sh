@@ -9,6 +9,8 @@ LOG_FILE="/tmp/dart_desk_e2e_server.log"
 
 DB_CMD="PGPASSWORD=dart_desk_be_test_password psql -h localhost -p 9090 -U postgres -d dart_desk_be_test"
 
+E2E_PROJECT_SLUG="e2e-dart-desk-project"
+
 if [ ! -f "$COMPOSE_FILE" ]; then
   echo "ERROR: docker-compose.yaml not found at $BACKEND_DIR"
   echo "Expected workspace layout: dart_desk_workspace/{dart_desk, dart_desk_be}"
@@ -95,19 +97,45 @@ run_sql() {
 # ---------------------------------------------------------------------------
 
 reset_db() {
-  echo "Resetting CMS content tables (preserving users, projects, auth)..."
+  echo "Resetting CMS content for project '$E2E_PROJECT_SLUG' only..."
   ensure_db_running
   run_sql "
-    TRUNCATE
-      document_crdt_operations,
-      document_crdt_snapshots,
-      document_versions,
-      documents_data,
-      documents,
-      media_assets
-    CASCADE;
+    DELETE FROM document_crdt_operations
+    USING documents d, projects p
+    WHERE document_crdt_operations.\"documentId\" = d.id
+      AND d.\"projectId\" = p.id
+      AND p.slug = '$E2E_PROJECT_SLUG';
+
+    DELETE FROM document_crdt_snapshots
+    USING documents d, projects p
+    WHERE document_crdt_snapshots.\"documentId\" = d.id
+      AND d.\"projectId\" = p.id
+      AND p.slug = '$E2E_PROJECT_SLUG';
+
+    DELETE FROM documents_data
+    USING document_versions dv, documents d, projects p
+    WHERE documents_data.\"documentVersionId\" = dv.id
+      AND dv.\"documentId\" = d.id
+      AND d.\"projectId\" = p.id
+      AND p.slug = '$E2E_PROJECT_SLUG';
+
+    DELETE FROM document_versions
+    USING documents d, projects p
+    WHERE document_versions.\"documentId\" = d.id
+      AND d.\"projectId\" = p.id
+      AND p.slug = '$E2E_PROJECT_SLUG';
+
+    DELETE FROM documents
+    USING projects p
+    WHERE documents.\"projectId\" = p.id
+      AND p.slug = '$E2E_PROJECT_SLUG';
+
+    DELETE FROM media_assets
+    USING projects p
+    WHERE media_assets.\"projectId\" = p.id
+      AND p.slug = '$E2E_PROJECT_SLUG';
   "
-  echo "Done. CMS content cleared; users, projects, api_tokens, auth preserved."
+  echo "Done. CMS content cleared for '$E2E_PROJECT_SLUG'; other projects, users, auth preserved."
 }
 
 # ---------------------------------------------------------------------------
@@ -122,7 +150,6 @@ seed_db() {
   local E2E_EMAIL="e2e@dartdesk.dev"
   local E2E_PASSWORD="e2e-password-123"
   local E2E_CLIENT_SLUG="e2e-dart-desk-client"
-  local E2E_PROJECT_SLUG="e2e-dart-desk-project"
 
   # API token: plaintext is "cms_w_e2eTestTokenForDartDeskIntegration00aaaa"
   # Validated by ApiKeyValidator which uses SHA-256 hash + prefix/suffix lookup.
