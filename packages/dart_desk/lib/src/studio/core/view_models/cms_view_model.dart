@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -159,16 +160,59 @@ class CmsViewModel {
     }
   }
 
-  Future<bool> deleteDocument(int documentId) async {
-    final result = await dataSource.deleteDocument(documentId);
-    if (result) {
-      if (selectedDocumentId.value == documentId) {
-        selectedDocumentId.value = null;
-        selectedVersionId.value = null;
-      }
-      documentsContainer(currentDocumentType.value?.name ?? '').awaitableReload();
+  /// Sets [documentId] as the default document for the current type.
+  /// Returns the updated document on success, or null on failure.
+  Future<CmsDocument?> setDefaultDocument(int documentId) async {
+    final docTypeName = currentDocumentType.value?.name ?? '';
+    try {
+      final updated =
+          await dataSource.setDefaultDocument(docTypeName, documentId);
+      documentsContainer(docTypeName).awaitableReload();
+      return updated;
+    } catch (_) {
+      return null;
     }
-    return result;
+  }
+
+  /// Deletes [documentId]. Returns a record with:
+  /// - [deleted]: whether the deletion succeeded.
+  /// - [newDefault]: the document that was auto-assigned as default (if the
+  ///   deleted document was the default and one other remained), or null.
+  Future<({bool deleted, CmsDocument? newDefault})> deleteDocument(
+    int documentId,
+  ) async {
+    final docTypeName = currentDocumentType.value?.name ?? '';
+
+    // Snapshot whether this doc is currently the default
+    final snapshot =
+        untracked(() => documentsContainer(docTypeName).value);
+    final wasDefault = snapshot.map(
+      data: (d) =>
+          d?.documents.any((doc) => doc.id == documentId && doc.isDefault) ??
+          false,
+      loading: () => false,
+      error: (_, __) => false,
+    );
+
+    final result = await dataSource.deleteDocument(documentId);
+    if (!result) return (deleted: false, newDefault: null);
+
+    if (selectedDocumentId.value == documentId) {
+      selectedDocumentId.value = null;
+      selectedVersionId.value = null;
+    }
+    documentsContainer(docTypeName).awaitableReload();
+
+    if (wasDefault) {
+      try {
+        final docList = await dataSource.getDocuments(docTypeName);
+        final newDefault =
+            docList.documents.firstWhereOrNull((d) => d.isDefault);
+        return (deleted: true, newDefault: newDefault);
+      } catch (_) {}
+    }
+
+    return (deleted: true, newDefault: null);
   }
 
   Future<CmsDocument?> updateDocumentData(Map<String, dynamic> data) async {
