@@ -193,7 +193,14 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       final genericTypeMatch = RegExp(
         r'CmsArrayFieldConfig<(.+?)>',
       ).firstMatch(configType);
-      final genericType = genericTypeMatch?.group(1) ?? 'dynamic';
+      final genericType = genericTypeMatch?.group(1);
+      if (genericType == null) {
+        throw InvalidGenerationSourceError(
+          'Could not extract type parameter from CmsArrayFieldConfig. '
+          'Use explicit type: @CmsArrayFieldConfig<String>() instead of @CmsArrayFieldConfig().',
+          element: field,
+        );
+      }
 
       // Validate: non-primitive T requires option
       const primitiveTypes = {'String', 'num', 'int', 'double', 'bool'};

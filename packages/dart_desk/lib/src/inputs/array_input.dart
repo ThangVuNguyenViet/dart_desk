@@ -5,8 +5,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'edit_styles/edit_styles.dart';
 
-class CmsArrayInput extends StatefulWidget {
-  final CmsArrayField field;
+class CmsArrayInput<T> extends StatefulWidget {
+  final CmsArrayField<T> field;
   final CmsData? data;
   final ValueChanged<List?>? onChanged;
   final EditStyles editStyle;
@@ -20,10 +20,10 @@ class CmsArrayInput extends StatefulWidget {
   });
 
   @override
-  State<CmsArrayInput> createState() => _CmsArrayInputState();
+  State<CmsArrayInput<T>> createState() => _CmsArrayInputState<T>();
 }
 
-class _CmsArrayInputState extends State<CmsArrayInput> {
+class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
   late List _items;
   int? _editingIndex; // -1 for adding new, null for none, >= 0 for editing
   dynamic _editingValue;
