@@ -188,7 +188,25 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
     ]) {
       final fieldName = field.name!;
 
-      return '''CmsArrayField(
+      // Extract T from CmsArrayFieldConfig<T>
+      final configType = config?.type?.toString() ?? '';
+      final genericTypeMatch = RegExp(
+        r'CmsArrayFieldConfig<(.+?)>',
+      ).firstMatch(configType);
+      final genericType = genericTypeMatch?.group(1) ?? 'dynamic';
+
+      // Validate: non-primitive T requires option
+      const primitiveTypes = {'String', 'num', 'int', 'double', 'bool'};
+      if (!primitiveTypes.contains(genericType) && optionSource == null) {
+        throw InvalidGenerationSourceError(
+          'CmsArrayFieldConfig<$genericType> requires an option with '
+          'itemBuilder and itemEditor because $genericType is not a '
+          'primitive type. Provide a CmsArrayOption<$genericType> subclass.',
+          element: field,
+        );
+      }
+
+      return '''CmsArrayField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}
