@@ -74,10 +74,13 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
         if (result.deleted) {
           toaster.show(const ShadToast(description: Text('Document deleted')));
           if (result.newDefault != null) {
-            toaster.show(ShadToast(
-              description:
-                  Text('"${result.newDefault!.title}" is now the default.'),
-            ));
+            toaster.show(
+              ShadToast(
+                description: Text(
+                  '"${result.newDefault!.title}" is now the default.',
+                ),
+              ),
+            );
           }
         } else {
           toaster.show(

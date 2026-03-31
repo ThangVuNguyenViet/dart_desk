@@ -13,21 +13,24 @@ part 'studio_router.gr.dart';
 class StudioRouter extends RootStackRouter {
   @override
   List<AutoRoute> get routes => [
-        AutoRoute(
-          page: StudioShellScreenRoute.page,
-          path: '/',
-          children: [
-            AutoRoute(page: MediaScreenRoute.page, path: 'media'),
-            AutoRoute(
-                page: DocumentTypeScreenRoute.page,
-                path: ':documentTypeSlug'),
-            AutoRoute(
-                page: DocumentScreenRoute.page,
-                path: ':documentTypeSlug/:documentId'),
-            AutoRoute(
-                page: VersionScreenRoute.page,
-                path: ':documentTypeSlug/:documentId/:versionId'),
-          ],
+    AutoRoute(
+      page: StudioShellScreenRoute.page,
+      path: '/',
+      children: [
+        AutoRoute(page: MediaScreenRoute.page, path: 'media'),
+        CustomRoute(
+          page: DocumentTypeScreenRoute.page,
+          path: ':documentTypeSlug',
         ),
-      ];
+        CustomRoute(
+          page: DocumentScreenRoute.page,
+          path: ':documentTypeSlug/:documentId',
+        ),
+        CustomRoute(
+          page: VersionScreenRoute.page,
+          path: ':documentTypeSlug/:documentId/:versionId',
+        ),
+      ],
+    ),
+  ];
 }

@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../data/models/document_version.dart';
 import '../components/common/cms_button.dart';
 import '../components/forms/cms_form.dart';
-import 'package:get_it/get_it.dart';
-
 import '../core/view_models/cms_document_view_model.dart';
 import '../core/view_models/cms_view_model.dart';
 
@@ -173,19 +172,14 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
             fields: widget.fields,
             data: Map<String, dynamic>.from(documentData),
             title: widget.title,
-            onFieldChanged: (fieldName, value) =>
-                editedData[fieldName] = value,
+            onFieldChanged: (fieldName, value) => editedData[fieldName] = value,
           ),
         ),
         if (hasUnsavedChanges)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: theme.colorScheme.border,
-                ),
-              ),
+              border: Border(top: BorderSide(color: theme.colorScheme.border)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,

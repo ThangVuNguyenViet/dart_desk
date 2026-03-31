@@ -11,10 +11,7 @@ import '../theme/spacing.dart';
 /// Live preview panel that renders the document type's builder with current
 /// edited data, falling back to the saved version data.
 class DocumentPreview extends StatelessWidget {
-  const DocumentPreview({
-    super.key,
-    required this.docType,
-  });
+  const DocumentPreview({super.key, required this.docType});
 
   final DocumentType docType;
 
@@ -58,13 +55,16 @@ class DocumentPreview extends StatelessWidget {
           ),
           const SizedBox(height: CmsSpacing.md),
           Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(CmsBorderRadius.lg),
+            child: KeyedSubtree(
+              key: ValueKey(docType.name),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(CmsBorderRadius.lg),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: docType.builder(data),
               ),
-              clipBehavior: Clip.antiAlias,
-              child: docType.builder(data),
             ),
           ),
         ],

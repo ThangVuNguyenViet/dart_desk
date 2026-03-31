@@ -16,7 +16,7 @@ class DocumentScreenRoute extends PageRouteInfo<DocumentScreenRouteArgs> {
   DocumentScreenRoute({
     Key? key,
     required String documentTypeSlug,
-    required String documentId,
+    String? documentId,
     String? versionId,
     List<PageRouteInfo>? children,
   }) : super(
@@ -44,7 +44,7 @@ class DocumentScreenRoute extends PageRouteInfo<DocumentScreenRouteArgs> {
       final args = data.argsAs<DocumentScreenRouteArgs>(
         orElse: () => DocumentScreenRouteArgs(
           documentTypeSlug: pathParams.getString('documentTypeSlug'),
-          documentId: pathParams.getString('documentId'),
+          documentId: pathParams.optString('documentId'),
           versionId: pathParams.optString('versionId'),
         ),
       );
@@ -62,7 +62,7 @@ class DocumentScreenRouteArgs {
   const DocumentScreenRouteArgs({
     this.key,
     required this.documentTypeSlug,
-    required this.documentId,
+    this.documentId,
     this.versionId,
   });
 
@@ -70,7 +70,7 @@ class DocumentScreenRouteArgs {
 
   final String documentTypeSlug;
 
-  final String documentId;
+  final String? documentId;
 
   final String? versionId;
 

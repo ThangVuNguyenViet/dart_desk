@@ -6,13 +6,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../config/cms_breakpoints.dart';
-import '../core/view_models/cms_view_model.dart';
-import '../router/studio_router.dart';
-import '../screens/document_list.dart';
-import '../theme/spacing.dart';
-import 'document_editor.dart';
-import 'document_preview.dart';
+import '../../../studio.dart';
 
 @RoutePage()
 class DocumentTypeScreen extends StatelessWidget {
@@ -54,23 +48,29 @@ class DocumentTypeScreen extends StatelessWidget {
       final result = await viewModel.deleteDocument(docId);
       if (context.mounted) {
         if (result.deleted) {
-          toaster
-              .show(const ShadToast(description: Text('Document deleted')));
+          toaster.show(const ShadToast(description: Text('Document deleted')));
           if (result.newDefault != null) {
-            toaster.show(ShadToast(
-              description:
-                  Text('"${result.newDefault!.title}" is now the default.'),
-            ));
+            toaster.show(
+              ShadToast(
+                description: Text(
+                  '"${result.newDefault!.title}" is now the default.',
+                ),
+              ),
+            );
           }
         } else {
-          toaster.show(ShadToast.destructive(
-              description: const Text('Failed to delete document')));
+          toaster.show(
+            ShadToast.destructive(
+              description: const Text('Failed to delete document'),
+            ),
+          );
         }
       }
     } catch (e) {
       if (context.mounted) {
         toaster.show(
-            ShadToast.destructive(description: Text('Failed to delete: $e')));
+          ShadToast.destructive(description: Text('Failed to delete: $e')),
+        );
       }
     }
   }
@@ -90,53 +90,28 @@ class DocumentTypeScreen extends StatelessWidget {
     if (isMobile) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(
-            CmsSpacing.md, CmsSpacing.sm, CmsSpacing.md, 0),
+          CmsSpacing.md,
+          CmsSpacing.sm,
+          CmsSpacing.md,
+          0,
+        ),
         child: CmsDocumentListView(
           selectedDocumentType: docType,
           icon: FontAwesomeIcons.file,
           onOpenDocument: (documentId) {
-            context.router.navigate(DocumentScreenRoute(
-              documentTypeSlug: documentTypeSlug,
-              documentId: documentId,
-            ));
+            context.router.navigate(
+              DocumentScreenRoute(
+                documentTypeSlug: documentTypeSlug,
+                documentId: documentId,
+              ),
+            );
           },
-          onDeleteDocument: (docId) =>
-              _deleteDocument(context, docId: docId),
+          onDeleteDocument: (docId) => _deleteDocument(context, docId: docId),
         ),
       );
     }
 
-    final editor = Container(
-      color: theme.colorScheme.background,
-      child: CmsDocumentEditor(
-        fields: docType.fields,
-        title: docType.title,
-      ),
-    );
-
     // Desktop: preview + editor side by side
-    if (isDesktop) {
-      return Row(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: theme.colorScheme.card,
-                border: Border(
-                  right: BorderSide(
-                    color: theme.colorScheme.border.withValues(alpha: 0.5),
-                  ),
-                ),
-              ),
-              child: DocumentPreview(docType: docType),
-            ),
-          ),
-          Expanded(child: editor),
-        ],
-      );
-    }
-
-    // Tablet: editor only
-    return editor;
+    return DocumentScreen(documentTypeSlug: documentTypeSlug);
   }
 }

@@ -10,12 +10,24 @@ import 'studio_router.dart';
 /// [CmsViewModel] signals (selectedDocumentId, currentDocumentTypeSlug, etc.)
 /// from [StudioRouter.topRoute.params].
 ///
-/// Registered on [StudioRouter.delegate] so it fires at the Navigator level,
-/// bypassing the inner-router notifyListeners limitation of [StackRouter.addListener].
+/// Uses [NavigationHistory.addListener] as the primary mechanism because
+/// Flutter's declarative Navigator.pages API does NOT fire didPush/didReplace
+/// for same-route-type navigations where only path params differ (e.g.
+/// /:documentTypeSlug = tip-screen → login-screen). navigationHistory fires
+/// on every URL state change, including param-only changes.
+///
+/// The NavigatorObserver overrides are kept as a secondary mechanism for
+/// cross-type navigations (harmless redundancy).
 class StudioRouteObserver extends AutoRouterObserver {
   final StudioRouter router;
 
-  StudioRouteObserver(this.router);
+  StudioRouteObserver(this.router) {
+    router.navigationHistory.addListener(_syncSignals);
+  }
+
+  void dispose() {
+    router.navigationHistory.removeListener(_syncSignals);
+  }
 
   void _syncSignals() {
     if (!GetIt.I.isRegistered<CmsViewModel>()) return;
