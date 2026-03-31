@@ -188,10 +188,9 @@ class CmsViewModel {
         untracked(() => documentsContainer(docTypeName).value);
     final wasDefault = snapshot.map(
       data: (d) =>
-          d?.documents.any((doc) => doc.id == documentId && doc.isDefault) ??
-          false,
+          d.documents.any((doc) => doc.id == documentId && doc.isDefault),
       loading: () => false,
-      error: (_, __) => false,
+      error: (_, _) => false,
     );
 
     final result = await dataSource.deleteDocument(documentId);
@@ -201,15 +200,16 @@ class CmsViewModel {
       selectedDocumentId.value = null;
       selectedVersionId.value = null;
     }
-    documentsContainer(docTypeName).awaitableReload();
+    await documentsContainer(docTypeName).awaitableReload();
 
     if (wasDefault) {
-      try {
-        final docList = await dataSource.getDocuments(docTypeName);
-        final newDefault =
-            docList.documents.firstWhereOrNull((d) => d.isDefault);
-        return (deleted: true, newDefault: newDefault);
-      } catch (_) {}
+      final refreshed = untracked(() => documentsContainer(docTypeName).value);
+      final newDefault = refreshed.map(
+        data: (d) => d.documents.firstWhereOrNull((doc) => doc.isDefault),
+        loading: () => null,
+        error: (_, _) => null,
+      );
+      return (deleted: true, newDefault: newDefault);
     }
 
     return (deleted: true, newDefault: null);
