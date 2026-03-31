@@ -52,11 +52,24 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       String? optionSource,
     ]) {
       final fieldName = field.name!;
+      final optional = config?.getField('optional')?.toBoolValue() ?? false;
+
+      String? resolvedOption = optionSource;
+      if (optional && resolvedOption == null) {
+        resolvedOption = 'CmsTextOption(optional: true)';
+      } else if (optional && resolvedOption != null) {
+        if (!resolvedOption.contains('optional')) {
+          resolvedOption = resolvedOption.replaceFirst(
+            'CmsTextOption(',
+            'CmsTextOption(optional: true, ',
+          );
+        }
+      }
 
       return '''CmsTextField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
     },
     'CmsStringFieldConfig': (
@@ -65,10 +78,24 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       String? optionSource,
     ]) {
       final fieldName = field.name!;
+      final optional = config?.getField('optional')?.toBoolValue() ?? false;
+
+      String? resolvedOption = optionSource;
+      if (optional && resolvedOption == null) {
+        resolvedOption = 'CmsStringOption(optional: true)';
+      } else if (optional && resolvedOption != null) {
+        if (!resolvedOption.contains('optional')) {
+          resolvedOption = resolvedOption.replaceFirst(
+            'CmsStringOption(',
+            'CmsStringOption(optional: true, ',
+          );
+        }
+      }
+
       return '''CmsStringField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
     },
     'CmsNumberFieldConfig': (
@@ -77,10 +104,24 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       String? optionSource,
     ]) {
       final fieldName = field.name!;
+      final optional = config?.getField('optional')?.toBoolValue() ?? false;
+
+      String? resolvedOption = optionSource;
+      if (optional && resolvedOption == null) {
+        resolvedOption = 'CmsNumberOption(optional: true)';
+      } else if (optional && resolvedOption != null) {
+        if (!resolvedOption.contains('optional')) {
+          resolvedOption = resolvedOption.replaceFirst(
+            'CmsNumberOption(',
+            'CmsNumberOption(optional: true, ',
+          );
+        }
+      }
+
       return '''CmsNumberField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
     },
     'CmsBooleanFieldConfig': (
@@ -114,10 +155,24 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       String? optionSource,
     ]) {
       final fieldName = field.name!;
+      final optional = config?.getField('optional')?.toBoolValue() ?? false;
+
+      String? resolvedOption = optionSource;
+      if (optional && resolvedOption == null) {
+        resolvedOption = 'CmsDateOption(optional: true)';
+      } else if (optional && resolvedOption != null) {
+        if (!resolvedOption.contains('optional')) {
+          resolvedOption = resolvedOption.replaceFirst(
+            'CmsDateOption(',
+            'CmsDateOption(optional: true, ',
+          );
+        }
+      }
+
       return '''CmsDateField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
     },
     'CmsDateTimeFieldConfig': (
@@ -126,10 +181,24 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       String? optionSource,
     ]) {
       final fieldName = field.name!;
+      final optional = config?.getField('optional')?.toBoolValue() ?? false;
+
+      String? resolvedOption = optionSource;
+      if (optional && resolvedOption == null) {
+        resolvedOption = 'CmsDateTimeOption(optional: true)';
+      } else if (optional && resolvedOption != null) {
+        if (!resolvedOption.contains('optional')) {
+          resolvedOption = resolvedOption.replaceFirst(
+            'CmsDateTimeOption(',
+            'CmsDateTimeOption(optional: true, ',
+          );
+        }
+      }
+
       return '''CmsDateTimeField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
     },
     'CmsUrlFieldConfig': (
@@ -138,10 +207,24 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       String? optionSource,
     ]) {
       final fieldName = field.name!;
+      final optional = config?.getField('optional')?.toBoolValue() ?? false;
+
+      String? resolvedOption = optionSource;
+      if (optional && resolvedOption == null) {
+        resolvedOption = 'CmsUrlOption(optional: true)';
+      } else if (optional && resolvedOption != null) {
+        if (!resolvedOption.contains('optional')) {
+          resolvedOption = resolvedOption.replaceFirst(
+            'CmsUrlOption(',
+            'CmsUrlOption(optional: true, ',
+          );
+        }
+      }
+
       return '''CmsUrlField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
     },
     'CmsSlugFieldConfig': (
@@ -176,10 +259,24 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       String? optionSource,
     ]) {
       final fieldName = field.name!;
+      final optional = config?.getField('optional')?.toBoolValue() ?? false;
+
+      String? resolvedOption = optionSource;
+      if (optional && resolvedOption == null) {
+        resolvedOption = 'CmsFileOption(optional: true)';
+      } else if (optional && resolvedOption != null) {
+        if (!resolvedOption.contains('optional')) {
+          resolvedOption = resolvedOption.replaceFirst(
+            'CmsFileOption(',
+            'CmsFileOption(optional: true, ',
+          );
+        }
+      }
+
       return '''CmsFileField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
     },
     'CmsArrayFieldConfig': (
