@@ -11,17 +11,13 @@
             "type": "dart",
         },
         {
-            "name": "CMS App (Chrome)",
+            "name": "CMS App",
             "type": "dart",
             "request": "launch",
             "program": "lib/main.dart",
-            "deviceId": "chrome",
-            "args": [
-                "--web-browser-flag=--user-data-dir=/tmp/dart_desk_chrome_profile"
-            ]
         },
         {
-            "name": "CMS QA Test (Chrome)",
+            "name": "CMS QA Test",
             "type": "dart",
             "request": "launch",
             "cwd": "examples/cms_app",
