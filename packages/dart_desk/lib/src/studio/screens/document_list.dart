@@ -496,20 +496,10 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
               Row(
                 children: [
                   if (doc.isDefault) ...[
-                    Text(
-                      'Default',
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: theme.colorScheme.mutedForeground,
-                      ),
+                    ShadBadge.secondary(
+                      child: const Text('Default', style: TextStyle(fontSize: 10)),
                     ),
-                    Text(
-                      ' · ',
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: theme.colorScheme.mutedForeground,
-                      ),
-                    ),
+                    const SizedBox(width: 6),
                   ],
                   Text(
                     _formatTimestamp(doc.updatedAt),
