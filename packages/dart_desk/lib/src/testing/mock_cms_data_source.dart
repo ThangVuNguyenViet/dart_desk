@@ -196,13 +196,18 @@ class MockDataSource implements DataSource {
     final versionId = _nextVersionId++;
     final now = DateTime.now();
 
+    // Determine effective isDefault: auto-assign if this is the first doc for this type
+    final isFirstForType =
+        !_documents.values.any((d) => d.documentType == documentType);
+    final effectiveIsDefault = isDefault || isFirstForType;
+
     final doc = CmsDocument(
       id: docId,
       clientId: 1,
       documentType: documentType,
       title: title,
       slug: slug ?? _generateSlug(title),
-      isDefault: isDefault,
+      isDefault: effectiveIsDefault,
       activeVersionData: data,
       createdAt: now,
       updatedAt: now,
@@ -273,12 +278,29 @@ class MockDataSource implements DataSource {
 
   @override
   Future<bool> deleteDocument(int documentId) async {
-    if (!_documents.containsKey(documentId)) return false;
-    _documents.remove(documentId);
-    final versionIds = _versions.remove(documentId)?.keys ?? [];
+    final doc = _documents[documentId];
+    if (doc == null) return false;
+
+    final wasDefault = doc.isDefault;
+    final docType = doc.documentType;
+
+    // Remove document and all its versions
+    final versionIds = _versions.remove(documentId)?.keys.toList() ?? [];
     for (final vid in versionIds) {
       _versionData.remove(vid);
     }
+    _documents.remove(documentId);
+
+    // Auto-assign default to the sole remaining document if needed
+    if (wasDefault) {
+      final remaining =
+          _documents.values.where((d) => d.documentType == docType).toList();
+      if (remaining.length == 1) {
+        final newDefault = remaining.first;
+        _documents[newDefault.id!] = newDefault.copyWith(isDefault: true);
+      }
+    }
+
     return true;
   }
 

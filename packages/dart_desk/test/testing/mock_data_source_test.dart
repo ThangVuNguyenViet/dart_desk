@@ -206,6 +206,64 @@ void main() {
   });
 
   // ============================================================
+  // N+1. Auto-default behaviours
+  // ============================================================
+
+  group('Auto-default on create', () {
+    test('first document for a new type is auto-set as default', () async {
+      final doc = await dataSource.createDocument(
+        'new_type',
+        'First Doc',
+        {},
+        slug: 'first-doc',
+      );
+      expect(doc.isDefault, isTrue);
+    });
+
+    test('second document for a type is NOT auto-set as default', () async {
+      await dataSource.createDocument('new_type', 'First', {}, slug: 'first');
+      final second = await dataSource.createDocument(
+        'new_type',
+        'Second',
+        {},
+        slug: 'second',
+      );
+      expect(second.isDefault, isFalse);
+    });
+  });
+
+  group('Auto-default on delete', () {
+    test('sole remaining document becomes default when the default is deleted', () async {
+      // Create two docs in a fresh type; first is auto-default
+      final a = await dataSource.createDocument('solo_type', 'A', {}, slug: 'a');
+      final b = await dataSource.createDocument('solo_type', 'B', {}, slug: 'b');
+      expect(a.isDefault, isTrue);
+
+      // Delete the default (a)
+      await dataSource.deleteDocument(a.id!);
+
+      final remaining = await dataSource.getDocument(b.id!);
+      expect(remaining?.isDefault, isTrue);
+    });
+
+    test('no auto-default when a non-default is deleted and multiple remain',
+        () async {
+      final a = await dataSource.createDocument('multi_type', 'A', {}, slug: 'a');
+      final b = await dataSource.createDocument('multi_type', 'B', {}, slug: 'b');
+      final c = await dataSource.createDocument('multi_type', 'C', {}, slug: 'c');
+      expect(a.isDefault, isTrue);
+
+      // Delete non-default (c)
+      await dataSource.deleteDocument(c.id!);
+
+      final stillDefault = await dataSource.getDocument(a.id!);
+      final bDoc = await dataSource.getDocument(b.id!);
+      expect(stillDefault?.isDefault, isTrue);
+      expect(bDoc?.isDefault, isFalse);
+    });
+  });
+
+  // ============================================================
   // 5. reset() restores seed state
   // ============================================================
 
