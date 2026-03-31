@@ -116,6 +116,13 @@ abstract class DataSource {
   /// Throws [CmsAuthenticationException] if authentication is required.
   Future<bool> deleteDocument(int documentId);
 
+  /// Atomically unsets the current default for [documentTypeSlug] and sets
+  /// [documentId] as the new default. Returns the updated document.
+  Future<CmsDocument> setDefaultDocument(
+    String documentTypeSlug,
+    int documentId,
+  );
+
   /// Suggests a unique slug for a document based on its title.
   ///
   /// [title] - The document title to generate a slug from
