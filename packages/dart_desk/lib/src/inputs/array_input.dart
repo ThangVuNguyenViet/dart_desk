@@ -235,7 +235,50 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
       });
     }
 
-    // Default shadcn text editor
+    // Default editors for primitive types
+    final field = widget.field;
+    if (field is CmsArrayField<bool>) {
+      return ShadCheckbox(
+        value: _editingValue as bool? ?? false,
+        onChanged: (value) {
+          setState(() {
+            _editingValue = value;
+          });
+        },
+      );
+    }
+
+    if (field is CmsArrayField<int>) {
+      return ShadInputFormField(
+        key: const ValueKey('array_item_editor'),
+        initialValue: _editingValue?.toString() ?? '',
+        keyboardType: TextInputType.number,
+        onChanged: (value) {
+          setState(() {
+            _editingValue = int.tryParse(value);
+          });
+        },
+        onSubmitted: (_) => _saveItem(),
+        placeholder: const Text('Enter number...'),
+      );
+    }
+
+    if (field is CmsArrayField<num> || field is CmsArrayField<double>) {
+      return ShadInputFormField(
+        key: const ValueKey('array_item_editor'),
+        initialValue: _editingValue?.toString() ?? '',
+        keyboardType: TextInputType.number,
+        onChanged: (value) {
+          setState(() {
+            _editingValue = num.tryParse(value);
+          });
+        },
+        onSubmitted: (_) => _saveItem(),
+        placeholder: const Text('Enter number...'),
+      );
+    }
+
+    // Default: String editor (also used for CmsArrayField<String>)
     return ShadInputFormField(
       key: const ValueKey('array_item_editor'),
       initialValue: _editingValue?.toString() ?? '',
@@ -275,7 +318,8 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: widget.field.option!.buildItem(context, _items[index]),
+              child: widget.field.option?.buildItem(context, _items[index])
+                  ?? Text(_items[index]?.toString() ?? ''),
             ),
             const SizedBox(width: 8),
             if (showEditButton) ...[

@@ -121,5 +121,108 @@ void main() {
       // Array input always renders (no hidden option on CmsArrayOption)
       expect(find.text('Hidden'), findsOneWidget);
     });
+
+    testWidgets('default number editor parses input as num', (tester) async {
+      List? received;
+      final numField = CmsArrayField<int>(
+        name: 'scores',
+        title: 'Scores',
+      );
+
+      await tester.pumpWidget(buildInputApp(
+        CmsArrayInput(
+          field: numField,
+          data: CmsData(value: List<int>.from([10]), path: 'scores'),
+          onChanged: (v) => received = v,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Tap Add
+      await tester.tap(find.text('Add'));
+      await tester.pumpAndSettle();
+
+      // Enter a number
+      await tester.enterText(
+        find.byType(ShadInputFormField).last,
+        '42',
+      );
+      await tester.pump();
+
+      // Save
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(received, isNotNull);
+      expect(received, contains(10));
+      expect(received, contains(42));
+    });
+
+    testWidgets('default bool editor toggles value', (tester) async {
+      List? received;
+      final boolField = CmsArrayField<bool>(
+        name: 'flags',
+        title: 'Flags',
+      );
+
+      await tester.pumpWidget(buildInputApp(
+        CmsArrayInput(
+          field: boolField,
+          data: CmsData(value: List<bool>.from([true]), path: 'flags'),
+          onChanged: (v) => received = v,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Tap Add
+      await tester.tap(find.text('Add'));
+      await tester.pumpAndSettle();
+
+      // The default bool editor should show a checkbox — tap it to set true
+      await tester.tap(find.byType(ShadCheckbox).last);
+      await tester.pumpAndSettle();
+
+      // Save
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(received, isNotNull);
+      expect(received, contains(true));
+    });
+
+    testWidgets('default string editor works without option', (tester) async {
+      List? received;
+      final stringField = CmsArrayField<String>(
+        name: 'labels',
+        title: 'Labels',
+      );
+
+      await tester.pumpWidget(buildInputApp(
+        CmsArrayInput(
+          field: stringField,
+          data: CmsData(value: List<String>.from([]), path: 'labels'),
+          onChanged: (v) => received = v,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Tap Add
+      await tester.tap(find.text('Add'));
+      await tester.pumpAndSettle();
+
+      // Enter text
+      await tester.enterText(
+        find.byType(ShadInputFormField).last,
+        'hello',
+      );
+      await tester.pump();
+
+      // Save
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(received, isNotNull);
+      expect(received, contains('hello'));
+    });
   });
 }
