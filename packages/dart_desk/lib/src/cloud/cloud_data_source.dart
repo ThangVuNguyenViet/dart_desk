@@ -130,7 +130,10 @@ class CloudDataSource implements DataSource {
     String documentTypeSlug,
     int documentId,
   ) async {
-    throw UnimplementedError('setDefaultDocument not yet implemented in CloudDataSource');
+    throw UnimplementedError(
+      'setDefaultDocument backend endpoint not yet implemented. '
+      'Awaiting Serverpod backend implementation and client regeneration.',
+    );
   }
 
   @override
