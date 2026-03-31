@@ -275,7 +275,7 @@ class _CmsArrayInputState extends State<CmsArrayInput> {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: widget.field.option!.itemBuilder(context, _items[index]),
+              child: widget.field.option!.buildItem(context, _items[index]),
             ),
             const SizedBox(width: 8),
             if (showEditButton) ...[

@@ -16,6 +16,12 @@ abstract class CmsArrayOption<T> extends CmsOption {
 
   CmsArrayFieldItemBuilder<T> get itemBuilder;
 
+  /// Calls [itemBuilder] with [value] cast to [T], bypassing the static
+  /// type system so that a typed option (e.g. CmsArrayOption<String>) can be
+  /// used through an untyped CmsArrayField reference.
+  Widget buildItem(BuildContext context, dynamic value) =>
+      itemBuilder(context, value as T);
+
   /// Override to provide a custom editor widget for array items.
   /// When null, a default editor will be used for primitive types
   /// (String, num, int, double, bool).

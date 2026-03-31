@@ -102,7 +102,7 @@ final allFieldsDocumentType = DocumentType(
           'Context-aware multi-select dropdown that loads documents reactively',
       option: TestDocumentRefDropdownOption(),
     ),
-    CmsArrayField(
+    CmsArrayField<String>(
       name: 'array_field',
       title: 'Array Field',
       description: 'A list of string items',
@@ -232,12 +232,12 @@ Widget _testAllFieldsBuilder(Map<String, dynamic> data) {
 }
 
 /// Concrete CmsArrayOption for testing string arrays.
-class TestStringArrayOption extends CmsArrayOption {
+class TestStringArrayOption extends CmsArrayOption<String> {
   const TestStringArrayOption();
 
   @override
-  CmsArrayFieldItemBuilder get itemBuilder =>
-      (context, value) => Text(value?.toString() ?? '');
+  CmsArrayFieldItemBuilder<String> get itemBuilder =>
+      (context, value) => Text(value);
 }
 
 /// Context-aware multi-dropdown option that resolves options reactively from

@@ -8,7 +8,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  final field = CmsArrayField(
+  final field = CmsArrayField<String>(
     name: 'tags',
     title: 'Tags',
     option: TestStringArrayOption(),
@@ -105,7 +105,7 @@ void main() {
     });
 
     testWidgets('hidden field renders nothing', (tester) async {
-      final hiddenField = CmsArrayField(
+      final hiddenField = CmsArrayField<String>(
         name: 'hidden',
         title: 'Hidden',
         option: TestStringArrayOption(),
