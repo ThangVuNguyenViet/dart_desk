@@ -21,11 +21,14 @@ class CmsColorInput extends StatefulWidget {
 
 class _CmsColorInputState extends State<CmsColorInput> {
   late Color _selectedColor;
+  late bool _isEnabled;
 
   @override
   void initState() {
     super.initState();
-    _selectedColor = _parseColor(widget.data?.value?.toString()) ?? Colors.blue;
+    final parsedColor = _parseColor(widget.data?.value?.toString());
+    _selectedColor = parsedColor ?? Colors.black;
+    _isEnabled = widget.field.option.optional ? parsedColor != null : true;
   }
 
   Color? _parseColor(String? colorString) {
@@ -71,53 +74,83 @@ class _CmsColorInputState extends State<CmsColorInput> {
     }
 
     final theme = ShadTheme.of(context);
+    final isOptional = widget.field.option.optional;
 
     return Material(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.field.title,
-            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 8),
           Row(
             children: [
-              // Color preview box
-              InkWell(
-                onTap: _showColorPicker,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  width: 80,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: _selectedColor,
-                    border: Border.all(
-                      color: theme.colorScheme.border,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
+              Text(
+                widget.field.title,
+                style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+              ),
+              if (isOptional) ...[
+                const SizedBox(width: 8),
+                SizedBox(
+                  height: 20,
+                  width: 36,
+                  child: Switch(
+                    value: _isEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _isEnabled = value;
+                      });
+                      if (!value) {
+                        widget.onChanged?.call(null);
+                      } else {
+                        widget.onChanged?.call(_colorToHex(_selectedColor));
+                      }
+                    },
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              // Hex value display and edit
-              Expanded(
-                child: ShadInput(
-                  initialValue: _colorToHex(_selectedColor),
-                  onChanged: (value) {
-                    final color = _parseColor(value);
-                    if (color != null) {
-                      setState(() {
-                        _selectedColor = color;
-                      });
-                      widget.onChanged?.call(value);
-                    }
-                  },
-                  placeholder: const Text('#RRGGBB'),
-                ),
-              ),
+              ],
             ],
+          ),
+          const SizedBox(height: 8),
+          IgnorePointer(
+            ignoring: !_isEnabled,
+            child: AnimatedOpacity(
+              opacity: _isEnabled ? 1.0 : 0.4,
+              duration: const Duration(milliseconds: 200),
+              child: Row(
+                children: [
+                  InkWell(
+                    onTap: _showColorPicker,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      width: 80,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: _selectedColor,
+                        border: Border.all(
+                          color: theme.colorScheme.border,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ShadInput(
+                      initialValue: _colorToHex(_selectedColor),
+                      onChanged: (value) {
+                        final color = _parseColor(value);
+                        if (color != null) {
+                          setState(() {
+                            _selectedColor = color;
+                          });
+                          widget.onChanged?.call(value);
+                        }
+                      },
+                      placeholder: const Text('#RRGGBB'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
