@@ -356,6 +356,9 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                         _slugController.clear();
                       });
 
+                      // Capture toaster before the async gap
+                      final toaster = ShadToaster.of(context);
+
                       final document = await viewModel.createDocument(
                         title,
                         viewModel.currentDocumentType.value?.defaultValue
@@ -366,6 +369,11 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
 
                       if (document?.id != null) {
                         widget.onOpenDocument?.call(document!.id.toString());
+                      }
+                      if (document?.isDefault == true && context.mounted) {
+                        toaster.show(ShadToast(
+                          description: Text('"${document!.title}" is now the default.'),
+                        ));
                       }
                     }
                   },
