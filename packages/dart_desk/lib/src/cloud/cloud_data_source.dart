@@ -126,6 +126,14 @@ class CloudDataSource implements DataSource {
   }
 
   @override
+  Future<CmsDocument> setDefaultDocument(
+    String documentTypeSlug,
+    int documentId,
+  ) async {
+    throw UnimplementedError('setDefaultDocument not yet implemented in CloudDataSource');
+  }
+
+  @override
   Future<bool> deleteDocument(int documentId) async {
     try {
       return await _client.document.deleteDocument(documentId);

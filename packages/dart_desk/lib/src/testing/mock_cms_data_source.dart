@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
+
 import '../data/cms_data_source.dart';
 import '../data/models/cms_document.dart';
 import '../data/models/document_list.dart';
@@ -240,6 +242,33 @@ class MockDataSource implements DataSource {
     );
 
     return _documents[documentId];
+  }
+
+  @override
+  Future<CmsDocument> setDefaultDocument(
+    String documentTypeSlug,
+    int documentId,
+  ) async {
+    // Unset any existing default for this type
+    final currentDefault = _documents.values.firstWhereOrNull(
+      (d) => d.documentType == documentTypeSlug && d.isDefault,
+    );
+    if (currentDefault?.id != null) {
+      _documents[currentDefault!.id!] =
+          currentDefault.copyWith(isDefault: false);
+    }
+
+    // Set new default
+    final doc = _documents[documentId];
+    if (doc == null) {
+      throw CmsNotFoundException(
+        resourceType: 'Document',
+        resourceId: documentId,
+      );
+    }
+    final updated = doc.copyWith(isDefault: true);
+    _documents[documentId] = updated;
+    return updated;
   }
 
   @override

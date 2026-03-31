@@ -160,6 +160,52 @@ void main() {
   });
 
   // ============================================================
+  // N. setDefaultDocument
+  // ============================================================
+
+  group('setDefaultDocument', () {
+    test('swaps isDefault from the current default to a new document', () async {
+      // Seed: doc 1 is already default in 'test_all_fields'. Create another.
+      final doc4 = await dataSource.createDocument(
+        'test_all_fields',
+        'Doc Four',
+        {},
+        slug: 'doc-four',
+      );
+
+      final updated = await dataSource.setDefaultDocument(
+        'test_all_fields',
+        doc4.id!,
+      );
+
+      expect(updated.isDefault, isTrue);
+
+      // Old default should now be false
+      final old = await dataSource.getDocument(1);
+      expect(old?.isDefault, isFalse);
+    });
+
+    test('returns the updated document with isDefault true', () async {
+      final doc4 = await dataSource.createDocument(
+        'test_all_fields',
+        'Doc Four',
+        {},
+        slug: 'doc-four',
+      );
+      final result = await dataSource.setDefaultDocument('test_all_fields', doc4.id!);
+      expect(result.id, doc4.id);
+      expect(result.isDefault, isTrue);
+    });
+
+    test('throws CmsNotFoundException for unknown documentId', () async {
+      expect(
+        () => dataSource.setDefaultDocument('test_all_fields', 99999),
+        throwsA(isA<CmsNotFoundException>()),
+      );
+    });
+  });
+
+  // ============================================================
   // 5. reset() restores seed state
   // ============================================================
 
