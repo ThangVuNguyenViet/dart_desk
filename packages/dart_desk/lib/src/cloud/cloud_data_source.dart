@@ -130,10 +130,16 @@ class CloudDataSource implements DataSource {
     String documentTypeSlug,
     int documentId,
   ) async {
-    throw UnimplementedError(
-      'setDefaultDocument backend endpoint not yet implemented. '
-      'Awaiting Serverpod backend implementation and client regeneration.',
-    );
+    try {
+      final doc = await _client.document
+          .setDefaultDocument(documentTypeSlug, documentId);
+      return _toCmsDocument(doc);
+    } on serverpod.ServerpodClientException catch (e) {
+      if (e.statusCode == 401) throw const CmsAuthenticationException();
+      throw CmsDataSourceException('Failed to set default document', e);
+    } catch (e) {
+      throw CmsDataSourceException('Failed to set default document', e);
+    }
   }
 
   @override
