@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation_generator.dart';
@@ -273,10 +274,24 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       String? optionSource,
     ]) {
       final fieldName = field.name!;
+      final optional = config?.getField('optional')?.toBoolValue() ?? false;
+
+      String? resolvedOption = optionSource;
+      if (optional && resolvedOption == null) {
+        resolvedOption = 'CmsColorOption(optional: true)';
+      } else if (optional && resolvedOption != null) {
+        if (!resolvedOption.contains('optional')) {
+          resolvedOption = resolvedOption.replaceFirst(
+            'CmsColorOption(',
+            'CmsColorOption(optional: true, ',
+          );
+        }
+      }
+
       return '''CmsColorField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
     },
     'CmsDropdownFieldConfig': (
@@ -297,6 +312,38 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}
+  )''';
+    },
+    'CmsObjectFieldConfig': (
+      FieldElement field,
+      DartObject? config, [
+      String? optionSource,
+    ]) {
+      final fieldName = field.name!;
+
+      // If no explicit option, try to auto-resolve from the field's type
+      String? resolvedOption = optionSource;
+      if (resolvedOption == null) {
+        final fieldType = field.type;
+        final typeElement =
+            fieldType is InterfaceType ? fieldType.element : null;
+        // Check if the type class has @CmsConfig annotation
+        if (typeElement != null &&
+            typeElement.metadata.annotations.any((m) =>
+                m.computeConstantValue()?.type?.element?.displayName ==
+                'CmsConfig')) {
+          final typeName = typeElement.displayName;
+          final fieldsListName =
+              '${typeName[0].toLowerCase()}${typeName.substring(1)}Fields';
+          resolvedOption =
+              'CmsObjectOption(children: [ColumnFields(children: $fieldsListName)])';
+        }
+      }
+
+      return '''CmsObjectField(
+    name: '$fieldName',
+    title: '${_titleCase(fieldName)}',
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
     },
   };
