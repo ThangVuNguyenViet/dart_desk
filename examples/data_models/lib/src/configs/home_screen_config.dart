@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:dart_desk/dart_desk.dart' show ImageUrl, ImageUrlMapper;
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 part 'home_screen_config.cms.g.dart';
@@ -14,7 +14,10 @@ part 'home_screen_config.mapper.dart';
   description:
       'Configuration for the mobile app home screen with hero section, features, and actions',
 )
-@MappableClass(ignoreNull: false, includeCustomMappers: [ColorMapper(), ImageUrlMapper()])
+@MappableClass(
+  ignoreNull: false,
+  includeCustomMappers: [ColorMapper(), ImageUrlMapper()],
+)
 class HomeScreenConfig
     with HomeScreenConfigMappable, Serializable<HomeScreenConfig> {
   // ── Hero Section ──────────────────────────────────────────────────────
@@ -68,7 +71,8 @@ class HomeScreenConfig
   final int maxFeaturedItems;
 
   @CmsNumberFieldConfig(
-    description: 'Opacity of the hero overlay (0.0 fully transparent, 1.0 fully opaque)',
+    description:
+        'Opacity of the hero overlay (0.0 fully transparent, 1.0 fully opaque)',
     option: CmsNumberOption(min: 0.0, max: 1.0),
   )
   final double heroOverlayOpacity;
@@ -254,7 +258,6 @@ class HomeScreenConfig
     metaTitle: null,
     metaDescription: null,
   );
-
 }
 
 class ColorMapper extends SimpleMapper<Color> {
@@ -289,38 +292,36 @@ class LayoutStyleDropdownOption extends CmsDropdownOption<String> {
   FutureOr<String?>? get defaultValue => 'grid';
 
   @override
-  FutureOr<List<DropdownOption<String>>> options(BuildContext context) => Future.value([
-    DropdownOption(value: 'grid', label: 'Grid Layout'),
-    DropdownOption(value: 'list', label: 'List Layout'),
-    DropdownOption(value: 'masonry', label: 'Masonry Layout'),
-  ]);
+  FutureOr<List<DropdownOption<String>>> options(BuildContext context) =>
+      Future.value([
+        DropdownOption(value: 'grid', label: 'Grid Layout'),
+        DropdownOption(value: 'list', label: 'List Layout'),
+        DropdownOption(value: 'masonry', label: 'Masonry Layout'),
+      ]);
 
   @override
   String? get placeholder => 'Select a layout style';
 }
 
-class FeaturedItemsArrayOption extends CmsArrayOption {
+class FeaturedItemsArrayOption extends CmsArrayOption<String> {
   const FeaturedItemsArrayOption({super.hidden});
 
   @override
-  CmsArrayFieldItemBuilder get itemBuilder =>
-      (BuildContext context, dynamic value) {
-        return Text(value as String);
+  CmsArrayFieldItemBuilder<String> get itemBuilder =>
+      (BuildContext context, String value) {
+        return Text(value);
       };
 
   @override
-  CmsArrayFieldItemEditor get itemEditor =>
-      (BuildContext context, dynamic value, ValueChanged<dynamic>? onChanged) {
-        return FeaturedItemEditor(
-          initialValue: value as String? ?? '',
-          onChanged: onChanged,
-        );
+  CmsArrayFieldItemEditor<String>? get itemEditor =>
+      (BuildContext context, String value, ValueChanged<String>? onChanged) {
+        return FeaturedItemEditor(initialValue: value, onChanged: onChanged);
       };
 }
 
 class FeaturedItemEditor extends StatefulWidget {
   final String initialValue;
-  final ValueChanged<dynamic>? onChanged;
+  final ValueChanged<String>? onChanged;
 
   const FeaturedItemEditor({
     super.key,
