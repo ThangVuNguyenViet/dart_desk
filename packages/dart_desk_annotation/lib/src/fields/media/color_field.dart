@@ -9,9 +9,13 @@ class CmsColorOption extends CmsOption {
   /// List of preset colors to show in the picker
   final List<Color>? presetColors;
 
+  /// Whether the color field is optional (can be null/unset)
+  final bool optional;
+
   const CmsColorOption({
     this.showAlpha = false,
     this.presetColors,
+    this.optional = false,
     super.hidden,
   });
 }
@@ -31,11 +35,17 @@ class CmsColorField extends CmsField {
 
 /// Configuration annotation for color fields
 class CmsColorFieldConfig extends CmsFieldConfig {
+  /// Whether the color field is optional (can be null/unset).
+  /// Convenience param that sets [CmsColorOption.optional] = true when no
+  /// explicit [option] is provided.
+  final bool optional;
+
   const CmsColorFieldConfig({
     super.name,
     super.title,
     super.description,
     CmsColorOption super.option = const CmsColorOption(),
+    this.optional = false,
   });
 
   @override
