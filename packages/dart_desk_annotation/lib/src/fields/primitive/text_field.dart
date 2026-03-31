@@ -7,6 +7,7 @@ class CmsTextOption extends CmsOption {
   final String? initialValue;
   final bool readOnly;
   final String? deprecatedReason;
+  final bool optional;
 
   const CmsTextOption({
     this.rows = 1,
@@ -15,6 +16,7 @@ class CmsTextOption extends CmsOption {
     this.initialValue,
     this.readOnly = false,
     this.deprecatedReason,
+    this.optional = false,
   });
 }
 
@@ -31,11 +33,14 @@ class CmsTextField extends CmsField {
 }
 
 class CmsTextFieldConfig extends CmsFieldConfig {
+  final bool optional;
+
   const CmsTextFieldConfig({
     super.name,
     super.title,
     super.description,
     CmsTextOption? super.option,
+    this.optional = false,
   });
 
   @override

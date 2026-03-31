@@ -1,7 +1,9 @@
 import '../base/field.dart';
 
 class CmsUrlOption extends CmsOption {
-  const CmsUrlOption({super.hidden});
+  final bool optional;
+
+  const CmsUrlOption({this.optional = false, super.hidden});
 }
 
 class CmsUrlField extends CmsField {
@@ -17,11 +19,14 @@ class CmsUrlField extends CmsField {
 }
 
 class CmsUrlFieldConfig extends CmsFieldConfig {
+  final bool optional;
+
   const CmsUrlFieldConfig({
     super.name,
     super.title,
     super.description,
     CmsUrlOption super.option = const CmsUrlOption(),
+    this.optional = false,
   });
 
   @override

@@ -1,7 +1,9 @@
 import '../base/field.dart';
 
 class CmsDateTimeOption extends CmsOption {
-  const CmsDateTimeOption({super.hidden});
+  final bool optional;
+
+  const CmsDateTimeOption({this.optional = false, super.hidden});
 }
 
 class CmsDateTimeField extends CmsField {
@@ -13,15 +15,19 @@ class CmsDateTimeField extends CmsField {
   });
 
   @override
-  CmsDateTimeOption get option => (super.option as CmsDateTimeOption?) ?? const CmsDateTimeOption();
+  CmsDateTimeOption get option =>
+      (super.option as CmsDateTimeOption?) ?? const CmsDateTimeOption();
 }
 
 class CmsDateTimeFieldConfig extends CmsFieldConfig {
+  final bool optional;
+
   const CmsDateTimeFieldConfig({
     super.name,
     super.title,
     super.description,
     CmsDateTimeOption super.option = const CmsDateTimeOption(),
+    this.optional = false,
   });
 
   @override

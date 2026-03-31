@@ -1,7 +1,9 @@
 import '../base/field.dart';
 
 class CmsStringOption extends CmsOption {
-  const CmsStringOption({super.hidden});
+  final bool optional;
+
+  const CmsStringOption({this.optional = false, super.hidden});
 }
 
 class CmsStringField extends CmsField {
@@ -13,15 +15,19 @@ class CmsStringField extends CmsField {
   });
 
   @override
-  CmsStringOption get option => (super.option as CmsStringOption?) ?? const CmsStringOption();
+  CmsStringOption get option =>
+      (super.option as CmsStringOption?) ?? const CmsStringOption();
 }
 
 class CmsStringFieldConfig extends CmsFieldConfig {
+  final bool optional;
+
   const CmsStringFieldConfig({
     super.name,
     super.title,
     super.description,
     CmsStringOption super.option = const CmsStringOption(),
+    this.optional = false,
   });
 
   @override

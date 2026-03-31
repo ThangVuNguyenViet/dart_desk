@@ -1,7 +1,9 @@
 import '../base/field.dart';
 
 class CmsFileOption extends CmsOption {
-  const CmsFileOption();
+  final bool optional;
+
+  const CmsFileOption({this.optional = false, super.hidden});
 }
 
 class CmsFileField extends CmsField {
@@ -13,15 +15,19 @@ class CmsFileField extends CmsField {
   });
 
   @override
-  CmsFileOption get option => (super.option as CmsFileOption?) ?? const CmsFileOption();
+  CmsFileOption get option =>
+      (super.option as CmsFileOption?) ?? const CmsFileOption();
 }
 
 class CmsFileFieldConfig extends CmsFieldConfig {
+  final bool optional;
+
   const CmsFileFieldConfig({
     super.name,
     super.title,
     super.description,
     CmsFileOption super.option = const CmsFileOption(),
+    this.optional = false,
   });
 
   @override
