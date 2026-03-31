@@ -140,7 +140,7 @@ class _CmsFileInputState extends State<CmsFileInput> {
     }
   }
 
-  Widget _buildFileContent(ThemeData theme) {
+  Widget _buildFileContent(ShadThemeData theme) {
     final hasFile = _fileName != null;
 
     return Column(
