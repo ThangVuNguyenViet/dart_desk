@@ -53,9 +53,15 @@ class DocumentTypeScreen extends StatelessWidget {
     try {
       final result = await viewModel.deleteDocument(docId);
       if (context.mounted) {
-        if (result) {
+        if (result.deleted) {
           toaster
               .show(const ShadToast(description: Text('Document deleted')));
+          if (result.newDefault != null) {
+            toaster.show(ShadToast(
+              description:
+                  Text('"${result.newDefault!.title}" is now the default.'),
+            ));
+          }
         } else {
           toaster.show(ShadToast.destructive(
               description: const Text('Failed to delete document')));
