@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'optional_field_wrapper.dart';
 
 @Preview(name: 'CmsTextInput')
 Widget preview() => ShadApp(
@@ -33,6 +34,7 @@ class CmsTextInput extends StatefulWidget {
 class _CmsTextInputState extends State<CmsTextInput> {
   late final TextEditingController _controller;
   late final UndoHistoryController _undoController;
+  late bool _isEnabled;
 
   @override
   void initState() {
@@ -41,13 +43,14 @@ class _CmsTextInputState extends State<CmsTextInput> {
         widget.data?.value ?? widget.field.option.initialValue ?? '';
     _controller = TextEditingController(text: initialText);
     _undoController = UndoHistoryController();
-
-    // Listen to text changes
     _controller.addListener(_onTextChanged);
+    _isEnabled = widget.field.option.optional
+        ? widget.data?.value != null
+        : true;
   }
 
   void _onTextChanged() {
-    widget.onChanged?.call(_controller.text);
+    if (_isEnabled) widget.onChanged?.call(_controller.text);
   }
 
   @override
@@ -73,9 +76,7 @@ class _CmsTextInputState extends State<CmsTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) {
-      return const SizedBox.shrink();
-    }
+    if (widget.field.option.hidden) return const SizedBox.shrink();
 
     final theme = ShadTheme.of(context);
     final label =
@@ -83,6 +84,34 @@ class _CmsTextInputState extends State<CmsTextInput> {
           widget.field.title,
         ) ??
         widget.field.title;
+    final isOptional = widget.field.option.optional;
+
+    if (!isOptional) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (widget.field.option.deprecatedReason case String deprecatedReason)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Text(
+                'Deprecated: $deprecatedReason',
+                style: theme.textTheme.small.copyWith(color: Colors.red),
+              ),
+            ),
+          ShadInputFormField(
+            controller: _controller,
+            undoController: _undoController,
+            label: Text(label),
+            placeholder: const Text('Enter text...'),
+            description: widget.field.description != null
+                ? Text(widget.field.description!)
+                : null,
+            maxLines: widget.field.option.rows,
+            readOnly: widget.field.option.readOnly,
+          ),
+        ],
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,18 +124,29 @@ class _CmsTextInputState extends State<CmsTextInput> {
               style: theme.textTheme.small.copyWith(color: Colors.red),
             ),
           ),
-
-        ShadInputFormField(
-          controller: _controller,
-          undoController: _undoController,
-          label: Text(label),
-          placeholder: const Text('Enter text...'),
-          description:
-              widget.field.description != null
-                  ? Text(widget.field.description!)
-                  : null,
-          maxLines: widget.field.option.rows,
-          readOnly: widget.field.option.readOnly,
+        Text(
+          label,
+          style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+        ),
+        if (widget.field.description != null) ...[
+          const SizedBox(height: 2),
+          Text(widget.field.description!, style: theme.textTheme.muted),
+        ],
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isOptional: true,
+          isEnabled: _isEnabled,
+          onToggle: (value) {
+            setState(() => _isEnabled = value);
+            widget.onChanged?.call(value ? _controller.text : null);
+          },
+          child: ShadInput(
+            controller: _controller,
+            undoController: _undoController,
+            placeholder: const Text('Enter text...'),
+            maxLines: widget.field.option.rows,
+            readOnly: widget.field.option.readOnly,
+          ),
         ),
       ],
     );

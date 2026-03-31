@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'optional_field_wrapper.dart';
 
 @Preview(name: 'CmsUrlInput')
 Widget preview() => ShadApp(
@@ -33,6 +34,7 @@ class CmsUrlInput extends StatefulWidget {
 class _CmsUrlInputState extends State<CmsUrlInput> {
   late final TextEditingController _controller;
   late final UndoHistoryController _undoController;
+  late bool _isEnabled;
   String? _validationError;
 
   @override
@@ -41,15 +43,16 @@ class _CmsUrlInputState extends State<CmsUrlInput> {
     final initialText = widget.data?.value?.toString() ?? '';
     _controller = TextEditingController(text: initialText);
     _undoController = UndoHistoryController();
-
-    // Listen to text changes
     _controller.addListener(_onTextChanged);
+    _isEnabled = widget.field.option.optional
+        ? widget.data?.value != null
+        : true;
   }
 
   void _onTextChanged() {
     final value = _controller.text;
     _validateUrl(value);
-    widget.onChanged?.call(value);
+    if (_isEnabled) widget.onChanged?.call(value);
   }
 
   void _validateUrl(String value) {
@@ -61,9 +64,8 @@ class _CmsUrlInputState extends State<CmsUrlInput> {
       final uri = Uri.parse(value);
       if (!uri.hasScheme || (!uri.scheme.startsWith('http'))) {
         setState(
-          () =>
-              _validationError =
-                  'Please enter a valid URL starting with http:// or https://',
+          () => _validationError =
+              'Please enter a valid URL starting with http:// or https://',
         );
       } else {
         setState(() => _validationError = null);
@@ -95,17 +97,57 @@ class _CmsUrlInputState extends State<CmsUrlInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) {
-      return const SizedBox.shrink();
+    if (widget.field.option.hidden) return const SizedBox.shrink();
+
+    final isOptional = widget.field.option.optional;
+
+    if (!isOptional) {
+      return ShadInputFormField(
+        controller: _controller,
+        undoController: _undoController,
+        label: Text(widget.field.title),
+        placeholder: const Text('https://example.com'),
+        maxLines: 1,
+        error: _validationError != null ? (_) => Text(_validationError!) : null,
+      );
     }
 
-    return ShadInputFormField(
-      controller: _controller,
-      undoController: _undoController,
-      label: Text(widget.field.title),
-      placeholder: const Text('https://example.com'),
-      maxLines: 1,
-      error: _validationError != null ? (_) => Text(_validationError!) : null,
+    final theme = ShadTheme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.field.title,
+          style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+        ),
+        if (widget.field.description != null) ...[
+          const SizedBox(height: 2),
+          Text(widget.field.description!, style: theme.textTheme.muted),
+        ],
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isOptional: true,
+          isEnabled: _isEnabled,
+          onToggle: (value) {
+            setState(() => _isEnabled = value);
+            widget.onChanged?.call(value ? _controller.text : null);
+          },
+          child: ShadInput(
+            controller: _controller,
+            undoController: _undoController,
+            placeholder: const Text('https://example.com'),
+          ),
+        ),
+        if (_validationError != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              _validationError!,
+              style: theme.textTheme.muted.copyWith(color: theme.colorScheme.destructive),
+            ),
+          ),
+      ],
     );
   }
 }
