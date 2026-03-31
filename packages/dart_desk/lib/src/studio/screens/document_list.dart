@@ -449,12 +449,30 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                           FontAwesomeIcons.ellipsisVertical,
                           size: 12,
                         ),
-                        onSelected: (value) {
-                          if (value == 'delete') {
+                        onSelected: (value) async {
+                          if (value == 'set_default') {
+                            final toaster = ShadToaster.of(context);
+                            final newDefault =
+                                await viewModel.setDefaultDocument(doc.id!);
+                            if (context.mounted && newDefault != null) {
+                              toaster.show(ShadToast(
+                                description: Text(
+                                    '"${newDefault.title}" is now the default.'),
+                              ));
+                            }
+                          } else if (value == 'delete') {
                             widget.onDeleteDocument!(doc.id!);
                           }
                         },
                         itemBuilder: (context) => [
+                          PopupMenuItem<String>(
+                            value: 'set_default',
+                            enabled: !doc.isDefault,
+                            child: const Text(
+                              'Set as default',
+                              style: TextStyle(fontSize: 13),
+                            ),
+                          ),
                           PopupMenuItem<String>(
                             key: const ValueKey('delete_document_button'),
                             value: 'delete',
