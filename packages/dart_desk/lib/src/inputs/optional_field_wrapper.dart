@@ -24,7 +24,6 @@ class OptionalFieldWrapper extends StatelessWidget {
     if (!isOptional) return child;
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
           child: IgnorePointer(
