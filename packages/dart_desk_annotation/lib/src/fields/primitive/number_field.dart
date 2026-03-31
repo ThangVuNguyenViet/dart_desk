@@ -5,9 +5,16 @@ class CmsNumberOption extends CmsOption {
   final CmsValidator? validation;
   final double? min;
   final double? max;
+  /// Whether the number field is optional (can be null/unset).
   final bool optional;
 
-  const CmsNumberOption({this.validation, this.min, this.max, super.hidden, this.optional = false});
+  const CmsNumberOption({
+    this.validation,
+    this.min,
+    this.max,
+    super.hidden,
+    this.optional = false,
+  });
 }
 
 class CmsNumberField extends CmsField {
@@ -23,6 +30,8 @@ class CmsNumberField extends CmsField {
 }
 
 class CmsNumberFieldConfig extends CmsFieldConfig {
+  /// Convenience param that sets [CmsNumberOption.optional] = true when no
+  /// explicit [option] is provided.
   final bool optional;
 
   const CmsNumberFieldConfig({

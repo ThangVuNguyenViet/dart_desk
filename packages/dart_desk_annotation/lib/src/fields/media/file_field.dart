@@ -1,6 +1,7 @@
 import '../base/field.dart';
 
 class CmsFileOption extends CmsOption {
+  /// Whether the file field is optional (can be null/unset).
   final bool optional;
 
   const CmsFileOption({this.optional = false, super.hidden});
@@ -20,6 +21,8 @@ class CmsFileField extends CmsField {
 }
 
 class CmsFileFieldConfig extends CmsFieldConfig {
+  /// Convenience param that sets [CmsFileOption.optional] = true when no
+  /// explicit [option] is provided.
   final bool optional;
 
   const CmsFileFieldConfig({

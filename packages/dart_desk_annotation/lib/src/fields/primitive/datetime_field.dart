@@ -1,6 +1,7 @@
 import '../base/field.dart';
 
 class CmsDateTimeOption extends CmsOption {
+  /// Whether the datetime field is optional (can be null/unset).
   final bool optional;
 
   const CmsDateTimeOption({this.optional = false, super.hidden});
@@ -20,6 +21,8 @@ class CmsDateTimeField extends CmsField {
 }
 
 class CmsDateTimeFieldConfig extends CmsFieldConfig {
+  /// Convenience param that sets [CmsDateTimeOption.optional] = true when no
+  /// explicit [option] is provided.
   final bool optional;
 
   const CmsDateTimeFieldConfig({

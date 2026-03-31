@@ -7,6 +7,7 @@ class CmsTextOption extends CmsOption {
   final String? initialValue;
   final bool readOnly;
   final String? deprecatedReason;
+  /// Whether the text field is optional (can be null/unset).
   final bool optional;
 
   const CmsTextOption({
@@ -33,6 +34,8 @@ class CmsTextField extends CmsField {
 }
 
 class CmsTextFieldConfig extends CmsFieldConfig {
+  /// Convenience param that sets [CmsTextOption.optional] = true when no
+  /// explicit [option] is provided.
   final bool optional;
 
   const CmsTextFieldConfig({
