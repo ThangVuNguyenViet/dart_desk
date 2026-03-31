@@ -4,6 +4,7 @@ import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'optional_field_wrapper.dart';
 
 @Preview(name: 'CmsFileInput')
 Widget preview() => ShadApp(
@@ -37,6 +38,7 @@ class _CmsFileInputState extends State<CmsFileInput> {
   String? _fileName;
   PlatformFile? _pickedFile;
   int? _fileSize;
+  late bool _isEnabled;
 
   @override
   void initState() {
@@ -45,6 +47,9 @@ class _CmsFileInputState extends State<CmsFileInput> {
     if (_fileUrl != null) {
       _fileName = _fileUrl!.split('/').last;
     }
+    _isEnabled = widget.field.option.optional
+        ? widget.data?.value != null
+        : true;
   }
 
   Future<void> _selectFile() async {
@@ -59,7 +64,7 @@ class _CmsFileInputState extends State<CmsFileInput> {
           _pickedFile = result.files.first;
           _fileName = _pickedFile!.name;
           _fileSize = _pickedFile!.size;
-          _fileUrl = null; // Clear URL if we have a local file
+          _fileUrl = null;
         });
         widget.onChanged?.call(_pickedFile!.path);
       }
@@ -135,20 +140,12 @@ class _CmsFileInputState extends State<CmsFileInput> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (widget.field.option.hidden) {
-      return const SizedBox.shrink();
-    }
-
-    final theme = ShadTheme.of(context);
+  Widget _buildFileContent(ThemeData theme) {
     final hasFile = _fileName != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.field.title, style: theme.textTheme.small),
-        const SizedBox(height: 8),
         if (hasFile) ...[
           Container(
             padding: const EdgeInsets.all(12),
@@ -210,6 +207,45 @@ class _CmsFileInputState extends State<CmsFileInput> {
               ],
             ),
           ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.field.option.hidden) return const SizedBox.shrink();
+
+    final theme = ShadTheme.of(context);
+    final isOptional = widget.field.option.optional;
+
+    if (!isOptional) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(widget.field.title, style: theme.textTheme.small),
+          const SizedBox(height: 8),
+          _buildFileContent(theme),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.field.title,
+          style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isOptional: true,
+          isEnabled: _isEnabled,
+          onToggle: (value) {
+            setState(() => _isEnabled = value);
+            if (!value) widget.onChanged?.call(null);
+          },
+          child: _buildFileContent(theme),
+        ),
       ],
     );
   }
