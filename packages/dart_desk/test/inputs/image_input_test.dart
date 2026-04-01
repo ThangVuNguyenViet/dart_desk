@@ -1,12 +1,14 @@
 import 'dart:io';
 
-import 'package:dart_desk/src/inputs/image_input.dart';
+import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_desk/testing.dart';
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../helpers/input_test_helpers.dart';
+
+class MockDataSource extends Mock implements DataSource {}
 
 void main() {
   setUpAll(() {
@@ -32,7 +34,11 @@ void main() {
 
   group('CmsImageInput', () {
     testWidgets('renders upload area when no data', (tester) async {
-      await tester.pumpWidget(buildInputApp(CmsImageInput(field: field)));
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsImageInput(field: field, dataSource: MockDataSource()),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byKey(const ValueKey('upload_button')), findsOneWidget);
