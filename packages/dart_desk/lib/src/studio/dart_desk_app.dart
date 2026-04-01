@@ -1,3 +1,4 @@
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -78,6 +79,7 @@ class DartDeskApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (_serverUrl != null) {
+      ImageRef.defaultAssetResolver = (id) => '${_serverUrl}files/$id';
       return DartDeskAuth(
         serverUrl: _serverUrl,
         apiKey: _apiKey!,

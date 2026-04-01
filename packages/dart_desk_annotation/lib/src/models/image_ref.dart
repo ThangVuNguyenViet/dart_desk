@@ -23,10 +23,28 @@ class ImageRef {
   static bool isImageRef(Map<String, dynamic> map) =>
       map['_type'] == 'imageReference';
 
-  /// Resolves to a displayable URL.
+  /// Default resolver used by [url]. Set this once at app startup so that
+  /// asset-ID-based refs resolve without passing a resolver every time.
   ///
-  /// Pass an [assetResolver] that converts an asset ID to an absolute URL
-  /// (e.g. `'${serverUrl}files/$id'`). Returns `null` if neither field is set.
+  /// Example:
+  /// ```dart
+  /// ImageRef.defaultAssetResolver = (id) => '${serverUrl}files/$id';
+  /// ```
+  static String Function(String assetId)? defaultAssetResolver;
+
+  /// Returns the URL for this image reference using [defaultAssetResolver]
+  /// for asset-ID-based refs. Returns [externalUrl] directly if set.
+  /// Returns `null` if neither field is set or no resolver is configured.
+  String? get url {
+    if (externalUrl != null) return externalUrl;
+    if (assetId != null) return defaultAssetResolver?.call(assetId!);
+    return null;
+  }
+
+  /// Resolves to a displayable URL using an explicit [assetResolver].
+  ///
+  /// Prefer [url] when [defaultAssetResolver] is configured. Use this when
+  /// you need a one-off resolver different from the default.
   String? resolveUrl(String Function(String assetId) assetResolver) {
     if (externalUrl != null) return externalUrl;
     if (assetId != null) return assetResolver(assetId!);
