@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 typedef CmsArrayFieldItemBuilder<T> =
     Widget Function(BuildContext context, T value);
 typedef CmsArrayFieldItemEditor<T> =
-    Widget Function(BuildContext context, dynamic value, ValueChanged<T>? onChanged);
+    Widget Function(BuildContext context, T value, ValueChanged<T>? onChanged);
 
 /// Factory function used to build a [CmsArrayInput]-like widget for a given
 /// [CmsArrayField]. Defined as a generic function so the type parameter T is
@@ -25,35 +25,30 @@ abstract class CmsArrayOption<T> extends CmsOption {
   /// Calls [itemBuilder] with [value] cast to [T], bypassing the static
   /// type system so that a typed option (e.g. CmsArrayOption<String>) can be
   /// used through an untyped CmsArrayField reference.
-  Widget buildItem(BuildContext context, dynamic value) {
-    final toMapValue = value is Serializable ? value.toMap() : value;
-    assert(
-      toMapValue is T,
-      'CmsArrayOption.buildItem: expected $T but got ${toMapValue.runtimeType}',
-    );
-    return itemBuilder(context, toMapValue);
+  Widget buildItem(BuildContext context, T value) {
+    return itemBuilder(context, value);
   }
+
+  /// Convert a raw stored value (e.g. a [Map] from Firestore) to [T].
+  /// Override this in subclasses for complex types; the default works for
+  /// primitives where the stored form IS already [T].
+  T fromDynamic(dynamic value) => value as T;
 
   /// Override to provide a custom editor widget for array items.
   /// When null, a default editor will be used for primitive types
   /// (String, num, int, double, bool).
   CmsArrayFieldItemEditor<T>? get itemEditor => null;
 
-  /// Calls [itemEditor] with [value] as dynamic, bypassing the static T check
-  /// at the call site — mirrors the same pattern as [buildItem].
+  /// Calls [itemEditor] after converting [value] via [fromDynamic].
   /// Returns null when [itemEditor] is null.
   Widget? buildItemEditor(
     BuildContext context,
     dynamic value,
-    void Function(dynamic)? onChanged,
+    ValueChanged<T>? onChanged,
   ) {
     final editor = itemEditor;
     if (editor == null) return null;
-    return editor(
-      context,
-      value,
-      onChanged == null ? null : (T v) => onChanged(v),
-    );
+    return editor(context, fromDynamic(value), onChanged);
   }
 }
 

@@ -75,6 +75,7 @@ class CmsDropdownInput<T> extends StatelessWidget {
             defaultValue: loadedDefaultValue,
             data: data,
             onChanged: onChanged,
+            fromDynamic: fieldOption.fromDynamic,
           );
         },
       );
@@ -88,6 +89,7 @@ class CmsDropdownInput<T> extends StatelessWidget {
       defaultValue: fieldOption.defaultValue as T?,
       data: data,
       onChanged: onChanged,
+      fromDynamic: fieldOption.fromDynamic,
     );
   }
 }
@@ -99,6 +101,7 @@ class _CmsDropdownInput<T> extends StatefulWidget {
   final String title;
   final String? description;
   final String? placeholder;
+  final T Function(dynamic)? fromDynamic;
 
   final ValueChanged<T?>? onChanged;
 
@@ -111,6 +114,7 @@ class _CmsDropdownInput<T> extends StatefulWidget {
     required this.title,
     this.description,
     this.placeholder,
+    this.fromDynamic,
   });
 
   @override
@@ -143,8 +147,9 @@ class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
 
   /// Resolves the initial value set, returning empty set when no valid selection.
   Set<T> _resolveInitialSet() {
-    final value = widget.data?.value ?? widget.defaultValue;
-    if (value == null) return {};
+    final raw = widget.data?.value ?? widget.defaultValue;
+    if (raw == null) return {};
+    final value = widget.fromDynamic != null ? widget.fromDynamic!(raw) : raw as T;
     return {value};
   }
 

@@ -30,6 +30,10 @@ abstract class CmsDropdownOption<T> extends CmsOption {
   bool get allowNull;
 
   const CmsDropdownOption({super.hidden});
+
+  /// Convert a raw stored value to [T]. Override for complex types;
+  /// the default works for primitives where the stored form is already [T].
+  T fromDynamic(dynamic value) => value as T;
 }
 
 class CmsDropdownSimpleOption<T> extends CmsDropdownOption<T> {
@@ -87,6 +91,10 @@ abstract class CmsMultiDropdownOption<T> extends CmsOption {
   int? get maxSelected;
 
   const CmsMultiDropdownOption({super.hidden});
+
+  /// Convert a raw stored value to [T]. Override for complex types;
+  /// the default works for primitives where the stored form is already [T].
+  T fromDynamic(dynamic value) => value as T;
 }
 
 /// Simple multi-dropdown option with static options list.

@@ -24,14 +24,18 @@ class CmsArrayInput<T> extends StatefulWidget {
 }
 
 class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
-  late List _items;
+  late List<T> _items;
   int? _editingIndex; // -1 for adding new, null for none, >= 0 for editing
   dynamic _editingValue;
 
   @override
   void initState() {
     super.initState();
-    _items = (widget.data?.value as List?)?.cast() ?? [];
+    final option = widget.field.option;
+    _items = (widget.data?.value as List?)
+            ?.map<T>((e) => option != null ? option.fromDynamic(e) : e as T)
+            .toList() ??
+        [];
   }
 
   void _addItem() {
@@ -58,14 +62,16 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
 
   void _saveItem() {
     setState(() {
-      if (_editingIndex == -1) {
-        // Adding new item
-        if (_editingValue != null) {
-          _items.add(_editingValue);
+      if (_editingValue != null) {
+        final option = widget.field.option;
+        final typed = option != null
+            ? option.fromDynamic(_editingValue)
+            : _editingValue as T;
+        if (_editingIndex == -1) {
+          _items.add(typed);
+        } else if (_editingIndex != null && _editingIndex! >= 0) {
+          _items[_editingIndex!] = typed;
         }
-      } else if (_editingIndex != null && _editingIndex! >= 0) {
-        // Updating existing item
-        _items[_editingIndex!] = _editingValue;
       }
       _editingIndex = null;
       _editingValue = null;
