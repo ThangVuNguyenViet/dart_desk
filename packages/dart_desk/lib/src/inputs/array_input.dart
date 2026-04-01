@@ -226,14 +226,12 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
       return const SizedBox.shrink();
     }
 
-    final itemEditor = widget.field.option?.itemEditor;
-    if (itemEditor != null) {
-      return itemEditor(context, _editingValue, (value) {
-        setState(() {
-          _editingValue = value;
-        });
-      });
-    }
+    final editorWidget = widget.field.option?.buildItemEditor(
+      context,
+      _editingValue,
+      (value) => setState(() => _editingValue = value),
+    );
+    if (editorWidget != null) return editorWidget;
 
     // Default editors for primitive types
     final field = widget.field;

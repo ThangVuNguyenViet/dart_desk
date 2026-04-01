@@ -139,9 +139,16 @@ class CmsFieldInputRegistry {
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsArrayField():
-        return (_, data, onChanged) => CmsArrayInput(
+        CmsArrayField.registerInputFactory(
+          <T>(f, data, onChanged, key) => CmsArrayInput<T>(
+            key: key,
+            field: f,
+            data: data,
+            onChanged: onChanged,
+          ),
+        );
+        return (_, data, onChanged) => field.buildInput(
           key: ValueKey(field.name),
-          field: field,
           data: data,
           onChanged: (value) => onChanged(field.name, value),
         );
