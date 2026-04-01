@@ -1,15 +1,10 @@
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
-
-import '../base/field.dart';
 
 typedef CmsArrayFieldItemBuilder<T> =
     Widget Function(BuildContext context, T value);
 typedef CmsArrayFieldItemEditor<T> =
-    Widget Function(
-      BuildContext context,
-      T value,
-      ValueChanged<T>? onChanged,
-    );
+    Widget Function(BuildContext context, T value, ValueChanged<T>? onChanged);
 
 abstract class CmsArrayOption<T> extends CmsOption {
   const CmsArrayOption({super.hidden});
@@ -20,8 +15,12 @@ abstract class CmsArrayOption<T> extends CmsOption {
   /// type system so that a typed option (e.g. CmsArrayOption<String>) can be
   /// used through an untyped CmsArrayField reference.
   Widget buildItem(BuildContext context, dynamic value) {
-    assert(value is T, 'CmsArrayOption.buildItem: expected $T but got ${value.runtimeType}');
-    return itemBuilder(context, value as T);
+    final toMapValue = value is Serializable ? value.toMap() : value;
+    assert(
+      toMapValue is T,
+      'CmsArrayOption.buildItem: expected $T but got ${toMapValue.runtimeType}',
+    );
+    return itemBuilder(context, toMapValue);
   }
 
   /// Override to provide a custom editor widget for array items.
@@ -42,7 +41,7 @@ class CmsArrayField<T> extends CmsField {
   CmsArrayOption<T>? get option => super.option as CmsArrayOption<T>?;
 }
 
-class CmsArrayFieldConfig<T extends Object?> extends CmsFieldConfig {
+class CmsArrayFieldConfig<T> extends CmsFieldConfig {
   const CmsArrayFieldConfig({
     super.name,
     super.title,
