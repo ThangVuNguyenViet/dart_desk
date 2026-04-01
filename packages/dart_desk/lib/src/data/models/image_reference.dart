@@ -1,7 +1,6 @@
-import 'image_types.dart';
-import 'media_asset.dart';
+import '../../../dart_desk.dart';
 
-class ImageReference {
+class ImageReference implements Serializable {
   final MediaAsset asset;
   final Hotspot? hotspot;
   final CropRect? crop;
@@ -22,11 +21,18 @@ class ImageReference {
     if (altText != null) 'altText': altText,
   };
 
-  factory ImageReference.fromDocumentJson(Map<String, dynamic> json, MediaAsset asset) {
+  factory ImageReference.fromDocumentJson(
+    Map<String, dynamic> json,
+    MediaAsset asset,
+  ) {
     return ImageReference(
       asset: asset,
-      hotspot: json['hotspot'] != null ? Hotspot.fromJson(json['hotspot'] as Map<String, dynamic>) : null,
-      crop: json['crop'] != null ? CropRect.fromJson(json['crop'] as Map<String, dynamic>) : null,
+      hotspot: json['hotspot'] != null
+          ? Hotspot.fromJson(json['hotspot'] as Map<String, dynamic>)
+          : null,
+      crop: json['crop'] != null
+          ? CropRect.fromJson(json['crop'] as Map<String, dynamic>)
+          : null,
       altText: json['altText'] as String?,
     );
   }
@@ -47,5 +53,10 @@ class ImageReference {
       crop: crop ?? this.crop,
       altText: altText ?? this.altText,
     );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return toDocumentJson();
   }
 }

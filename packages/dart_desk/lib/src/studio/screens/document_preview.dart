@@ -40,35 +40,32 @@ class DocumentPreview extends StatelessWidget {
       }
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(CmsSpacing.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'PREVIEW',
-            style: TextStyle(
-              fontSize: 10,
-              color: theme.colorScheme.mutedForeground,
-              letterSpacing: 1,
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'PREVIEW',
+          style: TextStyle(
+            fontSize: 10,
+            color: theme.colorScheme.mutedForeground,
+            letterSpacing: 1,
           ),
-          const SizedBox(height: CmsSpacing.md),
-          Expanded(
-            child: KeyedSubtree(
-              key: ValueKey(docType.name),
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(CmsBorderRadius.lg),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: docType.builder(data),
+        ),
+        const SizedBox(height: CmsSpacing.md),
+        Expanded(
+          child: KeyedSubtree(
+            key: ValueKey(docType.name),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(CmsBorderRadius.lg),
               ),
+              clipBehavior: Clip.antiAlias,
+              child: docType.builder(data),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

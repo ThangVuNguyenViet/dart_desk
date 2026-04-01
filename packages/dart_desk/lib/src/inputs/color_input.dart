@@ -80,77 +80,75 @@ class _CmsColorInputState extends State<CmsColorInput> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(
+            widget.field.title,
+            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 8),
           Row(
             children: [
-              Text(
-                widget.field.title,
-                style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+              Expanded(
+                child: IgnorePointer(
+                  ignoring: !_isEnabled,
+                  child: AnimatedOpacity(
+                    opacity: _isEnabled ? 1.0 : 0.4,
+                    duration: const Duration(milliseconds: 200),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: _showColorPicker,
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            width: 80,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: _selectedColor,
+                              border: Border.all(
+                                color: theme.colorScheme.border,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ShadInput(
+                            initialValue: _colorToHex(_selectedColor),
+                            onChanged: (value) {
+                              final color = _parseColor(value);
+                              if (color != null) {
+                                setState(() {
+                                  _selectedColor = color;
+                                });
+                                widget.onChanged?.call(value);
+                              }
+                            },
+                            placeholder: const Text('#RRGGBB'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
               if (isOptional) ...[
                 const SizedBox(width: 8),
-                SizedBox(
-                  height: 20,
-                  width: 36,
-                  child: Switch(
-                    value: _isEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        _isEnabled = value;
-                      });
-                      if (!value) {
-                        widget.onChanged?.call(null);
-                      } else {
-                        widget.onChanged?.call(_colorToHex(_selectedColor));
-                      }
-                    },
-                  ),
+                ShadCheckbox(
+                  value: _isEnabled,
+                  onChanged: (value) {
+                    setState(() {
+                      _isEnabled = value;
+                    });
+                    if (!value) {
+                      widget.onChanged?.call(null);
+                    } else {
+                      widget.onChanged?.call(_colorToHex(_selectedColor));
+                    }
+                  },
                 ),
               ],
             ],
-          ),
-          const SizedBox(height: 8),
-          IgnorePointer(
-            ignoring: !_isEnabled,
-            child: AnimatedOpacity(
-              opacity: _isEnabled ? 1.0 : 0.4,
-              duration: const Duration(milliseconds: 200),
-              child: Row(
-                children: [
-                  InkWell(
-                    onTap: _showColorPicker,
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      width: 80,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: _selectedColor,
-                        border: Border.all(
-                          color: theme.colorScheme.border,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ShadInput(
-                      initialValue: _colorToHex(_selectedColor),
-                      onChanged: (value) {
-                        final color = _parseColor(value);
-                        if (color != null) {
-                          setState(() {
-                            _selectedColor = color;
-                          });
-                          widget.onChanged?.call(value);
-                        }
-                      },
-                      placeholder: const Text('#RRGGBB'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
         ],
       ),
@@ -158,7 +156,7 @@ class _CmsColorInputState extends State<CmsColorInput> {
   }
 }
 
-/// Color picker dialog with HSV color wheel
+/// Color picker dialog with RGB sliders
 class _ColorPickerDialog extends StatefulWidget {
   final Color initialColor;
   final bool showAlpha;
@@ -177,17 +175,28 @@ class _ColorPickerDialog extends StatefulWidget {
 }
 
 class _ColorPickerDialogState extends State<_ColorPickerDialog> {
-  late HSVColor _hsvColor;
+  late int _red;
+  late int _green;
+  late int _blue;
+  late double _alpha;
 
   @override
   void initState() {
     super.initState();
-    _hsvColor = HSVColor.fromColor(widget.initialColor);
+    _red = widget.initialColor.red;
+    _green = widget.initialColor.green;
+    _blue = widget.initialColor.blue;
+    _alpha = widget.initialColor.opacity;
   }
 
-  void _updateColor(HSVColor newColor) {
+  Color get _currentColor => Color.fromRGBO(_red, _green, _blue, _alpha);
+
+  void _setFromColor(Color color) {
     setState(() {
-      _hsvColor = newColor;
+      _red = color.red;
+      _green = color.green;
+      _blue = color.blue;
+      _alpha = color.opacity;
     });
   }
 
@@ -207,62 +216,60 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
               width: double.infinity,
               height: 60,
               decoration: BoxDecoration(
-                color: _hsvColor.toColor(),
+                color: _currentColor,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: theme.colorScheme.border),
               ),
             ),
             const SizedBox(height: 16),
 
-            // Hue slider
+            // Red slider
             _buildSlider(
-              label: 'Hue',
-              value: _hsvColor.hue,
-              max: 360,
+              label: 'R',
+              value: _red.toDouble(),
+              max: 255,
+              activeColor: Colors.red,
               onChanged: (value) {
-                _updateColor(_hsvColor.withHue(value));
+                setState(() => _red = value.round());
               },
               gradient: LinearGradient(
                 colors: [
-                  const HSVColor.fromAHSV(1, 0, 1, 1).toColor(),
-                  const HSVColor.fromAHSV(1, 60, 1, 1).toColor(),
-                  const HSVColor.fromAHSV(1, 120, 1, 1).toColor(),
-                  const HSVColor.fromAHSV(1, 180, 1, 1).toColor(),
-                  const HSVColor.fromAHSV(1, 240, 1, 1).toColor(),
-                  const HSVColor.fromAHSV(1, 300, 1, 1).toColor(),
-                  const HSVColor.fromAHSV(1, 360, 1, 1).toColor(),
+                  Color.fromRGBO(0, _green, _blue, 1),
+                  Color.fromRGBO(255, _green, _blue, 1),
                 ],
               ),
             ),
 
-            // Saturation slider
+            // Green slider
             _buildSlider(
-              label: 'Saturation',
-              value: _hsvColor.saturation,
-              max: 1,
+              label: 'G',
+              value: _green.toDouble(),
+              max: 255,
+              activeColor: Colors.green,
               onChanged: (value) {
-                _updateColor(_hsvColor.withSaturation(value));
+                setState(() => _green = value.round());
               },
               gradient: LinearGradient(
                 colors: [
-                  _hsvColor.withSaturation(0).toColor(),
-                  _hsvColor.withSaturation(1).toColor(),
+                  Color.fromRGBO(_red, 0, _blue, 1),
+                  Color.fromRGBO(_red, 255, _blue, 1),
                 ],
               ),
             ),
 
-            // Value/Brightness slider
+            // Blue slider
             _buildSlider(
-              label: 'Brightness',
-              value: _hsvColor.value,
-              max: 1,
+              label: 'B',
+              value: _blue.toDouble(),
+              max: 255,
+              activeColor: Colors.blue,
               onChanged: (value) {
-                _updateColor(_hsvColor.withValue(value));
+                setState(() => _blue = value.round());
               },
               gradient: LinearGradient(
                 colors: [
-                  _hsvColor.withValue(0).toColor(),
-                  _hsvColor.withValue(1).toColor(),
+                  Color.fromRGBO(_red, _green, 0, 1),
+                  Color.fromRGBO(_red, _green, 255, 1),
                 ],
               ),
             ),
@@ -270,16 +277,16 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
             // Alpha slider (if enabled)
             if (widget.showAlpha)
               _buildSlider(
-                label: 'Opacity',
-                value: _hsvColor.alpha,
-                max: 1,
+                label: 'A',
+                value: _alpha * 255,
+                max: 255,
                 onChanged: (value) {
-                  _updateColor(_hsvColor.withAlpha(value));
+                  setState(() => _alpha = value / 255);
                 },
                 gradient: LinearGradient(
                   colors: [
-                    _hsvColor.withAlpha(0).toColor(),
-                    _hsvColor.withAlpha(1).toColor(),
+                    Color.fromRGBO(_red, _green, _blue, 0),
+                    Color.fromRGBO(_red, _green, _blue, 1),
                   ],
                 ),
               ),
@@ -294,9 +301,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
                 runSpacing: 8,
                 children: widget.presetColors!.map((color) {
                   return InkWell(
-                    onTap: () {
-                      _updateColor(HSVColor.fromColor(color));
-                    },
+                    onTap: () => _setFromColor(color),
                     child: Container(
                       width: 32,
                       height: 32,
@@ -324,7 +329,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
         ShadButton(
           size: ShadButtonSize.sm,
           onPressed: () {
-            widget.onColorSelected(_hsvColor.toColor());
+            widget.onColorSelected(_currentColor);
             Navigator.of(context).pop();
           },
           child: const Text('Select'),
@@ -339,12 +344,13 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
     required double max,
     required ValueChanged<double> onChanged,
     Gradient? gradient,
+    Color? activeColor,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '$label: ${(value / max * 100).toStringAsFixed(0)}%',
+          '$label: ${value.round()}',
           style: const TextStyle(fontSize: 12),
         ),
         const SizedBox(height: 4),
@@ -354,7 +360,14 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
             gradient: gradient,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Slider(value: value, max: max, onChanged: onChanged),
+          child: SliderTheme(
+            data: SliderThemeData(
+              activeTrackColor: activeColor?.withValues(alpha: 0.0),
+              inactiveTrackColor: Colors.transparent,
+              thumbColor: activeColor,
+            ),
+            child: Slider(value: value, max: max, onChanged: onChanged),
+          ),
         ),
         const SizedBox(height: 8),
       ],

@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'optional_field_wrapper.dart';
 
 @Preview(name: 'CmsNumberInput')
 Widget preview() => ShadApp(
@@ -63,59 +62,33 @@ class _CmsNumberInputState extends State<CmsNumberInput> {
   Widget build(BuildContext context) {
     if (widget.field.option.hidden) return const SizedBox.shrink();
 
-    final isOptional = widget.field.option.optional;
-
     final inputFormatters = [
       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
     ];
 
-    if (!isOptional) {
-      return ShadInputFormField(
-        initialValue: widget.data?.value?.toString(),
-        label: Text(widget.field.title),
-        placeholder: const Text('Enter number...'),
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: inputFormatters,
-        onChanged: (value) {
-          widget.onChanged?.call(num.tryParse(value));
-        },
-        validator: _validate,
-      );
-    }
-
-    final theme = ShadTheme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.field.title,
-          style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
-        ),
-        if (widget.field.description != null) ...[
-          const SizedBox(height: 2),
-          Text(widget.field.description!, style: theme.textTheme.muted),
-        ],
-        const SizedBox(height: 8),
-        OptionalFieldWrapper(
-          isOptional: true,
-          isEnabled: _isEnabled,
-          onToggle: (value) {
-            setState(() => _isEnabled = value);
-            if (!value) widget.onChanged?.call(null);
-          },
-          child: ShadInputFormField(
-            initialValue: widget.data?.value?.toString(),
-            placeholder: const Text('Enter number...'),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: inputFormatters,
-            onChanged: (value) {
-              if (_isEnabled) widget.onChanged?.call(num.tryParse(value));
-            },
-            validator: _validate,
-          ),
-        ),
-      ],
+    return ShadInputFormField(
+      initialValue: widget.data?.value?.toString(),
+      label: Text(widget.field.title),
+      description: widget.field.description != null
+          ? Text(widget.field.description!)
+          : null,
+      placeholder: const Text('Enter number...'),
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: inputFormatters,
+      enabled: !widget.field.option.optional || _isEnabled,
+      trailing: widget.field.option.optional
+          ? ShadCheckbox(
+              value: _isEnabled,
+              onChanged: (value) {
+                setState(() => _isEnabled = value);
+                if (!value) widget.onChanged?.call(null);
+              },
+            )
+          : null,
+      onChanged: (value) {
+        if (_isEnabled) widget.onChanged?.call(num.tryParse(value));
+      },
+      validator: _validate,
     );
   }
 }

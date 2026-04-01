@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
-import 'optional_field_wrapper.dart';
 
 @Preview(name: 'CmsStringInput')
 Widget preview() => ShadApp(
@@ -76,49 +75,25 @@ class _CmsStringInputState extends State<CmsStringInput> {
   Widget build(BuildContext context) {
     if (widget.field.option.hidden) return const SizedBox.shrink();
 
-    final isOptional = widget.field.option.optional;
-
-    if (!isOptional) {
-      return ShadInputFormField(
-        controller: _controller,
-        undoController: _undoController,
-        label: Text(widget.field.title),
-        placeholder: const Text('Enter text...'),
-        description: widget.field.description != null
-            ? Text(widget.field.description!)
-            : null,
-        maxLines: 1,
-      );
-    }
-
-    final theme = ShadTheme.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.field.title,
-          style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
-        ),
-        if (widget.field.description != null) ...[
-          const SizedBox(height: 2),
-          Text(widget.field.description!, style: theme.textTheme.muted),
-        ],
-        const SizedBox(height: 8),
-        OptionalFieldWrapper(
-          isOptional: true,
-          isEnabled: _isEnabled,
-          onToggle: (value) {
-            setState(() => _isEnabled = value);
-            widget.onChanged?.call(value ? _controller.text : null);
-          },
-          child: ShadInput(
-            controller: _controller,
-            undoController: _undoController,
-            placeholder: const Text('Enter text...'),
-          ),
-        ),
-      ],
+    return ShadInputFormField(
+      controller: _controller,
+      undoController: _undoController,
+      label: Text(widget.field.title),
+      placeholder: const Text('Enter text...'),
+      description: widget.field.description != null
+          ? Text(widget.field.description!)
+          : null,
+      maxLines: 1,
+      enabled: !widget.field.option.optional || _isEnabled,
+      trailing: widget.field.option.optional
+          ? ShadCheckbox(
+              value: _isEnabled,
+              onChanged: (value) {
+                setState(() => _isEnabled = value);
+                widget.onChanged?.call(value ? _controller.text : null);
+              },
+            )
+          : null,
     );
   }
 }

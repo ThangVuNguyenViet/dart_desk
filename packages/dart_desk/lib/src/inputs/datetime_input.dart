@@ -128,46 +128,39 @@ class _CmsDateTimeInputState extends State<CmsDateTimeInput> {
     final isOptional = widget.field.option.optional;
     final theme = ShadTheme.of(context);
 
-    final button = ShadButton.outline(
-      onPressed: _selectDateTime,
-      child: Text(
-        _selectedDateTime != null
-            ? _formatDateTime(_selectedDateTime!)
-            : 'Select date and time',
-      ),
-    );
-
-    if (!isOptional) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(widget.field.title, style: theme.textTheme.small),
-          const SizedBox(height: 8),
-          button,
-        ],
-      );
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.field.title,
-          style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+        Row(
+          children: [
+            Text(widget.field.title, style: theme.textTheme.small),
+            if (isOptional) ...[
+              const Spacer(),
+              ShadCheckbox(
+                value: _isEnabled,
+                onChanged: (value) {
+                  setState(() => _isEnabled = value);
+                  if (!value) {
+                    widget.onChanged?.call(null);
+                  } else if (_selectedDateTime != null) {
+                    widget.onChanged?.call(_selectedDateTime);
+                  }
+                },
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: 8),
         OptionalFieldWrapper(
-          isOptional: true,
-          isEnabled: _isEnabled,
-          onToggle: (value) {
-            setState(() => _isEnabled = value);
-            if (!value) {
-              widget.onChanged?.call(null);
-            } else if (_selectedDateTime != null) {
-              widget.onChanged?.call(_selectedDateTime);
-            }
-          },
-          child: button,
+          isEnabled: !isOptional || _isEnabled,
+          child: ShadButton.outline(
+            onPressed: _selectDateTime,
+            child: Text(
+              _selectedDateTime != null
+                  ? _formatDateTime(_selectedDateTime!)
+                  : 'Select date and time',
+            ),
+          ),
         ),
       ],
     );

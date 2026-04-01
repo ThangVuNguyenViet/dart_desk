@@ -39,15 +39,20 @@ class CmsDocumentViewModel {
   /// Shared edited data signal — written by the editor, read by the preview.
   final editedData = MapSignal<String, dynamic>({}, debugLabel: 'editedData');
 
-  EffectCleanup? _cleanup;
+  final List<EffectCleanup> _cleanups = [];
 
   CmsDocumentViewModel(this.dataSource);
 
-  /// Sets up a reactive effect that watches [cmsVM.selectedDocumentId].
-  /// When it changes, syncs [documentId], resets [editedData], and
-  /// auto-loads the latest version data.
+  /// Sets up reactive effects that watch [cmsVM.selectedDocumentId] and
+  /// [cmsVM.currentDocumentType].
+  ///
+  /// Effect 1: syncs [documentId], resets [editedData], and auto-loads the
+  /// latest version data whenever the selected document changes.
+  ///
+  /// Effect 2: seeds [editedData] with the document type's default values
+  /// whenever the type or document changes and [editedData] is empty.
   void listenTo(CmsViewModel cmsVM) {
-    _cleanup = effect(() {
+    _cleanups.add(effect(() {
       final newDocId = cmsVM.selectedDocumentId.value;
       final currentDocId = untracked(() => documentId.value);
 
@@ -61,7 +66,21 @@ class CmsDocumentViewModel {
           _autoLoadLatestData(cmsVM, newDocId);
         }
       }
-    });
+    }));
+
+    _cleanups.add(effect(() {
+      final docType = cmsVM.currentDocumentType.value;
+      final docId = documentId.value; // tracked — re-run when document changes
+      final defaults = docType?.defaultValue?.toMap() ?? {};
+      if (docId == null) {
+        // New-document form: always seed current type's defaults, even if
+        // editedData already has stale data from a previous type.
+        if (defaults.isNotEmpty) editedData.value = defaults;
+      } else if (untracked(() => editedData.value.isEmpty) && defaults.isNotEmpty) {
+        // Document selected but autoLoad hasn't populated editedData yet.
+        editedData.value = defaults;
+      }
+    }));
   }
 
   /// Fetches versions for a document and auto-loads the latest data.
@@ -172,7 +191,9 @@ class CmsDocumentViewModel {
 
   /// Disposes all signals
   void dispose() {
-    _cleanup?.call();
+    for (final cleanup in _cleanups) {
+      cleanup();
+    }
     documentId.dispose();
     title.dispose();
     slug.dispose();

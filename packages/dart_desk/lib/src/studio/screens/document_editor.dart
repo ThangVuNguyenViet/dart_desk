@@ -27,17 +27,6 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   MapSignal<String, dynamic> get editedData =>
       GetIt.I<CmsDocumentViewModel>().editedData;
 
-  @override
-  void initState() {
-    final viewModel = GetIt.I<CmsViewModel>();
-    final docType = viewModel.currentDocumentType.value;
-    final defaults = docType?.defaultValue?.toMap() ?? {};
-    if (editedData.value.isEmpty && defaults.isNotEmpty) {
-      editedData.value = defaults;
-    }
-    super.initState();
-  }
-
   Future<void> _saveDocument() async {
     final viewModel = GetIt.I<CmsViewModel>();
     try {
@@ -140,20 +129,9 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
           Center(child: Text('Error loading document: $error')),
       data: (versionData) {
         final versionDataMap = versionData?.data ?? {};
-
-        // Initialize editedData from version data
-        if (editedData.value.isEmpty && versionDataMap.isNotEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              editedData.value = Map<String, dynamic>.from(versionDataMap);
-            }
-          });
-        }
-
         final displayData = editedData.value.isEmpty
             ? versionDataMap
             : editedData.value;
-
         return _buildEditor(displayData, isSaving);
       },
     );

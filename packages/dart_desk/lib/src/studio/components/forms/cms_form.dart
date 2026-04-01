@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../inputs/array_input.dart';
@@ -10,18 +11,16 @@ import '../../../inputs/color_input.dart';
 import '../../../inputs/date_input.dart';
 import '../../../inputs/datetime_input.dart';
 import '../../../inputs/dropdown_input.dart';
-import '../../../inputs/multi_dropdown_input.dart';
 import '../../../inputs/file_input.dart';
 import '../../../inputs/geopoint_input.dart';
 import '../../../inputs/image_input.dart';
+import '../../../inputs/multi_dropdown_input.dart';
 import '../../../inputs/number_input.dart';
-import 'package:get_it/get_it.dart';
-
-import '../../core/view_models/cms_view_model.dart';
 import '../../../inputs/object_input.dart';
 import '../../../inputs/string_input.dart';
 import '../../../inputs/text_input.dart';
 import '../../../inputs/url_input.dart';
+import '../../core/view_models/cms_view_model.dart';
 
 /// Type definition for field value change callbacks
 typedef OnFieldChanged = void Function(String fieldName, dynamic value);
@@ -129,6 +128,7 @@ class CmsFieldInputRegistry {
           key: ValueKey(field.name),
           field: field,
           data: data,
+          dataSource: GetIt.I<CmsViewModel>().dataSource,
           onChanged: (value) => onChanged(field.name, value),
         );
       case CmsFileField():

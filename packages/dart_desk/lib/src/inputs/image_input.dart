@@ -4,7 +4,6 @@ import 'dart:typed_data';
 
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widget_previews.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -19,24 +18,8 @@ import '../media/image_transform_params.dart';
 import '../media/image_url.dart';
 import '../media/quick_metadata_extractor.dart';
 import 'hotspot/framing_controller.dart';
-import 'hotspot/image_hotspot_editor.dart';
 import 'hotspot/framing_status.dart';
-
-@Preview(name: 'CmsImageInput')
-Widget preview() => ShadApp(
-  home: Scaffold(
-    body: Padding(
-      padding: const EdgeInsets.all(16),
-      child: CmsImageInput(
-        field: const CmsImageField(
-          name: 'avatar',
-          title: 'Profile Image',
-          option: CmsImageOption(hotspot: false),
-        ),
-      ),
-    ),
-  ),
-);
+import 'hotspot/image_hotspot_editor.dart';
 
 enum _UploadState { idle, extractingMetadata, uploading, done, error }
 
@@ -46,7 +29,7 @@ class CmsImageInput extends StatefulWidget {
   final CmsImageField field;
   final CmsData? data;
   final ValueChanged<Map<String, dynamic>?>? onChanged;
-  final DataSource? dataSource;
+  final DataSource dataSource;
   final TransformUrlBuilder? transformUrl;
 
   const CmsImageInput({
@@ -54,7 +37,7 @@ class CmsImageInput extends StatefulWidget {
     required this.field,
     this.data,
     this.onChanged,
-    this.dataSource,
+    required this.dataSource,
     this.transformUrl,
   });
 
@@ -125,10 +108,10 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
 
   Future<void> _tryLoadImageReferenceFromData(Map<String, dynamic> json) async {
     final assetId = json['assetId'] as String?;
-    if (assetId == null || widget.dataSource == null) return;
+    if (assetId == null) return;
 
     try {
-      final asset = await widget.dataSource!.getMediaAsset(assetId);
+      final asset = await widget.dataSource.getMediaAsset(assetId);
       if (asset != null && mounted) {
         _imageRef.value = ImageReference.fromDocumentJson(json, asset);
       } else if (mounted) {
@@ -155,12 +138,6 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
   }
 
   Future<void> _uploadBytes(String fileName, Uint8List bytes) async {
-    if (widget.dataSource == null) {
-      // Legacy fallback: no dataSource, just emit null (cannot upload).
-      _errorMessage.value = 'No data source configured for upload.';
-      return;
-    }
-
     _errorMessage.value = null;
 
     try {
@@ -173,7 +150,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
 
       // Step 2: Upload
       _uploadState.value = _UploadState.uploading;
-      final asset = await widget.dataSource!.uploadImage(
+      final asset = await widget.dataSource.uploadImage(
         fileName,
         bytes,
         metadata,
@@ -271,15 +248,13 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
   }
 
   void _browseMedia() {
-    if (widget.dataSource == null) return;
-
     showShadDialog(
       context: context,
       builder: (context) => ShadDialog(
         scrollable: false,
         constraints: const BoxConstraints(maxWidth: 900, maxHeight: 600),
         child: MediaBrowser(
-          dataSource: widget.dataSource!,
+          dataSource: widget.dataSource,
           mode: MediaBrowserMode.picker,
           onAssetSelected: (asset) {
             final imageRef = ImageReference(asset: asset);
