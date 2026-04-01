@@ -729,6 +729,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
                 // Switching from upload to url: clear image ref
                 _imageRef.value = null;
                 _uploadState.value = _UploadState.idle;
+                _errorMessage.value = null;
                 _activeTab.value = _InputTab.url;
                 widget.onChanged?.call(null);
               }
