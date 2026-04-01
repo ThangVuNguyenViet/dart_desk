@@ -1,4 +1,5 @@
 import '../base/field.dart';
+import '../../models/image_ref.dart';
 
 class CmsImageOption extends CmsOption {
   final bool hotspot;
@@ -27,5 +28,5 @@ class CmsImageFieldConfig extends CmsFieldConfig {
   });
 
   @override
-  List<Type> get supportedFieldTypes => [Object]; // String (URL) or ImageUrl (resolved)
+  List<Type> get supportedFieldTypes => [Object, ImageRef]; // Map (ImageReference), ImageRef, or Object
 }
