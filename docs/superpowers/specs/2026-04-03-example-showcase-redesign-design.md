@@ -32,7 +32,7 @@ All share the "Aura Gastronomy" brand: green primary (#496455), Noto Serif headl
 | `bannerTitle` | `String` | `@CmsStringFieldConfig` | Hero banner headline |
 | `bannerSubtitle` | `String` | `@CmsTextFieldConfig` | Banner description text |
 | `bannerImage` | `ImageReference?` | `@CmsImageFieldConfig` | Banner background image |
-| `products` | `List<String>` | `@CmsArrayFieldConfig` | Array of product keys; each item uses a dropdown editor backed by kiosk seed products |
+| `products` | `List<String>` | `CmsMultiDropdownField` | Multi-select dropdown backed by kiosk seed products; `maxSelected: 4` |
 
 ### 2. HeroConfig
 
@@ -42,7 +42,7 @@ All share the "Aura Gastronomy" brand: green primary (#496455), Noto Serif headl
 | `heroSubtitle` | `String` | `@CmsTextFieldConfig` | Hero description |
 | `heroImage` | `ImageReference?` | `@CmsImageFieldConfig` | Hero background |
 | `ctaLabel` | `String` | `@CmsStringFieldConfig` | Button text |
-| `products` | `List<String>` | `@CmsArrayFieldConfig` | Array of product keys; each item uses a dropdown editor backed by hero seed products |
+| `products` | `List<String>` | `CmsMultiDropdownField` | Multi-select dropdown backed by hero seed products; `maxSelected: 4` |
 
 ### 3. UpsellConfig
 
@@ -52,7 +52,7 @@ All share the "Aura Gastronomy" brand: green primary (#496455), Noto Serif headl
 | `sectionSubtitle` | `String` | `@CmsTextFieldConfig` | Description below title |
 | `quoteText` | `String` | `@CmsTextFieldConfig` | Pull-quote content |
 | `chefName` | `String` | `@CmsStringFieldConfig` | Quote attribution |
-| `products` | `List<String>` | `@CmsArrayFieldConfig` | Array of product keys; each item uses a dropdown editor backed by upsell seed products |
+| `products` | `List<String>` | `CmsMultiDropdownField` | Multi-select dropdown backed by upsell seed products; `maxSelected: 4` |
 
 ### 4. RewardConfig
 
@@ -62,7 +62,7 @@ All share the "Aura Gastronomy" brand: green primary (#496455), Noto Serif headl
 | `pointsBalance` | `num` | `@CmsNumberFieldConfig` | Current points |
 | `nextRewardThreshold` | `num` | `@CmsNumberFieldConfig` | Points needed |
 | `rewardLabel` | `String` | `@CmsStringFieldConfig` | e.g. "Festive Tasting Menu" |
-| `coupons` | `List<String>` | `@CmsArrayFieldConfig` | Array of coupon keys; each item uses a dropdown editor backed by seed coupons |
+| `coupons` | `List<String>` | `CmsMultiDropdownField` | Multi-select dropdown backed by seed coupons; `maxSelected: 3` |
 
 ### 5. BrandTheme
 
