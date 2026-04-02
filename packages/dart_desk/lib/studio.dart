@@ -26,7 +26,7 @@ export 'src/studio/components/version/cms_version_history.dart';
 export 'src/studio/config/cms_breakpoints.dart';
 export 'src/studio/config/studio_config.dart';
 // Core studio functionality
-export 'src/studio/core/marionette_config.dart';
+// export 'src/studio/core/marionette_config.dart'; // TODO: re-enable when marionette_flutter is on pub.dev
 export 'src/studio/core/registry.dart';
 export 'src/studio/core/view_models/cms_view_model.dart';
 export 'src/studio/dart_desk_app.dart';
