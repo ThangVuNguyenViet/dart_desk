@@ -20,6 +20,7 @@ export 'src/fields/complex/object_field.dart';
 // Models
 export 'src/models/image_ref.dart';
 export 'src/models/image_types.dart';
+export 'src/models/image_reference_mapper.dart';
 // Media field configurations
 export 'src/fields/media/color_field.dart';
 export 'src/fields/media/file_field.dart';

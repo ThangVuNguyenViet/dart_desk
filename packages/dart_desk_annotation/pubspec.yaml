@@ -17,3 +17,4 @@ dependencies:
   flutter:
     sdk: flutter
   form_builder_validators: ^11.2.0
+  dart_mappable: ^4.0.0
