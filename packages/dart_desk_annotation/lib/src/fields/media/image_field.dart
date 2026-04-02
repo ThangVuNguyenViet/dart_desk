@@ -1,5 +1,5 @@
 import '../base/field.dart';
-import '../../models/image_ref.dart';
+import '../../models/image_ref.dart'; // exports ImageReference (and deprecated ImageRef typedef)
 
 enum CmsMediaType { image, svg, lottie, video }
 
@@ -35,5 +35,5 @@ class CmsImageFieldConfig extends CmsFieldConfig {
   });
 
   @override
-  List<Type> get supportedFieldTypes => [Object, ImageRef]; // Map (ImageReference), ImageRef, or Object
+  List<Type> get supportedFieldTypes => [Object, ImageReference];
 }

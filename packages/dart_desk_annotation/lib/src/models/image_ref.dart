@@ -1,68 +1,130 @@
-/// Lightweight image reference that can hold either an uploaded asset ID
-/// or an external URL (e.g. a Lottie animation URL, CDN image).
+import 'image_types.dart';
+
+/// Unified image reference for dart_desk.
 ///
-/// Serialised as `{ '_type': 'imageReference', 'assetId': '...' }` or
-/// `{ '_type': 'imageReference', 'externalUrl': '...' }`.
-class ImageRef {
+/// Handles both stored format (assetId only) and server-resolved format
+/// (assetId + publicUrl + dimensions + blurHash). Auto-detects which format
+/// when deserializing via [fromMap].
+///
+/// Serialised as `{ '_type': 'imageReference', 'assetId': '...' }` (stored)
+/// or with additional resolved fields (publicUrl, width, height, blurHash, lqip).
+///
+/// For CDN transform support, wrap in [ImageUrl] from `package:dart_desk`.
+class ImageReference {
   final String? assetId;
   final String? externalUrl;
+  final String? publicUrl;
+  final int? width;
+  final int? height;
+  final String? blurHash;
+  final String? lqip;
+  final Hotspot? hotspot;
+  final CropRect? crop;
+  final String? altText;
 
-  const ImageRef({this.assetId, this.externalUrl});
+  const ImageReference({
+    this.assetId,
+    this.externalUrl,
+    this.publicUrl,
+    this.width,
+    this.height,
+    this.blurHash,
+    this.lqip,
+    this.hotspot,
+    this.crop,
+    this.altText,
+  });
 
-  factory ImageRef.fromMap(Map<String, dynamic> map) => ImageRef(
+  factory ImageReference.fromMap(Map<String, dynamic> map) => ImageReference(
     assetId: map['assetId'] as String?,
     externalUrl: map['externalUrl'] as String?,
+    publicUrl: map['publicUrl'] as String?,
+    width: map['width'] as int?,
+    height: map['height'] as int?,
+    blurHash: map['blurHash'] as String?,
+    lqip: map['lqip'] as String?,
+    hotspot: map['hotspot'] != null
+        ? Hotspot.fromJson(map['hotspot'] as Map<String, dynamic>)
+        : null,
+    crop: map['crop'] != null
+        ? CropRect.fromJson(map['crop'] as Map<String, dynamic>)
+        : null,
+    altText: map['altText'] as String?,
   );
 
+  /// Always outputs stored format — no publicUrl/width/height/blurHash/lqip.
   Map<String, dynamic> toMap() => {
     '_type': 'imageReference',
     if (assetId != null) 'assetId': assetId,
     if (externalUrl != null) 'externalUrl': externalUrl,
+    if (hotspot != null) 'hotspot': hotspot!.toJson(),
+    if (crop != null) 'crop': crop!.toJson(),
+    if (altText != null) 'altText': altText,
   };
 
-  static bool isImageRef(Map<String, dynamic> map) =>
+  static bool isImageReference(Map<String, dynamic> map) =>
       map['_type'] == 'imageReference';
 
-  /// Default resolver used by [url]. Set this once at app startup so that
-  /// asset-ID-based refs resolve without passing a resolver every time.
-  ///
-  /// Example:
-  /// ```dart
-  /// ImageRef.defaultAssetResolver = (id) => '${serverUrl}files/$id';
-  /// ```
   static String Function(String assetId)? defaultAssetResolver;
 
-  /// Returns the URL for this image reference using [defaultAssetResolver]
-  /// for asset-ID-based refs. Returns [externalUrl] directly if set.
-  /// Returns `null` if neither field is set or no resolver is configured.
   String? get url {
+    if (publicUrl != null) return publicUrl;
     if (externalUrl != null) return externalUrl;
     if (assetId != null) return defaultAssetResolver?.call(assetId!);
     return null;
   }
 
-  /// Resolves to a displayable URL using an explicit [assetResolver].
-  ///
-  /// Prefer [url] when [defaultAssetResolver] is configured. Use this when
-  /// you need a one-off resolver different from the default.
   String? resolveUrl(String Function(String assetId) assetResolver) {
+    if (publicUrl != null) return publicUrl;
     if (externalUrl != null) return externalUrl;
     if (assetId != null) return assetResolver(assetId!);
     return null;
   }
 
+  ImageReference copyWith({
+    String? assetId,
+    String? externalUrl,
+    String? publicUrl,
+    int? width,
+    int? height,
+    String? blurHash,
+    String? lqip,
+    Hotspot? hotspot,
+    CropRect? crop,
+    String? altText,
+  }) => ImageReference(
+    assetId: assetId ?? this.assetId,
+    externalUrl: externalUrl ?? this.externalUrl,
+    publicUrl: publicUrl ?? this.publicUrl,
+    width: width ?? this.width,
+    height: height ?? this.height,
+    blurHash: blurHash ?? this.blurHash,
+    lqip: lqip ?? this.lqip,
+    hotspot: hotspot ?? this.hotspot,
+    crop: crop ?? this.crop,
+    altText: altText ?? this.altText,
+  );
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ImageRef &&
+      other is ImageReference &&
           runtimeType == other.runtimeType &&
           assetId == other.assetId &&
-          externalUrl == other.externalUrl;
+          externalUrl == other.externalUrl &&
+          publicUrl == other.publicUrl &&
+          hotspot == other.hotspot &&
+          crop == other.crop &&
+          altText == other.altText;
 
   @override
-  int get hashCode => Object.hash(assetId, externalUrl);
+  int get hashCode => Object.hash(assetId, externalUrl, publicUrl, hotspot, crop, altText);
 
   @override
   String toString() =>
-      'ImageRef(assetId: $assetId, externalUrl: $externalUrl)';
+      'ImageReference(assetId: $assetId, externalUrl: $externalUrl, publicUrl: $publicUrl)';
 }
+
+/// Deprecated. Use [ImageReference] instead.
+@Deprecated('Use ImageReference instead')
+typedef ImageRef = ImageReference;
