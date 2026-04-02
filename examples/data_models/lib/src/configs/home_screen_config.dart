@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:dart_desk/dart_desk.dart' show ImageUrl, ImageUrlMapper;
+import 'package:dart_desk/dart_desk.dart'
+    show ImageUrl, ImageUrlMapper, ImageReference;
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,7 @@ class HomeScreenConfig
     description: 'Background image for the hero section',
     option: CmsImageOption(hotspot: false),
   )
-  final ImageUrl? backgroundImage;
+  final ImageReference? backgroundImage;
 
   @CmsBooleanFieldConfig(
     description: 'Enable dark overlay on background image',
@@ -132,7 +133,7 @@ class HomeScreenConfig
     description: 'Logo image shown in the footer',
     option: CmsImageOption(hotspot: false),
   )
-  final ImageUrl? footerLogo;
+  final ImageReference? footerLogo;
 
   // ── Action Buttons ────────────────────────────────────────────────────
   @CmsStringFieldConfig(

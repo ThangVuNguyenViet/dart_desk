@@ -39,7 +39,7 @@ final homeScreenConfigFields = [
     title: 'Accent Color',
     option: CmsColorOption(),
   ),
-  CmsArrayField(
+  CmsArrayField<String>(
     name: 'featuredItems',
     title: 'Featured Items',
     option: FeaturedItemsArrayOption(),
@@ -196,7 +196,7 @@ class HomeScreenConfigCmsConfig {
 
   final CmsData<String> heroSubtitle;
 
-  final CmsData<ImageUrl?> backgroundImage;
+  final CmsData<ImageReference?> backgroundImage;
 
   final CmsData<bool> enableDarkOverlay;
 
@@ -226,7 +226,7 @@ class HomeScreenConfigCmsConfig {
 
   final CmsData<String?> downloadableResource;
 
-  final CmsData<ImageUrl?> footerLogo;
+  final CmsData<ImageReference?> footerLogo;
 
   final CmsData<String> primaryButtonLabel;
 

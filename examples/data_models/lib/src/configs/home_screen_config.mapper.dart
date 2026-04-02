@@ -33,12 +33,10 @@ class HomeScreenConfigMapper extends ClassMapperBase<HomeScreenConfig> {
     'heroSubtitle',
     _$heroSubtitle,
   );
-  static ImageUrl? _$backgroundImage(HomeScreenConfig v) => v.backgroundImage;
-  static const Field<HomeScreenConfig, ImageUrl> _f$backgroundImage = Field(
-    'backgroundImage',
-    _$backgroundImage,
-    opt: true,
-  );
+  static ImageReference? _$backgroundImage(HomeScreenConfig v) =>
+      v.backgroundImage;
+  static const Field<HomeScreenConfig, ImageReference> _f$backgroundImage =
+      Field('backgroundImage', _$backgroundImage, opt: true);
   static bool _$enableDarkOverlay(HomeScreenConfig v) => v.enableDarkOverlay;
   static const Field<HomeScreenConfig, bool> _f$enableDarkOverlay = Field(
     'enableDarkOverlay',
@@ -116,8 +114,8 @@ class HomeScreenConfigMapper extends ClassMapperBase<HomeScreenConfig> {
     _$downloadableResource,
     opt: true,
   );
-  static ImageUrl? _$footerLogo(HomeScreenConfig v) => v.footerLogo;
-  static const Field<HomeScreenConfig, ImageUrl> _f$footerLogo = Field(
+  static ImageReference? _$footerLogo(HomeScreenConfig v) => v.footerLogo;
+  static const Field<HomeScreenConfig, ImageReference> _f$footerLogo = Field(
     'footerLogo',
     _$footerLogo,
     opt: true,
@@ -303,7 +301,7 @@ abstract class HomeScreenConfigCopyWith<$R, $In extends HomeScreenConfig, $Out>
   $R call({
     String? heroTitle,
     String? heroSubtitle,
-    ImageUrl? backgroundImage,
+    ImageReference? backgroundImage,
     bool? enableDarkOverlay,
     Color? primaryColor,
     Color? accentColor,
@@ -318,7 +316,7 @@ abstract class HomeScreenConfigCopyWith<$R, $In extends HomeScreenConfig, $Out>
     DateTime? lastUpdated,
     String? externalLink,
     String? downloadableResource,
-    ImageUrl? footerLogo,
+    ImageReference? footerLogo,
     String? primaryButtonLabel,
     String? primaryButtonUrl,
     String? secondaryButtonLabel,
