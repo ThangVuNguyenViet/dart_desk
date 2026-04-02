@@ -1,0 +1,36 @@
+name: dart_desk_workspace
+
+packages:
+  - packages/dart_desk
+  - packages/dart_desk_annotation
+  - packages/dart_desk_generator
+
+command:
+  version:
+    message: "chore(release): publish packages"
+    includeCommitId: true
+    workspaceChangelog: false
+    changelogs:
+      - path: CHANGELOG.md
+        packageFilters:
+          scope: "*"
+  publish:
+    hooks:
+      pre: melos run analyze
+
+scripts:
+  analyze:
+    run: dart analyze --fatal-infos
+    packageFilters:
+      scope:
+        - dart_desk
+        - dart_desk_annotation
+        - dart_desk_generator
+  test:
+    run: flutter test
+    packageFilters:
+      dirExists: test
+  dry-run:
+    run: dart pub publish --dry-run
+    packageFilters:
+      noPrivate: true

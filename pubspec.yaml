@@ -13,7 +13,10 @@ workspace:
   - examples/example_app
   - examples/cms_app
 
-dependencies: 
+dev_dependencies:
+  melos: ^7.5.0
+
+dependencies:
   collection: ^1.19.1
   shadcn_ui: ^0.52.1
 
@@ -23,7 +26,9 @@ dependency_overrides:
   dart_desk_generator:
     path: packages/dart_desk_generator
   marionette_flutter:
-    path: /Users/vietthangvunguyen/Workspace/marionette_mcp/packages/marionette_flutter
+    git:
+      url: https://github.com/thangmoxielabs/marionette_mcp.git
+      path: packages/marionette_flutter
   dart_desk_client:
     path: /Users/vietthangvunguyen/Workspace/dart_desk_workspace/dart_desk_be/dart_desk_client
   signals:
