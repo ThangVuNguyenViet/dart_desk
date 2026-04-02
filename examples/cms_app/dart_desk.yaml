@@ -1,2 +1,3 @@
-project_slug: e2e-deploy-test
+project_id: e2e-deploy-test
+# server: https://api.dartdesk.dev  # Optional. Defaults to Dart Desk Cloud.
 server: http://localhost:8082

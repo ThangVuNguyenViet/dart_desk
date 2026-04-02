@@ -400,14 +400,14 @@ class ColorMapper extends SimpleMapper<Color> {
 Create a `dart_desk.yaml` in your dart_desk_app project root. This is used by `dart_desk_cli` for deployment.
 
 ```yaml
-project_slug: my-project
-server: https://api.dartdesk.dev
+project_id: my-project
+# server: https://api.dartdesk.dev  # Optional. Defaults to Dart Desk Cloud.
 ```
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `project_slug` | Yes | URL-safe project identifier for deployment (e.g. `my-project`) |
-| `server` | No | Dart Desk server URL. Defaults to `https://api.dartdesk.dev` |
+| `project_id` | Yes | URL-safe project identifier for deployment (e.g. `my-project`) |
+| `server` | No | Dart Desk server URL. Defaults to Dart Desk Cloud. Self-hosters set this to their own server. |
 
 ### Deploy with the CLI
 
@@ -416,13 +416,13 @@ server: https://api.dartdesk.dev
 dart pub global activate dart_desk_cli
 
 # Log in to your server
-dart_desk login
+dartdesk login
 
 # Deploy the studio
-dart_desk deploy
+dartdesk deploy
 
 # View deployments
-dart_desk deployments
+dartdesk deployments
 ```
 
 ---
@@ -448,7 +448,7 @@ workspace/
 └── dart_desk_app/      # Dart Desk studio
     ├── lib/
     │   └── main.dart
-    ├── dart_desk.yaml   # Deployment config (slug + server)
+    ├── dart_desk.yaml   # Deployment config (project_id + server)
     └── pubspec.yaml
 ```
 
@@ -464,5 +464,5 @@ workspace/
 - [ ] Create dart_desk_app with dependencies on `dart_desk`, `your_app`, and `data_models`
 - [ ] Register document types in `DartDeskConfig`
 - [ ] Add mock providers for any dependencies your app widgets expect
-- [ ] Add `dart_desk.yaml` with `project_slug` and `server` to dart_desk_app root
+- [ ] Add `dart_desk.yaml` with `project_id` (and optionally `server`) to dart_desk_app root
 - [ ] Verify preview renders correctly in the dart_desk studio
