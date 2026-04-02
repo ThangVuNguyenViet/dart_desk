@@ -11,12 +11,12 @@ part 'upsell_config.mapper.dart';
 
 @CmsConfig(
   title: 'Upsell Screen',
-  description: 'Mobile Chef\'s Choice curated item list with editorial pull-quote',
+  description: 'Mobile Chefs Choice curated item list with editorial pull-quote',
 )
 @MappableClass(ignoreNull: false, includeCustomMappers: [UpsellColorMapper()])
 class UpsellConfig with UpsellConfigMappable, Serializable<UpsellConfig> {
   @CmsStringFieldConfig(
-    description: 'Section title (e.g. Chef\'s Choice)',
+    description: 'Section title (e.g. Chefs Choice)',
     option: CmsStringOption(),
   )
   final String sectionTitle;
@@ -40,7 +40,7 @@ class UpsellConfig with UpsellConfigMappable, Serializable<UpsellConfig> {
   final String chefName;
 
   @CmsMultiDropdownFieldConfig<String>(
-    description: 'Chef\'s choice products to feature',
+    description: 'Chef choice products to feature',
     option: UpsellProductsDropdownOption(),
   )
   final List<String> products;
@@ -103,5 +103,5 @@ class UpsellProductsDropdownOption extends CmsMultiDropdownOption<String> {
       ]);
 
   @override
-  String? get placeholder => 'Select chef\'s picks';
+  String? get placeholder => "Select chef's picks";
 }

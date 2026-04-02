@@ -1,7 +1,8 @@
 library;
 
-export 'src/configs/storefront_config.dart' hide StorefrontColorMapper;
-export 'src/configs/menu_highlight.dart';
-export 'src/configs/promo_offer.dart' hide ColorMapper;
-export 'src/configs/app_theme.dart' hide ColorMapper;
-export 'src/configs/delivery_settings.dart';
+export 'src/configs/brand_theme.dart' hide BrandThemeColorMapper;
+export 'src/configs/kiosk_config.dart' hide KioskColorMapper;
+export 'src/configs/hero_config.dart' hide HeroColorMapper;
+export 'src/configs/upsell_config.dart' hide UpsellColorMapper;
+export 'src/configs/reward_config.dart' hide RewardColorMapper;
+export 'src/seed/seed_data.dart';
