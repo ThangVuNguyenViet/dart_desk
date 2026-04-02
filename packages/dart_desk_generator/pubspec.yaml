@@ -13,6 +13,8 @@ environment:
   sdk: ^3.8.0
 
 dependencies:
+  analyzer: ^10.0.1
+  collection: ^1.19.1
   dart_desk_annotation: ^0.1.0
   source_gen: ^4.1.1
   build: ^4.0.3
