@@ -1,62 +1,27 @@
-import '../../../dart_desk.dart';
+// Re-export the unified ImageReference from the annotation package.
+export 'package:dart_desk_annotation/src/models/image_ref.dart';
 
-class ImageReference implements Serializable {
-  final MediaAsset asset;
-  final Hotspot? hotspot;
-  final CropRect? crop;
-  final String? altText;
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'media_asset.dart';
 
-  const ImageReference({
-    required this.asset,
-    this.hotspot,
-    this.crop,
-    this.altText,
-  });
-
-  Map<String, dynamic> toDocumentJson() => {
-    '_type': 'imageReference',
-    'assetId': asset.assetId,
-    if (hotspot != null) 'hotspot': hotspot!.toJson(),
-    if (crop != null) 'crop': crop!.toJson(),
-    if (altText != null) 'altText': altText,
-  };
-
-  factory ImageReference.fromDocumentJson(
-    Map<String, dynamic> json,
-    MediaAsset asset,
-  ) {
-    return ImageReference(
-      asset: asset,
-      hotspot: json['hotspot'] != null
-          ? Hotspot.fromJson(json['hotspot'] as Map<String, dynamic>)
-          : null,
-      crop: json['crop'] != null
-          ? CropRect.fromJson(json['crop'] as Map<String, dynamic>)
-          : null,
-      altText: json['altText'] as String?,
-    );
-  }
-
-  static bool isImageReference(Map<String, dynamic> json) {
-    return json['_type'] == 'imageReference';
-  }
-
-  ImageReference copyWith({
-    MediaAsset? asset,
+/// Extension to bridge between [MediaAsset] (CMS-internal) and [ImageReference].
+extension ImageReferenceFromAsset on ImageReference {
+  /// Creates an [ImageReference] populated with resolved fields from a [MediaAsset].
+  static ImageReference fromAsset(
+    MediaAsset asset, {
     Hotspot? hotspot,
     CropRect? crop,
     String? altText,
-  }) {
-    return ImageReference(
-      asset: asset ?? this.asset,
-      hotspot: hotspot ?? this.hotspot,
-      crop: crop ?? this.crop,
-      altText: altText ?? this.altText,
-    );
-  }
-
-  @override
-  Map<String, dynamic> toMap() {
-    return toDocumentJson();
-  }
+  }) =>
+      ImageReference(
+        assetId: asset.assetId,
+        publicUrl: asset.publicUrl,
+        width: asset.width,
+        height: asset.height,
+        blurHash: asset.blurHash,
+        lqip: asset.lqip,
+        hotspot: hotspot,
+        crop: crop,
+        altText: altText,
+      );
 }
