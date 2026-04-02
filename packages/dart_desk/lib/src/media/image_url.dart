@@ -1,11 +1,19 @@
-import '../data/models/image_reference.dart';
-import '../data/models/image_types.dart';
-import '../data/models/media_asset.dart';
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+
+import '../data/models/image_types.dart' show FitMode;
 import 'image_transform_params.dart';
 
 typedef TransformUrlBuilder = String Function(
     String publicUrl, ImageTransformParams params);
 
+/// CDN transform wrapper around [ImageReference].
+///
+/// Adds `url()` method with width/height/format/quality params that delegates
+/// to a pluggable [TransformUrlBuilder]. Without a transform, returns the
+/// raw URL from the underlying [ImageReference].
+///
+/// Both [ImageUrl] and [ImageReference] serialize to the same wire format.
+/// You can switch between them without data migration.
 class ImageUrl {
   final ImageReference imageRef;
   final TransformUrlBuilder? _transformUrl;
@@ -13,30 +21,29 @@ class ImageUrl {
   const ImageUrl({required this.imageRef, TransformUrlBuilder? transformUrl})
       : _transformUrl = transformUrl;
 
-  /// Decodes a resolved imageReference JSON node into an [ImageUrl].
-  ///
-  /// The JSON must contain: assetId, publicUrl, width, height, blurHash.
-  /// Optional: lqip, hotspot, crop, altText.
-  /// [transformUrl] is null until the consumer calls [withTransform].
-  factory ImageUrl.fromJson(Map<String, dynamic> json) {
-    final asset = MediaAsset.fromInlineJson(json);
-    final ref = ImageReference.fromDocumentJson(json, asset);
-    return ImageUrl(imageRef: ref);
-  }
+  /// Decodes a stored or resolved imageReference JSON node into an [ImageUrl].
+  factory ImageUrl.fromMap(Map<String, dynamic> map) =>
+      ImageUrl(imageRef: ImageReference.fromMap(map));
 
   /// Returns a new [ImageUrl] with the given [builder] applied to [url].
-  ///
-  /// The original [ImageUrl] is not mutated.
   ImageUrl withTransform(TransformUrlBuilder builder) =>
       ImageUrl(imageRef: imageRef, transformUrl: builder);
 
-  String url({
+  /// Returns a (optionally transformed) URL for this image.
+  ///
+  /// If a [TransformUrlBuilder] is set, builds transform params from the
+  /// arguments and the image's hotspot/crop data, then delegates to the builder.
+  /// Otherwise returns the raw URL from [imageRef].
+  String? url({
     int? width,
     int? height,
     FitMode? fit,
     String? format,
     int? quality,
   }) {
+    final baseUrl = imageRef.url;
+    if (baseUrl == null) return null;
+    if (_transformUrl == null) return baseUrl;
     final params = ImageTransformParams(
       width: width,
       height: height,
@@ -47,10 +54,14 @@ class ImageUrl {
       fpY: imageRef.hotspot?.y,
       crop: imageRef.crop,
     );
-    return _transformUrl?.call(imageRef.asset.publicUrl, params) ??
-        imageRef.asset.publicUrl;
+    return _transformUrl(baseUrl, params);
   }
 
-  String get blurHash => imageRef.asset.blurHash;
-  String? get lqip => imageRef.asset.lqip;
+  /// Outputs stored format — identical to [imageRef.toMap()].
+  Map<String, dynamic> toMap() => imageRef.toMap();
+
+  String? get blurHash => imageRef.blurHash;
+  String? get lqip => imageRef.lqip;
+  int? get width => imageRef.width;
+  int? get height => imageRef.height;
 }
