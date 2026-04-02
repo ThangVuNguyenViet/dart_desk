@@ -10,7 +10,7 @@ packages:
     source: hosted
     version: "93.0.0"
   analyzer:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: analyzer
       sha256: de7148ed2fcec579b19f122c1800933dfa028f6d9fd38a152b04b1516cec120b
@@ -138,7 +138,7 @@ packages:
     source: hosted
     version: "4.11.1"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       sha256: "2f5709ae4d3d59dd8f7cd309b4e023046b57d8a6c82130785d2b0e5868084e76"
@@ -180,11 +180,10 @@ packages:
   dart_desk_annotation:
     dependency: "direct main"
     description:
-      path: "packages/dart_desk_annotation"
-      ref: HEAD
-      resolved-ref: "820d0678672667bf7f39b7ce29c518fee116a3ad"
-      url: "https://github.com/ThangVuNguyenViet/dart_desk.git"
-    source: git
+      name: dart_desk_annotation
+      sha256: "3fe576236ca591e3b0aa4f7ebbbb40d3e71de2eca7e5534e9b0c8d8061d40c22"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.0"
   dart_style:
     dependency: "direct main"

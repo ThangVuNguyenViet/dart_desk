@@ -124,7 +124,3 @@ class ImageReference {
   String toString() =>
       'ImageReference(assetId: $assetId, externalUrl: $externalUrl, publicUrl: $publicUrl)';
 }
-
-/// Deprecated. Use [ImageReference] instead.
-@Deprecated('Use ImageReference instead')
-typedef ImageRef = ImageReference;

@@ -6,7 +6,6 @@ import '../../data/models/image_types.dart';
 import 'aspect_ratio_preview.dart';
 import 'crop_overlay_painter.dart';
 import 'framing_controller.dart';
-import 'framing_math.dart';
 import 'framing_mode_toggle.dart';
 import 'hotspot_painter.dart';
 

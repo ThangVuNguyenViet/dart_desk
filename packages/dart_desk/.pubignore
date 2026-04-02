@@ -9,3 +9,4 @@ flutter_*.log
 sanity-fields-example.json
 docs/
 packages/
+coverage/**

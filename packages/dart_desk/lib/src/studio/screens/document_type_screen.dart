@@ -77,12 +77,10 @@ class DocumentTypeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = ShadTheme.of(context);
     final viewModel = GetIt.I<CmsViewModel>();
     final docType = viewModel.currentDocumentType.watch(context);
     final breakpoint = ResponsiveBreakpoints.of(context);
     final isMobile = breakpoint.isMobile;
-    final isDesktop = breakpoint.largerThan(CmsBreakpoints.tabletTag);
 
     if (docType == null) return const SizedBox.shrink();
 

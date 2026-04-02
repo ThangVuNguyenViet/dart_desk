@@ -1,25 +1,30 @@
 # dart_desk
 
-A structured content studio for Flutter. Define your content model as code, connect a data source, and get a real-time editing environment — schema-driven forms, document versioning, media management, and a full admin UI out of the box.
+A structured content studio for Flutter.
+
+## Cloud Quick Start
+
+The fastest way to get a CMS running:
+
+1. Sign up at [manage.dartdesk.dev](https://manage.dartdesk.dev)
+2. Install the CLI:
+   ```bash
+   dart pub global activate dart_desk_cli
+   ```
+3. Create `dart_desk.yaml` in your project root:
+   ```yaml
+   project_id: your-project-id
+   ```
+4. Authenticate and deploy:
+   ```bash
+   dartdesk login && dartdesk deploy
+   ```
+
+Your studio is live. Editors can log in at your project URL immediately.
 
 ## Why dart_desk
 
-Most CMS admin panels are web-only. dart_desk is a native Flutter widget library — embed it in your existing app, deploy to desktop, mobile, or web, and keep your entire stack in Dart.
-
-You define content types with annotations. dart_desk generates the editing UI from your schema: the right input for every field type, validation rules enforced in the form, and a studio layout that organizes everything by document type.
-
-```dart
-CmsStudioApp(
-  dataSource: myDataSource,
-  documentTypes: [blogPost, product, page],
-  documentTypeDecorations: [
-    CmsDocumentTypeDecoration(documentType: blogPost, icon: Icons.article),
-    CmsDocumentTypeDecoration(documentType: product, icon: Icons.shopping_bag),
-    CmsDocumentTypeDecoration(documentType: page, icon: Icons.web),
-  ],
-  title: 'My CMS',
-)
-```
+dart_desk is a native Flutter widget library — deploy your CMS to desktop, mobile, or web and keep your entire stack in Dart. You define content types with annotations and dart_desk generates the editing UI from your schema. Deploy to Dart Desk Cloud in one command, or self-host with any backend you control.
 
 ## Features
 
@@ -114,79 +119,85 @@ Built on [shadcn_ui](https://pub.dev/packages/shadcn_ui) for a polished, consist
 
 All UI state is powered by [signals](https://pub.dev/packages/signals) — fine-grained reactivity with no unnecessary rebuilds. Form state, document data, and navigation all update efficiently.
 
+## Architecture: Three-Package Pattern
+
+Most dart_desk projects follow this structure:
+
+```
+data_models/    — annotated Dart classes, shared by CMS + consumer app
+cms_app/        — DartDeskApp studio for editors
+consumer_app/   — your production app, reads content via dart_desk_client
+```
+
+`data_models` is a plain Dart package with no Flutter dependency. Both `cms_app` and `consumer_app` depend on it, keeping your content schema the single source of truth.
+
 ## Installation
 
 ```yaml
 dependencies:
   dart_desk: ^0.1.0
   dart_desk_annotation: ^0.1.0
+  dart_desk_client: ^0.1.0  # for consumer apps
 
 dev_dependencies:
   dart_desk_generator: ^0.1.0
   build_runner: ^2.13.1
 ```
 
-## Quick Start
+## Self-Hosting
 
-### 1. Define your schema
-
-```dart
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
-
-@CmsConfig(title: 'Page', description: 'A website page')
-class Page {
-  @CmsStringField(label: 'Title', validators: [RequiredValidator()])
-  final String title;
-
-  @CmsTextField(label: 'Content')
-  final String content;
-
-  @CmsBooleanField(label: 'Published')
-  final bool published;
-}
-```
-
-### 2. Generate document types
-
-```bash
-dart run build_runner build
-```
-
-### 3. Implement your data source
-
-```dart
-class MyDataSource implements CmsDataSource {
-  // Connect to your API, database, or backend of choice
-  // See CmsDataSource for the full interface
-}
-```
-
-### 4. Launch the studio
+To run your own backend, pass `serverUrl` and `apiKey` to `DartDeskApp` and point it at a [dart_desk_be](https://github.com/ThangVuNguyenViet/dart_desk) Serverpod instance:
 
 ```dart
 void main() => runApp(
-  CmsStudioApp(
-    dataSource: MyDataSource(),
-    documentTypes: [pageDocumentType],
-    documentTypeDecorations: [
-      CmsDocumentTypeDecoration(documentType: pageDocumentType, icon: Icons.web),
-    ],
+  DartDeskApp(
+    serverUrl: 'https://cms.example.com',
+    apiKey: 'your-api-key',
+    documentTypes: [blogPost, product, page],
     title: 'My CMS',
   ),
 );
 ```
 
-## Architecture
+## Advanced Patterns
 
-```
-dart_desk
-├── dart_desk.dart       # Annotations, data layer, input widgets, CmsStudioApp
-├── studio.dart          # Studio internals — screens, routes, components, theme, view models
-└── testing.dart         # Test utilities and mock data sources
+### DocumentTypeSpec.build with Default Merging
+
+Use `DocumentTypeSpec.build` to supply a preview builder that merges incoming editor data with your type's default values. This ensures the preview never crashes on missing fields:
+
+```dart
+final docType = myTypeSpec.build(builder: (data) {
+  final merged = {...MyType.defaultValue.toMap(), ...data};
+  return MyPreview(config: MyTypeMapper.fromMap(merged));
+});
 ```
 
-- `import 'package:dart_desk/dart_desk.dart'` — Standard usage
-- `import 'package:dart_desk/studio.dart'` — Lower-level access for customizing screens, routes, or theme
+### Custom Array Item Editors
+
+For arrays whose items need a bespoke editing UI, subclass the array option and provide an `itemEditor` builder. See the `FeaturedItemsArrayOption` pattern in the example app for a reference implementation.
+
+### Async Dropdown Options
+
+When dropdown choices must be loaded from an API or database, subclass `CmsDropdownOption` and override the async variant:
+
+```dart
+class StatusDropdownOption extends CmsDropdownOption {
+  @override
+  Future<List<String>> loadChoices() => myApi.fetchStatuses();
+}
+```
+
+### Consumer Runtime Fetching
+
+In your production app, use `dart_desk_client` to fetch published content at runtime:
+
+```dart
+final client = DartDeskClient(projectId: 'your-project-id');
+final posts = await client.getDocuments<BlogPost>(
+  documentType: 'blog_post',
+  mapper: BlogPostMapper.fromMap,
+);
+```
 
 ## Related Packages
 
@@ -194,6 +205,8 @@ dart_desk
 |---------|-------------|
 | [dart_desk_annotation](https://pub.dev/packages/dart_desk_annotation) | Schema annotations for defining document types and fields |
 | [dart_desk_generator](https://pub.dev/packages/dart_desk_generator) | Code generator that produces `CmsDocumentType` definitions from annotated classes |
+| [dart_desk_cli](https://pub.dev/packages/dart_desk_cli) | CLI for deploying CMS studios to Dart Desk Cloud |
+| [dart_desk_client](https://pub.dev/packages/dart_desk_client) | Runtime client for fetching published content |
 
 ## License
 
