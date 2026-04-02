@@ -12,7 +12,7 @@ Set up melos for the monorepo, prepare all 3 packages for pub.dev publishing, wr
 | `dart_desk_generator` | 0.1.0 | `dart_desk_annotation` |
 | `dart_desk` | 0.1.0 | `dart_desk_annotation`, `dart_desk_generator` |
 
-Repository: `https://github.com/vietthangvunguyen/dart_desk`
+Repository: `https://github.com/ThangVuNguyenViet/dart_desk`
 
 License: BSD 3-Clause (all packages)
 
@@ -32,9 +32,9 @@ For each package:
 - **CHANGELOG.md** — Handwritten initial v0.1.0 entry summarizing features
 - **pubspec.yaml cleanup:**
   - `description` (60-180 chars)
-  - `homepage: https://github.com/vietthangvunguyen/dart_desk`
-  - `repository: https://github.com/vietthangvunguyen/dart_desk`
-  - `issue_tracker: https://github.com/vietthangvunguyen/dart_desk/issues`
+  - `homepage: https://github.com/ThangVuNguyenViet/dart_desk`
+  - `repository: https://github.com/ThangVuNguyenViet/dart_desk`
+  - `issue_tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues`
   - `topics` (max 5, lowercase, alphanumeric+hyphens)
   - Remove `publish_to: "none"` from `dart_desk_generator`
   - Verify all dependency version constraints are appropriate for publishing

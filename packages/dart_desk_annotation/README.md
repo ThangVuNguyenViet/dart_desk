@@ -1,6 +1,6 @@
 # dart_desk_annotation
 
-Annotations and field definitions for the [Dart Desk](https://github.com/vietthangvunguyen/dart_desk) CMS framework.
+Annotations and field definitions for the [Dart Desk](https://github.com/ThangVuNguyenViet/dart_desk) CMS framework.
 
 This package provides the core annotations and field configuration classes used to define CMS document types, fields, and validators. It is designed to have minimal dependencies and is suitable as a compile-time dependency.
 

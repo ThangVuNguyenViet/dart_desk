@@ -2,8 +2,8 @@
 
 See the full example CMS app in the repository:
 
-- [CMS App Example](https://github.com/vietthangvunguyen/dart_desk/tree/main/examples/cms_app) — A complete CMS studio built with dart_desk
-- [Data Models Example](https://github.com/vietthangvunguyen/dart_desk/tree/main/examples/data_models) — Annotated content models with code generation
+- [CMS App Example](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/cms_app) — A complete CMS studio built with dart_desk
+- [Data Models Example](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/data_models) — Annotated content models with code generation
 
 ## Quick Start
 

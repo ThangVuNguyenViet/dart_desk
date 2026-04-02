@@ -1,6 +1,6 @@
 # dart_desk_generator
 
-A code generator for the [Dart Desk](https://github.com/vietthangvunguyen/dart_desk) CMS framework. Generates CMS field configuration and document type code from annotations at build time using `build_runner`.
+A code generator for the [Dart Desk](https://github.com/ThangVuNguyenViet/dart_desk) CMS framework. Generates CMS field configuration and document type code from annotations at build time using `build_runner`.
 
 ## Installation
 
@@ -66,8 +66,8 @@ See the [`dart_desk_annotation`](https://pub.dev/packages/dart_desk_annotation) 
 
 ## Additional Information
 
-- Source code: https://github.com/vietthangvunguyen/dart_desk
-- Issue tracker: https://github.com/vietthangvunguyen/dart_desk/issues
+- Source code: https://github.com/ThangVuNguyenViet/dart_desk
+- Issue tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues
 
 ## License
 

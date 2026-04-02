@@ -7,15 +7,15 @@ Instructions for integrating Dart Desk into an existing Flutter app.
 > ```yaml
 > dart_desk:
 >   git:
->     url: https://github.com/vietthangvunguyen/dart_desk.git
+>     url: https://github.com/ThangVuNguyenViet/dart_desk.git
 >     path: packages/dart_desk
 > dart_desk_annotation:
 >   git:
->     url: https://github.com/vietthangvunguyen/dart_desk.git
+>     url: https://github.com/ThangVuNguyenViet/dart_desk.git
 >     path: packages/dart_desk_annotation
 > dart_desk_generator:
 >   git:
->     url: https://github.com/vietthangvunguyen/dart_desk.git
+>     url: https://github.com/ThangVuNguyenViet/dart_desk.git
 >     path: packages/dart_desk_generator
 > ```
 

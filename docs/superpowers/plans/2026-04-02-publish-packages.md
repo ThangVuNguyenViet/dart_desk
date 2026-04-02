@@ -166,7 +166,7 @@ Remove the `publish_to: none` line (line 4).
 
 Add `issue_tracker`:
 ```yaml
-issue_tracker: https://github.com/vietthangvunguyen/dart_desk/issues
+issue_tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues
 ```
 
 Change `dart_desk_annotation` dependency from git ref to version constraint:
@@ -178,7 +178,7 @@ Change `dart_desk_annotation` dependency from git ref to version constraint:
 
 Add `issue_tracker`:
 ```yaml
-issue_tracker: https://github.com/vietthangvunguyen/dart_desk/issues
+issue_tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues
 ```
 
 Change `dart_desk_annotation` dependency from git ref to version constraint:
@@ -190,7 +190,7 @@ Change `dart_desk_annotation` dependency from git ref to version constraint:
 
 Add `issue_tracker`:
 ```yaml
-issue_tracker: https://github.com/vietthangvunguyen/dart_desk/issues
+issue_tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues
 ```
 
 - [ ] **Step 4: Verify resolution still works**
@@ -224,8 +224,8 @@ pub.dev awards points for an `example/` directory. Since `dart_desk` is a Flutte
 
 See the full example CMS app in the repository:
 
-- [CMS App Example](https://github.com/vietthangvunguyen/dart_desk/tree/main/examples/cms_app) — A complete CMS studio built with dart_desk
-- [Data Models Example](https://github.com/vietthangvunguyen/dart_desk/tree/main/examples/data_models) — Annotated content models with code generation
+- [CMS App Example](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/cms_app) — A complete CMS studio built with dart_desk
+- [Data Models Example](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/data_models) — Annotated content models with code generation
 
 ## Quick Start
 
