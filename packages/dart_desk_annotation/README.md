@@ -102,4 +102,4 @@ final validator = RequiredValidator<String>();
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+BSD 3-Clause — see [LICENSE](LICENSE)

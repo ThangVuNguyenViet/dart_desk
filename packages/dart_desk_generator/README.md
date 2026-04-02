@@ -68,3 +68,7 @@ See the [`dart_desk_annotation`](https://pub.dev/packages/dart_desk_annotation) 
 
 - Source code: https://github.com/vietthangvunguyen/dart_desk
 - Issue tracker: https://github.com/vietthangvunguyen/dart_desk/issues
+
+## License
+
+BSD 3-Clause — see [LICENSE](LICENSE)
