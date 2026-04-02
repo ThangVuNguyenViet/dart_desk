@@ -3,6 +3,7 @@ description: "CMS studio interface with inputs, validators, and runtime componen
 version: 0.1.0
 homepage: https://github.com/vietthangvunguyen/dart_desk
 repository: https://github.com/vietthangvunguyen/dart_desk
+issue_tracker: https://github.com/vietthangvunguyen/dart_desk/issues
 topics:
   - cms
   - flutter
@@ -14,10 +15,7 @@ environment:
 
 dependencies:
   dart_desk_client: ^0.1.0
-  dart_desk_annotation:
-    git:
-      url: https://github.com/ThangVuNguyenViet/dart_desk.git
-      path: packages/dart_desk_annotation
+  dart_desk_annotation: ^0.1.0
   flutter:
     sdk: flutter
   shadcn_ui: ^0.52.1

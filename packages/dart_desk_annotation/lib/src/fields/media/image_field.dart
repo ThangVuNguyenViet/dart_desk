@@ -1,10 +1,17 @@
 import '../base/field.dart';
 import '../../models/image_ref.dart';
 
+enum CmsMediaType { image, svg, lottie, video }
+
 class CmsImageOption extends CmsOption {
   final bool hotspot;
+  final List<CmsMediaType>? acceptedTypes; // null = all types (default)
 
-  const CmsImageOption({required this.hotspot, super.hidden});
+  const CmsImageOption({
+    required this.hotspot,
+    this.acceptedTypes,
+    super.hidden,
+  });
 }
 
 class CmsImageField extends CmsField {

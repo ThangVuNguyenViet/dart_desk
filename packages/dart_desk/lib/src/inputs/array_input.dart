@@ -32,7 +32,8 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
   void initState() {
     super.initState();
     final option = widget.field.option;
-    _items = (widget.data?.value as List?)
+    _items =
+        (widget.data?.value as List?)
             ?.map<T>((e) => option != null ? option.fromDynamic(e) : e as T)
             .toList() ??
         [];
@@ -76,7 +77,7 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
       _editingIndex = null;
       _editingValue = null;
     });
-    widget.onChanged?.call(_items);
+    widget.onChanged?.call(List<T>.from(_items));
   }
 
   void _cancelEditing() {
@@ -90,18 +91,16 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
     setState(() {
       _items.removeAt(index);
     });
-    widget.onChanged?.call(_items);
+    widget.onChanged?.call(List<T>.from(_items));
   }
 
   void _onReorder(int oldIndex, int newIndex) {
     setState(() {
-      if (newIndex > oldIndex) {
-        newIndex -= 1;
-      }
+      if (newIndex > oldIndex) newIndex -= 1;
       final item = _items.removeAt(oldIndex);
       _items.insert(newIndex, item);
     });
-    widget.onChanged?.call(_items);
+    widget.onChanged?.call(List<T>.from(_items));
   }
 
   @override
@@ -173,7 +172,11 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
                       key: ValueKey('item_$index'),
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: isEditing && widget.editStyle is InlineEditStyles
-                          ? _buildEditorWithActions(context, theme, isNew: false)
+                          ? _buildEditorWithActions(
+                              context,
+                              theme,
+                              isNew: false,
+                            )
                           : _buildItemRow(context, theme, index),
                     );
                   },
@@ -322,8 +325,9 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: widget.field.option?.buildItem(context, _items[index])
-                  ?? Text(_items[index]?.toString() ?? ''),
+              child:
+                  widget.field.option?.buildItem(context, _items[index]) ??
+                  Text(_items[index]?.toString() ?? ''),
             ),
             const SizedBox(width: 8),
             if (showEditButton) ...[

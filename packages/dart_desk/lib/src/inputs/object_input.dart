@@ -105,7 +105,7 @@ class _CmsObjectInputState extends State<CmsObjectInput> {
     setState(() {
       _value[fieldName] = childValue;
     });
-    widget.onChanged?.call(_value);
+    widget.onChanged?.call(Map<String, dynamic>.from(_value));
   }
 
   Widget _buildField(CmsField field) {

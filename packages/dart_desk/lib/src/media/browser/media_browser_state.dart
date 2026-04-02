@@ -35,7 +35,13 @@ class MediaBrowserState {
     debugLabel: 'assetsData',
   );
 
-  MediaBrowserState({required this.dataSource, this.pageSize = 24});
+  MediaBrowserState({
+    required this.dataSource,
+    this.pageSize = 24,
+    MediaTypeFilter? initialTypeFilter,
+  }) {
+    if (initialTypeFilter != null) typeFilter.value = initialTypeFilter;
+  }
 
   Future<MediaAsset> uploadFile(String fileName, Uint8List bytes,
       QuickImageMetadata metadata) async {

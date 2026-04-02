@@ -3,6 +3,7 @@ description: Annotations and field definitions for the Dart Desk CMS framework.
 version: 0.1.0
 homepage: https://github.com/vietthangvunguyen/dart_desk
 repository: https://github.com/vietthangvunguyen/dart_desk
+issue_tracker: https://github.com/vietthangvunguyen/dart_desk/issues
 topics:
   - cms
   - annotations

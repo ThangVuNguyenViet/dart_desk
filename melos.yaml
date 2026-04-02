@@ -1,10 +1,8 @@
 name: dart_desk_workspace
-
 packages:
   - packages/dart_desk
   - packages/dart_desk_annotation
   - packages/dart_desk_generator
-
 command:
   version:
     message: "chore(release): publish packages"
@@ -17,7 +15,6 @@ command:
   publish:
     hooks:
       pre: melos run analyze
-
 scripts:
   analyze:
     run: dart analyze --fatal-infos

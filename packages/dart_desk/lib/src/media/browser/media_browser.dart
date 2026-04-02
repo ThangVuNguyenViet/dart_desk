@@ -9,6 +9,7 @@ import 'package:signals/signals_flutter.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 import '../../data/cms_data_source.dart';
+import '../../data/models/image_types.dart';
 import '../../data/models/media_asset.dart';
 import '../quick_metadata_extractor.dart';
 import 'asset_detail_panel.dart';
@@ -22,6 +23,7 @@ enum MediaBrowserMode { standalone, picker }
 class MediaBrowser extends StatefulWidget {
   final DataSource dataSource;
   final MediaBrowserMode mode;
+  final MediaTypeFilter? initialTypeFilter;
   final ValueChanged<MediaAsset>? onAssetSelected;
   final VoidCallback? onClose;
 
@@ -29,6 +31,7 @@ class MediaBrowser extends StatefulWidget {
     super.key,
     required this.dataSource,
     this.mode = MediaBrowserMode.standalone,
+    this.initialTypeFilter,
     this.onAssetSelected,
     this.onClose,
   });
@@ -38,7 +41,10 @@ class MediaBrowser extends StatefulWidget {
 }
 
 class _MediaBrowserState extends State<MediaBrowser> {
-  late final _state = MediaBrowserState(dataSource: widget.dataSource);
+  late final _state = MediaBrowserState(
+    dataSource: widget.dataSource,
+    initialTypeFilter: widget.initialTypeFilter,
+  );
   final ImagePicker _picker = ImagePicker();
   // Local error signal for upload/drop failures (separate from listMedia errors)
   final _uploadError = signal<String?>(null, debugLabel: 'uploadError');

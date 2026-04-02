@@ -474,6 +474,48 @@ void main() {
         expect(received!['city'], 'NewCity');
       });
 
+      testWidgets('onChanged emits a new map reference, not the internal map',
+          (tester) async {
+        final received = <Map<String, dynamic>?>[];
+
+        await tester.pumpWidget(buildInputApp(
+          CmsObjectInput(
+            field: columnField,
+            data: const CmsData(
+              value: {'street': 'Original', 'city': 'A'},
+              path: 'address',
+            ),
+            onChanged: received.add,
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        final inputs = find.byType(CmsStringInput);
+
+        // Edit street, then city — each enterText may emit multiple times
+        // (focus clears existing value → onChanged, then new value → onChanged)
+        await tester.enterText(inputs.first, 'Edit 1');
+        await tester.pump();
+
+        await tester.enterText(inputs.at(1), 'Edit 2');
+        await tester.pump();
+
+        expect(received, isNotEmpty);
+
+        // No two consecutive emissions should share the same instance
+        for (var i = 1; i < received.length; i++) {
+          expect(
+            identical(received[i - 1], received[i]),
+            isFalse,
+            reason: 'emissions ${i - 1} and $i should be distinct instances',
+          );
+        }
+
+        // Final emission must reflect both edits
+        expect(received.last!['street'], 'Edit 1');
+        expect(received.last!['city'], 'Edit 2');
+      });
+
       testWidgets('updates child fields when data changes externally',
           (tester) async {
         const field = columnField;

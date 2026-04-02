@@ -5,7 +5,7 @@ import 'dart:typed_data';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
@@ -56,8 +56,6 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
 
   /// Temporary blurHash from the quick metadata extraction, used during upload.
   late final _uploadBlurHash = createSignal<String?>(null);
-
-  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -122,18 +120,67 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     }
   }
 
-  Future<void> _handlePickImage() async {
-    try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image == null) return;
+  List<String> get _allowedExtensions {
+    final types = widget.field.option?.acceptedTypes;
+    if (types == null) {
+      return [
+        'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'heic', 'avif',
+        'svg', 'json',
+        'mp4', 'mov', 'webm', 'avi',
+      ];
+    }
+    final exts = <String>[];
+    for (final t in types) {
+      switch (t) {
+        case CmsMediaType.image:
+          exts.addAll(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'heic', 'avif']);
+        case CmsMediaType.svg:
+          exts.add('svg');
+        case CmsMediaType.lottie:
+          exts.add('json');
+        case CmsMediaType.video:
+          exts.addAll(['mp4', 'mov', 'webm', 'avi']);
+      }
+    }
+    return exts;
+  }
 
-      final bytes = await image.readAsBytes();
-      final fileName = image.name;
-      await _uploadBytes(fileName, bytes);
+  String get _dropHint {
+    final types = widget.field.option?.acceptedTypes;
+    if (types == null) return 'Drop file or click to upload';
+    final hasImage = types.any((t) => t == CmsMediaType.image || t == CmsMediaType.svg);
+    final hasVideo = types.any((t) => t == CmsMediaType.video);
+    final hasLottie = types.any((t) => t == CmsMediaType.lottie);
+    if (hasVideo && !hasImage && !hasLottie) return 'Drop video or click to upload';
+    if (hasLottie && !hasImage && !hasVideo) return 'Drop JSON (Lottie) or click to upload';
+    if (hasImage && !hasVideo && !hasLottie) return 'Drop image or click to upload';
+    return 'Drop file or click to upload';
+  }
+
+  MediaTypeFilter _mediaTypeFilter() {
+    final types = widget.field.option?.acceptedTypes;
+    if (types == null) return MediaTypeFilter.all;
+    if (types.every((t) => t == CmsMediaType.video)) return MediaTypeFilter.video;
+    if (types.every((t) => t == CmsMediaType.image || t == CmsMediaType.svg)) return MediaTypeFilter.image;
+    return MediaTypeFilter.all;
+  }
+
+  Future<void> _handlePickFile() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: _allowedExtensions,
+        withData: true,
+      );
+      if (result == null || result.files.isEmpty) return;
+      final file = result.files.first;
+      final bytes = file.bytes;
+      if (bytes == null) return;
+      await _uploadBytes(file.name, bytes);
     } catch (e) {
       _uploadState.value = _UploadState.error;
-      _errorMessage.value = 'Failed to pick image: $e';
-      log('Error occurred while picking image: $e');
+      _errorMessage.value = 'Failed to pick file: $e';
+      log('Error occurred while picking file: $e');
     }
   }
 
@@ -189,7 +236,14 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       (file) async {
         try {
           final bytes = await file.readAll();
-          final name = file.fileName ?? 'dropped_image';
+          final name = file.fileName ?? 'dropped_file';
+          final ext = name.split('.').last.toLowerCase();
+          if (!_allowedExtensions.contains(ext)) {
+            _uploadState.value = _UploadState.error;
+            _errorMessage.value = 'File type .$ext is not accepted. Allowed: ${_allowedExtensions.join(', ')}';
+            completer.complete();
+            return;
+          }
           await _uploadBytes(name, bytes);
         } catch (e) {
           _uploadState.value = _UploadState.error;
@@ -256,6 +310,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
         child: MediaBrowser(
           dataSource: widget.dataSource,
           mode: MediaBrowserMode.picker,
+          initialTypeFilter: _mediaTypeFilter(),
           onAssetSelected: (asset) {
             final imageRef = ImageReference(asset: asset);
             _imageRef.value = imageRef;
@@ -346,8 +401,45 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       );
     }
 
-    // Loaded state: show actual image
+    // Loaded state: show preview based on mime type
     if (ref != null) {
+      final mimeType = ref.asset.mimeType;
+
+      if (mimeType.startsWith('video/')) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FaIcon(FontAwesomeIcons.film, size: 48, color: theme.colorScheme.mutedForeground),
+              const SizedBox(height: 8),
+              Text(
+                ref.asset.fileName,
+                style: theme.textTheme.small.copyWith(color: theme.colorScheme.mutedForeground),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        );
+      }
+
+      if (mimeType == 'application/json') {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FaIcon(FontAwesomeIcons.fileCode, size: 48, color: theme.colorScheme.mutedForeground),
+              const SizedBox(height: 8),
+              Text(
+                ref.asset.fileName,
+                style: theme.textTheme.small.copyWith(color: theme.colorScheme.mutedForeground),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        );
+      }
+
+      // image/* (including SVG)
       final url = widget.transformUrl != null
           ? widget.transformUrl!(
               ref.asset.publicUrl,
@@ -400,7 +492,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           ),
           const SizedBox(height: 8),
           Text(
-            'Drop image or click to upload',
+            _dropHint,
             style: theme.textTheme.small.copyWith(
               color: theme.colorScheme.mutedForeground,
             ),
@@ -535,7 +627,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
 
         // Image preview area
         GestureDetector(
-          onTap: isUploading ? null : _handlePickImage,
+          onTap: isUploading ? null : _handlePickFile,
           child: _buildImagePreviewArea(theme),
         ),
 
@@ -565,7 +657,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
             // Upload button
             ShadButton.outline(
               key: const ValueKey('upload_button'),
-              onPressed: isUploading ? null : _handlePickImage,
+              onPressed: isUploading ? null : _handlePickFile,
               size: ShadButtonSize.sm,
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
