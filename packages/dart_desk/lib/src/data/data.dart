@@ -32,5 +32,5 @@ export 'models/document_list.dart';
 export 'models/document_version.dart';
 export 'models/image_types.dart';
 export 'models/media_asset.dart';
-export 'models/image_reference.dart';
+export 'models/image_reference.dart' show ImageReferenceFromAsset;
 export 'models/media_page.dart';

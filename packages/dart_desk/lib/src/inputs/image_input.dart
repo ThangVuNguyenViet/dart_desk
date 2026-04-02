@@ -12,6 +12,7 @@ import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 import '../data/cms_data_source.dart';
 import '../data/models/image_reference.dart';
+import '../data/models/media_asset.dart';
 import '../data/models/image_types.dart';
 import '../media/browser/media_browser.dart';
 import '../media/image_transform_params.dart';
@@ -47,6 +48,7 @@ class CmsImageInput extends StatefulWidget {
 
 class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
   late final _imageRef = createSignal<ImageReference?>(null);
+  late final _asset = createSignal<MediaAsset?>(null);
   late final _uploadState = createSignal<_UploadState>(_UploadState.idle);
   late final _errorMessage = createSignal<String?>(null);
   late final _isDragOver = createSignal<bool>(false);
@@ -73,6 +75,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     // to a different document (same widget, new data).
     if (oldWidget.data != widget.data) {
       _imageRef.value = null;
+      _asset.value = null;
       _uploadState.value = _UploadState.idle;
       _errorMessage.value = null;
       _uploadBlurHash.value = null;
@@ -111,7 +114,20 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     try {
       final asset = await widget.dataSource.getMediaAsset(assetId);
       if (asset != null && mounted) {
-        _imageRef.value = ImageReference.fromDocumentJson(json, asset);
+        final hotspot = json['hotspot'] != null
+            ? Hotspot.fromJson(json['hotspot'] as Map<String, dynamic>)
+            : null;
+        final crop = json['crop'] != null
+            ? CropRect.fromJson(json['crop'] as Map<String, dynamic>)
+            : null;
+        final altText = json['altText'] as String?;
+        _asset.value = asset;
+        _imageRef.value = ImageReferenceFromAsset.fromAsset(
+          asset,
+          hotspot: hotspot,
+          crop: crop,
+          altText: altText,
+        );
       } else if (mounted) {
         log('ImageInput: getMediaAsset($assetId) returned null');
       }
@@ -206,12 +222,13 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       if (!mounted) return;
 
       // Step 3: Create ImageReference
-      final imageRef = ImageReference(asset: asset);
+      final imageRef = ImageReferenceFromAsset.fromAsset(asset);
+      _asset.value = asset;
       _imageRef.value = imageRef;
       _uploadState.value = _UploadState.done;
       _uploadBlurHash.value = null;
 
-      widget.onChanged?.call(imageRef.toDocumentJson());
+      widget.onChanged?.call(imageRef.toMap());
     } catch (e) {
       if (!mounted) return;
       _uploadState.value = _UploadState.error;
@@ -282,7 +299,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       builder: (context) => ShadDialog(
         constraints: const BoxConstraints(maxWidth: 640),
         child: ImageHotspotEditor(
-          imageUrl: ref.asset.publicUrl,
+          imageUrl: ref.publicUrl!,
           initialHotspot: ref.hotspot,
           initialCrop: ref.crop,
           initialMode: _lastFramingMode.value,
@@ -293,7 +310,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
               crop: result.crop,
             );
             _imageRef.value = updated;
-            widget.onChanged?.call(updated.toDocumentJson());
+            widget.onChanged?.call(updated.toMap());
             Navigator.of(context).pop();
           },
         ),
@@ -312,10 +329,11 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           mode: MediaBrowserMode.picker,
           initialTypeFilter: _mediaTypeFilter(),
           onAssetSelected: (asset) {
-            final imageRef = ImageReference(asset: asset);
+            final imageRef = ImageReferenceFromAsset.fromAsset(asset);
+            _asset.value = asset;
             _imageRef.value = imageRef;
             _uploadState.value = _UploadState.done;
-            widget.onChanged?.call(imageRef.toDocumentJson());
+            widget.onChanged?.call(imageRef.toMap());
             Navigator.of(context).pop();
           },
           onClose: () => Navigator.of(context).pop(),
@@ -403,7 +421,8 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
 
     // Loaded state: show preview based on mime type
     if (ref != null) {
-      final mimeType = ref.asset.mimeType;
+      final mimeType = _asset.value?.mimeType ?? '';
+      final fileName = _asset.value?.fileName ?? '';
 
       if (mimeType.startsWith('video/')) {
         return Center(
@@ -413,7 +432,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
               FaIcon(FontAwesomeIcons.film, size: 48, color: theme.colorScheme.mutedForeground),
               const SizedBox(height: 8),
               Text(
-                ref.asset.fileName,
+                fileName,
                 style: theme.textTheme.small.copyWith(color: theme.colorScheme.mutedForeground),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -430,7 +449,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
               FaIcon(FontAwesomeIcons.fileCode, size: 48, color: theme.colorScheme.mutedForeground),
               const SizedBox(height: 8),
               Text(
-                ref.asset.fileName,
+                fileName,
                 style: theme.textTheme.small.copyWith(color: theme.colorScheme.mutedForeground),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -442,10 +461,10 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       // image/* (including SVG)
       final url = widget.transformUrl != null
           ? widget.transformUrl!(
-              ref.asset.publicUrl,
+              ref.publicUrl!,
               const ImageTransformParams(width: 600, fit: FitMode.clip),
             )
-          : ref.asset.publicUrl;
+          : ref.publicUrl!;
 
       return Image.network(
         url,
@@ -472,7 +491,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           return Stack(
             fit: StackFit.expand,
             children: [
-              _buildBlurHashPlaceholder(ref.asset.blurHash),
+              _buildBlurHashPlaceholder(ref.blurHash ?? ''),
               const Center(child: CircularProgressIndicator()),
             ],
           );
@@ -732,7 +751,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           onChanged: (value) {
             _externalUrl.value = value.isEmpty ? null : value;
             if (value.isNotEmpty) {
-              widget.onChanged?.call(ImageRef(externalUrl: value).toMap());
+              widget.onChanged?.call(ImageReference(externalUrl: value).toMap());
             } else {
               widget.onChanged?.call(null);
             }

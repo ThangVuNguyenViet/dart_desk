@@ -79,7 +79,7 @@ class DartDeskApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (_serverUrl != null) {
-      ImageRef.defaultAssetResolver = (id) => '${_serverUrl}files/$id';
+      ImageReference.defaultAssetResolver = (id) => '${_serverUrl}files/$id';
       return DartDeskAuth(
         serverUrl: _serverUrl,
         apiKey: _apiKey!,
