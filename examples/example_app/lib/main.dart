@@ -1,5 +1,5 @@
 import 'package:data_models/example_data.dart';
-import 'package:example_app/screens/storefront_preview.dart';
+import 'package:example_app/screens/kiosk_preview.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,17 +11,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // In production, fetch config from dart_desk_client:
-    //   final client = DartDeskClient(serverUrl: '...', apiKey: '...');
-    //   final data = await client.getDocument('storefrontConfig', 'my-doc');
-    //   final config = StorefrontConfigMapper.fromMap(data);
-
     return MaterialApp(
       title: 'Food Ordering App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFD4451A)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF496455)),
       ),
-      home: StorefrontPreview(config: StorefrontConfig.defaultValue),
+      home: KioskPreview(config: KioskConfig.defaultValue),
     );
   }
 }
