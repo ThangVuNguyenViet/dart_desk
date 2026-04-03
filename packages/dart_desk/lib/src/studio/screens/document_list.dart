@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -11,8 +12,6 @@ import '../../data/models/document_list.dart';
 import '../../data/models/document_version.dart';
 import '../components/common/cms_collapse_bar.dart';
 import '../components/common/cms_status_pill.dart';
-import 'package:get_it/get_it.dart';
-
 import '../core/view_models/cms_document_view_model.dart';
 import '../core/view_models/cms_view_model.dart';
 import '../theme/spacing.dart';
@@ -146,10 +145,9 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
             Expanded(
               child: Text(
                 widget.selectedDocumentType.title,
-                style: theme.textTheme.large.copyWith(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.p,
               ),
             ),
             ShadIconButton.secondary(
@@ -371,9 +369,13 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                         widget.onOpenDocument?.call(document!.id.toString());
                       }
                       if (document?.isDefault == true && context.mounted) {
-                        toaster.show(ShadToast(
-                          description: Text('"${document!.title}" is now the default.'),
-                        ));
+                        toaster.show(
+                          ShadToast(
+                            description: Text(
+                              '"${document!.title}" is now the default.',
+                            ),
+                          ),
+                        );
                       }
                     }
                   },
@@ -460,13 +462,16 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                         onSelected: (value) async {
                           if (value == 'set_default') {
                             final toaster = ShadToaster.of(context);
-                            final newDefault =
-                                await viewModel.setDefaultDocument(doc.id!);
+                            final newDefault = await viewModel
+                                .setDefaultDocument(doc.id!);
                             if (context.mounted && newDefault != null) {
-                              toaster.show(ShadToast(
-                                description: Text(
-                                    '"${newDefault.title}" is now the default.'),
-                              ));
+                              toaster.show(
+                                ShadToast(
+                                  description: Text(
+                                    '"${newDefault.title}" is now the default.',
+                                  ),
+                                ),
+                              );
                             }
                           } else if (value == 'delete') {
                             widget.onDeleteDocument!(doc.id!);
@@ -523,7 +528,10 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                 children: [
                   if (doc.isDefault) ...[
                     ShadBadge.secondary(
-                      child: const Text('Default', style: TextStyle(fontSize: 10)),
+                      child: const Text(
+                        'Default',
+                        style: TextStyle(fontSize: 10),
+                      ),
                     ),
                     const SizedBox(width: 6),
                   ],

@@ -3,24 +3,21 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
+import '../../studio.dart';
 import '../data/cms_data_source.dart';
 import '../data/models/image_reference.dart';
-import '../data/models/media_asset.dart';
 import '../data/models/image_types.dart';
-import '../media/browser/media_browser.dart';
-import '../media/image_transform_params.dart';
-import '../media/image_url.dart';
+import '../data/models/media_asset.dart';
 import '../media/quick_metadata_extractor.dart';
 import 'hotspot/framing_controller.dart';
 import 'hotspot/framing_status.dart';
-import 'hotspot/image_hotspot_editor.dart';
 
 enum _UploadState { idle, extractingMetadata, uploading, done, error }
 
@@ -140,16 +137,36 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     final types = widget.field.option?.acceptedTypes;
     if (types == null) {
       return [
-        'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'heic', 'avif',
-        'svg', 'json',
-        'mp4', 'mov', 'webm', 'avi',
+        'jpg',
+        'jpeg',
+        'png',
+        'gif',
+        'webp',
+        'bmp',
+        'heic',
+        'avif',
+        'svg',
+        'json',
+        'mp4',
+        'mov',
+        'webm',
+        'avi',
       ];
     }
     final exts = <String>[];
     for (final t in types) {
       switch (t) {
         case CmsMediaType.image:
-          exts.addAll(['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'heic', 'avif']);
+          exts.addAll([
+            'jpg',
+            'jpeg',
+            'png',
+            'gif',
+            'webp',
+            'bmp',
+            'heic',
+            'avif',
+          ]);
         case CmsMediaType.svg:
           exts.add('svg');
         case CmsMediaType.lottie:
@@ -164,20 +181,27 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
   String get _dropHint {
     final types = widget.field.option?.acceptedTypes;
     if (types == null) return 'Drop file or click to upload';
-    final hasImage = types.any((t) => t == CmsMediaType.image || t == CmsMediaType.svg);
+    final hasImage = types.any(
+      (t) => t == CmsMediaType.image || t == CmsMediaType.svg,
+    );
     final hasVideo = types.any((t) => t == CmsMediaType.video);
     final hasLottie = types.any((t) => t == CmsMediaType.lottie);
-    if (hasVideo && !hasImage && !hasLottie) return 'Drop video or click to upload';
-    if (hasLottie && !hasImage && !hasVideo) return 'Drop JSON (Lottie) or click to upload';
-    if (hasImage && !hasVideo && !hasLottie) return 'Drop image or click to upload';
+    if (hasVideo && !hasImage && !hasLottie)
+      return 'Drop video or click to upload';
+    if (hasLottie && !hasImage && !hasVideo)
+      return 'Drop JSON (Lottie) or click to upload';
+    if (hasImage && !hasVideo && !hasLottie)
+      return 'Drop image or click to upload';
     return 'Drop file or click to upload';
   }
 
   MediaTypeFilter _mediaTypeFilter() {
     final types = widget.field.option?.acceptedTypes;
     if (types == null) return MediaTypeFilter.all;
-    if (types.every((t) => t == CmsMediaType.video)) return MediaTypeFilter.video;
-    if (types.every((t) => t == CmsMediaType.image || t == CmsMediaType.svg)) return MediaTypeFilter.image;
+    if (types.every((t) => t == CmsMediaType.video))
+      return MediaTypeFilter.video;
+    if (types.every((t) => t == CmsMediaType.image || t == CmsMediaType.svg))
+      return MediaTypeFilter.image;
     return MediaTypeFilter.all;
   }
 
@@ -257,7 +281,8 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           final ext = name.split('.').last.toLowerCase();
           if (!_allowedExtensions.contains(ext)) {
             _uploadState.value = _UploadState.error;
-            _errorMessage.value = 'File type .$ext is not accepted. Allowed: ${_allowedExtensions.join(', ')}';
+            _errorMessage.value =
+                'File type .$ext is not accepted. Allowed: ${_allowedExtensions.join(', ')}';
             completer.complete();
             return;
           }
@@ -429,11 +454,17 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FaIcon(FontAwesomeIcons.film, size: 48, color: theme.colorScheme.mutedForeground),
+              FaIcon(
+                FontAwesomeIcons.film,
+                size: 48,
+                color: theme.colorScheme.mutedForeground,
+              ),
               const SizedBox(height: 8),
               Text(
                 fileName,
-                style: theme.textTheme.small.copyWith(color: theme.colorScheme.mutedForeground),
+                style: theme.textTheme.small.copyWith(
+                  color: theme.colorScheme.mutedForeground,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -446,11 +477,17 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FaIcon(FontAwesomeIcons.fileCode, size: 48, color: theme.colorScheme.mutedForeground),
+              FaIcon(
+                FontAwesomeIcons.fileCode,
+                size: 48,
+                color: theme.colorScheme.mutedForeground,
+              ),
               const SizedBox(height: 8),
               Text(
                 fileName,
-                style: theme.textTheme.small.copyWith(color: theme.colorScheme.mutedForeground),
+                style: theme.textTheme.small.copyWith(
+                  color: theme.colorScheme.mutedForeground,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -751,7 +788,9 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           onChanged: (value) {
             _externalUrl.value = value.isEmpty ? null : value;
             if (value.isNotEmpty) {
-              widget.onChanged?.call(ImageReference(externalUrl: value).toMap());
+              widget.onChanged?.call(
+                ImageReference(externalUrl: value).toMap(),
+              );
             } else {
               widget.onChanged?.call(null);
             }
@@ -801,6 +840,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
             widget.field.title,
             style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
           ),
+          SizedBox(height: CmsSpacing.md),
 
           // Tabs
           ShadTabs<String>(

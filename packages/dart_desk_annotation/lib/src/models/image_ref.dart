@@ -52,10 +52,10 @@ class ImageReference {
     altText: map['altText'] as String?,
   );
 
-  /// Always outputs stored format — no publicUrl/width/height/blurHash/lqip.
   Map<String, dynamic> toMap() => {
     '_type': 'imageReference',
     if (assetId != null) 'assetId': assetId,
+    if (publicUrl != null) 'publicUrl': publicUrl,
     if (externalUrl != null) 'externalUrl': externalUrl,
     if (hotspot != null) 'hotspot': hotspot!.toJson(),
     if (crop != null) 'crop': crop!.toJson(),

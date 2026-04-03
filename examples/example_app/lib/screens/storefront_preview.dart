@@ -14,9 +14,7 @@ class StorefrontPreview extends StatelessWidget {
       body: Stack(
         children: [
           // Full-bleed hero image or dark texture
-          Positioned.fill(
-            child: _HeroBackground(config: config),
-          ),
+          Positioned.fill(child: _HeroBackground(config: config)),
           // Content overlay
           Positioned.fill(
             child: CustomScrollView(
@@ -33,7 +31,9 @@ class StorefrontPreview extends StatelessWidget {
                           const Spacer(),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
@@ -225,14 +225,8 @@ class _HeroBackground extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        if (hasImage)
-          Image.network(
-            config.heroImage!.url!,
-            fit: BoxFit.cover,
-          )
-        else
-          // Dark textured fallback — no gradient, just atmosphere
-          Container(color: const Color(0xFF111111)),
+        if (hasImage) Image.network(config.heroImage!.url!, fit: BoxFit.cover),
+
         // Heavy scrim — content lives on top
         Container(
           decoration: BoxDecoration(
@@ -242,8 +236,12 @@ class _HeroBackground extends StatelessWidget {
               stops: const [0.0, 0.3, 0.7, 1.0],
               colors: [
                 const Color(0xFF111111).withValues(alpha: hasImage ? 0.4 : 1.0),
-                const Color(0xFF111111).withValues(alpha: hasImage ? 0.55 : 1.0),
-                const Color(0xFF111111).withValues(alpha: hasImage ? 0.85 : 1.0),
+                const Color(
+                  0xFF111111,
+                ).withValues(alpha: hasImage ? 0.55 : 1.0),
+                const Color(
+                  0xFF111111,
+                ).withValues(alpha: hasImage ? 0.85 : 1.0),
                 const Color(0xFF111111),
               ],
             ),
@@ -274,9 +272,7 @@ class _LogoBadge extends StatelessWidget {
       height: 38,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.12),
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
         image: config.logo != null
             ? DecorationImage(
                 image: NetworkImage(config.logo!.url!),

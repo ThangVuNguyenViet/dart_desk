@@ -52,35 +52,41 @@ class CmsDocumentViewModel {
   /// Effect 2: seeds [editedData] with the document type's default values
   /// whenever the type or document changes and [editedData] is empty.
   void listenTo(CmsViewModel cmsVM) {
-    _cleanups.add(effect(() {
-      final newDocId = cmsVM.selectedDocumentId.value;
-      final currentDocId = untracked(() => documentId.value);
+    _cleanups.add(
+      effect(() {
+        final newDocId = cmsVM.selectedDocumentId.value;
+        final currentDocId = untracked(() => documentId.value);
 
-      if (currentDocId != newDocId) {
-        batch(() {
-          documentId.value = newDocId;
-          editedData.value = {};
-        });
+        if (currentDocId != newDocId) {
+          batch(() {
+            documentId.value = newDocId;
+            editedData.value = {};
+          });
 
-        if (newDocId != null) {
-          _autoLoadLatestData(cmsVM, newDocId);
+          if (newDocId != null) {
+            _autoLoadLatestData(cmsVM, newDocId);
+          }
         }
-      }
-    }));
+      }),
+    );
 
-    _cleanups.add(effect(() {
-      final docType = cmsVM.currentDocumentType.value;
-      final docId = documentId.value; // tracked — re-run when document changes
-      final defaults = docType?.defaultValue?.toMap() ?? {};
-      if (docId == null) {
-        // New-document form: always seed current type's defaults, even if
-        // editedData already has stale data from a previous type.
-        if (defaults.isNotEmpty) editedData.value = defaults;
-      } else if (untracked(() => editedData.value.isEmpty) && defaults.isNotEmpty) {
-        // Document selected but autoLoad hasn't populated editedData yet.
-        editedData.value = defaults;
-      }
-    }));
+    _cleanups.add(
+      effect(() {
+        final docType = cmsVM.currentDocumentType.value;
+        final docId =
+            documentId.value; // tracked — re-run when document changes
+        final defaults = docType?.defaultValue?.toMap() ?? {};
+        if (docId == null) {
+          // New-document form: always seed current type's defaults, even if
+          // editedData already has stale data from a previous type.
+          if (defaults.isNotEmpty) editedData.value = defaults;
+        } else if (untracked(() => editedData.value.isEmpty) &&
+            defaults.isNotEmpty) {
+          // Document selected but autoLoad hasn't populated editedData yet.
+          editedData.value = defaults;
+        }
+      }),
+    );
   }
 
   /// Fetches versions for a document and auto-loads the latest data.

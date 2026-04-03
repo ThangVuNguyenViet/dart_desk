@@ -528,8 +528,8 @@ final $fieldsListName = [
 /// Call .build(builder: ...) in your cms_app to produce a DocumentType.
 final $typeSpecName = DocumentTypeSpec<$className>(
   $idField
-  title: '$title',
-  description: '$description',
+  title: '${title.replaceAll("'", "\\'")}',
+  description: '${description.replaceAll("'", "\\'")}',
   fields: $fieldsListName,
   defaultValue: $className.defaultValue,
 );\n''';
