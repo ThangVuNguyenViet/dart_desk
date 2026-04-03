@@ -411,6 +411,26 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
     ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
     },
+    'CmsMultiDropdownFieldConfig': (
+      FieldElement field,
+      DartObject? config, [
+      String? optionSource,
+    ]) {
+      final fieldName = field.name!;
+
+      // Extract the generic type from CmsMultiDropdownFieldConfig<T>
+      final configType = config?.type?.toString() ?? '';
+      final genericTypeMatch = RegExp(
+        r'CmsMultiDropdownFieldConfig<(.+?)>',
+      ).firstMatch(configType);
+      final genericType = genericTypeMatch?.group(1) ?? 'dynamic';
+
+      return '''CmsMultiDropdownField<$genericType>(
+    name: '$fieldName',
+    title: '${_titleCase(fieldName)}',
+    ${optionSource != null ? 'option: $optionSource,' : ''}
+  )''';
+    },
     'CmsObjectFieldConfig': (
       FieldElement field,
       DartObject? config, [

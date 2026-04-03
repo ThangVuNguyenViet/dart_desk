@@ -1,46 +1,41 @@
 import 'package:data_models/example_data.dart';
-import 'package:example_app/screens/storefront_preview.dart';
-import 'package:example_app/screens/menu_highlight_card.dart';
-import 'package:example_app/screens/promo_offer_banner.dart';
-import 'package:example_app/screens/app_theme_preview.dart';
-import 'package:example_app/screens/delivery_settings_view.dart';
+import 'package:example_app/screens/brand_theme_preview.dart';
+import 'package:example_app/screens/kiosk_preview.dart';
+import 'package:example_app/screens/hero_preview.dart';
+import 'package:example_app/screens/upsell_preview.dart';
+import 'package:example_app/screens/reward_preview.dart';
 
-final storefrontDocumentType = storefrontConfigTypeSpec.build(
+final brandThemeDocumentType = brandThemeTypeSpec.build(
   builder: (data) {
-    final merged = {...StorefrontConfig.defaultValue.toMap(), ...data};
-    return StorefrontPreview(
-        config: StorefrontConfigMapper.fromMap(merged));
+    final merged = {...BrandTheme.defaultValue.toMap(), ...data};
+    return BrandThemePreview(config: BrandThemeMapper.fromMap(merged));
   },
 );
 
-final menuHighlightDocumentType = menuHighlightTypeSpec.build(
+final kioskDocumentType = kioskConfigTypeSpec.build(
   builder: (data) {
-    final merged = {...MenuHighlight.defaultValue.toMap(), ...data};
-    return MenuHighlightCard(
-        config: MenuHighlightMapper.fromMap(merged));
+    final merged = {...KioskConfig.defaultValue.toMap(), ...data};
+    return KioskPreview(config: KioskConfigMapper.fromMap(merged));
   },
 );
 
-final promoOfferDocumentType = promoOfferTypeSpec.build(
+final heroDocumentType = heroConfigTypeSpec.build(
   builder: (data) {
-    final merged = {...PromoOffer.defaultValue.toMap(), ...data};
-    return PromoOfferBanner(
-        config: PromoOfferMapper.fromMap(merged));
+    final merged = {...HeroConfig.defaultValue.toMap(), ...data};
+    return HeroPreview(config: HeroConfigMapper.fromMap(merged));
   },
 );
 
-final appThemeDocumentType = appThemeTypeSpec.build(
+final upsellDocumentType = upsellConfigTypeSpec.build(
   builder: (data) {
-    final merged = {...AppTheme.defaultValue.toMap(), ...data};
-    return AppThemePreview(
-        config: AppThemeMapper.fromMap(merged));
+    final merged = {...UpsellConfig.defaultValue.toMap(), ...data};
+    return UpsellPreview(config: UpsellConfigMapper.fromMap(merged));
   },
 );
 
-final deliverySettingsDocumentType = deliverySettingsTypeSpec.build(
+final rewardDocumentType = rewardConfigTypeSpec.build(
   builder: (data) {
-    final merged = {...DeliverySettings.defaultValue.toMap(), ...data};
-    return DeliverySettingsView(
-        config: DeliverySettingsMapper.fromMap(merged));
+    final merged = {...RewardConfig.defaultValue.toMap(), ...data};
+    return RewardPreview(config: RewardConfigMapper.fromMap(merged));
   },
 );

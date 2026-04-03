@@ -5,7 +5,6 @@ import 'package:marionette_flutter/marionette_flutter.dart';
 
 import 'document_types.dart';
 
-// Server configuration
 const String _defaultServerUrl = 'http://localhost:8080/';
 
 void main() {
@@ -35,32 +34,32 @@ class MyApp extends StatelessWidget {
       apiKey: apiKey,
       config: DartDeskConfig(
         documentTypes: [
-          storefrontDocumentType,
-          menuHighlightDocumentType,
-          promoOfferDocumentType,
-          appThemeDocumentType,
-          deliverySettingsDocumentType,
+          brandThemeDocumentType,
+          kioskDocumentType,
+          heroDocumentType,
+          upsellDocumentType,
+          rewardDocumentType,
         ],
         documentTypeDecorations: [
           DocumentTypeDecoration(
-            documentType: storefrontDocumentType,
-            icon: Icons.storefront,
-          ),
-          DocumentTypeDecoration(
-            documentType: menuHighlightDocumentType,
-            icon: Icons.restaurant_menu,
-          ),
-          DocumentTypeDecoration(
-            documentType: promoOfferDocumentType,
-            icon: Icons.local_offer,
-          ),
-          DocumentTypeDecoration(
-            documentType: appThemeDocumentType,
+            documentType: brandThemeDocumentType,
             icon: Icons.palette,
           ),
           DocumentTypeDecoration(
-            documentType: deliverySettingsDocumentType,
-            icon: Icons.delivery_dining,
+            documentType: kioskDocumentType,
+            icon: Icons.point_of_sale,
+          ),
+          DocumentTypeDecoration(
+            documentType: heroDocumentType,
+            icon: Icons.home,
+          ),
+          DocumentTypeDecoration(
+            documentType: upsellDocumentType,
+            icon: Icons.restaurant_menu,
+          ),
+          DocumentTypeDecoration(
+            documentType: rewardDocumentType,
+            icon: Icons.card_giftcard,
           ),
         ],
         title: 'Food Ordering CMS',
