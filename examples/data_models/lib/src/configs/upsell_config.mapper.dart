@@ -8,13 +8,14 @@
 
 part of 'upsell_config.dart';
 
-class UpsellConfigMapper extends ClassMapperBase<UpsellConfig> {
+class UpsellConfigMapper extends SubClassMapperBase<UpsellConfig> {
   UpsellConfigMapper._();
 
   static UpsellConfigMapper? _instance;
   static UpsellConfigMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = UpsellConfigMapper._());
+      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([UpsellColorMapper()]);
     }
     return _instance!;
@@ -57,6 +58,13 @@ class UpsellConfigMapper extends ClassMapperBase<UpsellConfig> {
     #chefName: _f$chefName,
     #products: _f$products,
   };
+
+  @override
+  final String discriminatorKey = 'documentType';
+  @override
+  final dynamic discriminatorValue = 'upsellConfig';
+  @override
+  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
 
   static UpsellConfig _instantiate(DecodingData data) {
     return UpsellConfig(
@@ -129,8 +137,9 @@ extension UpsellConfigValueCopy<$R, $Out>
 }
 
 abstract class UpsellConfigCopyWith<$R, $In extends UpsellConfig, $Out>
-    implements ClassCopyWith<$R, $In, $Out> {
+    implements CmsContentCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get products;
+  @override
   $R call({
     String? sectionTitle,
     String? sectionSubtitle,

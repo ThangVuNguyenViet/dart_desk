@@ -186,22 +186,27 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     );
     final hasVideo = types.any((t) => t == CmsMediaType.video);
     final hasLottie = types.any((t) => t == CmsMediaType.lottie);
-    if (hasVideo && !hasImage && !hasLottie)
+    if (hasVideo && !hasImage && !hasLottie) {
       return 'Drop video or click to upload';
-    if (hasLottie && !hasImage && !hasVideo)
+    }
+    if (hasLottie && !hasImage && !hasVideo) {
       return 'Drop JSON (Lottie) or click to upload';
-    if (hasImage && !hasVideo && !hasLottie)
+    }
+    if (hasImage && !hasVideo && !hasLottie) {
       return 'Drop image or click to upload';
+    }
     return 'Drop file or click to upload';
   }
 
   MediaTypeFilter _mediaTypeFilter() {
     final types = widget.field.option?.acceptedTypes;
     if (types == null) return MediaTypeFilter.all;
-    if (types.every((t) => t == CmsMediaType.video))
+    if (types.every((t) => t == CmsMediaType.video)) {
       return MediaTypeFilter.video;
-    if (types.every((t) => t == CmsMediaType.image || t == CmsMediaType.svg))
+    }
+    if (types.every((t) => t == CmsMediaType.image || t == CmsMediaType.svg)) {
       return MediaTypeFilter.image;
+    }
     return MediaTypeFilter.all;
   }
 

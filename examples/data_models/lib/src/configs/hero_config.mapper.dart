@@ -8,13 +8,14 @@
 
 part of 'hero_config.dart';
 
-class HeroConfigMapper extends ClassMapperBase<HeroConfig> {
+class HeroConfigMapper extends SubClassMapperBase<HeroConfig> {
   HeroConfigMapper._();
 
   static HeroConfigMapper? _instance;
   static HeroConfigMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = HeroConfigMapper._());
+      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([
         HeroColorMapper(),
         ImageReferenceMapper(),
@@ -61,6 +62,13 @@ class HeroConfigMapper extends ClassMapperBase<HeroConfig> {
     #ctaLabel: _f$ctaLabel,
     #products: _f$products,
   };
+
+  @override
+  final String discriminatorKey = 'documentType';
+  @override
+  final dynamic discriminatorValue = 'heroConfig';
+  @override
+  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
 
   static HeroConfig _instantiate(DecodingData data) {
     return HeroConfig(
@@ -131,8 +139,9 @@ extension HeroConfigValueCopy<$R, $Out>
 }
 
 abstract class HeroConfigCopyWith<$R, $In extends HeroConfig, $Out>
-    implements ClassCopyWith<$R, $In, $Out> {
+    implements CmsContentCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get products;
+  @override
   $R call({
     String? heroTitle,
     String? heroSubtitle,

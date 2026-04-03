@@ -5,6 +5,7 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
+import 'cms_content.dart';
 
 part 'kiosk_config.cms.g.dart';
 part 'kiosk_config.mapper.dart';
@@ -13,8 +14,8 @@ part 'kiosk_config.mapper.dart';
   title: 'Kiosk Screen',
   description: 'Desktop 3-panel kiosk layout with product grid and order sidebar',
 )
-@MappableClass(ignoreNull: false, includeCustomMappers: [KioskColorMapper(), ImageReferenceMapper()])
-class KioskConfig with KioskConfigMappable, Serializable<KioskConfig> {
+@MappableClass(ignoreNull: false, discriminatorValue: 'kioskConfig', includeCustomMappers: [KioskColorMapper(), ImageReferenceMapper()])
+class KioskConfig extends CmsContent with KioskConfigMappable, Serializable<KioskConfig> {
   @CmsStringFieldConfig(
     description: 'Restaurant name shown in the nav drawer',
     option: CmsStringOption(),

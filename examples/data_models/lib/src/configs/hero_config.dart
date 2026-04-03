@@ -5,6 +5,7 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
+import 'cms_content.dart';
 
 part 'hero_config.cms.g.dart';
 part 'hero_config.mapper.dart';
@@ -13,8 +14,8 @@ part 'hero_config.mapper.dart';
   title: 'Hero Screen',
   description: 'Mobile home screen with hero image, categories, and featured products',
 )
-@MappableClass(ignoreNull: false, includeCustomMappers: [HeroColorMapper(), ImageReferenceMapper()])
-class HeroConfig with HeroConfigMappable, Serializable<HeroConfig> {
+@MappableClass(ignoreNull: false, discriminatorValue: 'heroConfig', includeCustomMappers: [HeroColorMapper(), ImageReferenceMapper()])
+class HeroConfig extends CmsContent with HeroConfigMappable, Serializable<HeroConfig> {
   @CmsStringFieldConfig(
     description: 'Main headline in the hero section',
     option: CmsStringOption(),

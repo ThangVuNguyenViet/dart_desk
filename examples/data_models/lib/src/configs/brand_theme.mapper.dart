@@ -8,13 +8,14 @@
 
 part of 'brand_theme.dart';
 
-class BrandThemeMapper extends ClassMapperBase<BrandTheme> {
+class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
   BrandThemeMapper._();
 
   static BrandThemeMapper? _instance;
   static BrandThemeMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = BrandThemeMapper._());
+      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([BrandThemeColorMapper()]);
     }
     return _instance!;
@@ -69,6 +70,13 @@ class BrandThemeMapper extends ClassMapperBase<BrandTheme> {
     #cornerRadius: _f$cornerRadius,
     #themeMode: _f$themeMode,
   };
+
+  @override
+  final String discriminatorKey = 'documentType';
+  @override
+  final dynamic discriminatorValue = 'brandTheme';
+  @override
+  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
 
   static BrandTheme _instantiate(DecodingData data) {
     return BrandTheme(
@@ -141,7 +149,8 @@ extension BrandThemeValueCopy<$R, $Out>
 }
 
 abstract class BrandThemeCopyWith<$R, $In extends BrandTheme, $Out>
-    implements ClassCopyWith<$R, $In, $Out> {
+    implements CmsContentCopyWith<$R, $In, $Out> {
+  @override
   $R call({
     Color? primaryColor,
     Color? surfaceColor,

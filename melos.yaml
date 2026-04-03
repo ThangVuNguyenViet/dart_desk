@@ -3,15 +3,18 @@ packages:
   - packages/dart_desk
   - packages/dart_desk_annotation
   - packages/dart_desk_generator
+  - examples/*
 command:
   version:
     message: "chore(release): publish packages"
     includeCommitId: true
     workspaceChangelog: false
+    packageFilters:
+      noPrivate: true
     changelogs:
       - path: CHANGELOG.md
         packageFilters:
-          scope: "*"
+          noPrivate: true
   publish:
     hooks:
       pre: melos run analyze

@@ -8,13 +8,14 @@
 
 part of 'kiosk_config.dart';
 
-class KioskConfigMapper extends ClassMapperBase<KioskConfig> {
+class KioskConfigMapper extends SubClassMapperBase<KioskConfig> {
   KioskConfigMapper._();
 
   static KioskConfigMapper? _instance;
   static KioskConfigMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = KioskConfigMapper._());
+      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([
         KioskColorMapper(),
         ImageReferenceMapper(),
@@ -61,6 +62,13 @@ class KioskConfigMapper extends ClassMapperBase<KioskConfig> {
     #bannerImage: _f$bannerImage,
     #products: _f$products,
   };
+
+  @override
+  final String discriminatorKey = 'documentType';
+  @override
+  final dynamic discriminatorValue = 'kioskConfig';
+  @override
+  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
 
   static KioskConfig _instantiate(DecodingData data) {
     return KioskConfig(
@@ -131,8 +139,9 @@ extension KioskConfigValueCopy<$R, $Out>
 }
 
 abstract class KioskConfigCopyWith<$R, $In extends KioskConfig, $Out>
-    implements ClassCopyWith<$R, $In, $Out> {
+    implements CmsContentCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get products;
+  @override
   $R call({
     String? restaurantName,
     String? bannerTitle,

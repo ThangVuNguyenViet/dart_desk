@@ -82,7 +82,6 @@ void main() {
 
       final sidebar = SidebarRobot(tester);
       final docList = DocumentListRobot(tester);
-      final editor = DocumentEditorRobot(tester);
 
       await sidebar.tapDocumentType('Integration Test');
       await docList.createDocument('Doc To Delete');

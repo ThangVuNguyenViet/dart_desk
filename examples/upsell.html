@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Chef's Choice | Aura Gastronomy</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-primary": "#e1ffeb",
+            "on-surface": "#2f3331",
+            "tertiary-container": "#f9f3ea",
+            "surface": "#faf9f7",
+            "on-tertiary": "#fef8ef",
+            "outline": "#777c79",
+            "surface-container-highest": "#e0e3e0",
+            "surface-container-high": "#e6e9e6",
+            "secondary": "#5f5f5f",
+            "outline-variant": "#afb3b0",
+            "primary-fixed-dim": "#bedbc8",
+            "surface-tint": "#496455",
+            "surface-variant": "#e0e3e0",
+            "tertiary-fixed": "#f9f3ea",
+            "on-secondary-container": "#515252",
+            "secondary-fixed": "#e4e2e2",
+            "on-primary-fixed-variant": "#476152",
+            "primary-fixed": "#ccead6",
+            "surface-container-low": "#f3f4f1",
+            "surface-bright": "#faf9f7",
+            "primary-container": "#ccead6",
+            "on-secondary": "#faf8f8",
+            "on-error": "#fff7f6",
+            "error": "#9f403d",
+            "on-tertiary-fixed-variant": "#69665f",
+            "on-primary-container": "#3d5749",
+            "error-dim": "#4e0309",
+            "secondary-dim": "#535353",
+            "inverse-surface": "#0d0e0e",
+            "on-primary-fixed": "#2b4537",
+            "on-surface-variant": "#5c605d",
+            "secondary-container": "#e4e2e2",
+            "tertiary-dim": "#56534c",
+            "secondary-fixed-dim": "#d6d4d4",
+            "primary": "#496455",
+            "error-container": "#fe8983",
+            "tertiary-fixed-dim": "#ebe4db",
+            "on-secondary-fixed": "#3f3f3f",
+            "on-background": "#2f3331",
+            "inverse-primary": "#dffeea",
+            "surface-container": "#edeeeb",
+            "inverse-on-surface": "#9d9d9b",
+            "tertiary": "#625f58",
+            "surface-dim": "#d6dbd7",
+            "on-tertiary-container": "#5f5b54",
+            "surface-container-lowest": "#ffffff",
+            "on-tertiary-fixed": "#4c4943",
+            "on-error-container": "#752121",
+            "on-secondary-fixed-variant": "#5b5b5b",
+            "primary-dim": "#3e5849",
+            "background": "#faf9f7"
+          },
+          fontFamily: {
+            "headline": ["Noto Serif"],
+            "body": ["Manrope"],
+            "label": ["Manrope"]
+          },
+          borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+        },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    body {
+      font-family: 'Manrope', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .chef-badge-gradient {
+      background: linear-gradient(135deg, #496455 0%, #3e5849 100%);
+    }
+  </style>
+  <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+
+<body class="bg-surface text-on-surface antialiased">
+  <!-- TopAppBar -->
+  <header
+    class="fixed top-0 w-full flex items-center justify-between px-6 h-16 bg-[#faf9f7]/80 backdrop-blur-md z-50 shadow-sm">
+    <div class="flex items-center gap-4">
+      <span class="material-symbols-outlined text-[#496455]">menu</span>
+      <h1 class="font-noto-serif italic text-2xl text-[#496455]">Aura Gastronomy</h1>
+    </div>
+    <div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/20">
+      <img alt="User Profile"
+        data-alt="Close-up portrait of a professional chef in a clean white uniform against a soft blurred kitchen background"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbz6oDmzGWaLJfF3FSLGX1LSVL1WBXe8z77krztfYAda0yaXPK-E2Bkvk0lj8400sgUr3fy0wpEj5PKOmFlQO87ZEb1ASXzI0B4BsHSgOJowh83pnCrbrGZ79h3LSmQgujYNlyctfL8L4WoycFhCvd4jFBcPuBXUofLH92hSOdIkfH-TENTHaVWEKvq1N6KvU7s7X2MQEiwF5G1-HABePgihqmVqv08bnWJ-rP1WIn80rAVcqPAR98iwMg5lsArxyEqNuQVaEOXi4" />
+    </div>
+  </header>
+  <main class="pt-24 pb-32 px-4 max-w-lg mx-auto">
+    <!-- Editorial Header Section -->
+    <section class="mb-10 text-center">
+      <span
+        class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant font-bold mb-2 block">Monthly
+        Curation</span>
+      <h2 class="font-headline text-4xl text-primary mb-3">Chef's Choice</h2>
+      <div class="h-[1px] w-12 bg-primary/30 mx-auto mb-4"></div>
+      <p class="font-body text-sm text-on-surface-variant leading-relaxed max-w-[280px] mx-auto">
+        Hand-selected seasonal masterpieces defined by precision and local ingredients.
+      </p>
+    </section>
+    <!-- List Content -->
+    <div class="flex flex-col gap-6">
+      <!-- List Item 1 (Highlighted/Premium) -->
+      <div class="flex bg-tertiary-container rounded-xl overflow-hidden p-3 relative shadow-sm">
+        <div class="w-1/3 aspect-[4/5] rounded-lg overflow-hidden shrink-0">
+          <img class="w-full h-full object-cover"
+            data-alt="Gourmet wagyu beef burger with shaved black truffles and melting gruyere cheese on a brioche bun, studio lighting"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu4ogJ4MAs_MaWwB9bQZqCF-59LibpwudjHdRE5VW8ZrKtmArHKX7h7u66fryOlilCGbbc5K7WD_ieBiulMFqhTZ7Jw7L-8C_Ulc0C6tkSbOD1Xc016ancSHOKd77NC1o7gYJPrnbQ4RVMf7q8ZG1aEfXBlqFcWjzDHH7X6_JdmyZz0xNe4vVZONDiEKSYRCLSWeHX2A1CuraR5AcqcoVF11Z_L18vJwVzEAqS31OBv0pRNZzRb9TRRyvDr_5CJjhAEObqqqrZwDI" />
+        </div>
+        <div class="pl-4 flex flex-col justify-between flex-1 py-1">
+          <div>
+            <div class="flex justify-between items-start mb-1">
+              <span
+                class="chef-badge-gradient text-[9px] text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Chef's
+                Choice</span>
+              <span class="font-label text-[10px] text-on-surface-variant/70 font-semibold">840 kcal</span>
+            </div>
+            <h3 class="font-headline text-xl text-on-surface leading-tight mb-1">Truffle Wagyu Burger</h3>
+            <p class="font-body text-[11px] text-on-surface-variant leading-tight">Aged wagyu, winter truffle, brioche.
+            </p>
+          </div>
+          <div class="flex items-end justify-between">
+            <span class="font-headline text-lg text-primary font-bold">$32.00</span>
+            <button
+              class="bg-primary text-on-primary flex items-center justify-center p-2 rounded-lg active:scale-90 transition-transform">
+              <span class="material-symbols-outlined text-sm">shopping_cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- List Item 2 (Standard) -->
+      <div class="flex bg-surface-container-lowest rounded-xl overflow-hidden p-3 relative shadow-sm">
+        <div class="w-1/3 aspect-[4/5] rounded-lg overflow-hidden shrink-0">
+          <img class="w-full h-full object-cover"
+            data-alt="Linguine pasta with clams, fresh parsley, and garlic in a white wine sauce, high-end restaurant plating"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwE7IzIb2bPaeRMkAvHnmILdJGo7wmjBfdyA9ldN7xL4Df90a6jCae9ubfvi5YK0S4oPYiwb4GuCV3gBD0fVlaoJ3fBYHvQWD9esf_TK6y7xH-oGN3es91KcuZ30C8PCBi5A8hngDZl-4bDq2ZqKfrNARMMNIEP2QG5aKbW3KahxFKzhnpZ0oUGXYWKFMYSNbDiWbEOebHsabeYnLlXdvLaWFv18Qtkzyucxik7pe3JTMJVBNdfdgEonQ8TfADMBluJrRgVdqARx4" />
+        </div>
+        <div class="pl-4 flex flex-col justify-between flex-1 py-1">
+          <div>
+            <div class="flex justify-between items-start mb-1">
+              <span
+                class="chef-badge-gradient text-[9px] text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Chef's
+                Choice</span>
+              <span class="font-label text-[10px] text-on-surface-variant/70 font-semibold">620 kcal</span>
+            </div>
+            <h3 class="font-headline text-xl text-on-surface leading-tight mb-1">Linguine Alle Vongole</h3>
+            <p class="font-body text-[11px] text-on-surface-variant leading-tight">Wild clams, white wine, parsley oil.
+            </p>
+          </div>
+          <div class="flex items-end justify-between">
+            <span class="font-headline text-lg text-primary font-bold">$28.50</span>
+            <button
+              class="bg-primary text-on-primary flex items-center justify-center p-2 rounded-lg active:scale-90 transition-transform">
+              <span class="material-symbols-outlined text-sm">shopping_cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- List Item 3 (Standard) -->
+      <div class="flex bg-surface-container-lowest rounded-xl overflow-hidden p-3 relative shadow-sm">
+        <div class="w-1/3 aspect-[4/5] rounded-lg overflow-hidden shrink-0">
+          <img class="w-full h-full object-cover"
+            data-alt="Pan-seared scallops with cauliflower puree and microgreens, artistic gourmet presentation on a slate plate"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRkegIh8K2cX6HjewmYXVIH0uyBuPaskUTBhoMyrxn04IF8SX-x-6n0w3HPRBsd8uDdhmUvmohVlEILHc4jIObUird1m-0feKSmkD92Gg1kjWnjtJlW12SAmZ7aFkZk0uuJMSQjc4oy-KKtLPQtMG_zQK_JmsTJC42-Cd0oprgQSNGjiMEzppXlx7F4_7rK1IWHgerMa1144cr-vpObHWWyUEqYDBfY2isEsKR16bWBKWH7I0pOAMDS5Vq3mKv3b3hoDIdem7tDS4" />
+        </div>
+        <div class="pl-4 flex flex-col justify-between flex-1 py-1">
+          <div>
+            <div class="flex justify-between items-start mb-1">
+              <span
+                class="chef-badge-gradient text-[9px] text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Chef's
+                Choice</span>
+              <span class="font-label text-[10px] text-on-surface-variant/70 font-semibold">410 kcal</span>
+            </div>
+            <h3 class="font-headline text-xl text-on-surface leading-tight mb-1">Hokkaido Scallops</h3>
+            <p class="font-body text-[11px] text-on-surface-variant leading-tight">Pan-seared, cauliflower, brown
+              butter.</p>
+          </div>
+          <div class="flex items-end justify-between">
+            <span class="font-headline text-lg text-primary font-bold">$36.00</span>
+            <button
+              class="bg-primary text-on-primary flex items-center justify-center p-2 rounded-lg active:scale-90 transition-transform">
+              <span class="material-symbols-outlined text-sm">shopping_cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Pull Quote Section -->
+      <div class="my-6 relative py-12 px-8 overflow-hidden rounded-2xl bg-surface-container">
+        <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-12 h-32 bg-surface-variant/40"></div>
+        <blockquote class="relative z-10 text-center">
+          <p class="font-headline text-lg italic text-primary leading-relaxed">
+            "Cuisine is the bridge between nature and culture. Every selection here tells a story of the harvest."
+          </p>
+          <cite class="block mt-4 font-label text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">—
+            Executive Chef Elara</cite>
+        </blockquote>
+      </div>
+      <!-- List Item 4 (Highlighted/Premium) -->
+      <div class="flex bg-tertiary-container rounded-xl overflow-hidden p-3 relative shadow-sm">
+        <div class="w-1/3 aspect-[4/5] rounded-lg overflow-hidden shrink-0">
+          <img class="w-full h-full object-cover"
+            data-alt="Slow-roasted prime rib with rosemary and roasted root vegetables on a textured ceramic plate, moody lighting"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjyS_NLlXFORBEgP_P20yaARsT_v1ns6tlb6hxIFXEWFEJlBpyiBant39NsjDwbQhIMAL1wXNLQ410wArWfHr5IWZoJ-SpIKtdfZGeiihhxXrso0E8omaOpS2dPsyZIOyJzAssG5XIu6dglzC8wEoVGIbvSFzr2MDFu9Swp61zjOtAj0vxhvUqwqqy8KdKB8OiStqM30q94gnzr0yDMSvXd27m8FJ-ExQBKPyBfLp5B62h_6ueGlfuUUljp91z495FrF0w6IZyTXo" />
+        </div>
+        <div class="pl-4 flex flex-col justify-between flex-1 py-1">
+          <div>
+            <div class="flex justify-between items-start mb-1">
+              <span
+                class="chef-badge-gradient text-[9px] text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Chef's
+                Choice</span>
+              <span class="font-label text-[10px] text-on-surface-variant/70 font-semibold">950 kcal</span>
+            </div>
+            <h3 class="font-headline text-xl text-on-surface leading-tight mb-1">Dry-Aged Ribeye</h3>
+            <p class="font-body text-[11px] text-on-surface-variant leading-tight">45-day aged, bone marrow butter.</p>
+          </div>
+          <div class="flex items-end justify-between">
+            <span class="font-headline text-lg text-primary font-bold">$54.00</span>
+            <button
+              class="bg-primary text-on-primary flex items-center justify-center p-2 rounded-lg active:scale-90 transition-transform">
+              <span class="material-symbols-outlined text-sm">shopping_cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- BottomNavBar -->
+  <nav
+    class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 backdrop-blur-xl z-50 rounded-t-2xl shadow-[0_-4px_40px_rgba(47,51,49,0.04)]">
+    <button
+      class="flex flex-col items-center justify-center text-[#5c605d] px-5 py-2 hover:bg-[#edeeeb] rounded-xl transition-all active:scale-90">
+      <span class="material-symbols-outlined">home</span>
+      <span class="font-manrope text-[11px] uppercase tracking-wider font-semibold mt-1">Home</span>
+    </button>
+    <button
+      class="flex flex-col items-center justify-center bg-[#496455] text-white rounded-xl px-5 py-2 active:scale-90 transition-transform">
+      <span class="material-symbols-outlined">restaurant_menu</span>
+      <span class="font-manrope text-[11px] uppercase tracking-wider font-semibold mt-1">Menu</span>
+    </button>
+    <button
+      class="flex flex-col items-center justify-center text-[#5c605d] px-5 py-2 hover:bg-[#edeeeb] rounded-xl transition-all active:scale-90">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      <span class="font-manrope text-[11px] uppercase tracking-wider font-semibold mt-1">Cart</span>
+    </button>
+    <button
+      class="flex flex-col items-center justify-center text-[#5c605d] px-5 py-2 hover:bg-[#edeeeb] rounded-xl transition-all active:scale-90">
+      <span class="material-symbols-outlined">person</span>
+      <span class="font-manrope text-[11px] uppercase tracking-wider font-semibold mt-1">Profile</span>
+    </button>
+  </nav>
+</body>
+
+</html>

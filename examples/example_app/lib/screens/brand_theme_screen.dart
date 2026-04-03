@@ -1,8 +1,8 @@
 import 'package:data_models/example_data.dart';
 import 'package:flutter/material.dart';
 
-class BrandThemePreview extends StatelessWidget {
-  const BrandThemePreview({super.key, required this.config});
+class BrandThemeScreen extends StatelessWidget {
+  const BrandThemeScreen({super.key, required this.config});
 
   final BrandTheme config;
 

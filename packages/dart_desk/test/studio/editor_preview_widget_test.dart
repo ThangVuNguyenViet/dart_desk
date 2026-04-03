@@ -265,7 +265,6 @@ void main() {
       await tester.pump();
 
       // Access editedData through the element tree.
-      final context = tester.element(find.byType(_PreviewPanel));
       final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       expect(editedData['string_field'], 'hello world');
     });
@@ -289,7 +288,6 @@ void main() {
       await tester.enterText(inputField, '99');
       await tester.pump();
 
-      final context = tester.element(find.byType(_PreviewPanel));
       final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       expect(editedData['number_field'], 99);
     });
@@ -313,7 +311,6 @@ void main() {
       await tester.tap(switchFinder);
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(_PreviewPanel));
       final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       expect(editedData['boolean_field'], isNotNull);
     });
@@ -463,7 +460,6 @@ void main() {
       );
 
       // Programmatically update editedData to simulate selection change
-      final context = tester.element(find.byType(_PreviewPanel));
       final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       editedData.value = {
         ...editedData.value,
@@ -528,7 +524,6 @@ void main() {
       await tester.pump();
 
       // Verify editedData has the change.
-      final context = tester.element(find.byType(_PreviewPanel));
       final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       expect(editedData['string_field'], 'dirty');
 

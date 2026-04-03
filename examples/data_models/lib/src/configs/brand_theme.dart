@@ -4,6 +4,8 @@ import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
+import 'cms_content.dart';
+
 part 'brand_theme.cms.g.dart';
 part 'brand_theme.mapper.dart';
 
@@ -11,8 +13,8 @@ part 'brand_theme.mapper.dart';
   title: 'Brand Theme',
   description: 'Global brand colors, typography, and styling for the Aura Gastronomy app',
 )
-@MappableClass(ignoreNull: false, includeCustomMappers: [BrandThemeColorMapper()])
-class BrandTheme with BrandThemeMappable, Serializable<BrandTheme> {
+@MappableClass(ignoreNull: false, discriminatorValue: 'brandTheme', includeCustomMappers: [BrandThemeColorMapper()])
+class BrandTheme extends CmsContent with BrandThemeMappable, Serializable<BrandTheme> {
   @CmsColorFieldConfig(
     description: 'Primary brand color used for buttons, nav, and accents',
     option: CmsColorOption(),

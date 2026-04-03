@@ -8,10 +8,9 @@ const _onSurfaceVariant = Color(0xFF5C605D);
 const _surfaceContainer = Color(0xFFEDEEEB);
 const _primaryContainer = Color(0xFFCCEAD6);
 const _onPrimaryContainer = Color(0xFF3D5749);
-const _surfaceContainerLow = Color(0xFFF3F4F1);
 
-class HeroPreview extends StatelessWidget {
-  const HeroPreview({super.key, required this.config});
+class HeroScreen extends StatelessWidget {
+  const HeroScreen({super.key, required this.config});
 
   final HeroConfig config;
 
@@ -32,21 +31,13 @@ class HeroPreview extends StatelessWidget {
               // Top app bar space
               SliverToBoxAdapter(child: SizedBox(height: 64)),
               // Hero section
-              SliverToBoxAdapter(
-                child: _HeroSection(config: config),
-              ),
+              SliverToBoxAdapter(child: _HeroSection(config: config)),
               // Category pills
-              SliverToBoxAdapter(
-                child: _CategorySection(),
-              ),
+              SliverToBoxAdapter(child: _CategorySection()),
               // Featured Today
-              SliverToBoxAdapter(
-                child: _FeaturedSection(products: products),
-              ),
+              SliverToBoxAdapter(child: _FeaturedSection(products: products)),
               // Pull quote
-              SliverToBoxAdapter(
-                child: _PullQuoteSection(),
-              ),
+              SliverToBoxAdapter(child: _PullQuoteSection()),
               // Bottom nav space
               SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
@@ -59,12 +50,7 @@ class HeroPreview extends StatelessWidget {
             child: _TopAppBar(profileAvatarUrl: profileAvatarUrl),
           ),
           // Fixed bottom nav bar
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: _BottomNavBar(),
-          ),
+          Positioned(bottom: 0, left: 0, right: 0, child: _BottomNavBar()),
         ],
       ),
     );
@@ -82,7 +68,7 @@ class _TopAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 64,
-      color: _surface.withOpacity(0.9),
+      color: _surface.withValues(alpha: 0.9),
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
@@ -123,68 +109,62 @@ class _HeroSection extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(999),
-        child: AspectRatio(
-          aspectRatio: 4 / 5,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // Background image
-              Image.network(
-                imageUrl,
-                fit: BoxFit.cover,
-              ),
-              // Gradient overlay
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.8),
-                      Colors.transparent,
-                    ],
-                    stops: const [0.0, 0.6],
-                  ),
-                ),
-              ),
-              // Bottom content overlay
-              Positioned(
-                bottom: 40,
-                left: 32,
-                right: 32,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      config.heroSubtitle.toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 11,
-                        letterSpacing: 3.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white70,
-                        height: 1.0,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      config.heroTitle,
-                      style: const TextStyle(
-                        fontFamily: 'serif',
-                        fontSize: 36,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    _CtaButton(label: config.ctaLabel),
+      child: AspectRatio(
+        aspectRatio: 4 / 5,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Background image
+            Image.network(imageUrl, fit: BoxFit.cover),
+            // Gradient overlay
+            DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Colors.black.withValues(alpha: 0.8),
+                    Colors.transparent,
                   ],
+                  stops: const [0.0, 0.6],
                 ),
               ),
-            ],
-          ),
+            ),
+            // Bottom content overlay
+            Positioned(
+              bottom: 40,
+              left: 32,
+              right: 32,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    config.heroSubtitle.toUpperCase(),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      letterSpacing: 3.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white70,
+                      height: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    config.heroTitle,
+                    style: const TextStyle(
+                      fontFamily: 'serif',
+                      fontSize: 36,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white,
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _CtaButton(label: config.ctaLabel),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -376,11 +356,7 @@ class _FeaturedSection extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
-                width: 3,
-                height: 56,
-                color: _primary,
-              ),
+              Container(width: 3, height: 56, color: _primary),
               const SizedBox(width: 16),
               const Text(
                 'Featured Today',
@@ -449,10 +425,7 @@ class _ProductCard extends StatelessWidget {
               aspectRatio: 3 / 4,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
-                ),
+                child: Image.network(product.imageUrl, fit: BoxFit.cover),
               ),
             ),
             Positioned(
@@ -466,7 +439,7 @@ class _ProductCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.12),
+                      color: Colors.black.withValues(alpha: 0.12),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),
@@ -550,11 +523,11 @@ class _BottomNavBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),

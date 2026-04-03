@@ -10,13 +10,10 @@ const _surfaceContainer = Color(0xFFEDEEEB);
 const _surfaceContainerHighest = Color(0xFFE0E3E0);
 const _outline = Color(0xFF777C79);
 const _outlineVariant = Color(0xFFAFB3B0);
-const _error = Color(0xFF9F403D);
 const _primaryDim = Color(0xFF3E5849);
-const _tertiaryFixedDim = Color(0xFFEBE4DB);
-const _onTertiaryFixedVariant = Color(0xFF69665F);
 
-class RewardPreview extends StatelessWidget {
-  const RewardPreview({super.key, required this.config});
+class RewardScreen extends StatelessWidget {
+  const RewardScreen({super.key, required this.config});
 
   final RewardConfig config;
 
@@ -87,7 +84,7 @@ class _TopAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 64,
-      color: _surface.withOpacity(0.9),
+      color: _surface.withValues(alpha: 0.9),
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
@@ -136,7 +133,7 @@ class _LoyaltyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 6),
           ),
@@ -184,7 +181,7 @@ class _LoyaltyCard extends StatelessWidget {
                       fontSize: 10,
                       letterSpacing: 3.0,
                       fontWeight: FontWeight.w500,
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -208,7 +205,12 @@ class _LoyaltyCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${config.pointsBalance.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (m) => ',')}',
+                            config.pointsBalance
+                                .toStringAsFixed(0)
+                                .replaceAllMapped(
+                                  RegExp(r'\B(?=(\d{3})+(?!\d))'),
+                                  (m) => ',',
+                                ),
                             style: const TextStyle(
                               fontSize: 40,
                               fontWeight: FontWeight.bold,
@@ -224,7 +226,7 @@ class _LoyaltyCard extends StatelessWidget {
                               fontSize: 11,
                               letterSpacing: 1.5,
                               fontWeight: FontWeight.w500,
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                             ),
                           ),
                         ],
@@ -239,7 +241,7 @@ class _LoyaltyCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 10,
                               letterSpacing: 1.5,
-                              color: Colors.white.withOpacity(0.8),
+                              color: Colors.white.withValues(alpha: 0.8),
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -275,7 +277,7 @@ class _LoyaltyCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(999),
                             boxShadow: [
                               BoxShadow(
-                                color: _primaryContainer.withOpacity(0.4),
+                                color: _primaryContainer.withValues(alpha: 0.4),
                                 blurRadius: 8,
                               ),
                             ],
@@ -292,7 +294,7 @@ class _LoyaltyCard extends StatelessWidget {
                       fontFamily: 'serif',
                       fontStyle: FontStyle.italic,
                       fontSize: 12,
-                      color: Colors.white.withOpacity(0.7),
+                      color: Colors.white.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -382,8 +384,8 @@ class _CouponCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: coupon.locked
-              ? _outlineVariant.withOpacity(0.2)
-              : _outlineVariant.withOpacity(0.3),
+              ? _outlineVariant.withValues(alpha: 0.2)
+              : _outlineVariant.withValues(alpha: 0.3),
           width: 2,
           // Note: Flutter doesn't have native dashed borders, using solid with low alpha
         ),
@@ -391,7 +393,7 @@ class _CouponCard extends StatelessWidget {
             ? null
             : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
+                  color: Colors.black.withValues(alpha: 0.04),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -453,7 +455,7 @@ class _CouponCard extends StatelessWidget {
           // Divider
           Divider(
             color: coupon.locked
-                ? _outlineVariant.withOpacity(0.1)
+                ? _outlineVariant.withValues(alpha: 0.1)
                 : _surfaceContainer,
             height: 1,
           ),
@@ -501,7 +503,9 @@ class _CouponCard extends StatelessWidget {
               coupon.locked
                   ? Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 8),
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: _surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(8),
@@ -518,7 +522,9 @@ class _CouponCard extends StatelessWidget {
                     )
                   : Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 8),
+                        horizontal: 24,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: _primary,
                         borderRadius: BorderRadius.circular(8),
@@ -582,11 +588,11 @@ class _BottomNavBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -596,10 +602,8 @@ class _BottomNavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: const [
           _NavItem(icon: Icons.home, label: 'Home', isActive: false),
-          _NavItem(
-              icon: Icons.restaurant_menu, label: 'Menu', isActive: false),
-          _NavItem(
-              icon: Icons.shopping_cart, label: 'Cart', isActive: true),
+          _NavItem(icon: Icons.restaurant_menu, label: 'Menu', isActive: false),
+          _NavItem(icon: Icons.shopping_cart, label: 'Cart', isActive: true),
           _NavItem(icon: Icons.person, label: 'Profile', isActive: false),
         ],
       ),

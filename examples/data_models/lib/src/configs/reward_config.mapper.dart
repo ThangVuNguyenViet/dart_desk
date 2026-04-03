@@ -8,13 +8,14 @@
 
 part of 'reward_config.dart';
 
-class RewardConfigMapper extends ClassMapperBase<RewardConfig> {
+class RewardConfigMapper extends SubClassMapperBase<RewardConfig> {
   RewardConfigMapper._();
 
   static RewardConfigMapper? _instance;
   static RewardConfigMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = RewardConfigMapper._());
+      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([RewardColorMapper()]);
     }
     return _instance!;
@@ -57,6 +58,13 @@ class RewardConfigMapper extends ClassMapperBase<RewardConfig> {
     #rewardLabel: _f$rewardLabel,
     #coupons: _f$coupons,
   };
+
+  @override
+  final String discriminatorKey = 'documentType';
+  @override
+  final dynamic discriminatorValue = 'rewardConfig';
+  @override
+  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
 
   static RewardConfig _instantiate(DecodingData data) {
     return RewardConfig(
@@ -129,8 +137,9 @@ extension RewardConfigValueCopy<$R, $Out>
 }
 
 abstract class RewardConfigCopyWith<$R, $In extends RewardConfig, $Out>
-    implements ClassCopyWith<$R, $In, $Out> {
+    implements CmsContentCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get coupons;
+  @override
   $R call({
     String? brandName,
     num? pointsBalance,

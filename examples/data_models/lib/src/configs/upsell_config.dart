@@ -5,6 +5,7 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
+import 'cms_content.dart';
 
 part 'upsell_config.cms.g.dart';
 part 'upsell_config.mapper.dart';
@@ -13,8 +14,8 @@ part 'upsell_config.mapper.dart';
   title: 'Upsell Screen',
   description: 'Mobile Chefs Choice curated item list with editorial pull-quote',
 )
-@MappableClass(ignoreNull: false, includeCustomMappers: [UpsellColorMapper()])
-class UpsellConfig with UpsellConfigMappable, Serializable<UpsellConfig> {
+@MappableClass(ignoreNull: false, discriminatorValue: 'upsellConfig', includeCustomMappers: [UpsellColorMapper()])
+class UpsellConfig extends CmsContent with UpsellConfigMappable, Serializable<UpsellConfig> {
   @CmsStringFieldConfig(
     description: 'Section title (e.g. Chefs Choice)',
     option: CmsStringOption(),

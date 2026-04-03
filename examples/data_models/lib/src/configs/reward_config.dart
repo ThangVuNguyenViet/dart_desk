@@ -5,6 +5,7 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
+import 'cms_content.dart';
 
 part 'reward_config.cms.g.dart';
 part 'reward_config.mapper.dart';
@@ -13,8 +14,8 @@ part 'reward_config.mapper.dart';
   title: 'Reward Screen',
   description: 'Mobile loyalty rewards with points card and coupon list',
 )
-@MappableClass(ignoreNull: false, includeCustomMappers: [RewardColorMapper()])
-class RewardConfig with RewardConfigMappable, Serializable<RewardConfig> {
+@MappableClass(ignoreNull: false, discriminatorValue: 'rewardConfig', includeCustomMappers: [RewardColorMapper()])
+class RewardConfig extends CmsContent with RewardConfigMappable, Serializable<RewardConfig> {
   @CmsStringFieldConfig(
     description: 'Brand name shown in the header',
     option: CmsStringOption(),

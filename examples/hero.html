@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary": "#e1ffeb",
+                        "on-surface": "#2f3331",
+                        "tertiary-container": "#f9f3ea",
+                        "surface": "#faf9f7",
+                        "on-tertiary": "#fef8ef",
+                        "outline": "#777c79",
+                        "surface-container-highest": "#e0e3e0",
+                        "surface-container-high": "#e6e9e6",
+                        "secondary": "#5f5f5f",
+                        "outline-variant": "#afb3b0",
+                        "primary-fixed-dim": "#bedbc8",
+                        "surface-tint": "#496455",
+                        "surface-variant": "#e0e3e0",
+                        "tertiary-fixed": "#f9f3ea",
+                        "on-secondary-container": "#515252",
+                        "secondary-fixed": "#e4e2e2",
+                        "on-primary-fixed-variant": "#476152",
+                        "primary-fixed": "#ccead6",
+                        "surface-container-low": "#f3f4f1",
+                        "surface-bright": "#faf9f7",
+                        "primary-container": "#ccead6",
+                        "on-secondary": "#faf8f8",
+                        "on-error": "#fff7f6",
+                        "error": "#9f403d",
+                        "on-tertiary-fixed-variant": "#69665f",
+                        "on-primary-container": "#3d5749",
+                        "error-dim": "#4e0309",
+                        "secondary-dim": "#535353",
+                        "inverse-surface": "#0d0e0e",
+                        "on-primary-fixed": "#2b4537",
+                        "on-surface-variant": "#5c605d",
+                        "secondary-container": "#e4e2e2",
+                        "tertiary-dim": "#56534c",
+                        "secondary-fixed-dim": "#d6d4d4",
+                        "primary": "#496455",
+                        "error-container": "#fe8983",
+                        "tertiary-fixed-dim": "#ebe4db",
+                        "on-secondary-fixed": "#3f3f3f",
+                        "on-background": "#2f3331",
+                        "inverse-primary": "#dffeea",
+                        "surface-container": "#edeeeb",
+                        "inverse-on-surface": "#9d9d9b",
+                        "tertiary": "#625f58",
+                        "surface-dim": "#d6dbd7",
+                        "on-tertiary-container": "#5f5b54",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#4c4943",
+                        "on-error-container": "#752121",
+                        "on-secondary-fixed-variant": "#5b5b5b",
+                        "primary-dim": "#3e5849",
+                        "background": "#faf9f7"
+                    },
+                    fontFamily: {
+                        "headline": ["Noto Serif"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-surface font-body text-on-surface antialiased">
+    <!-- TopAppBar -->
+    <header
+        class="fixed top-0 w-full flex items-center justify-between px-6 h-16 bg-[#faf9f7]/80 dark:bg-stone-900/80 backdrop-blur-md z-50 shadow-sm dark:shadow-none">
+        <div class="flex items-center gap-3">
+            <span
+                class="material-symbols-outlined text-[#496455] dark:text-[#e1ffeb] active:scale-95 duration-150 transition-opacity hover:opacity-80 cursor-pointer"
+                data-icon="menu">menu</span>
+            <h1 class="font-noto-serif italic text-2xl text-[#496455] dark:text-[#e1ffeb] tracking-tight">Aura
+                Gastronomy</h1>
+        </div>
+        <div
+            class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container active:scale-95 duration-150 transition-opacity hover:opacity-80">
+            <img alt="User Profile" class="w-full h-full object-cover"
+                data-alt="professional portrait of a user for profile avatar in soft studio lighting"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAadtuOwfKN3oBAcPOWdIUgQLsNlAnxU3IxNhRA8J04Rtz1GIoZA8Bhv5b9R8suR6_mtZ3Uaqd8hNC6KxHkHDy0rw76tb8CCtXAfDQMGIXwOPdfMWXI-ahXNk01eHBjm_ITy-gR5Tuco1yo3o06_uKL83ivY59ONcAnk2voEqasdr_fB5g5NGyrKDqM1JI1XHLrvFzirFhI3VjMBeOgj_lpGWXauHG2lPH8pickvVF_4tjjElXM1GEuvUGatBGjgZeuX8gH0LdFpoI" />
+        </div>
+    </header>
+    <main class="pt-16 pb-32">
+        <!-- Hero Section: The Festive Feast -->
+        <section class="relative px-4 pt-4 mb-10">
+            <div class="relative w-full aspect-[4/5] rounded-full overflow-hidden shadow-2xl">
+                <img alt="Festive Feast" class="w-full h-full object-cover scale-105"
+                    data-alt="luxurious christmas dinner table setting with roasted meat, candles, holly, and elegant gold accents in a warm cozy dining room"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4sfUJtVO96YI82Ie3tQlRae8apQDGMEfIeTberImKMS1bmZU2A99l-VrK5VoS05wgARcetQ7uU_Xczj6CD6ber-rYgTqXf_Zylu6EKw0ykCCn89TD2HXFGGFBeY-ExOCXYYnPpjNJPqvSnunra1C2AcBcnMoPFBC8evQYvxjMmnBuz-fdeW-NtHrnlrEIOi4tFSNUCNX6-fxKB2vVP8fi6gtLQR46Lj7CZKrlitLZNTpBuNYL8LcTDoMCMCOmcaMVGzwL9dBdm38" />
+                <div class="absolute inset-0 bg-gradient-to-t from-on-surface/80 via-transparent to-transparent"></div>
+                <div class="absolute bottom-10 left-8 right-8 text-white">
+                    <span
+                        class="font-label text-[11px] uppercase tracking-[0.2em] font-bold text-on-primary/90 mb-3 block">Limited
+                        Seasonal Selection</span>
+                    <h2 class="font-headline text-4xl mb-6 leading-tight">The Festive Feast is Here</h2>
+                    <button
+                        class="bg-primary hover:bg-primary-dim text-on-primary px-8 py-4 rounded-full font-semibold transition-all active:scale-95 flex items-center gap-2 group">
+                        Explore the Menu
+                        <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1"
+                            data-icon="arrow_forward">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+        <!-- Horizontal Categories -->
+        <section class="mb-12">
+            <div class="flex items-center justify-between px-6 mb-4">
+                <h3 class="font-label text-xs uppercase tracking-widest font-bold text-on-surface-variant">Categories
+                </h3>
+                <span class="text-primary text-xs font-semibold hover:underline cursor-pointer">View All</span>
+            </div>
+            <div class="flex overflow-x-auto gap-4 px-6 hide-scrollbar">
+                <!-- Category Item 1 -->
+                <div class="flex flex-col items-center gap-2 flex-shrink-0 group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center transition-colors group-hover:bg-primary-container">
+                        <span class="material-symbols-outlined text-primary text-2xl"
+                            data-icon="restaurant_menu">restaurant_menu</span>
+                    </div>
+                    <span class="font-label text-[11px] font-bold text-on-surface">Starters</span>
+                </div>
+                <!-- Category Item 2 -->
+                <div class="flex flex-col items-center gap-2 flex-shrink-0 group">
+                    <div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-primary-container text-2xl"
+                            data-icon="dinner_dining">dinner_dining</span>
+                    </div>
+                    <span class="font-label text-[11px] font-bold text-primary">Mains</span>
+                </div>
+                <!-- Category Item 3 -->
+                <div class="flex flex-col items-center gap-2 flex-shrink-0 group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center transition-colors group-hover:bg-primary-container">
+                        <span class="material-symbols-outlined text-primary text-2xl" data-icon="cake">cake</span>
+                    </div>
+                    <span class="font-label text-[11px] font-bold text-on-surface">Festive Treats</span>
+                </div>
+                <!-- Category Item 4 -->
+                <div class="flex flex-col items-center gap-2 flex-shrink-0 group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center transition-colors group-hover:bg-primary-container">
+                        <span class="material-symbols-outlined text-primary text-2xl"
+                            data-icon="local_bar">local_bar</span>
+                    </div>
+                    <span class="font-label text-[11px] font-bold text-on-surface">Drinks</span>
+                </div>
+                <!-- Category Item 5 -->
+                <div class="flex flex-col items-center gap-2 flex-shrink-0 group">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center transition-colors group-hover:bg-primary-container">
+                        <span class="material-symbols-outlined text-primary text-2xl"
+                            data-icon="bakery_dining">bakery_dining</span>
+                    </div>
+                    <span class="font-label text-[11px] font-bold text-on-surface">Bakery</span>
+                </div>
+            </div>
+        </section>
+        <!-- Featured Today Grid -->
+        <section class="px-6">
+            <div class="flex items-end gap-4 mb-8">
+                <div class="h-16 w-1 bg-primary"></div>
+                <h3 class="font-headline text-3xl">Featured Today</h3>
+            </div>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-10">
+                <!-- Product Card 1 -->
+                <div class="flex flex-col gap-3">
+                    <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface-container-low group">
+                        <img alt="Roasted Turkey Platter"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            data-alt="glistening slow-roasted whole turkey on a silver platter garnished with cranberries and rosemary sprigs"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT40v_sLw55b4SL27WdbIGcMv-BTVIgtGUCG8gFyI1w3fh6cg1tFcGVVFJsnObLhuyaR9qs-JuYVHz8WNipg9ebgqbYx841FbxdzYdi0UoyNYK4Wagola1TONbdw67tMDWTPlJCJg5jglUaGspnWi8rPwsMpo2A0pTa-eZpAiSSnJjzzXMMgHFS_jy3-X6bEWkXkc8kesLVXKY78a2ferzojQ8eC4_YwZ3jBNkoD443TzdtkNe2PvRRJHLZA-bF6GlQ9LONN6vnEA" />
+                        <button
+                            class="absolute bottom-3 right-3 bg-white text-on-surface w-8 h-8 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        </button>
+                    </div>
+                    <div>
+                        <h4 class="font-headline text-lg leading-tight mb-1">Roasted Turkey Platter</h4>
+                        <p class="font-label text-xs text-on-surface-variant tracking-wide">$84.00</p>
+                    </div>
+                </div>
+                <!-- Product Card 2 -->
+                <div class="flex flex-col gap-3 mt-8">
+                    <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface-container-low group">
+                        <img alt="Berry Mascarpone Tart"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            data-alt="delicate berry mascarpone tart with fresh raspberries and blueberries on a light ceramic plate with mint leaves"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCk4oVPQvBD9eXfcVXuqTIcVknK1ib_lbkGTNySdCYgul9SW3feUxXgLqCMU4XZshDABYLna23CMIH2EP3s-vlOShcfp7sm6DHL1faBsDzEIWfZ1DKU_tg6n197MZ9n8K0QNDhEKJadl_U6teM45pb9dfheGn_U1MO_Sfl9p4eMiWQBcJhjLU7lpgpkEaHgPd_QWkikdlNUdhdCPpNCjOTanZi0HSy7fNMpy42cmPL_oTwzlnqlo6juJ1kowZ8jESApfGAOaptp8k8" />
+                        <button
+                            class="absolute bottom-3 right-3 bg-white text-on-surface w-8 h-8 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        </button>
+                    </div>
+                    <div>
+                        <h4 class="font-headline text-lg leading-tight mb-1">Berry Mascarpone Tart</h4>
+                        <p class="font-label text-xs text-on-surface-variant tracking-wide">$12.50</p>
+                    </div>
+                </div>
+                <!-- Product Card 3 -->
+                <div class="flex flex-col gap-3">
+                    <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface-container-low group">
+                        <img alt="Mulled Wine"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            data-alt="festive spiced mulled wine in glass mugs with cinnamon sticks and orange slices against a blurred holiday lights background"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCg-plghUaaB7VtjJmWgxLtZoN8OTvWVZHS4IdVwCgtvNcfKtDGuIKqq-Gg4qEDbjkxHxucz4VjXf3kYd4Ugkf14Mbqo10PzSVtShft8nYnx4TaiZquqFTfKfZte0--Qb1Zzs-qjU-kcVlqxZ-RT13m6jGMO6fOM1tekW5LHEVOQFZiuqho7DrWVPLBwTaflvPdKq_8HImT0moBAzQ3WHPapcl-mdRS7aqA8J8bhTtv5Lt7wC_zG7JU23JOcgYQ1Rze23hQHvPShsQ" />
+                        <button
+                            class="absolute bottom-3 right-3 bg-white text-on-surface w-8 h-8 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        </button>
+                    </div>
+                    <div>
+                        <h4 class="font-headline text-lg leading-tight mb-1">Seasonal Mulled Wine</h4>
+                        <p class="font-label text-xs text-on-surface-variant tracking-wide">$14.00</p>
+                    </div>
+                </div>
+                <!-- Product Card 4 -->
+                <div class="flex flex-col gap-3 mt-8">
+                    <div class="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface-container-low group">
+                        <img alt="Glazed Ham"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                            data-alt="gourmet honey glazed ham with cloves and grilled pineapple rings on a festive wooden serving board"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_m-Oeg69KUjrxHeJMNaMnERp0eaL6TDDLMW-If9pq3d1qMQspy18B2XVfXRk_hn8jXccE0INqMOU0QaZGEiDEpJ7GCbVZC7eit6PrfJCGpaJXhXm9o4J1iFX9Nd9jgB3TFVZryn6H3cs-vZitw3Gr-GMN2HxYUuxkp6wEIuSUd1D6HVbgZME9VPQvxQknSC21drMGViNX3DBAMsNiJTQNXhtlhD71noFrEX8dT8NLQnG-klppzsuvICxCXyYTPHX8X7PHVDOZFvk" />
+                        <button
+                            class="absolute bottom-3 right-3 bg-white text-on-surface w-8 h-8 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        </button>
+                    </div>
+                    <div>
+                        <h4 class="font-headline text-lg leading-tight mb-1">Honey Glazed Ham</h4>
+                        <p class="font-label text-xs text-on-surface-variant tracking-wide">$58.00</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Editorial Pull-Quote Section -->
+        <section class="py-20 px-10 relative mt-10">
+            <div
+                class="absolute left-0 w-32 h-32 bg-surface-variant opacity-30 -translate-x-12 translate-y-4 rounded-full">
+            </div>
+            <div class="relative z-10 text-center">
+                <h2 class="font-headline text-2xl italic text-primary leading-relaxed">
+                    "Gastronomy is the art of using food to create happiness."
+                </h2>
+                <p class="font-label text-[10px] uppercase tracking-widest mt-6 text-on-surface-variant">The Aura
+                    Manifesto</p>
+            </div>
+        </section>
+    </main>
+    <!-- BottomNavBar -->
+    <nav
+        class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 dark:bg-stone-950/80 backdrop-blur-xl z-50 rounded-t-2xl shadow-[0_-4px_40px_rgba(47,51,49,0.04)]">
+        <!-- Home (Active) -->
+        <a class="flex flex-col items-center justify-center bg-[#496455] text-white rounded-xl px-5 py-2 tap-highlight-none active:scale-90 transition-transform"
+            href="#">
+            <span class="material-symbols-outlined text-[24px]" data-icon="home"
+                style="font-variation-settings: 'FILL' 1;">home</span>
+            <span class="font-manrope text-[11px] uppercase tracking-wider font-semibold mt-1">Home</span>
+        </a>
+        <!-- Menu -->
+        <a class="flex flex-col items-center justify-center text-[#5c605d] px-5 py-2 tap-highlight-none active:scale-90 transition-transform hover:bg-[#edeeeb] dark:hover:bg-stone-800 rounded-xl"
+            href="#">
+            <span class="material-symbols-outlined text-[24px]" data-icon="restaurant_menu">restaurant_menu</span>
+            <span class="font-manrope text-[11px] uppercase tracking-wider font-semibold mt-1">Menu</span>
+        </a>
+        <!-- Cart -->
+        <a class="flex flex-col items-center justify-center text-[#5c605d] px-5 py-2 tap-highlight-none active:scale-90 transition-transform hover:bg-[#edeeeb] dark:hover:bg-stone-800 rounded-xl"
+            href="#">
+            <span class="material-symbols-outlined text-[24px]" data-icon="shopping_cart">shopping_cart</span>
+            <span class="font-manrope text-[11px] uppercase tracking-wider font-semibold mt-1">Cart</span>
+        </a>
+        <!-- Profile -->
+        <a class="flex flex-col items-center justify-center text-[#5c605d] px-5 py-2 tap-highlight-none active:scale-90 transition-transform hover:bg-[#edeeeb] dark:hover:bg-stone-800 rounded-xl"
+            href="#">
+            <span class="material-symbols-outlined text-[24px]" data-icon="person">person</span>
+            <span class="font-manrope text-[11px] uppercase tracking-wider font-semibold mt-1">Profile</span>
+        </a>
+    </nav>
+</body>
+
+</html>

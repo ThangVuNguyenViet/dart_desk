@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 const _primary = Color(0xFF496455);
 const _surface = Color(0xFFFAF9F7);
 const _onSurface = Color(0xFF2F3331);
-const _cardBg = Colors.white;
 const _surfaceContainerLow = Color(0xFFF3F4F1);
 const _surfaceContainerHigh = Color(0xFFE6E9E6);
 const _onSurfaceVariant = Color(0xFF5C605D);
@@ -14,8 +13,8 @@ const _onPrimaryContainer = Color(0xFF3D5749);
 const _surfaceContainer = Color(0xFFEDEEEB);
 const _surfaceContainerLowest = Color(0xFFFFFFFF);
 
-class KioskPreview extends StatelessWidget {
-  const KioskPreview({super.key, required this.config});
+class KioskScreen extends StatelessWidget {
+  const KioskScreen({super.key, required this.config});
 
   final KioskConfig config;
 
@@ -27,9 +26,7 @@ class KioskPreview extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _LeftNav(restaurantName: config.restaurantName),
-          Expanded(
-            child: _CenterPanel(config: config),
-          ),
+          Expanded(child: _CenterPanel(config: config)),
           _RightSidebar(),
         ],
       ),
@@ -66,23 +63,10 @@ class _LeftNav extends StatelessWidget {
             ),
           ),
           // Nav buttons
-          _NavButton(
-            icon: Icons.restaurant,
-            label: 'Dine In',
-            active: true,
-          ),
-          _NavButton(
-            icon: Icons.local_mall_outlined,
-            label: 'Takeaway',
-          ),
-          _NavButton(
-            icon: Icons.auto_awesome_outlined,
-            label: 'Seasonal',
-          ),
-          _NavButton(
-            icon: Icons.help_outline,
-            label: 'Support',
-          ),
+          _NavButton(icon: Icons.restaurant, label: 'Dine In', active: true),
+          _NavButton(icon: Icons.local_mall_outlined, label: 'Takeaway'),
+          _NavButton(icon: Icons.auto_awesome_outlined, label: 'Seasonal'),
+          _NavButton(icon: Icons.help_outline, label: 'Support'),
           const Spacer(),
           // Wait time card
           Padding(
@@ -92,7 +76,9 @@ class _LeftNav extends StatelessWidget {
               decoration: BoxDecoration(
                 color: _surfaceContainerLow,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _outlineVariant.withValues(alpha: 0.1)),
+                border: Border.all(
+                  color: _outlineVariant.withValues(alpha: 0.1),
+                ),
               ),
               child: const Column(
                 children: [
@@ -128,7 +114,11 @@ class _LeftNav extends StatelessWidget {
 }
 
 class _NavButton extends StatelessWidget {
-  const _NavButton({required this.icon, required this.label, this.active = false});
+  const _NavButton({
+    required this.icon,
+    required this.label,
+    this.active = false,
+  });
 
   final IconData icon;
   final String label;
@@ -314,12 +304,7 @@ class _TabItem extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        if (active)
-          Container(
-            height: 2,
-            width: 40,
-            color: _primary,
-          ),
+        if (active) Container(height: 2, width: 40, color: _primary),
       ],
     );
   }
@@ -351,7 +336,10 @@ class _Banner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = config.bannerImage?.publicUrl ?? config.bannerImage?.externalUrl ?? kioskBannerImageUrl;
+    final imageUrl =
+        config.bannerImage?.publicUrl ??
+        config.bannerImage?.externalUrl ??
+        kioskBannerImageUrl;
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: SizedBox(
@@ -362,7 +350,7 @@ class _Banner extends StatelessWidget {
             Image.network(
               imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(color: _primary),
+              errorBuilder: (_, _, _) => Container(color: _primary),
             ),
             // Gradient overlay (left-to-right, primary to transparent)
             Container(
@@ -388,7 +376,10 @@ class _Banner extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE1FFEB),
                       borderRadius: BorderRadius.circular(100),
@@ -462,10 +453,7 @@ class _ProductGrid extends StatelessWidget {
                 child: _FeaturedProductCard(product: products[0]),
               ),
               const SizedBox(width: 24),
-              Expanded(
-                flex: 4,
-                child: _SmallProductCard(product: products[1]),
-              ),
+              Expanded(flex: 4, child: _SmallProductCard(product: products[1])),
             ],
           ),
         ),
@@ -481,10 +469,7 @@ class _ProductGrid extends StatelessWidget {
       for (int i = 2; i < products.length && i < 4; i++) {
         if (smallCards.isNotEmpty) smallCards.add(const SizedBox(width: 24));
         smallCards.add(
-          Expanded(
-            flex: 4,
-            child: _SmallProductCard(product: products[i]),
-          ),
+          Expanded(flex: 4, child: _SmallProductCard(product: products[i])),
         );
       }
       // Pad with empty flex if only 1 item in row 2
@@ -492,7 +477,14 @@ class _ProductGrid extends StatelessWidget {
         smallCards.add(const SizedBox(width: 24));
         smallCards.add(const Expanded(flex: 4, child: SizedBox.shrink()));
       }
-      rows.add(IntrinsicHeight(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: smallCards)));
+      rows.add(
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: smallCards,
+          ),
+        ),
+      );
     }
 
     return Column(
@@ -524,13 +516,17 @@ class _FeaturedProductCard extends StatelessWidget {
                   Image.network(
                     product.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(color: _surfaceContainer),
+                    errorBuilder: (_, _, _) =>
+                        Container(color: _surfaceContainer),
                   ),
                   Positioned(
                     top: 16,
                     left: 16,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: _primary,
                         borderRadius: BorderRadius.circular(8),
@@ -582,7 +578,9 @@ class _FeaturedProductCard extends StatelessWidget {
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: product.tags.map((tag) => _TagChip(label: tag)).toList(),
+                            children: product.tags
+                                .map((tag) => _TagChip(label: tag))
+                                .toList(),
                           ),
                         ],
                       ],
@@ -603,7 +601,10 @@ class _FeaturedProductCard extends StatelessWidget {
                         icon: const Icon(Icons.add_shopping_cart, size: 20),
                         label: const Text(
                           'Add to Order',
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
@@ -641,13 +642,17 @@ class _SmallProductCard extends StatelessWidget {
                   Image.network(
                     product.imageUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(color: _surfaceContainer),
+                    errorBuilder: (_, _, _) =>
+                        Container(color: _surfaceContainer),
                   ),
                   Positioned(
                     bottom: 12,
                     right: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: _surfaceContainerLowest.withValues(alpha: 0.9),
                         borderRadius: BorderRadius.circular(6),
@@ -698,7 +703,10 @@ class _SmallProductCard extends StatelessWidget {
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
                           foregroundColor: _primary,
-                          side: const BorderSide(color: Color(0x33496455), width: 2),
+                          side: const BorderSide(
+                            color: Color(0x33496455),
+                            width: 2,
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -781,7 +789,10 @@ class _RightSidebar extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _primaryContainer,
                     borderRadius: BorderRadius.circular(100),
@@ -826,9 +837,7 @@ class _RightSidebar extends StatelessWidget {
             Container(
               padding: const EdgeInsets.only(top: 32),
               decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: _surfaceContainerHigh),
-                ),
+                border: Border(top: BorderSide(color: _surfaceContainerHigh)),
               ),
               child: Column(
                 children: [
@@ -892,7 +901,10 @@ class _RightSidebar extends StatelessWidget {
                           SizedBox(height: 4),
                           Text(
                             'Payment via Card or Digital Wallet',
-                            style: TextStyle(fontSize: 10, color: Colors.white70),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.white70,
+                            ),
                           ),
                         ],
                       ),
@@ -947,7 +959,7 @@ class _OrderItem extends StatelessWidget {
             child: Image.network(
               thumbUrl,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(color: _surfaceContainer),
+              errorBuilder: (_, _, _) => Container(color: _surfaceContainer),
             ),
           ),
         ),
@@ -980,10 +992,7 @@ class _OrderItem extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 note,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: _onSurfaceVariant,
-                ),
+                style: const TextStyle(fontSize: 12, color: _onSurfaceVariant),
               ),
               const SizedBox(height: 10),
               Row(
@@ -1039,8 +1048,14 @@ class _TotalsRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(color: _onSurfaceVariant, fontSize: 14)),
-        Text(value, style: const TextStyle(color: _onSurfaceVariant, fontSize: 14)),
+        Text(
+          label,
+          style: const TextStyle(color: _onSurfaceVariant, fontSize: 14),
+        ),
+        Text(
+          value,
+          style: const TextStyle(color: _onSurfaceVariant, fontSize: 14),
+        ),
       ],
     );
   }

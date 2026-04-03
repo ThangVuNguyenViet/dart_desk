@@ -8,8 +8,8 @@ const _onSurfaceVariant = Color(0xFF5C605D);
 const _warmCardBg = Color(0xFFF9F3EA);
 const _surfaceContainer = Color(0xFFEDEEEB);
 
-class UpsellPreview extends StatelessWidget {
-  const UpsellPreview({super.key, required this.config});
+class UpsellScreen extends StatelessWidget {
+  const UpsellScreen({super.key, required this.config});
 
   final UpsellConfig config;
 
@@ -49,12 +49,7 @@ class UpsellPreview extends StatelessWidget {
             child: _TopAppBar(profileAvatarUrl: profileAvatarUrl),
           ),
           // Fixed bottom nav bar
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: _BottomNavBar(),
-          ),
+          Positioned(bottom: 0, left: 0, right: 0, child: _BottomNavBar()),
         ],
       ),
     );
@@ -72,7 +67,7 @@ class _TopAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 64,
-      color: _surface.withOpacity(0.9),
+      color: _surface.withValues(alpha: 0.9),
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
         children: [
@@ -132,20 +127,12 @@ class _EditorialHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        Container(
-          width: 48,
-          height: 1,
-          color: _primary.withOpacity(0.3),
-        ),
+        Container(width: 48, height: 1, color: _primary.withValues(alpha: 0.3)),
         const SizedBox(height: 16),
         Text(
           config.sectionSubtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 13,
-            color: _onSurfaceVariant,
-            height: 1.6,
-          ),
+          style: TextStyle(fontSize: 13, color: _onSurfaceVariant, height: 1.6),
         ),
       ],
     );
@@ -200,7 +187,7 @@ class _ProductCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -216,10 +203,7 @@ class _ProductCard extends StatelessWidget {
               aspectRatio: 4 / 5,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  product.imageUrl,
-                  fit: BoxFit.cover,
-                ),
+                child: Image.network(product.imageUrl, fit: BoxFit.cover),
               ),
             ),
           ),
@@ -239,15 +223,14 @@ class _ProductCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _ChefBadge(),
-                      if (product.calories != null)
-                        Text(
-                          '${product.calories} kcal',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: _onSurfaceVariant.withOpacity(0.7),
-                            fontWeight: FontWeight.w600,
-                          ),
+                      Text(
+                        '${product.calories} kcal',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: _onSurfaceVariant.withValues(alpha: 0.7),
+                          fontWeight: FontWeight.w600,
                         ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -323,10 +306,7 @@ class _ChefBadge extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF496455),
-            Color(0xFF3E5849),
-          ],
+          colors: [Color(0xFF496455), Color(0xFF3E5849)],
         ),
         borderRadius: BorderRadius.circular(999),
       ),
@@ -375,7 +355,7 @@ class _PullQuoteCard extends StatelessWidget {
           Container(
             width: 32,
             height: 1,
-            color: _onSurfaceVariant.withOpacity(0.3),
+            color: _onSurfaceVariant.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 12),
           Text(
@@ -403,11 +383,11 @@ class _BottomNavBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
@@ -417,8 +397,7 @@ class _BottomNavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _NavItem(icon: Icons.home, label: 'Home', isActive: false),
-          _NavItem(
-              icon: Icons.restaurant_menu, label: 'Menu', isActive: true),
+          _NavItem(icon: Icons.restaurant_menu, label: 'Menu', isActive: true),
           _NavItem(icon: Icons.shopping_cart, label: 'Cart', isActive: false),
           _NavItem(icon: Icons.person, label: 'Profile', isActive: false),
         ],

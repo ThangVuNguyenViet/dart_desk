@@ -1,5 +1,6 @@
 library;
 
+export 'src/configs/cms_content.dart';
 export 'src/configs/brand_theme.dart' hide BrandThemeColorMapper;
 export 'src/configs/kiosk_config.dart' hide KioskColorMapper;
 export 'src/configs/hero_config.dart' hide HeroColorMapper;
