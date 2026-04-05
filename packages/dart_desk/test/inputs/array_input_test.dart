@@ -11,7 +11,8 @@ void main() {
   final field = CmsArrayField<String>(
     name: 'tags',
     title: 'Tags',
-    option: TestStringArrayOption(),
+    innerField: const CmsStringField(name: 'tag', title: 'Tag'),
+    option: const TestStringArrayOption(),
   );
 
   group('CmsArrayInput', () {
@@ -108,7 +109,8 @@ void main() {
       final hiddenField = CmsArrayField<String>(
         name: 'hidden',
         title: 'Hidden',
-        option: TestStringArrayOption(),
+        innerField: const CmsStringField(name: 'item', title: 'Item'),
+        option: const TestStringArrayOption(),
       );
 
       // CmsArrayField doesn't have a hidden option on the field itself,
@@ -127,6 +129,7 @@ void main() {
       final numField = CmsArrayField<int>(
         name: 'scores',
         title: 'Scores',
+        innerField: const CmsNumberField(name: 'score', title: 'Score'),
       );
 
       await tester.pumpWidget(buildInputApp(
@@ -163,6 +166,7 @@ void main() {
       final boolField = CmsArrayField<bool>(
         name: 'flags',
         title: 'Flags',
+        innerField: const CmsBooleanField(name: 'flag', title: 'Flag'),
       );
 
       await tester.pumpWidget(buildInputApp(
@@ -178,8 +182,8 @@ void main() {
       await tester.tap(find.text('Add'));
       await tester.pumpAndSettle();
 
-      // The default bool editor should show a checkbox — tap it to set true
-      await tester.tap(find.byType(ShadCheckbox).last);
+      // The default bool editor (CmsBooleanInput) uses a ShadSwitch
+      await tester.tap(find.byType(ShadSwitch).last);
       await tester.pumpAndSettle();
 
       // Save
@@ -195,6 +199,7 @@ void main() {
       final stringField = CmsArrayField<String>(
         name: 'labels',
         title: 'Labels',
+        innerField: const CmsStringField(name: 'label', title: 'Label'),
       );
 
       await tester.pumpWidget(buildInputApp(

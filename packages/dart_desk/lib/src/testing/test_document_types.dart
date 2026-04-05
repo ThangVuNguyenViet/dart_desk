@@ -106,7 +106,8 @@ final allFieldsDocumentType = DocumentType(
       name: 'array_field',
       title: 'Array Field',
       description: 'A list of string items',
-      option: TestStringArrayOption(),
+      innerField: const CmsStringField(name: 'item', title: 'Item'),
+      option: const TestStringArrayOption(),
     ),
     const CmsObjectField(
       name: 'object_field',
