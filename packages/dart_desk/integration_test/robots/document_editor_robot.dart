@@ -30,6 +30,12 @@ class DocumentEditorRobot {
     await tester.settle();
   }
 
+  /// Taps the new "Publish" button next to Save.
+  Future<void> tapSaveAndPublish() async {
+    await tester.tap(find.byKey(const ValueKey('publish_document_button')));
+    await tester.settle();
+  }
+
   /// Taps the "Discard" button.
   Future<void> tapDiscard() async {
     await tester.tap(find.byKey(const ValueKey('discard_document_button')));
@@ -37,7 +43,8 @@ class DocumentEditorRobot {
   }
 
   /// Opens the version history popover, taps "Publish", then confirms.
-  Future<void> tapPublish() async {
+  /// This is for publishing an EXISTING version from the history.
+  Future<void> tapPublishFromHistory() async {
     // Open the version history popover.
     await tester.tap(find.byKey(const ValueKey('version_history_button')));
     await tester.settle();
@@ -53,6 +60,11 @@ class DocumentEditorRobot {
   /// Expects the toast confirmation after saving.
   void expectSaveConfirmation() {
     expect(find.text('Document saved successfully'), findsOneWidget);
+  }
+
+  /// Expects the toast confirmation after publishing.
+  void expectPublishConfirmation() {
+    expect(find.text('Document published successfully'), findsOneWidget);
   }
 
   /// Reads the current text value of a field by its key.

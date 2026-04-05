@@ -94,7 +94,7 @@ void main() {
       docList.expectDocumentNotVisible('Doc To Delete');
     });
 
-    testWidgets('TC-E2E-01-05: Publish version via UI', (tester) async {
+    testWidgets('TC-E2E-01-05: Publish version from history', (tester) async {
       final ss = ScreenshotHelper(binding, 'tc_01_05');
       await pumpTestApp(tester);
 
@@ -106,9 +106,27 @@ void main() {
       await docList.tapDocument('Persistence Test Doc');
       await editor.tapSave();
       editor.expectSaveConfirmation();
-      await editor.tapPublish();
+      await editor.tapPublishFromHistory();
       await editor.expectPublishedStatus();
-      await ss.take(tester, 'published');
+      await ss.take(tester, 'published_from_history');
+    });
+
+    testWidgets('TC-E2E-01-06: Save and Publish document button', (tester) async {
+      final ss = ScreenshotHelper(binding, 'tc_01_06');
+      await pumpTestApp(tester);
+
+      final sidebar = SidebarRobot(tester);
+      final docList = DocumentListRobot(tester);
+      final editor = DocumentEditorRobot(tester);
+
+      await sidebar.tapDocumentType('Integration Test');
+      await docList.tapDocument('Persistence Test Doc');
+      await editor.enterField('title', 'Published Title');
+      await editor.tapSaveAndPublish();
+      editor.expectPublishConfirmation();
+      await ss.take(tester, 'published_via_button');
+
+      await editor.expectPublishedStatus();
     });
   });
 }
