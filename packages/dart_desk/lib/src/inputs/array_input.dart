@@ -3,6 +3,7 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import '../studio/components/forms/cms_form.dart';
 import 'edit_styles/edit_styles.dart';
 
 class CmsArrayInput<T> extends StatefulWidget {
@@ -235,67 +236,25 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
       return const SizedBox.shrink();
     }
 
-    final editorWidget = widget.field.option?.buildItemEditor(
-      context,
-      _editingValue,
-      (value) => setState(() => _editingValue = value),
-    );
-    if (editorWidget != null) return editorWidget;
+    // Use the registry for the innerField!
+    final builder = CmsFieldInputRegistry.getBuilder(widget.field.innerField);
+    if (builder != null) {
+      final path = widget.data?.path ?? widget.field.name;
+      final itemIndex = _editingIndex == -1 ? _items.length : _editingIndex;
 
-    // Default editors for primitive types
-    final field = widget.field;
-    if (field is CmsArrayField<bool>) {
-      return ShadCheckbox(
-        value: _editingValue as bool? ?? false,
-        onChanged: (value) {
+      return builder(
+        widget.field.innerField,
+        CmsData(value: _editingValue, path: '$path.[$itemIndex]'),
+        (_, newValue) {
           setState(() {
-            _editingValue = value;
+            _editingValue = newValue;
           });
         },
       );
     }
 
-    if (field is CmsArrayField<int>) {
-      return ShadInputFormField(
-        key: const ValueKey('array_item_editor'),
-        initialValue: _editingValue?.toString() ?? '',
-        keyboardType: TextInputType.number,
-        onChanged: (value) {
-          setState(() {
-            _editingValue = int.tryParse(value);
-          });
-        },
-        onSubmitted: (_) => _saveItem(),
-        placeholder: const Text('Enter number...'),
-      );
-    }
-
-    if (field is CmsArrayField<num> || field is CmsArrayField<double>) {
-      return ShadInputFormField(
-        key: const ValueKey('array_item_editor'),
-        initialValue: _editingValue?.toString() ?? '',
-        keyboardType: TextInputType.number,
-        onChanged: (value) {
-          setState(() {
-            _editingValue = num.tryParse(value);
-          });
-        },
-        onSubmitted: (_) => _saveItem(),
-        placeholder: const Text('Enter number...'),
-      );
-    }
-
-    // Default: String editor (also used for CmsArrayField<String>)
-    return ShadInputFormField(
-      key: const ValueKey('array_item_editor'),
-      initialValue: _editingValue?.toString() ?? '',
-      onChanged: (value) {
-        setState(() {
-          _editingValue = value;
-        });
-      },
-      onSubmitted: (_) => _saveItem(),
-      placeholder: const Text('Enter value...'),
+    return Text(
+      'No editor found for item type: ${widget.field.innerField.runtimeType}',
     );
   }
 
