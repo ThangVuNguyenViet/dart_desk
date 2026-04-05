@@ -333,9 +333,6 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
 
       if (innerSource != null) {
         // Use explicit inner config
-        // Note: This assumes innerSource is a valid CmsFieldConfig instance.
-        // We need to convert it to a CmsField instance.
-        // For now, we'll assume it's a simple mapping like CmsImageFieldConfig -> CmsImageField
         inferredFieldCode = innerSource
             .replaceAll('FieldConfig', 'Field')
             .replaceFirst('(', "(name: 'item', title: 'Item', ");
@@ -354,28 +351,16 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
           inferredFieldCode =
               "$fieldClass(name: 'item', title: '${_titleCase(genericType)}')";
         } else {
-          // Check for @CmsConfig object
-          final typeElement = config?.type is InterfaceType
-              ? (config?.type as InterfaceType).typeArguments.first.element
-              : null;
+          // Assume it's a CMS object and follow the fields list naming convention
+          final typeName = genericType;
+          final fieldsListName =
+              '${typeName[0].toLowerCase()}${typeName.substring(1)}Fields';
 
-          if (typeElement != null &&
-              typeElement.metadata.annotations.any((m) =>
-                  m.computeConstantValue()?.type?.element?.displayName ==
-                  'CmsConfig')) {
-            final typeName = typeElement.displayName;
-            final fieldsListName =
-                '${typeName[0].toLowerCase()}${typeName.substring(1)}Fields';
-            inferredFieldCode = '''CmsObjectField(
+          inferredFieldCode = '''CmsObjectField(
     name: 'item',
     title: '${_titleCase(typeName)}',
     option: CmsObjectOption(children: [ColumnFields(children: $fieldsListName)]),
   )''';
-          } else {
-            // Fallback or error
-            inferredFieldCode =
-                "CmsStringField(name: 'item', title: 'Item')"; // Safe fallback
-          }
         }
       }
 
@@ -521,16 +506,16 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
         final fieldType = field.type;
         final typeElement =
             fieldType is InterfaceType ? fieldType.element : null;
-        // Check if the type class has @CmsConfig annotation
-        if (typeElement != null &&
-            typeElement.metadata.annotations.any((m) =>
-                m.computeConstantValue()?.type?.element?.displayName ==
-                'CmsConfig')) {
+        if (typeElement != null) {
           final typeName = typeElement.displayName;
-          final fieldsListName =
-              '${typeName[0].toLowerCase()}${typeName.substring(1)}Fields';
-          resolvedOption =
-              'CmsObjectOption(children: [ColumnFields(children: $fieldsListName)])';
+          // Assume any non-primitive class used with @CmsObjectFieldConfig follows the convention
+          const primitives = {'String', 'int', 'num', 'double', 'bool', 'DateTime'};
+          if (!primitives.contains(typeName)) {
+            final fieldsListName =
+                '${typeName[0].toLowerCase()}${typeName.substring(1)}Fields';
+            resolvedOption =
+                'CmsObjectOption(children: [ColumnFields(children: $fieldsListName)])';
+          }
         }
       }
 
