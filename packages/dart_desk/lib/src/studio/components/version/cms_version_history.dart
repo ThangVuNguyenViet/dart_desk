@@ -322,7 +322,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     widget.viewModel.selectedVersionId.value = version.id;
 
     try {
-      await widget.viewModel.publishVersion();
+      await widget.viewModel.publishVersion.run(version.id!);
       if (mounted) {
         toaster.show(
           const ShadToast(description: Text('Version published')),
@@ -365,7 +365,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     widget.viewModel.selectedVersionId.value = version.id;
 
     try {
-      await widget.viewModel.archiveVersion();
+      await widget.viewModel.archiveVersion.run(version.id!);
       if (mounted) {
         toaster.show(
           const ShadToast(description: Text('Version archived')),

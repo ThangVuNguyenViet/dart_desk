@@ -357,13 +357,15 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                       // Capture toaster before the async gap
                       final toaster = ShadToaster.of(context);
 
-                      final document = await viewModel.createDocument(
-                        title,
-                        viewModel.currentDocumentType.value?.defaultValue
+                      final document = await viewModel.createDocument.run((
+                        title: title,
+                        data: viewModel.currentDocumentType.value?.defaultValue
                                 ?.toMap() ??
                             {},
                         slug: slug,
-                      );
+                        isDefault: false,
+                        publish: false,
+                      ));
 
                       if (document?.id != null) {
                         widget.onOpenDocument?.call(document!.id.toString());
@@ -463,7 +465,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                           if (value == 'set_default') {
                             final toaster = ShadToaster.of(context);
                             final newDefault = await viewModel
-                                .setDefaultDocument(doc.id!);
+                                .setDefaultDocument.run(doc.id!);
                             if (context.mounted && newDefault != null) {
                               toaster.show(
                                 ShadToast(

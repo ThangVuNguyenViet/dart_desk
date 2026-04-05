@@ -69,8 +69,8 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
     if (confirmed != true || !mounted) return;
 
     try {
-      final result = await viewModel.deleteDocument(docId);
-      if (mounted) {
+      final result = await viewModel.deleteDocument.run(docId);
+      if (mounted && result != null) {
         if (result.deleted) {
           toaster.show(const ShadToast(description: Text('Document deleted')));
           if (result.newDefault != null) {

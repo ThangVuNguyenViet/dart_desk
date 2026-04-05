@@ -27,7 +27,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   MapSignal<String, dynamic> get editedData =>
       GetIt.I<CmsDocumentViewModel>().editedData;
 
-  Future<void> _saveDocument() async {
+  Future<void> _performSave({required bool publish}) async {
     final viewModel = GetIt.I<CmsViewModel>();
     try {
       final documentViewModel = GetIt.I<CmsDocumentViewModel>();
@@ -37,9 +37,13 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
 
       if (docId != null) {
         // Update existing document data
-        await viewModel.updateDocumentData(dataToSave);
+        await viewModel.updateDocumentData.run((
+          documentId: docId,
+          data: dataToSave,
+          publish: publish,
+        ));
+        editedData.value = {};
       } else {
-        final documentViewModel = GetIt.I<CmsDocumentViewModel>();
         final title = documentViewModel.title.value;
         final slug = documentViewModel.slug.value;
 
@@ -55,22 +59,41 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
         }
 
         // Create new document with initial version
-        await viewModel.createDocument(title, dataToSave, slug: slug);
+        await viewModel.createDocument.run((
+          title: title,
+          data: dataToSave,
+          slug: slug,
+          isDefault: false,
+          publish: publish,
+        ));
       }
 
       if (mounted) {
         ShadToaster.of(context).show(
-          const ShadToast(description: Text('Document saved successfully')),
+          ShadToast(
+            description: Text(
+              publish
+                  ? 'Document published successfully'
+                  : 'Document saved successfully',
+            ),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ShadToaster.of(
           context,
-        ).show(ShadToast(description: Text('Failed to save: $e')));
+        ).show(
+          ShadToast(
+            description: Text('Failed to ${publish ? 'publish' : 'save'}: $e'),
+          ),
+        );
       }
     }
   }
+
+  Future<void> _saveDocument() => _performSave(publish: false);
+  Future<void> _publishDocument() => _performSave(publish: true);
 
   Future<void> _discardDocument() async {
     try {
@@ -110,7 +133,10 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
   Widget build(BuildContext context) {
     final viewModel = GetIt.I<CmsViewModel>();
 
-    final isSaving = viewModel.isSaving.watch(context);
+    final createStatus = viewModel.createDocument.watch(context);
+    final updateStatus = viewModel.updateDocumentData.watch(context);
+    final isSaving = createStatus.isLoading || updateStatus.isLoading;
+
     final versionId = viewModel.selectedVersionId.watch(context);
     final versionState = versionId != null
         ? viewModel.documentDataContainer(versionId).watch(context)
@@ -174,6 +200,13 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
                   text: 'Save',
                   loading: isSaving,
                   onPressed: isSaving ? null : _saveDocument,
+                ),
+                const SizedBox(width: 8),
+                CmsButton(
+                  key: const ValueKey('publish_document_button'),
+                  text: 'Publish',
+                  loading: isSaving,
+                  onPressed: isSaving ? null : _publishDocument,
                 ),
               ],
             ),

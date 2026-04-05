@@ -414,7 +414,13 @@ void main() {
       expect(find.text('count: 3'), findsOneWidget);
 
       // Use the ViewModel's createDocument, which should auto-reload
-      await viewModel.createDocument('New via VM', {});
+      await viewModel.createDocument.run((
+        title: 'New via VM',
+        data: {},
+        slug: null,
+        isDefault: false,
+        publish: false,
+      ));
 
       await tester.pumpAndSettle();
       expect(find.text('count: 4'), findsOneWidget);
@@ -449,7 +455,7 @@ void main() {
       expect(find.text('count: 3'), findsOneWidget);
 
       // Delete the first document (ID 1)
-      await viewModel.deleteDocument(1);
+      await viewModel.deleteDocument.run(1);
 
       await tester.pumpAndSettle();
       expect(find.text('count: 2'), findsOneWidget);
