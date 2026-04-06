@@ -266,6 +266,87 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
     return '$fieldClass(${args.join(', ')})';
   }
 
+  static String? _inferredFieldCodeFor(
+    FieldElement field,
+    List<ClassElement> discoveryQueue,
+  ) {
+    final fieldName = field.name;
+    if (fieldName == null) return null;
+
+    final fieldType = field.type;
+    final typeName = _displayType(fieldType);
+    if (typeName == null) return null;
+
+    if (fieldType is InterfaceType &&
+        fieldType.element.displayName == 'List' &&
+        fieldType.typeArguments.isNotEmpty) {
+      final itemType = fieldType.typeArguments.first;
+      final itemTypeName = _displayType(itemType);
+      if (itemTypeName == null) return null;
+
+      String inferredFieldCode;
+      if (_arrayPrimitiveFields.containsKey(itemTypeName)) {
+        final fieldClass = _arrayPrimitiveFields[itemTypeName]!;
+        inferredFieldCode =
+            "$fieldClass(name: 'item', title: '${_titleCase(itemTypeName)}')";
+      } else if (_isImageReferenceType(itemTypeName)) {
+        inferredFieldCode = "CmsImageField(name: 'item', title: 'Item')";
+      } else {
+        final itemClassElement = _classElementFromType(itemType);
+        if (itemClassElement != null) {
+          discoveryQueue.add(itemClassElement);
+        }
+        final fieldsListName =
+            '${itemTypeName[0].toLowerCase()}${itemTypeName.substring(1)}Fields';
+        inferredFieldCode =
+            '''CmsObjectField(
+    name: 'item',
+    title: '${_titleCase(itemTypeName)}',
+    option: CmsObjectOption(children: [ColumnFields(children: $fieldsListName)]),
+  )''';
+      }
+
+      return '''CmsArrayField<$itemTypeName>(
+    name: '$fieldName',
+    title: '${_titleCase(fieldName)}',
+    innerField: $inferredFieldCode,
+  )''';
+    }
+
+    final primitiveFieldClass = _arrayPrimitiveFields[typeName];
+    if (primitiveFieldClass != null) {
+      return "$primitiveFieldClass(name: '$fieldName', title: '${_titleCase(fieldName)}')";
+    }
+
+    if (typeName == 'Uri') {
+      return "CmsUrlField(name: '$fieldName', title: '${_titleCase(fieldName)}')";
+    }
+
+    if (_isImageReferenceType(typeName)) {
+      return "CmsImageField(name: '$fieldName', title: '${_titleCase(fieldName)}')";
+    }
+
+    if (typeName == 'Object' || typeName == 'dynamic') {
+      return null;
+    }
+
+    final typeElement = _classElementFromType(fieldType);
+    if (typeElement == null) return null;
+
+    discoveryQueue.add(typeElement);
+    final fieldsListName =
+        '${typeName[0].toLowerCase()}${typeName.substring(1)}Fields';
+    return '''CmsObjectField(
+    name: '$fieldName',
+    title: '${_titleCase(fieldName)}',
+    option: CmsObjectOption(children: [ColumnFields(children: $fieldsListName)]),
+  )''';
+  }
+
+  static bool _isImageReferenceType(String typeName) {
+    return typeName == 'ImageReference' || typeName == 'ImageRef';
+  }
+
   static final _fieldConfigs = {
     'CmsTextFieldConfig':
         (
@@ -958,6 +1039,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       // Generate field configurations and discover new nested classes.
       final (fieldConfigs, newlyDiscovered) = await _generateFieldList(
         currentElement,
+        inferUnannotatedFields: className != topLevelClassName,
       );
 
       // Add newly discovered classes to the queue if they haven't been processed.
@@ -1018,7 +1100,10 @@ final $typeSpecName = DocumentTypeSpec<$topLevelClassName>(
   /// Generates the list of CmsField strings for a given [ClassElement] and
   /// discovers nested classes that also need to be processed.
   Future<(List<String> fieldConfigs, List<ClassElement> discoveredClasses)>
-  _generateFieldList(ClassElement element) async {
+  _generateFieldList(
+    ClassElement element, {
+    bool inferUnannotatedFields = false,
+  }) async {
     final fields = element.fields.where(
       (f) => !f.isStatic && f.name != 'defaultValue',
     );
@@ -1076,6 +1161,11 @@ final $typeSpecName = DocumentTypeSpec<$topLevelClassName>(
 
       if (configCode != null) {
         fieldConfigs.add(configCode);
+      } else if (inferUnannotatedFields) {
+        final inferredCode = _inferredFieldCodeFor(field, discoveredClasses);
+        if (inferredCode != null) {
+          fieldConfigs.add(inferredCode);
+        }
       }
     }
 

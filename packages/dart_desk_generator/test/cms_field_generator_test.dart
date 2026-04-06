@@ -249,6 +249,52 @@ class ArrayConfig {
         ),
       );
     });
+
+    test('infers fields for unannotated object array item classes', () async {
+      await _testCmsBuilder(
+        _fixture('''
+class ImageReference {
+  final String url;
+
+  const ImageReference({required this.url});
+}
+
+class ItemConfig {
+  final String title;
+  final ImageReference? image;
+
+  const ItemConfig({required this.title, this.image});
+
+  static ItemConfig? defaultValue = const ItemConfig(title: '');
+}
+
+@CmsConfig(title: 'Array Config', description: 'Array config')
+class ArrayConfig {
+  @CmsArrayFieldConfig<ItemConfig>()
+  final List<ItemConfig> items;
+
+  final String unannotatedTopLevelField;
+
+  const ArrayConfig({
+    required this.items,
+    required this.unannotatedTopLevelField,
+  });
+
+  static ArrayConfig? defaultValue = const ArrayConfig(
+    items: [],
+    unannotatedTopLevelField: '',
+  );
+}
+'''),
+        allOf(
+          contains('ColumnFields(children: itemConfigFields)'),
+          contains('final itemConfigFields = ['),
+          contains("CmsStringField(name: 'title', title: 'Title')"),
+          contains("CmsImageField(name: 'image', title: 'Image')"),
+          isNot(contains("name: 'unannotatedTopLevelField'")),
+        ),
+      );
+    });
   });
 }
 

@@ -38,6 +38,18 @@ final arrayTestConfigFields = [
   ),
 ];
 
+/// Generated CmsField list for HeroConfig
+final heroConfigFields = [
+  CmsStringField(name: 'title', title: 'Title'),
+  CmsImageField(name: 'heroImage', title: 'Hero Image'),
+];
+
+/// Generated CmsField list for SampleConfig
+final sampleConfigFields = [
+  CmsStringField(name: 'name', title: 'Name'),
+  CmsImageField(name: 'image', title: 'Image'),
+];
+
 /// Generated document type spec for ArrayTestConfig.
 /// Call .build(builder: ...) in your cms_app to produce a DocumentType.
 final arrayTestConfigTypeSpec = DocumentTypeSpec<ArrayTestConfig>(
