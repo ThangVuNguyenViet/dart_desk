@@ -63,6 +63,209 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
     return null;
   }
 
+  static const _arrayPrimitiveFields = {
+    'String': 'CmsStringField',
+    'num': 'CmsNumberField',
+    'int': 'CmsNumberField',
+    'double': 'CmsNumberField',
+    'bool': 'CmsBooleanField',
+    'DateTime': 'CmsDateTimeField',
+  };
+
+  static const _optionalOptionTypes = {
+    'CmsTextFieldConfig': 'CmsTextOption',
+    'CmsStringFieldConfig': 'CmsStringOption',
+    'CmsNumberFieldConfig': 'CmsNumberOption',
+    'CmsDateFieldConfig': 'CmsDateOption',
+    'CmsDateTimeFieldConfig': 'CmsDateTimeOption',
+    'CmsUrlFieldConfig': 'CmsUrlOption',
+    'CmsFileFieldConfig': 'CmsFileOption',
+    'CmsColorFieldConfig': 'CmsColorOption',
+  };
+
+  static String? _displayType(DartType? type) {
+    if (type == null) return null;
+    final displayType = type.getDisplayString();
+    return displayType.endsWith('?')
+        ? displayType.substring(0, displayType.length - 1)
+        : displayType;
+  }
+
+  static DartType? _arrayItemDartType(FieldElement field) {
+    final fieldType = field.type;
+    if (fieldType is InterfaceType && fieldType.typeArguments.isNotEmpty) {
+      return fieldType.typeArguments.first;
+    }
+    return null;
+  }
+
+  static ClassElement? _classElementFromType(DartType? type) {
+    if (type is InterfaceType && type.element is ClassElement) {
+      return type.element as ClassElement;
+    }
+    return null;
+  }
+
+  static String _singleQuoted(String value) {
+    return "'${value.replaceAll('\\', r'\\').replaceAll("'", r"\'")}'";
+  }
+
+  static List<String> _splitTopLevelArguments(String source) {
+    final start = source.indexOf('(');
+    final end = source.lastIndexOf(')');
+    if (start < 0 || end <= start) return const [];
+
+    final argsSource = source.substring(start + 1, end);
+    final args = <String>[];
+    var depth = 0;
+    var inSingleQuote = false;
+    var inDoubleQuote = false;
+    var escaped = false;
+    var segmentStart = 0;
+
+    for (var i = 0; i < argsSource.length; i++) {
+      final char = argsSource[i];
+
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+
+      if (char == '\\') {
+        escaped = true;
+        continue;
+      }
+
+      if (!inDoubleQuote && char == "'") {
+        inSingleQuote = !inSingleQuote;
+        continue;
+      }
+
+      if (!inSingleQuote && char == '"') {
+        inDoubleQuote = !inDoubleQuote;
+        continue;
+      }
+
+      if (inSingleQuote || inDoubleQuote) continue;
+
+      if (char == '(' || char == '[' || char == '{') {
+        depth++;
+      } else if (char == ')' || char == ']' || char == '}') {
+        depth--;
+      } else if (char == ',' && depth == 0) {
+        final arg = argsSource.substring(segmentStart, i).trim();
+        if (arg.isNotEmpty) args.add(arg);
+        segmentStart = i + 1;
+      }
+    }
+
+    final lastArg = argsSource.substring(segmentStart).trim();
+    if (lastArg.isNotEmpty) args.add(lastArg);
+    return args;
+  }
+
+  static String? _namedArgumentSource(String source, String name) {
+    for (final arg in _splitTopLevelArguments(source)) {
+      final prefix = '$name:';
+      if (arg.startsWith(prefix)) {
+        return arg.substring(prefix.length).trim();
+      }
+    }
+    return null;
+  }
+
+  static String? _fieldConfigKeyForDisplayName(String? displayName) {
+    if (displayName == null) return null;
+    if (_fieldConfigs.containsKey(displayName)) return displayName;
+
+    final genericStart = displayName.indexOf('<');
+    if (genericStart == -1) return null;
+
+    final rawDisplayName = displayName.substring(0, genericStart);
+    return _fieldConfigs.containsKey(rawDisplayName) ? rawDisplayName : null;
+  }
+
+  static String? _fieldConfigKeyFor(DartType annotationType) {
+    return _fieldConfigKeyForDisplayName(
+      annotationType.element?.displayName ?? _displayType(annotationType),
+    );
+  }
+
+  static String? _fieldConfigKeyForAnnotation(ElementAnnotation annotation) {
+    final element = annotation.element;
+    if (element is ConstructorElement) {
+      return _fieldConfigKeyForDisplayName(
+        element.enclosingElement.displayName,
+      );
+    }
+    return _fieldConfigKeyForDisplayName(element?.displayName);
+  }
+
+  static String _innerConfigTypeFromSource(String source) {
+    final parenIndex = source.indexOf('(');
+    final expression = parenIndex == -1
+        ? source
+        : source.substring(0, parenIndex);
+    return expression
+        .trim()
+        .replaceFirst('const ', '')
+        .replaceFirst('new ', '');
+  }
+
+  static String _explicitInnerFieldCode(
+    DartObject? innerConfig,
+    String source,
+  ) {
+    final configType =
+        innerConfig?.type?.element?.displayName ??
+        _innerConfigTypeFromSource(source);
+    if (!configType.endsWith('FieldConfig')) {
+      throw InvalidGenerationSourceError(
+        'CmsArrayFieldConfig.inner must be a CmsFieldConfig.',
+      );
+    }
+
+    final fieldClass = configType.replaceFirst('FieldConfig', 'Field');
+    final name =
+        _namedArgumentSource(source, 'name') ??
+        _singleQuoted(innerConfig?.read('name')?.toStringValue() ?? 'item');
+    final title =
+        _namedArgumentSource(source, 'title') ??
+        _singleQuoted(innerConfig?.read('title')?.toStringValue() ?? 'Item');
+    final description =
+        _namedArgumentSource(source, 'description') ??
+        switch (innerConfig?.read('description')?.toStringValue()) {
+          final value? => _singleQuoted(value),
+          null => null,
+        };
+    final optionalSource = _namedArgumentSource(source, 'optional');
+    final optional =
+        optionalSource == 'true' ||
+        (innerConfig?.getFieldOrNull('optional')?.toBoolValue() ?? false);
+
+    var optionSource = _namedArgumentSource(source, 'option');
+    final optionType = _optionalOptionTypes[configType];
+    if (optional && optionType != null) {
+      if (optionSource == null) {
+        optionSource = '$optionType(optional: true)';
+      } else if (!optionSource.contains('optional')) {
+        optionSource = optionSource.replaceFirst(
+          '$optionType(',
+          '$optionType(optional: true, ',
+        );
+      }
+    }
+
+    final args = [
+      'name: $name',
+      'title: $title',
+      if (description != null) 'description: $description',
+      if (optionSource != null) 'option: $optionSource',
+    ];
+
+    return '$fieldClass(${args.join(', ')})';
+  }
+
   static final _fieldConfigs = {
     'CmsTextFieldConfig':
         (
@@ -412,7 +615,8 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
             );
           }
 
-          // Extract T from CmsArrayFieldConfig<T>
+          // Extract T from CmsArrayFieldConfig<T>. If the annotation uses
+          // inference (common when `inner` is provided), fall back to List<T>.
           final configType = config?.type;
           String? genericType;
           ClassElement? genericClassElement;
@@ -420,10 +624,15 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
           if (configType is InterfaceType &&
               configType.typeArguments.isNotEmpty) {
             final T = configType.typeArguments[0];
-            genericType = T.getDisplayString(withNullability: false);
-            if (T is InterfaceType && T.element is ClassElement) {
-              genericClassElement = T.element as ClassElement;
-            }
+            genericType = _displayType(T);
+            genericClassElement = _classElementFromType(T);
+          }
+
+          if (genericType == null || genericType == 'dynamic') {
+            final itemType = _arrayItemDartType(field);
+            genericType = _displayType(itemType) ?? genericType;
+            genericClassElement =
+                _classElementFromType(itemType) ?? genericClassElement;
           }
 
           if (genericType == null) {
@@ -437,23 +646,14 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
           String inferredFieldCode;
 
           if (innerSource != null) {
-            // Use explicit inner config
-            inferredFieldCode = innerSource
-                .replaceAll('FieldConfig', 'Field')
-                .replaceFirst('(', "(name: 'item', title: 'Item', ");
+            inferredFieldCode = _explicitInnerFieldCode(
+              config?.getFieldOrNull('inner'),
+              innerSource,
+            );
           } else {
             // Infer based on genericType
-            const primitiveTypes = {
-              'String': 'CmsStringField',
-              'num': 'CmsNumberField',
-              'int': 'CmsNumberField',
-              'double': 'CmsNumberField',
-              'bool': 'CmsBooleanField',
-              'DateTime': 'CmsDateTimeField',
-            };
-
-            if (primitiveTypes.containsKey(genericType)) {
-              final fieldClass = primitiveTypes[genericType]!;
+            if (_arrayPrimitiveFields.containsKey(genericType)) {
+              final fieldClass = _arrayPrimitiveFields[genericType]!;
               inferredFieldCode =
                   "$fieldClass(name: 'item', title: '${_titleCase(genericType)}')";
             } else {
@@ -621,7 +821,10 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
           final genericTypeMatch = RegExp(
             r'CmsDropdownFieldConfig<(.+?)>',
           ).firstMatch(configType);
-          final genericType = genericTypeMatch?.group(1) ?? 'dynamic';
+          final genericType =
+              genericTypeMatch?.group(1) ??
+              _displayType(field.type) ??
+              'dynamic';
 
           return '''CmsDropdownField<$genericType>(
     name: '$fieldName',
@@ -650,7 +853,10 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
           final genericTypeMatch = RegExp(
             r'CmsMultiDropdownFieldConfig<(.+?)>',
           ).firstMatch(configType);
-          final genericType = genericTypeMatch?.group(1) ?? 'dynamic';
+          final genericType =
+              genericTypeMatch?.group(1) ??
+              _displayType(_arrayItemDartType(field)) ??
+              'dynamic';
 
           return '''CmsMultiDropdownField<$genericType>(
     name: '$fieldName',
@@ -824,29 +1030,40 @@ final $typeSpecName = DocumentTypeSpec<$topLevelClassName>(
       final annotations = field.metadata.annotations;
       for (final annotation in annotations) {
         final annotationValue = annotation.computeConstantValue();
-        if (annotationValue == null) continue;
+        final annotationType = annotationValue?.type;
 
-        final annotationType = annotationValue.type;
-        if (annotationType == null) continue;
+        final displayName = annotationType != null
+            ? _fieldConfigKeyFor(annotationType)
+            : _fieldConfigKeyForAnnotation(annotation);
+        final sourceDisplayName = _fieldConfigKeyForDisplayName(
+          _innerConfigTypeFromSource(
+            annotation.toSource().replaceFirst('@', ''),
+          ),
+        );
+        final fieldConfigName = displayName ?? sourceDisplayName;
 
-        final displayName = annotationType.element?.displayName;
-
-        if (displayName == null || !_fieldConfigs.containsKey(displayName)) {
+        if (fieldConfigName == null) {
           continue;
         }
 
-        final optionSource = await _getOptionSourceFromElementAnnotation(
-          field,
-          annotation,
-          displayName,
-        );
-        final innerSource = await _getInnerSourceFromElementAnnotation(
-          field,
-          annotation,
-          displayName,
-        );
+        String? optionSource;
+        String? innerSource;
+        if (annotationType != null) {
+          optionSource = await _getOptionSourceFromElementAnnotation(
+            field,
+            annotation,
+            fieldConfigName,
+          );
+          innerSource = await _getInnerSourceFromElementAnnotation(
+            field,
+            annotation,
+            fieldConfigName,
+          );
+        }
+        optionSource ??= _namedArgumentSource(annotation.toSource(), 'option');
+        innerSource ??= _namedArgumentSource(annotation.toSource(), 'inner');
 
-        configCode = _fieldConfigs[displayName]?.call(
+        configCode = _fieldConfigs[fieldConfigName]?.call(
           field,
           annotationValue,
           optionSource: optionSource,
