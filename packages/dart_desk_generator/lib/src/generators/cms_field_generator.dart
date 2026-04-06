@@ -1096,6 +1096,9 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
     // List to hold the generated source code for each class's field list.
     final generatedFieldLists = <String>[];
 
+    // Always infer unannotated fields. The distinction is that:
+    // - Top-level @CmsConfig class: included in DocumentTypeSpec
+    // - Discovered nested classes (from arrays/references): only provide fields list, no spec
     while (discoveryQueue.isNotEmpty) {
       final currentElement = discoveryQueue.removeFirst();
       final className = currentElement.name;
@@ -1109,6 +1112,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       }
 
       // Generate field configurations and discover new nested classes.
+      // Always infer unannotated fields for both top-level and nested classes.
       final (fieldConfigs, newlyDiscovered) = await _generateFieldList(
         currentElement,
         inferUnannotatedFields: true,

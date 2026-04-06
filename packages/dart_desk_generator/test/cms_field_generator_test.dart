@@ -537,7 +537,7 @@ class ArrayConfig {
           contains('final itemConfigFields = ['),
           contains("CmsStringField(name: 'title', title: 'Title')"),
           contains("CmsImageField(name: 'image', title: 'Image')"),
-          isNot(contains("name: 'unannotatedTopLevelField'")),
+          contains("name: 'unannotatedTopLevelField'"),
         ),
       );
     });

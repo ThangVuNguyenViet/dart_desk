@@ -7,8 +7,29 @@ part of 'array_test_config.dart';
 // CmsFieldGenerator
 // **************************************************************************
 
+/// Generated CmsField list for HeroConfig
+final heroConfigFields = [
+  CmsStringField(name: 'title', title: 'Title'),
+  CmsImageField(name: 'heroImage', title: 'Hero Image'),
+];
+
+/// Generated document type spec for HeroConfig.
+/// Call .build(builder: ...) in your cms_app to produce a DocumentType.
+final heroConfigTypeSpec = DocumentTypeSpec<HeroConfig>(
+  name: 'heroConfig',
+  title: 'Hero Configuration',
+  description: 'Configuration for the hero section',
+  fields: heroConfigFields,
+  defaultValue: HeroConfig.defaultValue,
+);
+
 /// Generated CmsField list for ArrayTestConfig
 final arrayTestConfigFields = [
+  CmsArrayField<String>(
+    name: 'primitiveStrings',
+    title: 'Primitive Strings',
+    innerField: CmsStringField(name: 'item', title: 'String'),
+  ),
   CmsArrayField<HeroConfig>(
     name: 'cmsObjectList',
     title: 'Cms Object List',
