@@ -64,7 +64,7 @@ class ArrayFieldGenerator implements FieldCodeGenerator {
 
     if (innerSource != null) {
       inferredFieldCode = _explicitInnerFieldCode(
-        config?.getFieldOrNull('inner'),
+        config?.getField('inner'),
         innerSource,
       );
     } else {
