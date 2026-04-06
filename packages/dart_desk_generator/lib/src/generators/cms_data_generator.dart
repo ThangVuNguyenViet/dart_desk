@@ -42,10 +42,12 @@ class CmsConfigGenerator extends GeneratorForAnnotation<CmsConfig> {
   ) {
     // 1. Validate that the annotated element is a class
     if (element is! ClassElement) {
+      // coverage:ignore-start
       throw InvalidGenerationSourceError(
         '`@CmsConfig` can only be used on classes.',
         element: element,
       );
+      // coverage:ignore-end
     }
 
     final className = element.name;

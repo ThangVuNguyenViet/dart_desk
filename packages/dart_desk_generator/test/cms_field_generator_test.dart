@@ -76,10 +76,10 @@ class AllFieldsConfig {
   @CmsObjectFieldConfig()
   final ChildConfig objectField;
 
-  @CmsBlockFieldConfig()
+  @CmsBlockFieldConfig(option: CmsBlockOption())
   final Object blockField;
 
-  @CmsGeopointFieldConfig()
+  @CmsGeopointFieldConfig(option: CmsGeopointOption())
   final Object geopointField;
 
   const AllFieldsConfig({
@@ -140,12 +140,222 @@ class AllFieldsConfig {
             contains('CmsObjectField('),
             contains('ColumnFields(children: childConfigFields)'),
             contains('CmsBlockField('),
+            contains('option: CmsBlockOption()'),
             contains('CmsGeopointField('),
+            contains('option: CmsGeopointOption()'),
             contains('final childConfigFields = ['),
           ]),
         );
       },
     );
+
+    test('preserves optional flags when explicit options omit them', () async {
+      await _testCmsBuilder(
+        _fixture('''
+@CmsConfig(title: 'Optional Fields', description: 'Optional fields config')
+class OptionalFieldsConfig {
+  @CmsTextFieldConfig(optional: true, option: CmsTextOption(rows: 3))
+  final String textField;
+
+  @CmsStringFieldConfig(optional: true, option: CmsStringOption(hidden: true))
+  final String stringField;
+
+  @CmsNumberFieldConfig(optional: true, option: CmsNumberOption(min: 1))
+  final num numberField;
+
+  @CmsDateFieldConfig(optional: true, option: CmsDateOption(hidden: true))
+  final DateTime dateField;
+
+  @CmsDateTimeFieldConfig(
+    optional: true,
+    option: CmsDateTimeOption(hidden: true),
+  )
+  final DateTime dateTimeField;
+
+  @CmsUrlFieldConfig(optional: true, option: CmsUrlOption(hidden: true))
+  final Uri urlField;
+
+  @CmsFileFieldConfig(optional: true, option: CmsFileOption(hidden: true))
+  final String fileField;
+
+  @CmsColorFieldConfig(optional: true, option: CmsColorOption(showAlpha: true))
+  final String colorField;
+
+  const OptionalFieldsConfig({
+    required this.textField,
+    required this.stringField,
+    required this.numberField,
+    required this.dateField,
+    required this.dateTimeField,
+    required this.urlField,
+    required this.fileField,
+    required this.colorField,
+  });
+
+  static OptionalFieldsConfig? defaultValue;
+}
+'''),
+        allOf([
+          contains('option: CmsTextOption(optional: true, rows: 3)'),
+          contains('option: CmsStringOption(optional: true, hidden: true)'),
+          contains('option: CmsNumberOption(optional: true, min: 1)'),
+          contains('option: CmsDateOption(optional: true, hidden: true)'),
+          contains('option: CmsDateTimeOption(optional: true, hidden: true)'),
+          contains('option: CmsUrlOption(optional: true, hidden: true)'),
+          contains('option: CmsFileOption(optional: true, hidden: true)'),
+          contains('option: CmsColorOption(optional: true, showAlpha: true)'),
+        ]),
+      );
+    });
+
+    test(
+      'generates legacy reference style field configs by display name',
+      () async {
+        await _testCmsBuilder(
+          _fixture('''
+class CmsSlugFieldConfig {
+  const CmsSlugFieldConfig({this.option});
+
+  final Object? option;
+}
+
+class CmsReferenceFieldConfig {
+  const CmsReferenceFieldConfig({this.option});
+
+  final Object? option;
+}
+
+class CmsCrossDatasetReferenceFieldConfig {
+  const CmsCrossDatasetReferenceFieldConfig({this.option});
+
+  final Object? option;
+}
+
+class CmsSlugOption {
+  const CmsSlugOption({this.hidden = false});
+
+  final bool hidden;
+}
+
+class CmsReferenceOption {
+  const CmsReferenceOption({this.to = ''});
+
+  final String to;
+}
+
+class CmsCrossDatasetReferenceOption {
+  const CmsCrossDatasetReferenceOption({this.dataset = ''});
+
+  final String dataset;
+}
+
+@CmsConfig(title: 'Legacy', description: 'Legacy field config names')
+class LegacyFieldsConfig {
+  @CmsSlugFieldConfig(option: CmsSlugOption(hidden: true))
+  final String slugField;
+
+  @CmsReferenceFieldConfig(option: CmsReferenceOption(to: 'post'))
+  final String referenceField;
+
+  @CmsCrossDatasetReferenceFieldConfig(
+    option: CmsCrossDatasetReferenceOption(dataset: 'production'),
+  )
+  final String crossDatasetReferenceField;
+
+  const LegacyFieldsConfig({
+    required this.slugField,
+    required this.referenceField,
+    required this.crossDatasetReferenceField,
+  });
+
+  static LegacyFieldsConfig? defaultValue;
+}
+'''),
+          allOf([
+            contains('CmsSlugField('),
+            contains('option: CmsSlugOption(hidden: true)'),
+            contains('CmsReferenceField('),
+            contains("option: CmsReferenceOption(to: 'post')"),
+            contains('CmsCrossDatasetReferenceField('),
+            contains(
+              "option: CmsCrossDatasetReferenceOption(dataset: 'production')",
+            ),
+          ]),
+        );
+      },
+    );
+
+    test('infers dropdown generic types from the Dart field types', () async {
+      await _testCmsBuilder(
+        _fixture('''
+@CmsConfig(title: 'Dropdowns', description: 'Dropdown config')
+class DropdownsConfig {
+  @CmsDropdownFieldConfig()
+  final String dropdownField;
+
+  @CmsMultiDropdownFieldConfig()
+  final List<int> multiDropdownField;
+
+  const DropdownsConfig({
+    required this.dropdownField,
+    required this.multiDropdownField,
+  });
+
+  static DropdownsConfig? defaultValue;
+}
+'''),
+        allOf([
+          contains('CmsDropdownField<String>('),
+          contains('CmsMultiDropdownField<int>('),
+        ]),
+      );
+    });
+
+    test('generates document id and nested CmsConfig data wrappers', () async {
+      await _testCmsBuilder(
+        _fixture('''
+@CmsConfig(title: 'Nested', description: 'Nested config')
+class NestedConfig {
+  @CmsStringFieldConfig()
+  final String title;
+
+  const NestedConfig({required this.title});
+
+  static NestedConfig? defaultValue;
+}
+
+@CmsConfig(title: 'Document', description: 'Document config', id: 'custom-id')
+class DocumentConfig {
+  @CmsObjectFieldConfig()
+  final NestedConfig nested;
+
+  final NestedConfig? nullableNested;
+
+  const DocumentConfig({required this.nested, this.nullableNested});
+
+  static DocumentConfig? defaultValue;
+}
+'''),
+        allOf(
+          contains("name: 'custom-id'"),
+          contains('final CmsData<NestedConfigCmsConfig?> nullableNested;'),
+        ),
+      );
+    });
+
+    test('reports an error when CmsConfig is used on a non-class', () async {
+      await expectLater(
+        _testCmsBuilder('''
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+
+part 'input.cms.g.dart';
+
+@CmsConfig(title: 'Bad', description: 'Bad config')
+const badConfig = 1;
+''', anything),
+        throwsA(anything),
+      );
+    });
   });
 
   group('CmsFieldGenerator arrays', () {
@@ -194,6 +404,42 @@ class ArrayConfig {
             contains("innerField: CmsStringField("),
             contains("option: CmsStringOption(optional: true)"),
             isNot(contains("optional: true,\n      option:")),
+          ),
+        );
+      },
+    );
+
+    test(
+      'preserves explicit inner description and augments explicit inner options',
+      () async {
+        await _testCmsBuilder(
+          _fixture('''
+@CmsConfig(title: 'Array Config', description: 'Array config')
+class ArrayConfig {
+  @CmsArrayFieldConfig<String>(
+    inner: CmsStringFieldConfig(
+      name: 'tag',
+      title: 'Tag',
+      description: 'Visible tag',
+      optional: true,
+      option: CmsStringOption(hidden: true),
+    ),
+    option: CmsArrayOption(horizontal: true),
+  )
+  final List<String> tags;
+
+  const ArrayConfig({required this.tags});
+
+  static ArrayConfig? defaultValue = const ArrayConfig(tags: []);
+}
+'''),
+          allOf(
+            contains("innerField: CmsStringField("),
+            contains("name: 'tag'"),
+            contains("title: 'Tag'"),
+            contains("description: 'Visible tag'"),
+            contains('option: CmsStringOption(optional: true, hidden: true)'),
+            contains('option: CmsArrayOption(horizontal: true)'),
           ),
         );
       },

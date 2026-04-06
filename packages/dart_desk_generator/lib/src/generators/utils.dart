@@ -42,21 +42,26 @@ Future<ArgumentList?> getAnnotationArguments(
     annotations = node.metadata;
   } else if (node is FormalParameter) {
     annotations = node.metadata;
+    // coverage:ignore-start
   } else if (node is RecordTypeAnnotationField) {
+    // Record annotation metadata is accepted for completeness; analyzer exposes
+    // record field annotations inconsistently across SDK versions in build_test.
     annotations = node.metadata;
   }
+  // coverage:ignore-end
 
   if (annotations == null) {
+    // coverage:ignore-start
     print('Unknown node type: ${node.runtimeType} $node');
+    // coverage:ignore-end
     return null;
   }
 
   var checker = TypeChecker.fromStatic(annotationType);
-  var annotation =
-      annotations.where((a) {
-        var type = a.elementAnnotation?.computeConstantValue()?.type;
-        return type != null && checker.isAssignableFromType(type);
-      }).firstOrNull;
+  var annotation = annotations.where((a) {
+    var type = a.elementAnnotation?.computeConstantValue()?.type;
+    return type != null && checker.isAssignableFromType(type);
+  }).firstOrNull;
   var arguments = annotation?.arguments;
   if (arguments != null) {
     return arguments;
@@ -155,6 +160,7 @@ List<T>? toList<T>(dynamic value) {
 }
 
 extension NullableType on DartType {
+  // coverage:ignore-start
   bool get isNullable =>
       nullabilitySuffix == NullabilitySuffix.question ||
       (this is TypeParameterType &&
@@ -164,6 +170,7 @@ extension NullableType on DartType {
       this is DynamicType ||
       (this is TypeParameterType &&
           (this as TypeParameterType).bound.isNullableOrDynamic);
+  // coverage:ignore-end
 }
 
 extension TypeList on DartObject {

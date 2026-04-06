@@ -82,5 +82,5 @@ class CmsArrayFieldConfig<T> extends CmsFieldConfig {
   final CmsFieldConfig? inner;
 
   @override
-  List<Type> get supportedFieldTypes => [List];
+  List<Type> get supportedFieldTypes => [List<T>];
 }

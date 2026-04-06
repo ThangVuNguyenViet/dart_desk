@@ -124,7 +124,7 @@ class CmsMultiDropdownSimpleOption<T> extends CmsMultiDropdownOption<T> {
 }
 
 /// A multi-select dropdown field that stores List<T> values.
-class CmsMultiDropdownField<T> extends CmsField {
+class CmsMultiDropdownField<T> extends CmsFieldConfig {
   const CmsMultiDropdownField({
     required super.name,
     required super.title,
@@ -135,4 +135,7 @@ class CmsMultiDropdownField<T> extends CmsField {
   @override
   CmsMultiDropdownOption<T>? get option =>
       super.option as CmsMultiDropdownOption<T>?;
+
+  @override
+  List<Type> get supportedFieldTypes => [List<T>];
 }
