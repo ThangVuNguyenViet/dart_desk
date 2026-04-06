@@ -12,10 +12,16 @@ part 'kiosk_config.mapper.dart';
 
 @CmsConfig(
   title: 'Kiosk Screen',
-  description: 'Desktop 3-panel kiosk layout with product grid and order sidebar',
+  description:
+      'Desktop 3-panel kiosk layout with product grid and order sidebar',
 )
-@MappableClass(ignoreNull: false, discriminatorValue: 'kioskConfig', includeCustomMappers: [KioskColorMapper(), ImageReferenceMapper()])
-class KioskConfig extends CmsContent with KioskConfigMappable, Serializable<KioskConfig> {
+@MappableClass(
+  ignoreNull: false,
+  discriminatorValue: 'kioskConfig',
+  includeCustomMappers: [KioskColorMapper(), ImageReferenceMapper()],
+)
+class KioskConfig extends CmsContent
+    with KioskConfigMappable, Serializable<KioskConfig> {
   @CmsStringFieldConfig(
     description: 'Restaurant name shown in the nav drawer',
     option: CmsStringOption(),
@@ -60,7 +66,12 @@ class KioskConfig extends CmsContent with KioskConfigMappable, Serializable<Kios
     bannerSubtitle:
         'Curated flavors to welcome the dawn of a new season. Experience artisanal culinary craftsmanship.',
     bannerImage: null,
-    products: ['truffle_risotto', 'heritage_scallops', 'cherry_duck', 'valrhona_fondant'],
+    products: [
+      'truffle_risotto',
+      'heritage_scallops',
+      'cherry_duck',
+      'valrhona_fondant',
+    ],
   );
 }
 
@@ -86,8 +97,12 @@ class KioskProductsDropdownOption extends CmsMultiDropdownOption<String> {
   const KioskProductsDropdownOption({super.hidden});
 
   @override
-  List<String>? get defaultValues =>
-      ['truffle_risotto', 'heritage_scallops', 'cherry_duck', 'valrhona_fondant'];
+  List<String>? get defaultValues => [
+    'truffle_risotto',
+    'heritage_scallops',
+    'cherry_duck',
+    'valrhona_fondant',
+  ];
 
   @override
   int? get maxSelected => 4;
@@ -99,7 +114,10 @@ class KioskProductsDropdownOption extends CmsMultiDropdownOption<String> {
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) =>
       Future.value([
         for (final p in kioskProducts)
-          DropdownOption(value: p.key, label: '${p.name} (\$${p.price.toStringAsFixed(2)})'),
+          DropdownOption(
+            value: p.key,
+            label: '${p.name} (\$${p.price.toStringAsFixed(2)})',
+          ),
       ]);
 
   @override

@@ -9,14 +9,9 @@ part of 'array_test_config.dart';
 
 /// Generated CmsField list for ArrayTestConfig
 final arrayTestConfigFields = [
-  CmsArrayField<String>(
-    name: 'tags',
-    title: 'Tags',
-    innerField: CmsStringField(name: 'item', title: 'String'),
-  ),
   CmsArrayField<HeroConfig>(
-    name: 'heroes',
-    title: 'Heroes',
+    name: 'cmsObjectList',
+    title: 'Cms Object List',
     innerField: CmsObjectField(
       name: 'item',
       title: 'Hero Config',
@@ -25,9 +20,20 @@ final arrayTestConfigFields = [
       ),
     ),
   ),
-  CmsArrayField<String>(
-    name: 'gallery',
-    title: 'Gallery',
+  CmsArrayField<SampleConfig>(
+    name: 'unannotatedObjectList',
+    title: 'Unannotated Object List',
+    innerField: CmsObjectField(
+      name: 'item',
+      title: 'Sample Config',
+      option: CmsObjectOption(
+        children: [ColumnFields(children: sampleConfigFields)],
+      ),
+    ),
+  ),
+  CmsArrayField<dynamic>(
+    name: 'stringListWithImageInner',
+    title: 'String List With Image Inner',
     innerField: CmsImageField(name: 'item', title: 'Item'),
   ),
 ];
@@ -36,8 +42,8 @@ final arrayTestConfigFields = [
 /// Call .build(builder: ...) in your cms_app to produce a DocumentType.
 final arrayTestConfigTypeSpec = DocumentTypeSpec<ArrayTestConfig>(
   name: 'arrayTestConfig',
-  title: 'Array Test Config',
-  description: 'Testing unified array field inputs with objects and primitives',
+  title: 'Array Test Configuration',
+  description: 'Configuration for testing array fields in CMS',
   fields: arrayTestConfigFields,
   defaultValue: ArrayTestConfig.defaultValue,
 );
@@ -46,16 +52,27 @@ final arrayTestConfigTypeSpec = DocumentTypeSpec<ArrayTestConfig>(
 // CmsConfigGenerator
 // **************************************************************************
 
+class HeroConfigCmsConfig {
+  HeroConfigCmsConfig({required this.title, required this.heroImage});
+
+  final CmsData<String> title;
+
+  final CmsData<ImageReference?> heroImage;
+}
+
 class ArrayTestConfigCmsConfig {
   ArrayTestConfigCmsConfig({
-    required this.tags,
-    required this.heroes,
-    required this.gallery,
+    required this.primitiveStrings,
+    required this.cmsObjectList,
+    required this.unannotatedObjectList,
+    required this.stringListWithImageInner,
   });
 
-  final CmsData<List<String>> tags;
+  final CmsData<List<String>> primitiveStrings;
 
-  final CmsData<List<HeroConfig>> heroes;
+  final CmsData<List<HeroConfig>> cmsObjectList;
 
-  final CmsData<List<String>> gallery;
+  final CmsData<List<SampleConfig>> unannotatedObjectList;
+
+  final CmsData<List<String>> stringListWithImageInner;
 }
