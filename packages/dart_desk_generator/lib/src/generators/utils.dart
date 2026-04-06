@@ -194,6 +194,16 @@ extension ObjectReader on DartObject {
   }
 }
 
+extension SafeFieldAccess on DartObject {
+  DartObject? getFieldOrNull(String fieldName) {
+    try {
+      return getField(fieldName);
+    } catch (e) {
+      return null;
+    }
+  }
+}
+
 Map<String, List<String>> validatedBuildExtensionsFrom(
   Map? optionsMap,
   Map<String, List<String>> defaultExtensions,

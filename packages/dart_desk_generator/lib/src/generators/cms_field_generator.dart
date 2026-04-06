@@ -8,24 +8,75 @@ import 'package:build/build.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation_generator.dart';
 import 'package:source_gen/source_gen.dart';
 
+import 'field_code_registry.dart'
+    hide
+        BlockFieldGenerator,
+        CrossDatasetReferenceFieldGenerator,
+        GeopointFieldGenerator;
+import 'field_code_registry.dart'
+    as registry
+    show
+        BlockFieldGenerator,
+        CrossDatasetReferenceFieldGenerator,
+        GeopointFieldGenerator;
+import 'field_code_generators/field_code_generator.dart';
+import 'field_code_generators/string_field_generator.dart';
+import 'field_code_generators/number_field_generator.dart';
+import 'field_code_generators/boolean_field_generator.dart';
+import 'field_code_generators/checkbox_field_generator.dart';
+import 'field_code_generators/date_field_generator.dart';
+import 'field_code_generators/datetime_field_generator.dart';
+import 'field_code_generators/url_field_generator.dart';
+import 'field_code_generators/slug_field_generator.dart';
+import 'field_code_generators/image_field_generator.dart';
+import 'field_code_generators/file_field_generator.dart';
+import 'field_code_generators/color_field_generator.dart';
+import 'field_code_generators/array_field_generator.dart';
+import 'field_code_generators/reference_field_generator.dart';
+import 'field_code_generators/dropdown_field_generator.dart';
+import 'field_code_generators/object_field_generator.dart';
+import 'type_inference_engine.dart';
 import 'utils.dart';
-
-/// Extension to provide safe field access similar to widgetbook's readOrNull pattern
-extension DartObjectExtension on DartObject {
-  /// Safely gets a field value, returning null if the field doesn't exist
-  DartObject? getFieldOrNull(String fieldName) {
-    try {
-      return getField(fieldName);
-    } catch (e) {
-      return null;
-    }
-  }
-}
 
 /// Generates CmsField lists from classes annotated with @CmsConfig.
 /// This generator processes the @CmsFieldConfig annotations on fields to create
 /// corresponding CmsField instances for runtime use.
 class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
+  static final _registry = FieldCodeRegistry();
+  static final _inferenceEngine = TypeInferenceEngine(_registry);
+
+  static void _registerDefaults() {
+    _registry.register(StringFieldGenerator());
+    _registry.register(NumberFieldGenerator());
+    _registry.register(BooleanFieldGenerator());
+    _registry.register(CheckboxFieldGenerator());
+    _registry.register(DateFieldGenerator());
+    _registry.register(DateTimeFieldGenerator());
+    _registry.register(UrlFieldGenerator());
+    _registry.register(SlugFieldGenerator());
+    _registry.register(ImageFieldGenerator());
+    _registry.register(FileFieldGenerator());
+    _registry.register(ColorFieldGenerator());
+    _registry.register(ArrayFieldGenerator());
+    _registry.register(registry.BlockFieldGenerator());
+    _registry.register(ReferenceFieldGenerator());
+    _registry.register(registry.CrossDatasetReferenceFieldGenerator());
+    _registry.register(registry.GeopointFieldGenerator());
+    _registry.register(DropdownFieldGenerator());
+    _registry.register(MultiDropdownFieldGenerator());
+    _registry.register(ObjectFieldGenerator());
+    _inferenceEngine.buildDefaults();
+  }
+
+  static bool _initialized = false;
+
+  static void ensureInitialized() {
+    if (!_initialized) {
+      _registerDefaults();
+      _initialized = true;
+    }
+  }
+
   /// Get option source from ElementAnnotation using async utils.dart approach
   static Future<String?> _getOptionSourceFromElementAnnotation(
     FieldElement fieldElement,
@@ -1018,6 +1069,8 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) async {
+    ensureInitialized();
+
     // Set the node resolver for utils
     nodeResolver = buildStep.resolver;
     if (element is! ClassElement) {

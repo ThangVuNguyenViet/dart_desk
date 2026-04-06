@@ -6,16 +6,6 @@ import 'package:source_gen/source_gen.dart';
 import '../utils.dart';
 import 'field_code_generator.dart';
 
-extension DartObjectExtension on DartObject {
-  DartObject? getFieldOrNull(String fieldName) {
-    try {
-      return getField(fieldName);
-    } catch (e) {
-      return null;
-    }
-  }
-}
-
 class ArrayFieldGenerator implements FieldCodeGenerator {
   @override
   String get fieldConfigName => 'CmsArrayFieldConfig';
