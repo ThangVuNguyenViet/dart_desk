@@ -542,6 +542,136 @@ class ArrayConfig {
       );
     });
   });
+
+  group('CmsFieldGenerator auto-detection', () {
+    test('auto-detects String field without annotation', () async {
+      await _testCmsBuilder(
+        _fixture('''
+@CmsConfig(title: 'Auto', description: 'Auto detect test')
+class AutoDetectConfig {
+  final String name;
+
+  const AutoDetectConfig({required this.name});
+
+  static AutoDetectConfig? defaultValue;
+}
+'''),
+        contains('CmsStringField(name: \'name\', title: \'Name\')'),
+      );
+    });
+
+    test(
+      'auto-detects List<String> field without annotation defaults to Array',
+      () async {
+        await _testCmsBuilder(
+          _fixture('''
+@CmsConfig(title: 'Auto', description: 'Auto detect test')
+class AutoDetectConfig {
+  final List<String> tags;
+
+  const AutoDetectConfig({required this.tags});
+
+  static AutoDetectConfig? defaultValue = const AutoDetectConfig(tags: []);
+}
+'''),
+          allOf(
+            contains('CmsArrayField<String>'),
+            contains('innerField: CmsStringField'),
+          ),
+        );
+      },
+    );
+
+    test('auto-detects int field as NumberField', () async {
+      await _testCmsBuilder(
+        _fixture('''
+@CmsConfig(title: 'Auto', description: 'Auto detect test')
+class AutoDetectConfig {
+  final int count;
+
+  const AutoDetectConfig({required this.count});
+
+  static AutoDetectConfig? defaultValue;
+}
+'''),
+        contains('CmsNumberField(name: \'count\', title: \'Count\')'),
+      );
+    });
+
+    test('auto-detects bool field as BooleanField', () async {
+      await _testCmsBuilder(
+        _fixture('''
+@CmsConfig(title: 'Auto', description: 'Auto detect test')
+class AutoDetectConfig {
+  final bool enabled;
+
+  const AutoDetectConfig({required this.enabled});
+
+  static AutoDetectConfig? defaultValue;
+}
+'''),
+        contains('CmsBooleanField(name: \'enabled\', title: \'Enabled\')'),
+      );
+    });
+
+    test('auto-detects DateTime field as DateTimeField', () async {
+      await _testCmsBuilder(
+        _fixture('''
+@CmsConfig(title: 'Auto', description: 'Auto detect test')
+class AutoDetectConfig {
+  final DateTime createdAt;
+
+  const AutoDetectConfig({required this.createdAt});
+
+  static AutoDetectConfig? defaultValue;
+}
+'''),
+        contains(
+          'CmsDateTimeField(name: \'createdAt\', title: \'Created At\')',
+        ),
+      );
+    });
+
+    test('auto-detects Uri field as UrlField', () async {
+      await _testCmsBuilder(
+        _fixture('''
+@CmsConfig(title: 'Auto', description: 'Auto detect test')
+class AutoDetectConfig {
+  final Uri website;
+
+  const AutoDetectConfig({required this.website});
+
+  static AutoDetectConfig? defaultValue;
+}
+'''),
+        contains('CmsUrlField(name: \'website\', title: \'Website\')'),
+      );
+    });
+
+    test('explicit annotation takes precedence over auto-detection', () async {
+      await _testCmsBuilder(
+        _fixture('''
+@CmsConfig(title: 'Mixed', description: 'Mixed config')
+class MixedConfig {
+  final String name;
+
+  @CmsTextFieldConfig()
+  final String description;
+
+  const MixedConfig({required this.name, required this.description});
+
+  static MixedConfig? defaultValue;
+}
+'''),
+        allOf(
+          contains('CmsStringField(name: \'name\', title: \'Name\')'),
+          contains(
+            'CmsTextField(name: \'description\', title: \'Description\')',
+          ),
+        ),
+      );
+    });
+  });
 }
 
 String _fixture(String body) =>

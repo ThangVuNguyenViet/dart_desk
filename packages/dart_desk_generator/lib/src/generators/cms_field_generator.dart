@@ -1111,7 +1111,7 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       // Generate field configurations and discover new nested classes.
       final (fieldConfigs, newlyDiscovered) = await _generateFieldList(
         currentElement,
-        inferUnannotatedFields: className != topLevelClassName,
+        inferUnannotatedFields: true,
       );
 
       // Add newly discovered classes to the queue if they haven't been processed.
