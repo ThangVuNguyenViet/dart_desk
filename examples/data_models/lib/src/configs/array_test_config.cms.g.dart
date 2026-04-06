@@ -31,7 +31,7 @@ final arrayTestConfigFields = [
       ),
     ),
   ),
-  CmsArrayField<dynamic>(
+  CmsArrayField<String>(
     name: 'stringListWithImageInner',
     title: 'String List With Image Inner',
     innerField: CmsImageField(name: 'item', title: 'Item'),
