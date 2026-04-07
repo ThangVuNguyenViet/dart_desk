@@ -543,6 +543,71 @@ class ArrayConfig {
     });
   });
 
+  group('CmsFieldGenerator deduplication', () {
+    test(
+      'does not emit field list for discovered classes with @CmsConfig',
+      () async {
+        await _testCmsBuilder(
+          _fixture('''
+@CmsConfig(title: 'Hero', description: 'Hero config')
+class HeroConfig {
+  @CmsStringFieldConfig()
+  final String heroName;
+
+  const HeroConfig({required this.heroName});
+
+  static HeroConfig? defaultValue;
+}
+
+@CmsConfig(title: 'Array Test', description: 'Array test config')
+class ArrayTestConfig {
+  @CmsArrayFieldConfig<HeroConfig>()
+  final List<HeroConfig> heroes;
+
+  const ArrayTestConfig({required this.heroes});
+
+  static ArrayTestConfig? defaultValue = const ArrayTestConfig(heroes: []);
+}
+'''),
+          _containsExactCount('final heroConfigFields = [', 1),
+        );
+      },
+    );
+
+    test(
+      'still emits field list for discovered classes without @CmsConfig',
+      () async {
+        await _testCmsBuilder(
+          _fixture('''
+class SampleConfig {
+  @CmsStringFieldConfig()
+  final String sampleName;
+
+  const SampleConfig({required this.sampleName});
+
+  static SampleConfig? defaultValue;
+}
+
+@CmsConfig(title: 'Parent', description: 'Parent config')
+class ParentConfig {
+  @CmsArrayFieldConfig<SampleConfig>()
+  final List<SampleConfig> samples;
+
+  const ParentConfig({required this.samples});
+
+  static ParentConfig? defaultValue = const ParentConfig(samples: []);
+}
+'''),
+          allOf(
+            contains('final parentConfigFields = ['),
+            // SampleConfig has no @CmsConfig, so its fields should be emitted
+            contains('final sampleConfigFields = ['),
+          ),
+        );
+      },
+    );
+  });
+
   group('CmsFieldGenerator auto-detection', () {
     test('auto-detects String field without annotation', () async {
       await _testCmsBuilder(
@@ -673,6 +738,21 @@ class MixedConfig {
     });
   });
 }
+
+/// Matches a string that contains [substring] exactly [count] times.
+Matcher _containsExactCount(String substring, int count) =>
+    predicate(
+      (dynamic s) {
+        var occurrences = 0;
+        var index = 0;
+        while ((index = s.indexOf(substring, index)) != -1) {
+          occurrences++;
+          index += substring.length;
+        }
+        return occurrences == count;
+      },
+      'contains "$substring" exactly $count time(s)',
+    );
 
 String _fixture(String body) =>
     '''

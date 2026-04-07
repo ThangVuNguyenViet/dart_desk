@@ -59,12 +59,6 @@ final arrayTestConfigFields = [
   ),
 ];
 
-/// Generated CmsField list for HeroConfig
-final heroConfigFields = [
-  CmsStringField(name: 'title', title: 'Title'),
-  CmsImageField(name: 'heroImage', title: 'Hero Image'),
-];
-
 /// Generated CmsField list for SampleConfig
 final sampleConfigFields = [
   CmsStringField(name: 'name', title: 'Name'),

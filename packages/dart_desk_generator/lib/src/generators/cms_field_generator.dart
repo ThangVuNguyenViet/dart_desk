@@ -8,33 +8,32 @@ import 'package:build/build.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation_generator.dart';
 import 'package:source_gen/source_gen.dart';
 
-import 'field_code_registry.dart'
-    hide
-        BlockFieldGenerator,
-        CrossDatasetReferenceFieldGenerator,
-        GeopointFieldGenerator;
+import 'field_code_generators/array_field_generator.dart';
+import 'field_code_generators/boolean_field_generator.dart';
+import 'field_code_generators/checkbox_field_generator.dart';
+import 'field_code_generators/color_field_generator.dart';
+import 'field_code_generators/date_field_generator.dart';
+import 'field_code_generators/datetime_field_generator.dart';
+import 'field_code_generators/dropdown_field_generator.dart';
+import 'field_code_generators/file_field_generator.dart';
+import 'field_code_generators/image_field_generator.dart';
+import 'field_code_generators/number_field_generator.dart';
+import 'field_code_generators/object_field_generator.dart';
+import 'field_code_generators/reference_field_generator.dart';
+import 'field_code_generators/slug_field_generator.dart';
+import 'field_code_generators/string_field_generator.dart';
+import 'field_code_generators/url_field_generator.dart';
 import 'field_code_registry.dart'
     as registry
     show
         BlockFieldGenerator,
         CrossDatasetReferenceFieldGenerator,
         GeopointFieldGenerator;
-import 'field_code_generators/field_code_generator.dart';
-import 'field_code_generators/string_field_generator.dart';
-import 'field_code_generators/number_field_generator.dart';
-import 'field_code_generators/boolean_field_generator.dart';
-import 'field_code_generators/checkbox_field_generator.dart';
-import 'field_code_generators/date_field_generator.dart';
-import 'field_code_generators/datetime_field_generator.dart';
-import 'field_code_generators/url_field_generator.dart';
-import 'field_code_generators/slug_field_generator.dart';
-import 'field_code_generators/image_field_generator.dart';
-import 'field_code_generators/file_field_generator.dart';
-import 'field_code_generators/color_field_generator.dart';
-import 'field_code_generators/array_field_generator.dart';
-import 'field_code_generators/reference_field_generator.dart';
-import 'field_code_generators/dropdown_field_generator.dart';
-import 'field_code_generators/object_field_generator.dart';
+import 'field_code_registry.dart'
+    hide
+        BlockFieldGenerator,
+        CrossDatasetReferenceFieldGenerator,
+        GeopointFieldGenerator;
 import 'type_inference_engine.dart';
 import 'utils.dart';
 
@@ -1128,7 +1127,16 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
         }
       }
 
-      if (fieldConfigs.isNotEmpty) {
+      // Skip emitting field lists for discovered classes that have their own
+      // @CmsConfig annotation — their own generator invocation will handle them.
+      final isTopLevel = currentElement == element;
+      final hasCmsConfig =
+          !isTopLevel &&
+          currentElement.metadata.annotations.any(
+            (a) => a.element?.enclosingElement?.displayName == 'CmsConfig',
+          );
+
+      if (fieldConfigs.isNotEmpty && !hasCmsConfig) {
         final fieldsListName =
             '${className[0].toLowerCase()}${className.substring(1)}Fields';
         generatedFieldLists.add('''

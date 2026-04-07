@@ -26,7 +26,7 @@ class ImageReference with ImageReferenceMappable {
   title: 'Hero Configuration',
   description: 'Configuration for the hero section',
 ) // Annotated as a CMS Config
-class HeroConfig with HeroConfigMappable {
+class HeroConfig with HeroConfigMappable implements Serializable<HeroConfig> {
   final String title;
   final ImageReference? heroImage; // Uses the placeholder ImageReference
 
