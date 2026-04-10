@@ -1,4 +1,25 @@
-## 0.1.2
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+## 2026-04-11
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`dart_desk` - `v0.1.2`](#dart_desk---v012)
+
+---
+
+#### `dart_desk` - `v0.1.2`
 
  - **REFACTOR**: rename FlutterCmsAuth to DartDeskAuth and remove context extension.
  - **REFACTOR**: update CMS editor, resolver, and barrel exports for unified ImageReference.
@@ -120,18 +141,3 @@
  - **DOCS**: add isDefault UI implementation plan.
  - **DOCS**: add unified test suite README.
 
-## 0.1.1
-
-- Cloud-first documentation with Dart Desk Cloud quick start
-- Expanded example app with 5 document types demonstrating all field types
-- Architecture guide for the three-package pattern
-- Advanced patterns documentation (default merging, custom editors, async dropdowns)
-- Added dart_desk_cli and dart_desk_client to related packages
-
-## 0.1.0
-
-- Initial release
-- Studio layout with navigation and document management
-- Input widgets for all CMS field types
-- Reactive state management with signals
-- shadcn_ui-based component library
