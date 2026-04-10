@@ -29,10 +29,6 @@ abstract class CmsMultiDropdownOption<T> extends CmsOption {
   int? get maxSelected;
 
   const CmsMultiDropdownOption({super.hidden});
-
-  /// Convert a raw stored value to [T]. Override for complex types;
-  /// the default works for primitives where the stored form is already [T].
-  T fromDynamic(dynamic value) => value as T;
 }
 
 /// Simple multi-dropdown option with static options list.
@@ -67,8 +63,13 @@ class CmsMultiDropdownField<T> extends CmsField {
     required super.name,
     required super.title,
     super.description,
+    this.fromMap,
     required CmsMultiDropdownOption<T> super.option,
   });
+
+  /// Converts a raw [Map<String, dynamic>] to [T] for non-primitive multi-dropdown
+  /// value types. The model class must provide a static `$fromMap` method.
+  final T Function(Map<String, dynamic>)? fromMap;
 
   @override
   CmsMultiDropdownOption<T>? get option =>

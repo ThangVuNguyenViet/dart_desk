@@ -59,6 +59,7 @@ IntegrationTestWidgetsFlutterBinding ensureTestInitialized() {
 /// tests work without opening the system file picker.
 Future<void> pumpTestApp(WidgetTester tester) async {
   FakeImagePickerPlatform.install();
+  FakeFilePickerPlatform.install();
 
   // Build a pre-authenticated client so we bypass the login screen.
   final sessionManager = FlutterAuthSessionManager();

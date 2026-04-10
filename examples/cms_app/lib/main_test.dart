@@ -8,6 +8,7 @@ void main() {
   if (kDebugMode) {
     // MarionetteBinding.ensureInitialized(CmsMarionetteConfig.configuration);
     FakeImagePickerPlatform.install();
+    FakeFilePickerPlatform.install();
   }
 
   runApp(

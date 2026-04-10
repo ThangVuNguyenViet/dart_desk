@@ -30,10 +30,6 @@ abstract class CmsDropdownOption<T> extends CmsOption {
   bool get allowNull;
 
   const CmsDropdownOption({super.hidden});
-
-  /// Convert a raw stored value to [T]. Override for complex types;
-  /// the default works for primitives where the stored form is already [T].
-  T fromDynamic(dynamic value) => value as T;
 }
 
 class CmsDropdownSimpleOption<T> extends CmsDropdownOption<T> {
@@ -63,8 +59,13 @@ class CmsDropdownField<T> extends CmsField {
     required super.name,
     required super.title,
     super.description,
+    this.fromMap,
     required CmsDropdownOption<T> super.option,
   });
+
+  /// Converts a raw [Map<String, dynamic>] to [T] for non-primitive dropdown
+  /// value types. The model class must provide a static `$fromMap` method.
+  final T Function(Map<String, dynamic>)? fromMap;
 
   @override
   CmsDropdownOption<T>? get option => super.option as CmsDropdownOption<T>?;

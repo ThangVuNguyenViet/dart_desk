@@ -9,30 +9,33 @@ part of 'brand_theme.dart';
 
 /// Generated CmsField list for BrandTheme
 final brandThemeFields = [
+  CmsStringField(name: 'name', title: 'Name', option: CmsStringOption()),
   CmsColorField(
     name: 'primaryColor',
     title: 'Primary Color',
     option: CmsColorOption(),
   ),
   CmsColorField(
-    name: 'surfaceColor',
-    title: 'Surface Color',
+    name: 'secondaryColor',
+    title: 'Secondary Color',
     option: CmsColorOption(),
   ),
   CmsColorField(
-    name: 'textColor',
-    title: 'Text Color',
+    name: 'accentColor',
+    title: 'Accent Color',
     option: CmsColorOption(),
   ),
-  CmsStringField(
+  CmsDropdownField<String>(
     name: 'headlineFont',
     title: 'Headline Font',
-    option: CmsStringOption(),
+
+    option: HeadlineFontDropdownOption(),
   ),
-  CmsStringField(
+  CmsDropdownField<String>(
     name: 'bodyFont',
     title: 'Body Font',
-    option: CmsStringOption(),
+
+    option: BodyFontDropdownOption(),
   ),
   CmsNumberField(
     name: 'cornerRadius',
@@ -42,7 +45,13 @@ final brandThemeFields = [
   CmsDropdownField<String>(
     name: 'themeMode',
     title: 'Theme Mode',
+
     option: ThemeModeDropdownOption(),
+  ),
+  CmsImageField(
+    name: 'logo',
+    title: 'Logo',
+    option: CmsImageOption(hotspot: false),
   ),
 ];
 
@@ -51,8 +60,7 @@ final brandThemeFields = [
 final brandThemeTypeSpec = DocumentTypeSpec<BrandTheme>(
   name: 'brandTheme',
   title: 'Brand Theme',
-  description:
-      'Global brand colors, typography, and styling for the Aura Gastronomy app',
+  description: 'Visual identity — colors, fonts, and logo for the app',
   fields: brandThemeFields,
   defaultValue: BrandTheme.defaultValue,
 );
@@ -63,20 +71,24 @@ final brandThemeTypeSpec = DocumentTypeSpec<BrandTheme>(
 
 class BrandThemeCmsConfig {
   BrandThemeCmsConfig({
+    required this.name,
     required this.primaryColor,
-    required this.surfaceColor,
-    required this.textColor,
+    required this.secondaryColor,
+    required this.accentColor,
     required this.headlineFont,
     required this.bodyFont,
     required this.cornerRadius,
     required this.themeMode,
+    required this.logo,
   });
+
+  final CmsData<String> name;
 
   final CmsData<Color> primaryColor;
 
-  final CmsData<Color> surfaceColor;
+  final CmsData<Color> secondaryColor;
 
-  final CmsData<Color> textColor;
+  final CmsData<Color> accentColor;
 
   final CmsData<String> headlineFont;
 
@@ -85,4 +97,6 @@ class BrandThemeCmsConfig {
   final CmsData<num> cornerRadius;
 
   final CmsData<String> themeMode;
+
+  final CmsData<ImageReference?> logo;
 }

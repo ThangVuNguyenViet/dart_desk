@@ -32,11 +32,12 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
   @override
   void initState() {
     super.initState();
-    final option = widget.field.option;
+    final fromMap = widget.field.fromMap;
     _items =
-        (widget.data?.value as List?)
-            ?.map<T>((e) => option != null ? option.fromDynamic(e) : e as T)
-            .toList() ??
+        (widget.data?.value as List?)?.map<T>((e) {
+          if (e is T) return e;
+          return fromMap!(Map<String, dynamic>.from(e as Map));
+        }).toList() ??
         [];
   }
 
@@ -65,10 +66,15 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
   void _saveItem() {
     setState(() {
       if (_editingValue != null) {
-        final option = widget.field.option;
-        final typed = option != null
-            ? option.fromDynamic(_editingValue)
-            : _editingValue as T;
+        final fromMap = widget.field.fromMap;
+        final T typed;
+        if (_editingValue is T) {
+          typed = _editingValue as T;
+        } else {
+          typed = fromMap!(
+            Map<String, dynamic>.from(_editingValue as Map),
+          );
+        }
         if (_editingIndex == -1) {
           _items.add(typed);
         } else if (_editingIndex != null && _editingIndex! >= 0) {

@@ -15,8 +15,14 @@ class CmsObjectField extends CmsField {
     required super.name,
     required super.title,
     super.description,
+    this.fromMap,
     CmsObjectOption super.option = const CmsObjectOption(children: []),
   });
+
+  /// Converts a raw [Map<String, dynamic>] (e.g. from Firestore) back to a
+  /// typed object [T]. For non-primitive object types, the model class must
+  /// provide a static `$fromMap` method and the generated code passes it here.
+  final Function(Map<String, dynamic>)? fromMap;
 
   @override
   CmsObjectOption get option => (super.option as CmsObjectOption?) ?? const CmsObjectOption(children: []);

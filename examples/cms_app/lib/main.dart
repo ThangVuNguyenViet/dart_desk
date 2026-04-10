@@ -34,32 +34,27 @@ class MyApp extends StatelessWidget {
       apiKey: apiKey,
       config: DartDeskConfig(
         documentTypes: [
+          restaurantProfileDocumentType,
+          menuItemDocumentType,
+          promotionCampaignDocumentType,
           brandThemeDocumentType,
-          kioskDocumentType,
-          heroDocumentType,
-          upsellDocumentType,
-          rewardDocumentType,
         ],
         documentTypeDecorations: [
           DocumentTypeDecoration(
-            documentType: brandThemeDocumentType,
-            icon: Icons.palette,
+            documentType: restaurantProfileDocumentType,
+            icon: Icons.store,
           ),
           DocumentTypeDecoration(
-            documentType: kioskDocumentType,
-            icon: Icons.point_of_sale,
-          ),
-          DocumentTypeDecoration(
-            documentType: heroDocumentType,
-            icon: Icons.home,
-          ),
-          DocumentTypeDecoration(
-            documentType: upsellDocumentType,
+            documentType: menuItemDocumentType,
             icon: Icons.restaurant_menu,
           ),
           DocumentTypeDecoration(
-            documentType: rewardDocumentType,
-            icon: Icons.card_giftcard,
+            documentType: promotionCampaignDocumentType,
+            icon: Icons.campaign,
+          ),
+          DocumentTypeDecoration(
+            documentType: brandThemeDocumentType,
+            icon: Icons.palette,
           ),
         ],
         title: 'Food Ordering CMS',

@@ -20,17 +20,12 @@ class CmsArrayOption<T> extends CmsOption {
 
   final CmsArrayFieldItemBuilder<T>? itemBuilder;
 
-  /// Calls [itemBuilder] with [value] cast to [T], bypassing the static
+  /// Calls [itemBuilder] with [value], bypassing the static
   /// type system so that a typed option (e.g. CmsArrayOption<String>) can be
   /// used through an untyped CmsArrayField reference.
   Widget buildItem(BuildContext context, T value) {
     return itemBuilder?.call(context, value) ?? Text(value.toString());
   }
-
-  /// Convert a raw stored value (e.g. a [Map] from Firestore) to [T].
-  /// Override this in subclasses for complex types; the default works for
-  /// primitives where the stored form IS already [T].
-  T fromDynamic(dynamic value) => value as T;
 }
 
 class CmsArrayField<T> extends CmsField {
@@ -39,10 +34,18 @@ class CmsArrayField<T> extends CmsField {
     required super.title,
     super.description,
     required this.innerField,
+    this.fromMap,
     CmsArrayOption<T>? super.option,
   });
 
   final CmsField innerField;
+
+  /// Converts a raw [Map<String, dynamic>] (e.g. from Firestore) to [T].
+  ///
+  /// For non-primitive array item types, the model class must provide a static
+  /// `$fromMap` method (e.g. `CategoryConfig.$fromMap`) and the generated code
+  /// passes it here. Primitive types (String, int, etc.) don't need this.
+  final T Function(Map<String, dynamic>)? fromMap;
 
   static CmsArrayInputFactory? _inputFactory;
 

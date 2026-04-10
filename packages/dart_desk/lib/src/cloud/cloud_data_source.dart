@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart';
 
 import 'package:dart_desk_client/dart_desk_client.dart' as serverpod;
 
@@ -31,6 +32,14 @@ class CloudDataSource implements DataSource {
   /// [client] - The Serverpod client instance configured with the server URL
   CloudDataSource(this._client);
 
+  /// Logs the error with stack trace and throws a [CmsDataSourceException].
+  Never _throw(String message, Object error, [StackTrace? stack]) {
+    final st = stack ?? StackTrace.current;
+    debugPrint('[CloudDataSource] $message: $error');
+    debugPrintStack(stackTrace: st, label: 'CloudDataSource');
+    throw CmsDataSourceException(message, error);
+  }
+
   // ============================================================
   // Document Operations
   // ============================================================
@@ -56,8 +65,8 @@ class CloudDataSource implements DataSource {
         page: response.page,
         pageSize: response.pageSize,
       );
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get documents', e);
+    } catch (e, st) {
+      _throw('Failed to get documents', e, st);
     }
   }
 
@@ -67,8 +76,8 @@ class CloudDataSource implements DataSource {
       final response = await _client.document.getDocument(documentId);
       if (response == null) return null;
       return _toCmsDocument(response);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get document', e);
+    } catch (e, st) {
+      _throw('Failed to get document', e, st);
     }
   }
 
@@ -89,13 +98,13 @@ class CloudDataSource implements DataSource {
         isDefault: isDefault,
       );
       return _toCmsDocument(response);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to create document', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to create document', e);
+      _throw('Failed to create document', e, st);
+    } catch (e, st) {
+      _throw('Failed to create document', e, st);
     }
   }
 
@@ -115,13 +124,13 @@ class CloudDataSource implements DataSource {
       );
       if (response == null) return null;
       return _toCmsDocument(response);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to update document', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to update document', e);
+      _throw('Failed to update document', e, st);
+    } catch (e, st) {
+      _throw('Failed to update document', e, st);
     }
   }
 
@@ -134,11 +143,11 @@ class CloudDataSource implements DataSource {
       final doc = await _client.document
           .setDefaultDocument(documentTypeSlug, documentId);
       return _toCmsDocument(doc);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) throw const CmsAuthenticationException();
-      throw CmsDataSourceException('Failed to set default document', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to set default document', e);
+      _throw('Failed to set default document', e, st);
+    } catch (e, st) {
+      _throw('Failed to set default document', e, st);
     }
   }
 
@@ -146,13 +155,13 @@ class CloudDataSource implements DataSource {
   Future<bool> deleteDocument(int documentId) async {
     try {
       return await _client.document.deleteDocument(documentId);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to delete document', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to delete document', e);
+      _throw('Failed to delete document', e, st);
+    } catch (e, st) {
+      _throw('Failed to delete document', e, st);
     }
   }
 
@@ -160,8 +169,8 @@ class CloudDataSource implements DataSource {
   Future<String> suggestSlug(String title, String documentType) async {
     try {
       return await _client.document.suggestSlug(title, documentType);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to suggest slug', e);
+    } catch (e, st) {
+      _throw('Failed to suggest slug', e, st);
     }
   }
 
@@ -169,8 +178,8 @@ class CloudDataSource implements DataSource {
   Future<List<String>> getDocumentTypes() async {
     try {
       return await _client.document.getDocumentTypes();
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get document types', e);
+    } catch (e, st) {
+      _throw('Failed to get document types', e, st);
     }
   }
 
@@ -220,8 +229,8 @@ class CloudDataSource implements DataSource {
         page: response.page,
         pageSize: response.pageSize,
       );
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get document versions', e);
+    } catch (e, st) {
+      _throw('Failed to get document versions', e, st);
     }
   }
 
@@ -232,8 +241,8 @@ class CloudDataSource implements DataSource {
       if (response == null) return null;
 
       return _toDocumentVersion(response);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get document version', e);
+    } catch (e, st) {
+      _throw('Failed to get document version', e, st);
     }
   }
 
@@ -244,8 +253,8 @@ class CloudDataSource implements DataSource {
       return dataJson != null
           ? jsonDecode(dataJson) as Map<String, dynamic>
           : null;
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get document version data', e);
+    } catch (e, st) {
+      _throw('Failed to get document version data', e, st);
     }
   }
 
@@ -265,13 +274,13 @@ class CloudDataSource implements DataSource {
         changeLog: changeLog,
       );
       return _toDocumentVersion(response);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to create document version', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to create document version', e);
+      _throw('Failed to create document version', e, st);
+    } catch (e, st) {
+      _throw('Failed to create document version', e, st);
     }
   }
 
@@ -281,13 +290,13 @@ class CloudDataSource implements DataSource {
       final response = await _client.document.publishDocumentVersion(versionId);
       if (response == null) return null;
       return _toDocumentVersion(response);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to publish document version', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to publish document version', e);
+      _throw('Failed to publish document version', e, st);
+    } catch (e, st) {
+      _throw('Failed to publish document version', e, st);
     }
   }
 
@@ -297,13 +306,13 @@ class CloudDataSource implements DataSource {
       final response = await _client.document.archiveDocumentVersion(versionId);
       if (response == null) return null;
       return _toDocumentVersion(response);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to archive document version', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to archive document version', e);
+      _throw('Failed to archive document version', e, st);
+    } catch (e, st) {
+      _throw('Failed to archive document version', e, st);
     }
   }
 
@@ -311,13 +320,13 @@ class CloudDataSource implements DataSource {
   Future<bool> deleteDocumentVersion(int versionId) async {
     try {
       return await _client.document.deleteDocumentVersion(versionId);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to delete document version', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to delete document version', e);
+      _throw('Failed to delete document version', e, st);
+    } catch (e, st) {
+      _throw('Failed to delete document version', e, st);
     }
   }
 
@@ -343,13 +352,13 @@ class CloudDataSource implements DataSource {
         metadata.contentHash,
       );
       return _toMediaAsset(response);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to upload image', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to upload image', e);
+      _throw('Failed to upload image', e, st);
+    } catch (e, st) {
+      _throw('Failed to upload image', e, st);
     }
   }
 
@@ -359,13 +368,13 @@ class CloudDataSource implements DataSource {
       final byteData = ByteData.view(fileData.buffer);
       final response = await _client.media.uploadFile(fileName, byteData);
       return _toMediaAsset(response);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to upload file', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to upload file', e);
+      _throw('Failed to upload file', e, st);
+    } catch (e, st) {
+      _throw('Failed to upload file', e, st);
     }
   }
 
@@ -373,13 +382,13 @@ class CloudDataSource implements DataSource {
   Future<bool> deleteMedia(String assetId) async {
     try {
       return await _client.media.deleteMedia(assetId);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to delete media', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to delete media', e);
+      _throw('Failed to delete media', e, st);
+    } catch (e, st) {
+      _throw('Failed to delete media', e, st);
     }
   }
 
@@ -389,8 +398,8 @@ class CloudDataSource implements DataSource {
       final response = await _client.media.getMedia(assetId);
       if (response == null) return null;
       return _toMediaAsset(response);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get media asset', e);
+    } catch (e, st) {
+      _throw('Failed to get media asset', e, st);
     }
   }
 
@@ -431,8 +440,8 @@ class CloudDataSource implements DataSource {
       );
       final items = response.map(_toMediaAsset).toList();
       return MediaPage(items: items, total: total);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to list media', e);
+    } catch (e, st) {
+      _throw('Failed to list media', e, st);
     }
   }
 
@@ -447,13 +456,13 @@ class CloudDataSource implements DataSource {
         fileName: fileName,
       );
       return _toMediaAsset(response);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to update media asset', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to update media asset', e);
+      _throw('Failed to update media asset', e, st);
+    } catch (e, st) {
+      _throw('Failed to update media asset', e, st);
     }
   }
 
@@ -461,8 +470,8 @@ class CloudDataSource implements DataSource {
   Future<int> getMediaUsageCount(String assetId) async {
     try {
       return await _client.media.getMediaUsageCount(assetId);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get media usage count', e);
+    } catch (e, st) {
+      _throw('Failed to get media usage count', e, st);
     }
   }
 
@@ -652,13 +661,13 @@ class CloudDataSource implements DataSource {
         sessionId: sessionId,
       );
       return _toCmsDocument(response);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to update document data', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to update document data', e);
+      _throw('Failed to update document data', e, st);
+    } catch (e, st) {
+      _throw('Failed to update document data', e, st);
     }
   }
 
@@ -675,8 +684,8 @@ class CloudDataSource implements DataSource {
         sinceHlc,
         limit: limit,
       );
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get operations', e);
+    } catch (e, st) {
+      _throw('Failed to get operations', e, st);
     }
   }
 
@@ -693,13 +702,13 @@ class CloudDataSource implements DataSource {
         jsonEncode(fieldUpdates),
       );
       return _toCmsDocument(response);
-    } on serverpod.ServerpodClientException catch (e) {
+    } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
       }
-      throw CmsDataSourceException('Failed to submit edit', e);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to submit edit', e);
+      _throw('Failed to submit edit', e, st);
+    } catch (e, st) {
+      _throw('Failed to submit edit', e, st);
     }
   }
 
@@ -712,8 +721,8 @@ class CloudDataSource implements DataSource {
       return response
           .map((e) => jsonDecode(e) as Map<String, dynamic>)
           .toList();
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get active editors', e);
+    } catch (e, st) {
+      _throw('Failed to get active editors', e, st);
     }
   }
 
@@ -721,8 +730,8 @@ class CloudDataSource implements DataSource {
   Future<String?> getCurrentHlc(int documentId) async {
     try {
       return await _client.documentCollaboration.getCurrentHlc(documentId);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get current HLC', e);
+    } catch (e, st) {
+      _throw('Failed to get current HLC', e, st);
     }
   }
 
@@ -730,8 +739,8 @@ class CloudDataSource implements DataSource {
   Future<int> getOperationCount(int documentId) async {
     try {
       return await _client.documentCollaboration.getOperationCount(documentId);
-    } catch (e) {
-      throw CmsDataSourceException('Failed to get operation count', e);
+    } catch (e, st) {
+      _throw('Failed to get operation count', e, st);
     }
   }
 

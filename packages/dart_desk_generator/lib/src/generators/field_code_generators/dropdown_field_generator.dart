@@ -5,6 +5,15 @@ import 'package:source_gen/source_gen.dart';
 
 import 'field_code_generator.dart';
 
+const _primitiveTypes = {
+  'String',
+  'int',
+  'num',
+  'double',
+  'bool',
+  'DateTime',
+};
+
 class DropdownFieldGenerator implements FieldCodeGenerator {
   @override
   String get fieldConfigName => 'CmsDropdownFieldConfig';
@@ -18,6 +27,36 @@ class DropdownFieldGenerator implements FieldCodeGenerator {
     return displayType.endsWith('?')
         ? displayType.substring(0, displayType.length - 1)
         : displayType;
+  }
+
+  static ClassElement? _classElementFromType(DartType? type) {
+    if (type is InterfaceType && type.element is ClassElement) {
+      return type.element as ClassElement;
+    }
+    return null;
+  }
+
+  static String? _validateAndEmitFromMap(
+    String genericType,
+    ClassElement? genericClassElement,
+    FieldElement field,
+  ) {
+    if (_primitiveTypes.contains(genericType)) return null;
+    if (genericClassElement == null) return null;
+
+    final hasFromMap = genericClassElement.methods.any(
+      (m) => m.isStatic && m.name == r'$fromMap',
+    );
+    if (!hasFromMap) {
+      throw InvalidGenerationSourceError(
+        '$genericType is used as a CmsDropdownField/CmsMultiDropdownField '
+        'type but does not have a static \$fromMap method. Add:\n\n'
+        '  static $genericType \$fromMap(Map<String, dynamic> map) => '
+        '${genericType}Mapper.fromMap(map);\n',
+        element: field,
+      );
+    }
+    return 'fromMap: $genericType.\$fromMap,';
   }
 
   @override
@@ -40,9 +79,17 @@ class DropdownFieldGenerator implements FieldCodeGenerator {
     final genericType =
         genericTypeMatch?.group(1) ?? _displayType(field.type) ?? 'dynamic';
 
+    final genericClassElement = _classElementFromType(field.type);
+    final fromMapCode = _validateAndEmitFromMap(
+      genericType,
+      genericClassElement,
+      field,
+    );
+
     return '''CmsDropdownField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
+    ${fromMapCode ?? ''}
     ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
   }
@@ -114,9 +161,17 @@ class MultiDropdownFieldGenerator implements FieldCodeGenerator {
         _displayType(_arrayItemDartType(field)) ??
         'dynamic';
 
+    final genericClassElement = DropdownFieldGenerator._classElementFromType(_arrayItemDartType(field));
+    final fromMapCode = DropdownFieldGenerator._validateAndEmitFromMap(
+      genericType,
+      genericClassElement,
+      field,
+    );
+
     return '''CmsMultiDropdownField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
+    ${fromMapCode ?? ''}
     ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
   }

@@ -16,7 +16,10 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = BrandThemeMapper._());
       CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
-      MapperContainer.globals.useAll([BrandThemeColorMapper()]);
+      MapperContainer.globals.useAll([
+        BrandThemeColorMapper(),
+        ImageReferenceMapper(),
+      ]);
     }
     return _instance!;
   }
@@ -24,20 +27,22 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
   @override
   final String id = 'BrandTheme';
 
+  static String _$name(BrandTheme v) => v.name;
+  static const Field<BrandTheme, String> _f$name = Field('name', _$name);
   static Color _$primaryColor(BrandTheme v) => v.primaryColor;
   static const Field<BrandTheme, Color> _f$primaryColor = Field(
     'primaryColor',
     _$primaryColor,
   );
-  static Color _$surfaceColor(BrandTheme v) => v.surfaceColor;
-  static const Field<BrandTheme, Color> _f$surfaceColor = Field(
-    'surfaceColor',
-    _$surfaceColor,
+  static Color _$secondaryColor(BrandTheme v) => v.secondaryColor;
+  static const Field<BrandTheme, Color> _f$secondaryColor = Field(
+    'secondaryColor',
+    _$secondaryColor,
   );
-  static Color _$textColor(BrandTheme v) => v.textColor;
-  static const Field<BrandTheme, Color> _f$textColor = Field(
-    'textColor',
-    _$textColor,
+  static Color _$accentColor(BrandTheme v) => v.accentColor;
+  static const Field<BrandTheme, Color> _f$accentColor = Field(
+    'accentColor',
+    _$accentColor,
   );
   static String _$headlineFont(BrandTheme v) => v.headlineFont;
   static const Field<BrandTheme, String> _f$headlineFont = Field(
@@ -59,16 +64,24 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
     'themeMode',
     _$themeMode,
   );
+  static ImageReference? _$logo(BrandTheme v) => v.logo;
+  static const Field<BrandTheme, ImageReference> _f$logo = Field(
+    'logo',
+    _$logo,
+    opt: true,
+  );
 
   @override
   final MappableFields<BrandTheme> fields = const {
+    #name: _f$name,
     #primaryColor: _f$primaryColor,
-    #surfaceColor: _f$surfaceColor,
-    #textColor: _f$textColor,
+    #secondaryColor: _f$secondaryColor,
+    #accentColor: _f$accentColor,
     #headlineFont: _f$headlineFont,
     #bodyFont: _f$bodyFont,
     #cornerRadius: _f$cornerRadius,
     #themeMode: _f$themeMode,
+    #logo: _f$logo,
   };
 
   @override
@@ -80,13 +93,15 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
 
   static BrandTheme _instantiate(DecodingData data) {
     return BrandTheme(
+      name: data.dec(_f$name),
       primaryColor: data.dec(_f$primaryColor),
-      surfaceColor: data.dec(_f$surfaceColor),
-      textColor: data.dec(_f$textColor),
+      secondaryColor: data.dec(_f$secondaryColor),
+      accentColor: data.dec(_f$accentColor),
       headlineFont: data.dec(_f$headlineFont),
       bodyFont: data.dec(_f$bodyFont),
       cornerRadius: data.dec(_f$cornerRadius),
       themeMode: data.dec(_f$themeMode),
+      logo: data.dec(_f$logo),
     );
   }
 
@@ -152,13 +167,15 @@ abstract class BrandThemeCopyWith<$R, $In extends BrandTheme, $Out>
     implements CmsContentCopyWith<$R, $In, $Out> {
   @override
   $R call({
+    String? name,
     Color? primaryColor,
-    Color? surfaceColor,
-    Color? textColor,
+    Color? secondaryColor,
+    Color? accentColor,
     String? headlineFont,
     String? bodyFont,
     num? cornerRadius,
     String? themeMode,
+    ImageReference? logo,
   });
   BrandThemeCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -173,33 +190,39 @@ class _BrandThemeCopyWithImpl<$R, $Out>
       BrandThemeMapper.ensureInitialized();
   @override
   $R call({
+    String? name,
     Color? primaryColor,
-    Color? surfaceColor,
-    Color? textColor,
+    Color? secondaryColor,
+    Color? accentColor,
     String? headlineFont,
     String? bodyFont,
     num? cornerRadius,
     String? themeMode,
+    Object? logo = $none,
   }) => $apply(
     FieldCopyWithData({
+      if (name != null) #name: name,
       if (primaryColor != null) #primaryColor: primaryColor,
-      if (surfaceColor != null) #surfaceColor: surfaceColor,
-      if (textColor != null) #textColor: textColor,
+      if (secondaryColor != null) #secondaryColor: secondaryColor,
+      if (accentColor != null) #accentColor: accentColor,
       if (headlineFont != null) #headlineFont: headlineFont,
       if (bodyFont != null) #bodyFont: bodyFont,
       if (cornerRadius != null) #cornerRadius: cornerRadius,
       if (themeMode != null) #themeMode: themeMode,
+      if (logo != $none) #logo: logo,
     }),
   );
   @override
   BrandTheme $make(CopyWithData data) => BrandTheme(
+    name: data.get(#name, or: $value.name),
     primaryColor: data.get(#primaryColor, or: $value.primaryColor),
-    surfaceColor: data.get(#surfaceColor, or: $value.surfaceColor),
-    textColor: data.get(#textColor, or: $value.textColor),
+    secondaryColor: data.get(#secondaryColor, or: $value.secondaryColor),
+    accentColor: data.get(#accentColor, or: $value.accentColor),
     headlineFont: data.get(#headlineFont, or: $value.headlineFont),
     bodyFont: data.get(#bodyFont, or: $value.bodyFont),
     cornerRadius: data.get(#cornerRadius, or: $value.cornerRadius),
     themeMode: data.get(#themeMode, or: $value.themeMode),
+    logo: data.get(#logo, or: $value.logo),
   );
 
   @override

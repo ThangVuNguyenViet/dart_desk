@@ -89,10 +89,30 @@ class ArrayFieldGenerator implements FieldCodeGenerator {
       }
     }
 
+    // For non-primitive array item types, require a static $fromMap method.
+    final isPrimitive = _arrayPrimitiveFields.containsKey(genericType);
+    String? fromMapCode;
+    if (!isPrimitive && genericClassElement != null) {
+      final hasFromMap = genericClassElement.methods.any(
+        (m) => m.isStatic && m.name == r'$fromMap',
+      );
+      if (!hasFromMap) {
+        throw InvalidGenerationSourceError(
+          '$genericType is used as a CmsArrayField item type but does '
+          'not have a static \$fromMap method. Add:\n\n'
+          '  static $genericType \$fromMap(Map<String, dynamic> map) => '
+          '${genericType}Mapper.fromMap(map);\n',
+          element: field,
+        );
+      }
+      fromMapCode = 'fromMap: $genericType.\$fromMap,';
+    }
+
     return '''CmsArrayField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     innerField: $inferredFieldCode,
+    ${fromMapCode ?? ''}
     ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
   }

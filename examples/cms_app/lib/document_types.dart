@@ -1,9 +1,8 @@
 import 'package:data_models/example_data.dart';
 import 'package:example_app/screens/brand_theme_screen.dart';
-import 'package:example_app/screens/kiosk_screen.dart';
-import 'package:example_app/screens/hero_screen.dart';
-import 'package:example_app/screens/upsell_screen.dart';
-import 'package:example_app/screens/reward_screen.dart';
+import 'package:example_app/screens/restaurant_profile_screen.dart';
+import 'package:example_app/screens/menu_item_screen.dart';
+import 'package:example_app/screens/promotion_campaign_screen.dart';
 
 final brandThemeDocumentType = brandThemeTypeSpec.build(
   builder: (data) {
@@ -12,30 +11,23 @@ final brandThemeDocumentType = brandThemeTypeSpec.build(
   },
 );
 
-final kioskDocumentType = kioskConfigTypeSpec.build(
+final restaurantProfileDocumentType = restaurantProfileTypeSpec.build(
   builder: (data) {
-    final merged = {...KioskConfig.defaultValue.toMap(), ...data};
-    return KioskScreen(config: KioskConfigMapper.fromMap(merged));
+    final merged = {...RestaurantProfile.defaultValue.toMap(), ...data};
+    return RestaurantProfileScreen(config: RestaurantProfileMapper.fromMap(merged));
   },
 );
 
-final heroDocumentType = heroConfigTypeSpec.build(
+final menuItemDocumentType = menuItemTypeSpec.build(
   builder: (data) {
-    final merged = {...HeroConfig.defaultValue.toMap(), ...data};
-    return HeroScreen(config: HeroConfigMapper.fromMap(merged));
+    final merged = {...MenuItem.defaultValue.toMap(), ...data};
+    return MenuItemScreen(config: MenuItemMapper.fromMap(merged));
   },
 );
 
-final upsellDocumentType = upsellConfigTypeSpec.build(
+final promotionCampaignDocumentType = promotionCampaignTypeSpec.build(
   builder: (data) {
-    final merged = {...UpsellConfig.defaultValue.toMap(), ...data};
-    return UpsellScreen(config: UpsellConfigMapper.fromMap(merged));
-  },
-);
-
-final rewardDocumentType = rewardConfigTypeSpec.build(
-  builder: (data) {
-    final merged = {...RewardConfig.defaultValue.toMap(), ...data};
-    return RewardScreen(config: RewardConfigMapper.fromMap(merged));
+    final merged = {...PromotionCampaign.defaultValue.toMap(), ...data};
+    return PromotionCampaignScreen(config: PromotionCampaignMapper.fromMap(merged));
   },
 );

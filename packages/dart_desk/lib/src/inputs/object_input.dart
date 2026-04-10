@@ -83,21 +83,23 @@ class CmsObjectInput extends StatefulWidget {
 class _CmsObjectInputState extends State<CmsObjectInput> {
   late Map<String, dynamic> _value;
 
+  static Map<String, dynamic> _toMap(Object? value) {
+    if (value is Map<String, dynamic>) return Map<String, dynamic>.from(value);
+    if (value is Serializable) return value.toMap();
+    return {};
+  }
+
   @override
   void initState() {
     super.initState();
-    _value = Map<String, dynamic>.from(
-      (widget.data?.value as Map<String, dynamic>?) ?? {},
-    );
+    _value = _toMap(widget.data?.value);
   }
 
   @override
   void didUpdateWidget(covariant CmsObjectInput oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.data?.value != widget.data?.value) {
-      _value = Map<String, dynamic>.from(
-        (widget.data?.value as Map<String, dynamic>?) ?? {},
-      );
+      _value = _toMap(widget.data?.value);
     }
   }
 

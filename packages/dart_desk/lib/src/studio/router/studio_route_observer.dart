@@ -36,14 +36,18 @@ class StudioRouteObserver extends AutoRouterObserver {
     final docId = params.optString('documentId');
     final versionId = params.optString('versionId');
     final docTypeSlug = params.optString('documentTypeSlug');
-    batch(() {
-      vm.currentDocumentTypeSlug.value = docTypeSlug;
-      vm.currentDocumentId.value = docId;
-      vm.selectedDocumentId.value =
-          docId != null ? int.tryParse(docId) : null;
-      vm.currentVersionId.value = versionId;
-      vm.selectedVersionId.value =
-          versionId != null ? int.tryParse(versionId) : null;
+    // Defer signal updates to avoid triggering rebuilds mid-navigation,
+    // which causes _InactiveElements.remove assertion failures.
+    Future.microtask(() {
+      batch(() {
+        vm.currentDocumentTypeSlug.value = docTypeSlug;
+        vm.currentDocumentId.value = docId;
+        vm.selectedDocumentId.value =
+            docId != null ? int.tryParse(docId) : null;
+        vm.currentVersionId.value = versionId;
+        vm.selectedVersionId.value =
+            versionId != null ? int.tryParse(versionId) : null;
+      });
     });
   }
 

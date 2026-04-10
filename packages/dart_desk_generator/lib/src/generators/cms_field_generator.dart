@@ -37,6 +37,15 @@ import 'field_code_registry.dart'
 import 'type_inference_engine.dart';
 import 'utils.dart';
 
+const _primitiveTypes = {
+  'String',
+  'int',
+  'num',
+  'double',
+  'bool',
+  'DateTime',
+};
+
 /// Generates CmsField lists from classes annotated with @CmsConfig.
 /// This generator processes the @CmsFieldConfig annotations on fields to create
 /// corresponding CmsField instances for runtime use.
@@ -364,10 +373,34 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
   )''';
       }
 
+      // For non-primitive array item types, require a static $fromMap method.
+      final isPrimitive = _arrayPrimitiveFields.containsKey(itemTypeName) ||
+          _isImageReferenceType(itemTypeName);
+      String? fromMapCode;
+      if (!isPrimitive) {
+        final itemClassElement = _classElementFromType(itemType);
+        if (itemClassElement != null) {
+          final hasFromMap = itemClassElement.methods.any(
+            (m) => m.isStatic && m.name == r'$fromMap',
+          );
+          if (!hasFromMap) {
+            throw InvalidGenerationSourceError(
+              '$itemTypeName is used as a CmsArrayField item type but does '
+              'not have a static \$fromMap method. Add:\n\n'
+              '  static $itemTypeName \$fromMap(Map<String, dynamic> map) => '
+              '${itemTypeName}Mapper.fromMap(map);\n',
+              element: field,
+            );
+          }
+        }
+        fromMapCode = 'fromMap: $itemTypeName.\$fromMap,';
+      }
+
       return '''CmsArrayField<$itemTypeName>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     innerField: $inferredFieldCode,
+    ${fromMapCode ?? ''}
   )''';
     }
 
@@ -817,10 +850,30 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
             }
           }
 
+          // For non-primitive array item types, require a static $fromMap method.
+          final isPrimitive = _arrayPrimitiveFields.containsKey(genericType);
+          String? fromMapCode;
+          if (!isPrimitive && genericClassElement != null) {
+            final hasFromMap = genericClassElement.methods.any(
+              (m) => m.isStatic && m.name == r'$fromMap',
+            );
+            if (!hasFromMap) {
+              throw InvalidGenerationSourceError(
+                '$genericType is used as a CmsArrayField item type but does '
+                'not have a static \$fromMap method. Add:\n\n'
+                '  static $genericType \$fromMap(Map<String, dynamic> map) => '
+                '${genericType}Mapper.fromMap(map);\n',
+                element: field,
+              );
+            }
+            fromMapCode = 'fromMap: $genericType.\$fromMap,';
+          }
+
           return '''CmsArrayField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     innerField: $inferredFieldCode,
+    ${fromMapCode ?? ''}
     ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
         },
@@ -969,9 +1022,30 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
               _displayType(field.type) ??
               'dynamic';
 
+          // For non-primitive dropdown types, require a static $fromMap method.
+          String? fromMapCode;
+          final dropdownClassElement = _classElementFromType(field.type);
+          if (!_primitiveTypes.contains(genericType) &&
+              dropdownClassElement != null) {
+            final hasFromMap = dropdownClassElement.methods.any(
+              (m) => m.isStatic && m.name == r'$fromMap',
+            );
+            if (!hasFromMap) {
+              throw InvalidGenerationSourceError(
+                '$genericType is used as a CmsDropdownField type but does '
+                'not have a static \$fromMap method. Add:\n\n'
+                '  static $genericType \$fromMap(Map<String, dynamic> map) => '
+                '${genericType}Mapper.fromMap(map);\n',
+                element: field,
+              );
+            }
+            fromMapCode = 'fromMap: $genericType.\$fromMap,';
+          }
+
           return '''CmsDropdownField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
+    ${fromMapCode ?? ''}
     ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
         },
@@ -1001,9 +1075,31 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
               _displayType(_arrayItemDartType(field)) ??
               'dynamic';
 
+          // For non-primitive multi-dropdown types, require a static $fromMap method.
+          String? multiFromMapCode;
+          final multiDropdownClassElement =
+              _classElementFromType(_arrayItemDartType(field));
+          if (!_primitiveTypes.contains(genericType) &&
+              multiDropdownClassElement != null) {
+            final hasFromMap = multiDropdownClassElement.methods.any(
+              (m) => m.isStatic && m.name == r'$fromMap',
+            );
+            if (!hasFromMap) {
+              throw InvalidGenerationSourceError(
+                '$genericType is used as a CmsMultiDropdownField type but does '
+                'not have a static \$fromMap method. Add:\n\n'
+                '  static $genericType \$fromMap(Map<String, dynamic> map) => '
+                '${genericType}Mapper.fromMap(map);\n',
+                element: field,
+              );
+            }
+            multiFromMapCode = 'fromMap: $genericType.\$fromMap,';
+          }
+
           return '''CmsMultiDropdownField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
+    ${multiFromMapCode ?? ''}
     ${optionSource != null ? 'option: $optionSource,' : ''}
   )''';
         },
@@ -1053,9 +1149,37 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
             }
           }
 
+          // For non-primitive object types, require a static $fromMap method.
+          String? objFromMapCode;
+          {
+            final fieldType = field.type;
+            final typeElement = fieldType is InterfaceType
+                ? fieldType.element
+                : null;
+            if (typeElement is ClassElement) {
+              final typeName = typeElement.displayName;
+              if (!_primitiveTypes.contains(typeName)) {
+                final hasFromMap = typeElement.methods.any(
+                  (m) => m.isStatic && m.name == r'$fromMap',
+                );
+                if (!hasFromMap) {
+                  throw InvalidGenerationSourceError(
+                    '$typeName is used as a CmsObjectField type but does '
+                    'not have a static \$fromMap method. Add:\n\n'
+                    '  static $typeName \$fromMap(Map<String, dynamic> map) => '
+                    '${typeName}Mapper.fromMap(map);\n',
+                    element: field,
+                  );
+                }
+                objFromMapCode = 'fromMap: $typeName.\$fromMap,';
+              }
+            }
+          }
+
           return '''CmsObjectField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
+    ${objFromMapCode ?? ''}
     ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
         },

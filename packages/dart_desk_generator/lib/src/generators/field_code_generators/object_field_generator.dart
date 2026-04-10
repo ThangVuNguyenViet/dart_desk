@@ -51,9 +51,41 @@ class ObjectFieldGenerator implements FieldCodeGenerator {
       }
     }
 
+    // For non-primitive object types, require a static $fromMap method.
+    String? fromMapCode;
+    final fieldType = field.type;
+    final typeElement = fieldType is InterfaceType ? fieldType.element : null;
+    if (typeElement is ClassElement) {
+      final typeName = typeElement.displayName;
+      const primitives = {
+        'String',
+        'int',
+        'num',
+        'double',
+        'bool',
+        'DateTime',
+      };
+      if (!primitives.contains(typeName)) {
+        final hasFromMap = typeElement.methods.any(
+          (m) => m.isStatic && m.name == r'$fromMap',
+        );
+        if (!hasFromMap) {
+          throw InvalidGenerationSourceError(
+            '$typeName is used as a CmsObjectField type but does '
+            'not have a static \$fromMap method. Add:\n\n'
+            '  static $typeName \$fromMap(Map<String, dynamic> map) => '
+            '${typeName}Mapper.fromMap(map);\n',
+            element: field,
+          );
+        }
+        fromMapCode = 'fromMap: $typeName.\$fromMap,';
+      }
+    }
+
     return '''CmsObjectField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
+    ${fromMapCode ?? ''}
     ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
   }

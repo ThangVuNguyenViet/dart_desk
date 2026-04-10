@@ -48,6 +48,7 @@ class CmsMultiDropdownInput<T> extends StatelessWidget {
             maxSelected: fieldOption.maxSelected,
             data: data,
             onChanged: onChanged,
+            fromMap: field.fromMap,
           );
         },
       );
@@ -63,6 +64,7 @@ class CmsMultiDropdownInput<T> extends StatelessWidget {
       maxSelected: fieldOption.maxSelected,
       data: data,
       onChanged: onChanged,
+      fromMap: field.fromMap,
     );
   }
 }
@@ -76,6 +78,7 @@ class _CmsMultiDropdownInput<T> extends StatefulWidget {
   final String? placeholder;
   final int? minSelected;
   final int? maxSelected;
+  final T Function(Map<String, dynamic>)? fromMap;
   final ValueChanged<List<T>>? onChanged;
 
   const _CmsMultiDropdownInput({
@@ -89,6 +92,7 @@ class _CmsMultiDropdownInput<T> extends StatefulWidget {
     this.placeholder,
     this.minSelected,
     this.maxSelected,
+    this.fromMap,
   });
 
   @override
@@ -122,7 +126,15 @@ class _CmsMultiDropdownInputState<T> extends State<_CmsMultiDropdownInput<T>> {
   Set<T> _resolveInitialSet() {
     final value = widget.data?.value ?? widget.defaultValues;
     if (value == null) return {};
-    if (value is List) return Set<T>.from(value);
+    if (value is List) {
+      return value.map<T>((e) {
+        if (e is T) return e;
+        if (widget.fromMap != null && e is Map) {
+          return widget.fromMap!(Map<String, dynamic>.from(e));
+        }
+        return e as T;
+      }).toSet();
+    }
     return {};
   }
 
