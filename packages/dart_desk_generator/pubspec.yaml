@@ -1,6 +1,6 @@
 name: dart_desk_generator
 description: Code generator for the Dart Desk CMS framework. Generates CMS configuration from annotations.
-version: 0.1.1
+version: 0.1.2
 homepage: https://github.com/ThangVuNguyenViet/dart_desk
 repository: https://github.com/ThangVuNguyenViet/dart_desk
 issue_tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues
@@ -15,7 +15,7 @@ environment:
 dependencies:
   analyzer: ^10.0.1
   collection: ^1.19.1
-  dart_desk_annotation: ^0.1.0
+  dart_desk_annotation: ^0.1.1
   source_gen: ^4.1.1
   build: ^4.0.3
   code_builder: ^4.10.0

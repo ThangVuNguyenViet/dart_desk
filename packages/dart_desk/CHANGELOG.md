@@ -1,3 +1,7 @@
+## 0.1.3
+
+- Pin dependency versions: `dart_desk_annotation: ^0.1.1`, `dart_desk_client: ^0.1.1`
+
 ## 0.1.2
 
 ### Features

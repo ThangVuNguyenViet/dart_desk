@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Pin dependency version: `dart_desk_annotation: ^0.1.1`
+
 ## 0.1.1
 
 - Add `FieldCodeGenerator` architecture with string, array, dropdown, and object generators
