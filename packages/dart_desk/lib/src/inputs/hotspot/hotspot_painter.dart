@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import '../../data/models/image_types.dart';
@@ -16,26 +18,40 @@ class HotspotPainter extends CustomPainter {
     final ellipseRect =
         Rect.fromCenter(center: center, width: rx * 2, height: ry * 2);
 
-    // Ellipse fill
-    canvas.drawOval(
-      ellipseRect,
-      Paint()..color = Colors.blue.withValues(alpha: 0.2),
+    // Subtle fill with a radial gradient — bright center fading out
+    final gradient = ui.Gradient.radial(
+      center,
+      (rx + ry) / 2,
+      [
+        Colors.white.withValues(alpha: 0.15),
+        Colors.white.withValues(alpha: 0.04),
+      ],
     );
+    canvas.drawOval(ellipseRect, Paint()..shader = gradient);
 
-    // Ellipse border
+    // Ellipse border — white with slight shadow for contrast on any bg
+    canvas.drawOval(
+      ellipseRect.inflate(1),
+      Paint()
+        ..color = Colors.black.withValues(alpha: 0.25)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3
+        ..maskFilter = const ui.MaskFilter.blur(ui.BlurStyle.normal, 2),
+    );
     canvas.drawOval(
       ellipseRect,
       Paint()
-        ..color = Colors.blue
+        ..color = Colors.white
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+        ..strokeWidth = 1.5,
     );
 
-    // Center crosshair
-    const crossSize = 6.0;
+    // Center crosshair — small and refined
+    const crossSize = 5.0;
     final crossPaint = Paint()
-      ..color = Colors.blue
-      ..strokeWidth = 1.5;
+      ..color = Colors.white
+      ..strokeWidth = 1.0
+      ..strokeCap = ui.StrokeCap.round;
     canvas.drawLine(
       Offset(center.dx - crossSize, center.dy),
       Offset(center.dx + crossSize, center.dy),
@@ -46,27 +62,40 @@ class HotspotPainter extends CustomPainter {
       Offset(center.dx, center.dy + crossSize),
       crossPaint,
     );
-    canvas.drawCircle(center, 3, Paint()..color = Colors.blue);
+    // Center dot
+    canvas.drawCircle(
+      center,
+      2.5,
+      Paint()..color = Colors.white,
+    );
+    canvas.drawCircle(
+      center,
+      2.5,
+      Paint()
+        ..color = Colors.black.withValues(alpha: 0.3)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.5,
+    );
 
-    // Resize handles at cardinal points
-    final handlePaint = Paint()..color = Colors.blue;
-    const hs = 5.0;
+    // Cardinal resize handles — small circles with shadow
+    const hs = 4.0;
     final cardinalPoints = [
-      Offset(center.dx, center.dy - ry), // top
-      Offset(center.dx, center.dy + ry), // bottom
-      Offset(center.dx - rx, center.dy), // left
-      Offset(center.dx + rx, center.dy), // right
+      Offset(center.dx, center.dy - ry),
+      Offset(center.dx, center.dy + ry),
+      Offset(center.dx - rx, center.dy),
+      Offset(center.dx + rx, center.dy),
     ];
     for (final offset in cardinalPoints) {
-      canvas.drawCircle(offset, hs, handlePaint);
+      // Shadow
       canvas.drawCircle(
         offset,
-        hs,
+        hs + 0.5,
         Paint()
-          ..color = Colors.white
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.5,
+          ..color = Colors.black.withValues(alpha: 0.3)
+          ..maskFilter = const ui.MaskFilter.blur(ui.BlurStyle.normal, 1.5),
       );
+      // Fill
+      canvas.drawCircle(offset, hs, Paint()..color = Colors.white);
     }
   }
 

@@ -21,9 +21,9 @@ class AspectRatioPreviewStrip extends StatelessWidget {
   });
 
   static const _ratios = [
-    (label: '16:9 hero', width: 16.0, height: 9.0),
-    (label: '4:3 card', width: 4.0, height: 3.0),
-    (label: '1:1 thumb', width: 1.0, height: 1.0),
+    (label: '16:9', desc: 'Hero', width: 16.0, height: 9.0),
+    (label: '4:3', desc: 'Card', width: 4.0, height: 3.0),
+    (label: '1:1', desc: 'Thumb', width: 1.0, height: 1.0),
   ];
 
   @override
@@ -36,47 +36,69 @@ class AspectRatioPreviewStrip extends StatelessWidget {
     final visibleWidth = (1.0 - crop.left - crop.right).clamp(0.1, 1.0);
     final visibleHeight = (1.0 - crop.top - crop.bottom).clamp(0.1, 1.0);
 
-    return Row(
-      children: _ratios.map((ratio) {
-        final aspectRatio = ratio.width / ratio.height;
-        return Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: Column(
-            children: [
-              Container(
-                width: 96,
-                height: 96 / aspectRatio,
-                decoration: BoxDecoration(
-                  border: Border.all(color: theme.colorScheme.border),
-                  borderRadius: BorderRadius.circular(6),
-                  color: readOnly
-                      ? theme.colorScheme.muted.withValues(alpha: 0.2)
-                      : null,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(5),
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    alignment: alignment,
-                    child: SizedBox(
-                      width: 96 / visibleWidth,
-                      height: (96 / aspectRatio) / visibleHeight,
-                      child: Image.network(imageUrl, fit: BoxFit.cover),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Preview',
+          style: theme.textTheme.small.copyWith(
+            color: theme.colorScheme.mutedForeground,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: _ratios.map((ratio) {
+            final aspectRatio = ratio.width / ratio.height;
+            return Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Column(
+                children: [
+                  Container(
+                    width: 80,
+                    height: 80 / aspectRatio,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: theme.colorScheme.border,
+                        width: 1,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: FittedBox(
+                        fit: BoxFit.cover,
+                        alignment: alignment,
+                        child: SizedBox(
+                          width: 80 / visibleWidth,
+                          height: (80 / aspectRatio) / visibleHeight,
+                          child: Image.network(imageUrl, fit: BoxFit.cover),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 6),
+                  Text(
+                    ratio.label,
+                    style: theme.textTheme.small.copyWith(
+                      color: theme.colorScheme.foreground,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 11,
+                    ),
+                  ),
+                  Text(
+                    ratio.desc,
+                    style: theme.textTheme.small.copyWith(
+                      color: theme.colorScheme.mutedForeground,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                ratio.label,
-                style: theme.textTheme.small.copyWith(
-                  color: theme.colorScheme.mutedForeground,
-                ),
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }

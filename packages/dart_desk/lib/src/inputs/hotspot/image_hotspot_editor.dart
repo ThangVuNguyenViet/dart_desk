@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -75,132 +76,176 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
     final draft = _draft.watch(context);
     final loadFailed = _loadFailed.watch(context);
 
-    return Column(
+    return ShadCard(
       key: const ValueKey('hotspot_editor'),
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Edit Framing', style: theme.textTheme.h4),
-        const SizedBox(height: 12),
-        FramingModeToggle(
-          mode: draft.mode,
-          onChanged: (mode) {
-            _draft.value = draft.copyWith(mode: mode);
-            widget.onModeChanged?.call(mode);
-          },
-        ),
-        const SizedBox(height: 12),
-
-        if (loadFailed)
-          _ErrorState(
-            onRetry: () => _loadFailed.value = false,
-            onClose: () => Navigator.of(context).pop(),
-          )
-        else
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 400),
-            child: AspectRatio(
-              aspectRatio: aspectRatio ?? 16 / 9,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return GestureDetector(
-                    onPanStart: draft.mode == FramingMode.preview
-                        ? null
-                        : (details) =>
-                              _onPanStart(details, constraints.biggest),
-                    onPanUpdate: draft.mode == FramingMode.preview
-                        ? null
-                        : (details) =>
-                              _onPanUpdate(details, constraints.biggest),
-                    onPanEnd: (_) => _dragTarget = null,
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: Image.network(
-                            widget.imageUrl,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                if (mounted) {
-                                  _loadFailed.value = true;
-                                }
-                              });
-                              return const SizedBox.shrink();
-                            },
-                          ),
-                        ),
-                        if (draft.mode != FramingMode.focus)
-                          Positioned.fill(
-                            child: CustomPaint(
-                              painter: CropOverlayPainter(
-                                crop: draft.crop,
-                                imageSize: constraints.biggest,
-                              ),
-                            ),
-                          ),
-                        if (draft.mode != FramingMode.crop)
-                          Positioned.fill(
-                            child: CustomPaint(
-                              painter: HotspotPainter(hotspot: draft.hotspot),
-                            ),
-                          ),
-                      ],
-                    ),
-                  );
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header row: title + mode toggle
+          Row(
+            children: [
+              Expanded(
+                child: Text('Edit Framing', style: theme.textTheme.h4),
+              ),
+              FramingModeToggle(
+                mode: draft.mode,
+                onChanged: (mode) {
+                  _draft.value = draft.copyWith(mode: mode);
+                  widget.onModeChanged?.call(mode);
                 },
               ),
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // Image canvas
+          if (loadFailed)
+            _ErrorState(
+              onRetry: () => _loadFailed.value = false,
+              onClose: () => Navigator.of(context).pop(),
+            )
+          else
+            Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.muted.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: theme.colorScheme.border),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(7),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 400),
+                  child: AspectRatio(
+                    aspectRatio: aspectRatio ?? 16 / 9,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return MouseRegion(
+                          cursor: draft.mode == FramingMode.preview
+                              ? SystemMouseCursors.basic
+                              : SystemMouseCursors.grab,
+                          child: GestureDetector(
+                            onPanStart: draft.mode == FramingMode.preview
+                                ? null
+                                : (details) =>
+                                    _onPanStart(details, constraints.biggest),
+                            onPanUpdate: draft.mode == FramingMode.preview
+                                ? null
+                                : (details) =>
+                                    _onPanUpdate(details, constraints.biggest),
+                            onPanEnd: (_) => _dragTarget = null,
+                            child: Stack(
+                              children: [
+                                Positioned.fill(
+                                  child: Image.network(
+                                    widget.imageUrl,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                        if (mounted) {
+                                          _loadFailed.value = true;
+                                        }
+                                      });
+                                      return const SizedBox.shrink();
+                                    },
+                                  ),
+                                ),
+                                if (draft.mode != FramingMode.focus)
+                                  Positioned.fill(
+                                    child: CustomPaint(
+                                      painter: CropOverlayPainter(
+                                        crop: draft.crop,
+                                        imageSize: constraints.biggest,
+                                      ),
+                                    ),
+                                  ),
+                                if (draft.mode != FramingMode.crop)
+                                  Positioned.fill(
+                                    child: CustomPaint(
+                                      painter:
+                                          HotspotPainter(hotspot: draft.hotspot),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
             ),
+
+          const SizedBox(height: 16),
+
+          // Preview strip
+          AspectRatioPreviewStrip(
+            imageUrl: widget.imageUrl,
+            hotspot: draft.hotspot,
+            crop: draft.crop,
+            readOnly: draft.mode == FramingMode.preview,
           ),
 
-        const SizedBox(height: 16),
+          const SizedBox(height: 16),
+          const Divider(height: 1),
+          const SizedBox(height: 16),
 
-        AspectRatioPreviewStrip(
-          imageUrl: widget.imageUrl,
-          hotspot: draft.hotspot,
-          crop: draft.crop,
-          readOnly: draft.mode == FramingMode.preview,
-        ),
-
-        const SizedBox(height: 16),
-
-        Wrap(
-          alignment: WrapAlignment.end,
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            ShadButton.outline(
-              key: const ValueKey('reset_focus_button'),
-              onPressed: () => _draft.value = draft.resetFocus(),
-              size: ShadButtonSize.sm,
-              child: const Text('Reset focus'),
-            ),
-            ShadButton.outline(
-              key: const ValueKey('reset_crop_button'),
-              onPressed: () => _draft.value = draft.resetCrop(),
-              size: ShadButtonSize.sm,
-              child: const Text('Reset crop'),
-            ),
-            ShadButton.outline(
-              key: const ValueKey('reset_all_button'),
-              onPressed: () => _draft.value = draft.resetAll(),
-              size: ShadButtonSize.sm,
-              child: const Text('Reset all'),
-            ),
-            ShadButton.outline(
-              key: const ValueKey('cancel_button'),
-              onPressed: () => Navigator.of(context).pop(),
-              size: ShadButtonSize.sm,
-              child: const Text('Cancel'),
-            ),
-            ShadButton(
-              key: const ValueKey('apply_button'),
-              onPressed: _apply,
-              size: ShadButtonSize.sm,
-              child: const Text('Apply'),
-            ),
-          ],
-        ),
-      ],
+          // Actions
+          Wrap(
+            spacing: 4,
+            runSpacing: 8,
+            alignment: WrapAlignment.spaceBetween,
+            children: [
+              // Reset actions — ghost for low visual weight
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ShadButton.ghost(
+                    key: const ValueKey('reset_focus_button'),
+                    onPressed: () => _draft.value = draft.resetFocus(),
+                    size: ShadButtonSize.sm,
+                    child: const Text('Reset focus'),
+                  ),
+                  ShadButton.ghost(
+                    key: const ValueKey('reset_crop_button'),
+                    onPressed: () => _draft.value = draft.resetCrop(),
+                    size: ShadButtonSize.sm,
+                    child: const Text('Reset crop'),
+                  ),
+                  ShadButton.ghost(
+                    key: const ValueKey('reset_all_button'),
+                    onPressed: () => _draft.value = draft.resetAll(),
+                    size: ShadButtonSize.sm,
+                    child: const Text('Reset all'),
+                  ),
+                ],
+              ),
+              // Primary actions
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ShadButton.outline(
+                    key: const ValueKey('cancel_button'),
+                    onPressed: () => Navigator.of(context).pop(),
+                    size: ShadButtonSize.sm,
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  ShadButton(
+                    key: const ValueKey('apply_button'),
+                    onPressed: _apply,
+                    size: ShadButtonSize.sm,
+                    child: const Text('Apply'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -390,27 +435,46 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
       decoration: BoxDecoration(
-        border: Border.all(color: ShadTheme.of(context).colorScheme.border),
+        color: theme.colorScheme.muted.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.border),
       ),
-      child: Row(
+      child: Column(
         children: [
-          const Expanded(child: Text('Could not load image')),
-          ShadButton.outline(
-            key: const ValueKey('retry_image_button'),
-            onPressed: onRetry,
-            size: ShadButtonSize.sm,
-            child: const Text('Retry'),
+          Icon(
+            LucideIcons.imageOff,
+            size: 32,
+            color: theme.colorScheme.mutedForeground,
           ),
-          const SizedBox(width: 8),
-          ShadButton.outline(
-            key: const ValueKey('close_error_button'),
-            onPressed: onClose,
-            size: ShadButtonSize.sm,
-            child: const Text('Close'),
+          const SizedBox(height: 8),
+          Text(
+            'Could not load image',
+            style: theme.textTheme.p.copyWith(
+              color: theme.colorScheme.mutedForeground,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ShadButton.outline(
+                key: const ValueKey('retry_image_button'),
+                onPressed: onRetry,
+                size: ShadButtonSize.sm,
+                child: const Text('Retry'),
+              ),
+              const SizedBox(width: 8),
+              ShadButton.ghost(
+                key: const ValueKey('close_error_button'),
+                onPressed: onClose,
+                size: ShadButtonSize.sm,
+                child: const Text('Close'),
+              ),
+            ],
           ),
         ],
       ),
