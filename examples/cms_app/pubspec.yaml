@@ -33,10 +33,7 @@ dependencies:
     git:
       url: https://github.com/ThangVuNguyenViet/dart_desk_be.git
       path: dart_desk_client
-  marionette_flutter:
-    git:
-      url: https://github.com/thangmoxielabs/marionette_mcp.git
-      path: packages/marionette_flutter
+  marionette_flutter: ^0.5.0
 
 dev_dependencies:
   flutter_test:

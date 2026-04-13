@@ -2,14 +2,13 @@ import 'package:dart_desk/studio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
-
 import 'document_types.dart';
 
 const String _defaultServerUrl = 'http://localhost:8080/';
 
 void main() {
   if (kDebugMode) {
-    MarionetteBinding.ensureInitialized(const MarionetteConfiguration());
+    MarionetteBinding.ensureInitialized(CmsMarionetteConfig.configuration);
   }
   runApp(const MyApp());
 }
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
 
   static const apiKey = String.fromEnvironment(
     'API_KEY',
-    defaultValue: 'cms_w_5dGK1_MeafXRpFF5sLLU-0x5ICYqEIVDdyT9wrlcFmg',
+    defaultValue: 'cms_w_5cRn9tCk-cdHTP0KM5Wiia02WhNMTL2rCzrz8guMVgk',
   );
 
   @override

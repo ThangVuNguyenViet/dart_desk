@@ -25,10 +25,6 @@ dependency_overrides:
     path: packages/dart_desk_annotation
   dart_desk_generator:
     path: packages/dart_desk_generator
-  marionette_flutter:
-    git:
-      url: https://github.com/thangmoxielabs/marionette_mcp.git
-      path: packages/marionette_flutter
   dart_desk_client:
     path: ../dart_desk_be/dart_desk_client
   signals:
