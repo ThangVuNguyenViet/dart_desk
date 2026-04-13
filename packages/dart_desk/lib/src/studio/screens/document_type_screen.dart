@@ -17,7 +17,7 @@ class DocumentTypeScreen extends StatelessWidget {
 
   final String documentTypeSlug;
 
-  Future<void> _deleteDocument(BuildContext context, {int? docId}) async {
+  Future<void> _deleteDocument(BuildContext context, {String? docId}) async {
     final viewModel = GetIt.I<CmsViewModel>();
     final toaster = ShadToaster.of(context);
     if (docId == null) return;

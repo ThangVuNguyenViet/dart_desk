@@ -14,9 +14,7 @@ void main() {
 
   group('CmsCheckboxInput', () {
     testWidgets('renders label text', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsCheckboxInput(field: field),
-      ));
+      await tester.pumpWidget(buildInputApp(CmsCheckboxInput(field: field)));
       await tester.pumpAndSettle();
 
       expect(find.text('Enable this feature'), findsOneWidget);
@@ -25,13 +23,15 @@ void main() {
     testWidgets('onChanged fires on checkbox tap', (tester) async {
       bool? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsCheckboxInput(
-          field: field,
-          data: const CmsData(value: false, path: 'enable'),
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsCheckboxInput(
+            field: field,
+            data: const CmsData(value: false, path: 'enable'),
+            onChanged: (v) => received = v,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(ShadCheckbox));
@@ -43,13 +43,15 @@ void main() {
     testWidgets('onChanged fires on label tap', (tester) async {
       bool? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsCheckboxInput(
-          field: field,
-          data: const CmsData(value: false, path: 'enable'),
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsCheckboxInput(
+            field: field,
+            data: const CmsData(value: false, path: 'enable'),
+            onChanged: (v) => received = v,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Enable this feature'));
@@ -65,9 +67,9 @@ void main() {
         option: CmsCheckboxOption(hidden: true),
       );
 
-      await tester.pumpWidget(buildInputApp(
-        CmsCheckboxInput(field: hiddenField),
-      ));
+      await tester.pumpWidget(
+        buildInputApp(CmsCheckboxInput(field: hiddenField)),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(ShadCheckbox), findsNothing);

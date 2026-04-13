@@ -65,7 +65,7 @@ class CmsViewModel {
   );
 
   late final versionsContainer = SignalContainer(
-    (int documentId) => AwaitableFutureSignal(
+    (String documentId) => AwaitableFutureSignal(
       () => dataSource.getDocumentVersions(documentId),
       debugLabel: 'versions',
     ),
@@ -73,7 +73,7 @@ class CmsViewModel {
   );
 
   late final documentDataContainer = SignalContainer(
-    (int versionId) => AwaitableFutureSignal(
+    (String versionId) => AwaitableFutureSignal(
       () => _fetchVersionWithData(versionId),
       debugLabel: 'documentData',
     ),
@@ -94,7 +94,7 @@ class CmsViewModel {
   ///
   /// `getDocumentVersion` returns metadata only (no data field).
   /// This method also fetches the version data and combines them.
-  Future<DocumentVersion?> _fetchVersionWithData(int versionId) async {
+  Future<DocumentVersion?> _fetchVersionWithData(String versionId) async {
     final results = await Future.wait([
       dataSource.getDocumentVersion(versionId),
       dataSource.getDocumentVersionData(versionId),
@@ -105,11 +105,14 @@ class CmsViewModel {
     return version.copyWith(data: data);
   }
 
-  final selectedDocumentId = Signal<int?>(
+  final selectedDocumentId = Signal<String?>(
     null,
     debugLabel: 'selectedDocumentId',
   );
-  final selectedVersionId = Signal<int?>(null, debugLabel: 'selectedVersionId');
+  final selectedVersionId = Signal<String?>(
+    null,
+    debugLabel: 'selectedVersionId',
+  );
 
   // ============================================================
   // Document Operations
@@ -162,7 +165,7 @@ class CmsViewModel {
         return document;
       }, debugLabel: 'createDocument');
 
-  late final setDefaultDocument = mutationSignal<CmsDocument?, int>((
+  late final setDefaultDocument = mutationSignal<CmsDocument?, String>((
     documentId,
   ) async {
     final docTypeName = currentDocumentType.value?.name ?? '';
@@ -175,7 +178,7 @@ class CmsViewModel {
   }, debugLabel: 'setDefaultDocument');
 
   late final deleteDocument =
-      mutationSignal<({bool deleted, CmsDocument? newDefault}), int>((
+      mutationSignal<({bool deleted, CmsDocument? newDefault}), String>((
         documentId,
       ) async {
         final docTypeName = currentDocumentType.value?.name ?? '';
@@ -216,7 +219,7 @@ class CmsViewModel {
   late final updateDocumentData =
       mutationSignal<
         CmsDocument?,
-        ({int documentId, Map<String, dynamic> data, bool publish})
+        ({String documentId, Map<String, dynamic> data, bool publish})
       >((args) async {
         final result = await dataSource.updateDocumentData(
           args.documentId,
@@ -251,7 +254,7 @@ class CmsViewModel {
   // Version Status Operations
   // ============================================================
 
-  late final publishVersion = mutationSignal<DocumentVersion?, int>((
+  late final publishVersion = mutationSignal<DocumentVersion?, String>((
     versionId,
   ) async {
     final result = await dataSource.publishDocumentVersion(versionId);
@@ -265,7 +268,7 @@ class CmsViewModel {
     return result;
   }, debugLabel: 'publishVersion');
 
-  late final archiveVersion = mutationSignal<DocumentVersion?, int>((
+  late final archiveVersion = mutationSignal<DocumentVersion?, String>((
     versionId,
   ) async {
     final result = await dataSource.archiveDocumentVersion(versionId);
@@ -279,7 +282,7 @@ class CmsViewModel {
     return result;
   }, debugLabel: 'archiveVersion');
 
-  late final deleteVersion = mutationSignal<bool, int>((versionId) async {
+  late final deleteVersion = mutationSignal<bool, String>((versionId) async {
     final result = await dataSource.deleteDocumentVersion(versionId);
     if (result) {
       if (selectedVersionId.value == versionId) {

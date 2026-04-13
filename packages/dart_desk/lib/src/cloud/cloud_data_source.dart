@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
 
 import 'package:dart_desk_client/dart_desk_client.dart' as serverpod;
 
@@ -71,9 +72,12 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<CmsDocument?> getDocument(int documentId) async {
+  Future<CmsDocument?> getDocument(String documentId) async {
     try {
-      final response = await _client.document.getDocument(documentId);
+      final response = await _client.document.getDocument(
+        UuidValue.fromString(documentId),
+      );
+      if (response == null) return null;
       return _toCmsDocument(response);
     } on serverpod.ServerpodClientException catch (e) {
       if (e.statusCode == 404 || e.statusCode == 410) return null;
@@ -112,14 +116,14 @@ class CloudDataSource implements DataSource {
 
   @override
   Future<CmsDocument?> updateDocument(
-    int documentId, {
+    String documentId, {
     String? title,
     String? slug,
     bool? isDefault,
   }) async {
     try {
       final response = await _client.document.updateDocument(
-        documentId,
+        UuidValue.fromString(documentId),
         title: title,
         slug: slug,
         isDefault: isDefault,
@@ -139,11 +143,13 @@ class CloudDataSource implements DataSource {
   @override
   Future<CmsDocument> setDefaultDocument(
     String documentTypeSlug,
-    int documentId,
+    String documentId,
   ) async {
     try {
-      final doc = await _client.document
-          .setDefaultDocument(documentTypeSlug, documentId);
+      final doc = await _client.document.setDefaultDocument(
+        documentTypeSlug,
+        UuidValue.fromString(documentId),
+      );
       return _toCmsDocument(doc);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) throw const CmsAuthenticationException();
@@ -154,9 +160,11 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<bool> deleteDocument(int documentId) async {
+  Future<bool> deleteDocument(String documentId) async {
     try {
-      return await _client.document.deleteDocument(documentId);
+      return await _client.document.deleteDocument(
+        UuidValue.fromString(documentId),
+      );
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
@@ -191,14 +199,14 @@ class CloudDataSource implements DataSource {
 
   @override
   Future<DocumentVersionList> getDocumentVersions(
-    int documentId, {
+    String documentId, {
     int limit = 20,
     int offset = 0,
   }) async {
     try {
       // Always fetch with operations to compute data
       final response = await _client.document.getDocumentVersions(
-        documentId,
+        UuidValue.fromString(documentId),
         limit: limit,
         offset: offset,
         includeOperations: true,
@@ -237,9 +245,12 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<DocumentVersion?> getDocumentVersion(int versionId) async {
+  Future<DocumentVersion?> getDocumentVersion(String versionId) async {
     try {
-      final response = await _client.document.getDocumentVersion(versionId);
+      final response = await _client.document.getDocumentVersion(
+        UuidValue.fromString(versionId),
+      );
+      if (response == null) return null;
       return _toDocumentVersion(response);
     } on serverpod.ServerpodClientException catch (e) {
       if (e.statusCode == 404 || e.statusCode == 410) return null;
@@ -250,9 +261,11 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<Map<String, dynamic>?> getDocumentVersionData(int versionId) async {
+  Future<Map<String, dynamic>?> getDocumentVersionData(String versionId) async {
     try {
-      final dataJson = await _client.document.getDocumentVersionData(versionId);
+      final dataJson = await _client.document.getDocumentVersionData(
+        UuidValue.fromString(versionId),
+      );
       return dataJson != null
           ? jsonDecode(dataJson) as Map<String, dynamic>
           : null;
@@ -263,7 +276,7 @@ class CloudDataSource implements DataSource {
 
   @override
   Future<DocumentVersion> createDocumentVersion(
-    int documentId, {
+    String documentId, {
     String status = 'draft',
     String? changeLog,
   }) async {
@@ -272,7 +285,7 @@ class CloudDataSource implements DataSource {
       final enumStatus = _parseDocumentVersionStatus(status);
 
       final response = await _client.document.createDocumentVersion(
-        documentId,
+        UuidValue.fromString(documentId),
         status: enumStatus,
         changeLog: changeLog,
       );
@@ -288,9 +301,11 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<DocumentVersion?> publishDocumentVersion(int versionId) async {
+  Future<DocumentVersion?> publishDocumentVersion(String versionId) async {
     try {
-      final response = await _client.document.publishDocumentVersion(versionId);
+      final response = await _client.document.publishDocumentVersion(
+        UuidValue.fromString(versionId),
+      );
       if (response == null) return null;
       return _toDocumentVersion(response);
     } on serverpod.ServerpodClientException catch (e, st) {
@@ -304,9 +319,11 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<DocumentVersion?> archiveDocumentVersion(int versionId) async {
+  Future<DocumentVersion?> archiveDocumentVersion(String versionId) async {
     try {
-      final response = await _client.document.archiveDocumentVersion(versionId);
+      final response = await _client.document.archiveDocumentVersion(
+        UuidValue.fromString(versionId),
+      );
       if (response == null) return null;
       return _toDocumentVersion(response);
     } on serverpod.ServerpodClientException catch (e, st) {
@@ -320,9 +337,11 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<bool> deleteDocumentVersion(int versionId) async {
+  Future<bool> deleteDocumentVersion(String versionId) async {
     try {
-      return await _client.document.deleteDocumentVersion(versionId);
+      return await _client.document.deleteDocumentVersion(
+        UuidValue.fromString(versionId),
+      );
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
         throw const CmsAuthenticationException();
@@ -496,8 +515,8 @@ class CloudDataSource implements DataSource {
     }
 
     return CmsDocument(
-      id: doc.id,
-      clientId: doc.projectId,
+      id: doc.id.toString(),
+      clientId: doc.projectId.toString(),
       documentType: doc.documentType,
       title: doc.title,
       slug: doc.slug,
@@ -506,8 +525,8 @@ class CloudDataSource implements DataSource {
           parsedData, // Frontend still uses activeVersionData name
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
-      createdByUserId: doc.createdByUserId,
-      updatedByUserId: doc.updatedByUserId,
+      createdByUserId: doc.createdByUserId?.toString(),
+      updatedByUserId: doc.updatedByUserId?.toString(),
     );
   }
 
@@ -538,7 +557,7 @@ class CloudDataSource implements DataSource {
     }
 
     return MediaAsset(
-      id: asset.id ?? 0,
+      id: asset.id.toString(),
       assetId: asset.assetId,
       fileName: asset.fileName,
       mimeType: asset.mimeType,
@@ -552,7 +571,7 @@ class CloudDataSource implements DataSource {
       palette: palette,
       exif: exif,
       location: location,
-      uploadedByUserId: asset.uploadedByUserId,
+      uploadedByUserId: asset.uploadedByUserId?.toString(),
       createdAt: asset.createdAt ?? DateTime.now(),
       metadataStatus: _toMetadataStatus(asset.metadataStatus),
     );
@@ -574,8 +593,8 @@ class CloudDataSource implements DataSource {
   /// Converts a Serverpod DocumentVersion to a platform-agnostic DocumentVersion.
   DocumentVersion _toDocumentVersion(serverpod.DocumentVersion version) {
     return DocumentVersion(
-      id: version.id,
-      documentId: version.documentId,
+      id: version.id.toString(),
+      documentId: version.documentId.toString(),
       versionNumber: version.versionNumber,
       status: DocumentVersionStatus.fromString(version.status.name),
       changeLog: version.changeLog,
@@ -583,7 +602,7 @@ class CloudDataSource implements DataSource {
       scheduledAt: version.scheduledAt,
       archivedAt: version.archivedAt,
       createdAt: version.createdAt,
-      createdByUserId: version.createdByUserId,
+      createdByUserId: version.createdByUserId?.toString(),
     );
   }
 
@@ -593,8 +612,8 @@ class CloudDataSource implements DataSource {
     Map<String, dynamic> data,
   ) {
     return DocumentVersion(
-      id: version.id,
-      documentId: version.documentId,
+      id: version.id.toString(),
+      documentId: version.documentId.toString(),
       versionNumber: version.versionNumber,
       status: DocumentVersionStatus.fromString(version.status.name),
       data: Map<String, dynamic>.from(data), // Copy to avoid mutation
@@ -603,7 +622,7 @@ class CloudDataSource implements DataSource {
       scheduledAt: version.scheduledAt,
       archivedAt: version.archivedAt,
       createdAt: version.createdAt,
-      createdByUserId: version.createdByUserId,
+      createdByUserId: version.createdByUserId?.toString(),
     );
   }
 
@@ -653,13 +672,13 @@ class CloudDataSource implements DataSource {
 
   @override
   Future<CmsDocument> updateDocumentData(
-    int documentId,
+    String documentId,
     Map<String, dynamic> updates, {
     String? sessionId,
   }) async {
     try {
       final response = await _client.document.updateDocumentData(
-        documentId,
+        UuidValue.fromString(documentId),
         jsonEncode(updates),
         sessionId: sessionId,
       );
@@ -677,13 +696,13 @@ class CloudDataSource implements DataSource {
   /// Get CRDT operations since a specific HLC timestamp
   /// Used for polling updates from other users
   Future<List<serverpod.DocumentCrdtOperation>> getOperationsSince(
-    int documentId,
+    String documentId,
     String sinceHlc, {
     int limit = 100,
   }) async {
     try {
       return await _client.documentCollaboration.getOperationsSince(
-        documentId,
+        UuidValue.fromString(documentId),
         sinceHlc,
         limit: limit,
       );
@@ -694,13 +713,13 @@ class CloudDataSource implements DataSource {
 
   /// Submit an edit (partial field updates) for collaborative editing
   Future<CmsDocument> submitEdit(
-    int documentId,
+    String documentId,
     String sessionId,
     Map<String, dynamic> fieldUpdates,
   ) async {
     try {
       final response = await _client.documentCollaboration.submitEdit(
-        documentId,
+        UuidValue.fromString(documentId),
         sessionId,
         jsonEncode(fieldUpdates),
       );
@@ -716,10 +735,10 @@ class CloudDataSource implements DataSource {
   }
 
   /// Get list of users currently editing this document
-  Future<List<Map<String, dynamic>>> getActiveEditors(int documentId) async {
+  Future<List<Map<String, dynamic>>> getActiveEditors(String documentId) async {
     try {
       final response = await _client.documentCollaboration.getActiveEditors(
-        documentId,
+        UuidValue.fromString(documentId),
       );
       return response
           .map((e) => jsonDecode(e) as Map<String, dynamic>)
@@ -730,18 +749,18 @@ class CloudDataSource implements DataSource {
   }
 
   /// Get the current HLC for a document
-  Future<String?> getCurrentHlc(int documentId) async {
+  Future<String?> getCurrentHlc(String documentId) async {
     try {
-      return await _client.documentCollaboration.getCurrentHlc(documentId);
+      return await _client.documentCollaboration.getCurrentHlc(UuidValue.fromString(documentId));
     } catch (e, st) {
       _throw('Failed to get current HLC', e, st);
     }
   }
 
   /// Get operation count for a document
-  Future<int> getOperationCount(int documentId) async {
+  Future<int> getOperationCount(String documentId) async {
     try {
-      return await _client.documentCollaboration.getOperationCount(documentId);
+      return await _client.documentCollaboration.getOperationCount(UuidValue.fromString(documentId));
     } catch (e, st) {
       _throw('Failed to get operation count', e, st);
     }

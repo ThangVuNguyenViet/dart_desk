@@ -39,30 +39,33 @@ class CmsTopBar extends StatelessWidget {
         label: headerConfig?.title ?? 'CMS Studio',
         onTap: docTypeSlug != null
             ? () => context.router.navigate(
-                  DocumentTypeScreenRoute(documentTypeSlug: docTypeSlug),
-                )
+                DocumentTypeScreenRoute(documentTypeSlug: docTypeSlug),
+              )
             : null,
       ),
     ];
 
     if (docTypeSlug != null) {
       final docType = viewModel.currentDocumentType.value;
-      segments.add(BreadcrumbSegment(
-        label: docType?.title ?? docTypeSlug,
-        key: docId != null ? const ValueKey('breadcrumb_back') : null,
-        onTap: docId != null
-            ? () => context.router.navigate(
+      segments.add(
+        BreadcrumbSegment(
+          label: docType?.title ?? docTypeSlug,
+          key: docId != null ? const ValueKey('breadcrumb_back') : null,
+          onTap: docId != null
+              ? () => context.router.navigate(
                   DocumentTypeScreenRoute(documentTypeSlug: docTypeSlug),
                 )
-            : null,
-      ));
+              : null,
+        ),
+      );
     }
 
     if (docId != null) {
       final documentViewModel = GetIt.I<CmsDocumentViewModel>();
       final title = documentViewModel.title.watch(context);
-      segments
-          .add(BreadcrumbSegment(label: title.isNotEmpty ? title : 'Document'));
+      segments.add(
+        BreadcrumbSegment(label: title.isNotEmpty ? title : 'Document'),
+      );
     }
 
     final themeModeSignal = CmsThemeModeProvider.of(context);
@@ -73,9 +76,7 @@ class CmsTopBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: CmsSpacing.lg),
       decoration: BoxDecoration(
         color: theme.colorScheme.background,
-        border: Border(
-          bottom: BorderSide(color: theme.colorScheme.border),
-        ),
+        border: Border(bottom: BorderSide(color: theme.colorScheme.border)),
       ),
       child: Row(
         children: [
@@ -110,7 +111,10 @@ class CmsTopBar extends StatelessWidget {
             onChanged: (mode) async {
               themeModeSignal.value = mode;
               final prefs = await SharedPreferences.getInstance();
-              await prefs.setBool('cms_theme_mode_dark', mode == ThemeMode.dark);
+              await prefs.setBool(
+                'cms_theme_mode_dark',
+                mode == ThemeMode.dark,
+              );
             },
           ),
           const SizedBox(width: CmsSpacing.md),

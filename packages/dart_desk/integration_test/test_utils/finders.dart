@@ -13,9 +13,9 @@ Finder findByKey(String key) => find.byKey(ValueKey(key));
 /// the given text. This is the correct finder for shadcn_ui inputs, which
 /// use [EditableText] internally rather than [TextField].
 Finder findShadInput(String placeholder) => find.descendant(
-      of: find.ancestor(
-        of: find.text(placeholder),
-        matching: find.byType(ShadInput),
-      ),
-      matching: find.byType(EditableText),
-    );
+  of: find.ancestor(
+    of: find.text(placeholder),
+    matching: find.byType(ShadInput),
+  ),
+  matching: find.byType(EditableText),
+);

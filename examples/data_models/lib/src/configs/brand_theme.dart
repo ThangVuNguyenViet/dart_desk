@@ -21,10 +21,7 @@ part 'brand_theme.mapper.dart';
 )
 class BrandTheme extends CmsContent
     with BrandThemeMappable, Serializable<BrandTheme> {
-  @CmsStringFieldConfig(
-    description: 'Theme name',
-    option: CmsStringOption(),
-  )
+  @CmsStringFieldConfig(description: 'Theme name', option: CmsStringOption())
   final String name;
 
   @CmsColorFieldConfig(

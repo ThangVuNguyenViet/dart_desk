@@ -8,7 +8,20 @@ class PromotionCampaignScreen extends StatelessWidget {
 
   String _formatDate(DateTime? dt) {
     if (dt == null) return '—';
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
   }
 
@@ -45,8 +58,12 @@ class PromotionCampaignScreen extends StatelessWidget {
                 // Schedule timeline
                 _ScheduleCard(
                   validFrom: _formatDate(config.validFrom),
-                  startsAt: config.startsAt != null ? '${_formatDate(config.startsAt)} at ${_formatTime(config.startsAt)}' : '—',
-                  endsAt: config.endsAt != null ? '${_formatDate(config.endsAt)} at ${_formatTime(config.endsAt)}' : '—',
+                  startsAt: config.startsAt != null
+                      ? '${_formatDate(config.startsAt)} at ${_formatTime(config.startsAt)}'
+                      : '—',
+                  endsAt: config.endsAt != null
+                      ? '${_formatDate(config.endsAt)} at ${_formatTime(config.endsAt)}'
+                      : '—',
                 ),
                 const SizedBox(height: 20),
 
@@ -135,13 +152,19 @@ class _PromoBanner extends StatelessWidget {
                     height: 6,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: config.isActive ? const Color(0xFF4ADE80) : Colors.red[300],
+                      color: config.isActive
+                          ? const Color(0xFF4ADE80)
+                          : Colors.red[300],
                     ),
                   ),
                   const SizedBox(width: 6),
                   Text(
                     config.isActive ? 'Active' : 'Inactive',
-                    style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -223,12 +246,20 @@ class _DiscountCard extends StatelessWidget {
               children: [
                 Text(
                   '${config.discountPercent}% off',
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: -0.5),
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.5,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   config.discountType,
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600], fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
@@ -250,19 +281,37 @@ class _PromoCodeCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFFF8FAF9),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE8F0EC), style: BorderStyle.solid),
+        border: Border.all(
+          color: const Color(0xFFE8F0EC),
+          style: BorderStyle.solid,
+        ),
       ),
       child: Row(
         children: [
-          const Icon(Icons.confirmation_number_outlined, size: 20, color: Color(0xFF496455)),
+          const Icon(
+            Icons.confirmation_number_outlined,
+            size: 20,
+            color: Color(0xFF496455),
+          ),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Promo Code', style: TextStyle(fontSize: 10, color: Colors.grey[500], fontWeight: FontWeight.w600, letterSpacing: 0.5)),
+              Text(
+                'Promo Code',
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey[500],
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
+              ),
               const SizedBox(height: 2),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1B3A2D),
                   borderRadius: BorderRadius.circular(6),
@@ -304,7 +353,11 @@ class _ScheduleCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -318,16 +371,28 @@ class _ScheduleCard extends StatelessWidget {
                   color: const Color(0xFFFFF7ED),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.calendar_today, size: 16, color: Color(0xFFFF6B35)),
+                child: const Icon(
+                  Icons.calendar_today,
+                  size: 16,
+                  color: Color(0xFFFF6B35),
+                ),
               ),
               const SizedBox(width: 8),
-              const Text('Schedule', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              const Text(
+                'Schedule',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
           const SizedBox(height: 16),
           _TimelineItem(label: 'Valid From', value: validFrom, isFirst: true),
           _TimelineItem(label: 'Starts', value: startsAt, isFirst: false),
-          _TimelineItem(label: 'Ends', value: endsAt, isFirst: false, isLast: true),
+          _TimelineItem(
+            label: 'Ends',
+            value: endsAt,
+            isFirst: false,
+            isLast: true,
+          ),
         ],
       ),
     );
@@ -361,15 +426,17 @@ class _TimelineItem extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: isFirst ? const Color(0xFFFF6B35) : Colors.grey[300],
-                    border: Border.all(color: isFirst ? const Color(0xFFFF6B35) : Colors.grey[300]!, width: 2),
+                    border: Border.all(
+                      color: isFirst
+                          ? const Color(0xFFFF6B35)
+                          : Colors.grey[300]!,
+                      width: 2,
+                    ),
                   ),
                 ),
                 if (!isLast)
                   Expanded(
-                    child: Container(
-                      width: 1.5,
-                      color: Colors.grey[200],
-                    ),
+                    child: Container(width: 1.5, color: Colors.grey[200]),
                   ),
               ],
             ),
@@ -381,9 +448,23 @@ class _TimelineItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[500], fontWeight: FontWeight.w600, letterSpacing: 0.5)),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey[500],
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -410,7 +491,14 @@ class _CategoriesSection extends StatelessWidget {
             color: const Color(0xFFF5F0EB),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text(c, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Color(0xFF78552B))),
+          child: Text(
+            c,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF78552B),
+            ),
+          ),
         );
       }).toList(),
     );
@@ -437,7 +525,11 @@ class _LinkCard extends StatelessWidget {
           Expanded(
             child: Text(
               url,
-              style: const TextStyle(fontSize: 13, color: Color(0xFF2563EB), fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                fontSize: 13,
+                color: Color(0xFF2563EB),
+                fontWeight: FontWeight.w500,
+              ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -466,10 +558,22 @@ class _TermsSection extends StatelessWidget {
         children: [
           Text(
             'Terms & Conditions',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.grey[500], letterSpacing: 0.5),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[500],
+              letterSpacing: 0.5,
+            ),
           ),
           const SizedBox(height: 8),
-          Text(terms, style: TextStyle(fontSize: 12, color: Colors.grey[600], height: 1.5)),
+          Text(
+            terms,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
+              height: 1.5,
+            ),
+          ),
         ],
       ),
     );

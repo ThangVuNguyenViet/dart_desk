@@ -64,7 +64,9 @@ class CmsConfigGenerator extends GeneratorForAnnotation<CmsConfig> {
           // Determine the CmsData generic type
           // Strip trailing '?' for nullability — we'll re-add it after the suffix
           final isNullable = fieldType.endsWith('?');
-          final baseType = isNullable ? fieldType.substring(0, fieldType.length - 1) : fieldType;
+          final baseType = isNullable
+              ? fieldType.substring(0, fieldType.length - 1)
+              : fieldType;
           final nullSuffix = isNullable ? '?' : '';
           String cmsDataType;
           if (fieldElement is ClassElement &&
@@ -77,44 +79,38 @@ class CmsConfigGenerator extends GeneratorForAnnotation<CmsConfig> {
           }
 
           return Field(
-            (b) =>
-                b
-                  ..name = field.name
-                  ..modifier = FieldModifier.final$
-                  ..type = refer(cmsDataType),
+            (b) => b
+              ..name = field.name
+              ..modifier = FieldModifier.final$
+              ..type = refer(cmsDataType),
           );
         });
 
     // 3. Generate constructor with all fields as required named parameters
     final constructor = Constructor(
-      (b) =>
-          b
-            ..optionalParameters.addAll(
-              element.fields
-                  .where(
-                    (field) => !field.isStatic && field.name != 'defaultValue',
-                  )
-                  .map((field) {
-                    final fieldName = field.displayName;
-                    return Parameter(
-                      (b) =>
-                          b
-                            ..name = fieldName
-                            ..toThis = true
-                            ..named = true
-                            ..required = true,
-                    );
-                  }),
-            ),
+      (b) => b
+        ..optionalParameters.addAll(
+          element.fields
+              .where((field) => !field.isStatic && field.name != 'defaultValue')
+              .map((field) {
+                final fieldName = field.displayName;
+                return Parameter(
+                  (b) => b
+                    ..name = fieldName
+                    ..toThis = true
+                    ..named = true
+                    ..required = true,
+                );
+              }),
+        ),
     );
 
     // 4. Build the generated class
     final generatedClass = Class(
-      (b) =>
-          b
-            ..name = generatedClassName
-            ..fields.addAll(fields)
-            ..constructors.add(constructor),
+      (b) => b
+        ..name = generatedClassName
+        ..fields.addAll(fields)
+        ..constructors.add(constructor),
     );
 
     // 5. Emit and format the code

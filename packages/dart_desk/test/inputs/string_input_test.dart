@@ -14,21 +14,21 @@ void main() {
 
   group('CmsStringInput', () {
     testWidgets('renders with initial value', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsStringInput(
-          field: field,
-          data: const CmsData(value: 'Hello World', path: 'title'),
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsStringInput(
+            field: field,
+            data: const CmsData(value: 'Hello World', path: 'title'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Hello World'), findsOneWidget);
     });
 
     testWidgets('renders empty placeholder', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsStringInput(field: field),
-      ));
+      await tester.pumpWidget(buildInputApp(CmsStringInput(field: field)));
       await tester.pumpAndSettle();
 
       expect(find.text('Enter text...'), findsOneWidget);
@@ -37,18 +37,14 @@ void main() {
     testWidgets('onChanged fires on text entry', (tester) async {
       String? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsStringInput(
-          field: field,
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsStringInput(field: field, onChanged: (v) => received = v),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
-      await tester.enterText(
-        find.byType(ShadInputFormField),
-        'New value',
-      );
+      await tester.enterText(find.byType(ShadInputFormField), 'New value');
       await tester.pump();
 
       expect(received, 'New value');
@@ -61,9 +57,9 @@ void main() {
         option: CmsStringOption(hidden: true),
       );
 
-      await tester.pumpWidget(buildInputApp(
-        CmsStringInput(field: hiddenField),
-      ));
+      await tester.pumpWidget(
+        buildInputApp(CmsStringInput(field: hiddenField)),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(ShadInputFormField), findsNothing);

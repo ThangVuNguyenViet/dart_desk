@@ -5,14 +5,7 @@ import 'package:source_gen/source_gen.dart';
 
 import 'field_code_generator.dart';
 
-const _primitiveTypes = {
-  'String',
-  'int',
-  'num',
-  'double',
-  'bool',
-  'DateTime',
-};
+const _primitiveTypes = {'String', 'int', 'num', 'double', 'bool', 'DateTime'};
 
 class DropdownFieldGenerator implements FieldCodeGenerator {
   @override
@@ -161,7 +154,9 @@ class MultiDropdownFieldGenerator implements FieldCodeGenerator {
         _displayType(_arrayItemDartType(field)) ??
         'dynamic';
 
-    final genericClassElement = DropdownFieldGenerator._classElementFromType(_arrayItemDartType(field));
+    final genericClassElement = DropdownFieldGenerator._classElementFromType(
+      _arrayItemDartType(field),
+    );
     final fromMapCode = DropdownFieldGenerator._validateAndEmitFromMap(
       genericType,
       genericClassElement,

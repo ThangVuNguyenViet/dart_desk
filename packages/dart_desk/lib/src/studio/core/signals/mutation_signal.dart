@@ -20,9 +20,9 @@ sealed class MutationState<T> {
   bool get isSuccess => this is MutationSuccess<T>;
 
   Object? get error => switch (this) {
-        MutationError(:final error) => error,
-        _ => null,
-      };
+    MutationError(:final error) => error,
+    _ => null,
+  };
 
   /// The current value: the latest success result if in [MutationSuccess],
   /// otherwise [lastValue] (the previous success, if any).
@@ -82,7 +82,7 @@ class MutationSignal<T, A> extends Signal<MutationState<T>> {
   final Future<T> Function(A) _fn;
 
   MutationSignal(this._fn, {String? debugLabel})
-      : super(MutationIdle<T>(), debugLabel: debugLabel);
+    : super(MutationIdle<T>(), debugLabel: debugLabel);
 
   /// Executes the mutation with [args].
   ///
@@ -114,5 +114,4 @@ class MutationSignal<T, A> extends Signal<MutationState<T>> {
 MutationSignal<T, A> mutationSignal<T, A>(
   Future<T> Function(A) fn, {
   String? debugLabel,
-}) =>
-    MutationSignal<T, A>(fn, debugLabel: debugLabel);
+}) => MutationSignal<T, A>(fn, debugLabel: debugLabel);

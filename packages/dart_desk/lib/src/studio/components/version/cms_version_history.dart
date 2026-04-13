@@ -77,7 +77,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
           orElse: () => data.versions.isNotEmpty
               ? data.versions.first
               : DocumentVersion(
-                  documentId: 0,
+                  documentId: '',
                   versionNumber: 0,
                   status: DocumentVersionStatus.draft,
                 ),
@@ -270,11 +270,13 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
                           widget.viewModel.currentDocumentTypeSlug.value;
                       final docId = widget.viewModel.currentDocumentId.value;
                       if (docTypeSlug != null && docId != null) {
-                        context.router.navigate(DocumentScreenRoute(
-                          documentTypeSlug: docTypeSlug,
-                          documentId: docId,
-                          versionId: version.id.toString(),
-                        ));
+                        context.router.navigate(
+                          DocumentScreenRoute(
+                            documentTypeSlug: docTypeSlug,
+                            documentId: docId,
+                            versionId: version.id.toString(),
+                          ),
+                        );
                       }
                       _popoverController.toggle();
                     }
@@ -294,7 +296,10 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     );
   }
 
-  Future<void> _publishVersion(BuildContext context, DocumentVersion version) async {
+  Future<void> _publishVersion(
+    BuildContext context,
+    DocumentVersion version,
+  ) async {
     final toaster = ShadToaster.of(context);
 
     final confirmed = await showShadDialog<bool>(
@@ -324,9 +329,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     try {
       await widget.viewModel.publishVersion.run(version.id!);
       if (mounted) {
-        toaster.show(
-          const ShadToast(description: Text('Version published')),
-        );
+        toaster.show(const ShadToast(description: Text('Version published')));
       }
     } catch (e) {
       if (mounted) {
@@ -337,7 +340,10 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     }
   }
 
-  Future<void> _archiveVersion(BuildContext context, DocumentVersion version) async {
+  Future<void> _archiveVersion(
+    BuildContext context,
+    DocumentVersion version,
+  ) async {
     final toaster = ShadToaster.of(context);
 
     final confirmed = await showShadDialog<bool>(
@@ -367,9 +373,7 @@ class _CmsVersionHistoryState extends State<CmsVersionHistory> {
     try {
       await widget.viewModel.archiveVersion.run(version.id!);
       if (mounted) {
-        toaster.show(
-          const ShadToast(description: Text('Version archived')),
-        );
+        toaster.show(const ShadToast(description: Text('Version archived')));
       }
     } catch (e) {
       if (mounted) {

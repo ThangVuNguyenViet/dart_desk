@@ -15,12 +15,14 @@ void main() {
 
   group('CmsTextInput', () {
     testWidgets('renders with initial multi-line value', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsTextInput(
-          field: field,
-          data: const CmsData(value: 'Line one\nLine two', path: 'body'),
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsTextInput(
+            field: field,
+            data: const CmsData(value: 'Line one\nLine two', path: 'body'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Line one\nLine two'), findsOneWidget);
@@ -29,18 +31,14 @@ void main() {
     testWidgets('onChanged fires on text entry', (tester) async {
       String? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsTextInput(
-          field: field,
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsTextInput(field: field, onChanged: (v) => received = v),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
-      await tester.enterText(
-        find.byType(ShadInputFormField),
-        'New text',
-      );
+      await tester.enterText(find.byType(ShadInputFormField), 'New text');
       await tester.pump();
 
       expect(received, 'New text');
@@ -56,15 +54,12 @@ void main() {
         ),
       );
 
-      await tester.pumpWidget(buildInputApp(
-        CmsTextInput(field: deprecatedField),
-      ));
+      await tester.pumpWidget(
+        buildInputApp(CmsTextInput(field: deprecatedField)),
+      );
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('Deprecated: Use new field instead'),
-        findsOneWidget,
-      );
+      expect(find.text('Deprecated: Use new field instead'), findsOneWidget);
     });
 
     testWidgets('hidden field renders nothing', (tester) async {
@@ -74,9 +69,7 @@ void main() {
         option: CmsTextOption(rows: 1, hidden: true),
       );
 
-      await tester.pumpWidget(buildInputApp(
-        CmsTextInput(field: hiddenField),
-      ));
+      await tester.pumpWidget(buildInputApp(CmsTextInput(field: hiddenField)));
       await tester.pumpAndSettle();
 
       expect(find.byType(SizedBox), findsWidgets);

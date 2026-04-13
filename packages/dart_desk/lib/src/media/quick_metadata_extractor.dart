@@ -12,7 +12,13 @@ class QuickMetadataExtractor {
   }
 
   static QuickImageMetadata _extractInIsolate(Uint8List bytes) {
-    // Decode image
+    // Content hash (SHA-256) — runs on raw bytes, no decode needed.
+    final digest = sha256.convert(bytes);
+    final contentHash = digest.toString();
+
+    // Decode image — needed for dimensions, alpha, and BlurHash.
+    // For large images the `image` package (pure Dart) is slow, but it runs
+    // in an isolate so it won't block the UI thread.
     final image = img.decodeImage(bytes);
     if (image == null) {
       throw Exception('Failed to decode image');
@@ -22,12 +28,13 @@ class QuickMetadataExtractor {
     final height = image.height;
     final hasAlpha = image.hasAlpha;
 
-    // BlurHash — encode using blurhash_dart (uses package:image Image type)
-    final blurHash = BlurHash.encode(image, numCompX: 4, numCompY: 3).hash;
-
-    // Content hash (full SHA-256)
-    final digest = sha256.convert(bytes);
-    final contentHash = digest.toString();
+    // BlurHash — downscale to a small thumbnail first since BlurHash is
+    // inherently low-resolution (4x3 components). Computing on a full 4000x3000
+    // image is ~100x slower than on a 64px thumbnail with identical results.
+    final thumb = (width > 64 || height > 64)
+        ? img.copyResize(image, width: 64, maintainAspect: true)
+        : image;
+    final blurHash = BlurHash.encode(thumb, numCompX: 4, numCompY: 3).hash;
 
     return QuickImageMetadata(
       width: width,

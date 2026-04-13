@@ -22,7 +22,7 @@ class CmsDocumentListView extends StatefulWidget {
   final IconData? icon;
   final String? filter;
   final void Function(String documentId)? onOpenDocument;
-  final void Function(int documentId)? onDeleteDocument;
+  final void Function(String documentId)? onDeleteDocument;
 
   const CmsDocumentListView({
     super.key,
@@ -359,7 +359,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
 
                       final document = await viewModel.createDocument.run((
                         title: title,
-                        data: viewModel.currentDocumentType.value?.defaultValue
+                        data:
+                            viewModel.currentDocumentType.value?.defaultValue
                                 ?.toMap() ??
                             {},
                         slug: slug,
@@ -465,7 +466,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                           if (value == 'set_default') {
                             final toaster = ShadToaster.of(context);
                             final newDefault = await viewModel
-                                .setDefaultDocument.run(doc.id!);
+                                .setDefaultDocument
+                                .run(doc.id!);
                             if (context.mounted && newDefault != null) {
                               toaster.show(
                                 ShadToast(
@@ -568,7 +570,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
 /// Watches the versions container for a document and displays its latest
 /// version's status as a [CmsStatusPill].
 class _DocumentStatusPill extends StatelessWidget {
-  final int documentId;
+  final String documentId;
   final CmsViewModel viewModel;
 
   const _DocumentStatusPill({

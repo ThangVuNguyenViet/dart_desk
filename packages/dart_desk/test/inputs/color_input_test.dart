@@ -15,12 +15,14 @@ void main() {
 
   group('CmsColorInput', () {
     testWidgets('renders with initial hex color', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsColorInput(
-          field: field,
-          data: const CmsData(value: '#FF5733', path: 'color'),
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsColorInput(
+            field: field,
+            data: const CmsData(value: '#FF5733', path: 'color'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // The hex value is displayed in the ShadInput
@@ -30,13 +32,15 @@ void main() {
     testWidgets('onChanged fires on hex text entry', (tester) async {
       String? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsColorInput(
-          field: field,
-          data: const CmsData(value: '#FF5733', path: 'color'),
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsColorInput(
+            field: field,
+            data: const CmsData(value: '#FF5733', path: 'color'),
+            onChanged: (v) => received = v,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Enter a different valid hex color
@@ -47,12 +51,14 @@ void main() {
     });
 
     testWidgets('dialog opens on swatch tap', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsColorInput(
-          field: field,
-          data: const CmsData(value: '#FF5733', path: 'color'),
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsColorInput(
+            field: field,
+            data: const CmsData(value: '#FF5733', path: 'color'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Tap the color preview box (InkWell wrapping the color container)
@@ -65,13 +71,15 @@ void main() {
     testWidgets('dialog Select fires onChanged', (tester) async {
       String? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsColorInput(
-          field: field,
-          data: const CmsData(value: '#FF5733', path: 'color'),
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsColorInput(
+            field: field,
+            data: const CmsData(value: '#FF5733', path: 'color'),
+            onChanged: (v) => received = v,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Open dialog
@@ -88,13 +96,15 @@ void main() {
     testWidgets('dialog Cancel closes without callback', (tester) async {
       String? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsColorInput(
-          field: field,
-          data: const CmsData(value: '#FF5733', path: 'color'),
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsColorInput(
+            field: field,
+            data: const CmsData(value: '#FF5733', path: 'color'),
+            onChanged: (v) => received = v,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Open dialog

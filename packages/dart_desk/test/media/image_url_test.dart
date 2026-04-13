@@ -51,7 +51,10 @@ void main() {
       final withTransform = imageUrl.withTransform(
         (publicUrl, params) => '$publicUrl?w=${params.width}',
       );
-      expect(withTransform.url(width: 800), equals('https://cdn.example.com/image.jpg?w=800'));
+      expect(
+        withTransform.url(width: 800),
+        equals('https://cdn.example.com/image.jpg?w=800'),
+      );
     });
 
     test('original imageUrl is unchanged after withTransform', () {

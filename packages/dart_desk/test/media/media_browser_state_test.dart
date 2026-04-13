@@ -53,15 +53,17 @@ void main() {
       expect(state.assetsData.value.value?.items, hasLength(3));
     });
 
-    test('deleteAsset clears selectedAssetId when deleted asset was selected',
-        () async {
-      await state.assetsData.future;
-      state.selectedAssetId.value = 'asset-icon';
+    test(
+      'deleteAsset clears selectedAssetId when deleted asset was selected',
+      () async {
+        await state.assetsData.future;
+        state.selectedAssetId.value = 'asset-icon';
 
-      await state.deleteAsset('asset-icon');
+        await state.deleteAsset('asset-icon');
 
-      expect(state.selectedAssetId.value, isNull);
-    });
+        expect(state.selectedAssetId.value, isNull);
+      },
+    );
 
     test('selectedAsset tracks selection', () async {
       await state.assetsData.future;

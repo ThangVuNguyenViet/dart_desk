@@ -71,9 +71,7 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
         if (_editingValue is T) {
           typed = _editingValue as T;
         } else {
-          typed = fromMap!(
-            Map<String, dynamic>.from(_editingValue as Map),
-          );
+          typed = fromMap!(Map<String, dynamic>.from(_editingValue as Map));
         }
         if (_editingIndex == -1) {
           _items.add(typed);

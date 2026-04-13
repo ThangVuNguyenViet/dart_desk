@@ -17,18 +17,20 @@ void main() {
     description: 'Home address',
     option: CmsObjectOption(
       children: [
-        ColumnFields(children: [
-          CmsStringField(
-            name: 'street',
-            title: 'Street',
-            option: CmsStringOption(),
-          ),
-          CmsStringField(
-            name: 'city',
-            title: 'City',
-            option: CmsStringOption(),
-          ),
-        ]),
+        ColumnFields(
+          children: [
+            CmsStringField(
+              name: 'street',
+              title: 'Street',
+              option: CmsStringOption(),
+            ),
+            CmsStringField(
+              name: 'city',
+              title: 'City',
+              option: CmsStringOption(),
+            ),
+          ],
+        ),
       ],
     ),
   );
@@ -38,18 +40,20 @@ void main() {
     title: 'Location',
     option: CmsObjectOption(
       children: [
-        RowFields(children: [
-          CmsStringField(
-            name: 'lat',
-            title: 'Latitude',
-            option: CmsStringOption(),
-          ),
-          CmsStringField(
-            name: 'lng',
-            title: 'Longitude',
-            option: CmsStringOption(),
-          ),
-        ]),
+        RowFields(
+          children: [
+            CmsStringField(
+              name: 'lat',
+              title: 'Latitude',
+              option: CmsStringOption(),
+            ),
+            CmsStringField(
+              name: 'lng',
+              title: 'Longitude',
+              option: CmsStringOption(),
+            ),
+          ],
+        ),
       ],
     ),
   );
@@ -65,13 +69,15 @@ void main() {
           collapsible: true,
           collapsed: true,
           children: [
-            ColumnFields(children: [
-              CmsStringField(
-                name: 'apiKey',
-                title: 'API Key',
-                option: CmsStringOption(),
-              ),
-            ]),
+            ColumnFields(
+              children: [
+                CmsStringField(
+                  name: 'apiKey',
+                  title: 'API Key',
+                  option: CmsStringOption(),
+                ),
+              ],
+            ),
           ],
         ),
       ],
@@ -83,37 +89,43 @@ void main() {
     title: 'Profile',
     option: CmsObjectOption(
       children: [
-        ColumnFields(children: [
-          CmsStringField(
-            name: 'name',
-            title: 'Name',
-            option: CmsStringOption(),
-          ),
-        ]),
-        RowFields(children: [
-          CmsNumberField(
-            name: 'age',
-            title: 'Age',
-            option: CmsNumberOption(),
-          ),
-          CmsStringField(
-            name: 'email',
-            title: 'Email',
-            option: CmsStringOption(),
-          ),
-        ]),
+        ColumnFields(
+          children: [
+            CmsStringField(
+              name: 'name',
+              title: 'Name',
+              option: CmsStringOption(),
+            ),
+          ],
+        ),
+        RowFields(
+          children: [
+            CmsNumberField(
+              name: 'age',
+              title: 'Age',
+              option: CmsNumberOption(),
+            ),
+            CmsStringField(
+              name: 'email',
+              title: 'Email',
+              option: CmsStringOption(),
+            ),
+          ],
+        ),
         GroupFields(
           title: 'Metadata',
           collapsible: true,
           collapsed: false,
           children: [
-            ColumnFields(children: [
-              CmsStringField(
-                name: 'notes',
-                title: 'Notes',
-                option: CmsStringOption(),
-              ),
-            ]),
+            ColumnFields(
+              children: [
+                CmsStringField(
+                  name: 'notes',
+                  title: 'Notes',
+                  option: CmsStringOption(),
+                ),
+              ],
+            ),
           ],
         ),
       ],
@@ -131,13 +143,15 @@ void main() {
             GroupFields(
               title: 'Inner',
               children: [
-                ColumnFields(children: [
-                  CmsStringField(
-                    name: 'deep',
-                    title: 'Deep Field',
-                    option: CmsStringOption(),
-                  ),
-                ]),
+                ColumnFields(
+                  children: [
+                    CmsStringField(
+                      name: 'deep',
+                      title: 'Deep Field',
+                      option: CmsStringOption(),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
@@ -151,9 +165,9 @@ void main() {
   group('CmsObjectInput', () {
     group('rendering', () {
       testWidgets('renders title and description', (tester) async {
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: columnField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: columnField)),
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('Address'), findsOneWidget);
@@ -167,9 +181,9 @@ void main() {
           option: CmsObjectOption(children: [], hidden: true),
         );
 
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: hiddenField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: hiddenField)),
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('Hidden'), findsNothing);
@@ -181,20 +195,22 @@ void main() {
           title: 'Simple',
           option: CmsObjectOption(
             children: [
-              ColumnFields(children: [
-                CmsStringField(
-                  name: 'a',
-                  title: 'A',
-                  option: CmsStringOption(),
-                ),
-              ]),
+              ColumnFields(
+                children: [
+                  CmsStringField(
+                    name: 'a',
+                    title: 'A',
+                    option: CmsStringOption(),
+                  ),
+                ],
+              ),
             ],
           ),
         );
 
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: noDescField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: noDescField)),
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('Simple'), findsOneWidget);
@@ -204,9 +220,9 @@ void main() {
 
     group('ColumnFields', () {
       testWidgets('renders fields vertically', (tester) async {
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: columnField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: columnField)),
+        );
         await tester.pumpAndSettle();
 
         expect(find.byType(CmsStringInput), findsNWidgets(2));
@@ -217,9 +233,7 @@ void main() {
 
     group('RowFields', () {
       testWidgets('renders fields horizontally using Expanded', (tester) async {
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: rowField),
-        ));
+        await tester.pumpWidget(buildInputApp(CmsObjectInput(field: rowField)));
         await tester.pumpAndSettle();
 
         expect(find.byType(CmsStringInput), findsNWidgets(2));
@@ -231,9 +245,9 @@ void main() {
 
     group('GroupFields', () {
       testWidgets('renders group title', (tester) async {
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: groupField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: groupField)),
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('Advanced'), findsOneWidget);
@@ -251,31 +265,33 @@ void main() {
                 collapsible: true,
                 collapsed: false,
                 children: [
-                  ColumnFields(children: [
-                    CmsStringField(
-                      name: 'apiKey',
-                      title: 'API Key',
-                      option: CmsStringOption(),
-                    ),
-                  ]),
+                  ColumnFields(
+                    children: [
+                      CmsStringField(
+                        name: 'apiKey',
+                        title: 'API Key',
+                        option: CmsStringOption(),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ],
           ),
         );
 
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: expandedGroupField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: expandedGroupField)),
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('Advanced settings'), findsOneWidget);
       });
 
       testWidgets('collapsed group hides children', (tester) async {
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: groupField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: groupField)),
+        );
         await tester.pumpAndSettle();
 
         // Group is collapsed — child field should not be visible
@@ -290,9 +306,9 @@ void main() {
       });
 
       testWidgets('tapping collapsed group expands it', (tester) async {
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: groupField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: groupField)),
+        );
         await tester.pumpAndSettle();
 
         // Initially collapsed
@@ -314,9 +330,9 @@ void main() {
       });
 
       testWidgets('tapping expanded group collapses it', (tester) async {
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: groupField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: groupField)),
+        );
         await tester.pumpAndSettle();
 
         // Expand
@@ -330,8 +346,9 @@ void main() {
         expect(find.text('API Key'), findsNothing);
       });
 
-      testWidgets('non-collapsible group always shows children',
-          (tester) async {
+      testWidgets('non-collapsible group always shows children', (
+        tester,
+      ) async {
         const nonCollapsibleField = CmsObjectField(
           name: 'info',
           title: 'Info',
@@ -341,22 +358,24 @@ void main() {
                 title: 'Details',
                 collapsible: false,
                 children: [
-                  ColumnFields(children: [
-                    CmsStringField(
-                      name: 'desc',
-                      title: 'Description',
-                      option: CmsStringOption(),
-                    ),
-                  ]),
+                  ColumnFields(
+                    children: [
+                      CmsStringField(
+                        name: 'desc',
+                        title: 'Description',
+                        option: CmsStringOption(),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ],
           ),
         );
 
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: nonCollapsibleField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: nonCollapsibleField)),
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('Details'), findsOneWidget);
@@ -377,9 +396,9 @@ void main() {
       });
 
       testWidgets('nested groups render recursively', (tester) async {
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: nestedGroupField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: nestedGroupField)),
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('Outer'), findsOneWidget);
@@ -390,9 +409,9 @@ void main() {
 
     group('mixed layouts', () {
       testWidgets('renders Column, Row, and Group together', (tester) async {
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(field: mixedField),
-        ));
+        await tester.pumpWidget(
+          buildInputApp(CmsObjectInput(field: mixedField)),
+        );
         await tester.pumpAndSettle();
 
         // Column field
@@ -412,31 +431,33 @@ void main() {
 
     group('data flow', () {
       testWidgets('passes initial data to child fields', (tester) async {
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(
-            field: columnField,
-            data: const CmsData(
-              value: {'street': '123 Main St', 'city': 'Springfield'},
-              path: 'address',
+        await tester.pumpWidget(
+          buildInputApp(
+            CmsObjectInput(
+              field: columnField,
+              data: const CmsData(
+                value: {'street': '123 Main St', 'city': 'Springfield'},
+                path: 'address',
+              ),
             ),
           ),
-        ));
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('123 Main St'), findsOneWidget);
         expect(find.text('Springfield'), findsOneWidget);
       });
 
-      testWidgets('onChanged fires with updated map on child edit',
-          (tester) async {
+      testWidgets('onChanged fires with updated map on child edit', (
+        tester,
+      ) async {
         Map<String, dynamic>? received;
 
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(
-            field: columnField,
-            onChanged: (v) => received = v,
+        await tester.pumpWidget(
+          buildInputApp(
+            CmsObjectInput(field: columnField, onChanged: (v) => received = v),
           ),
-        ));
+        );
         await tester.pumpAndSettle();
 
         // Type into the first string input (Street)
@@ -448,20 +469,23 @@ void main() {
         expect(received!['street'], '456 Elm St');
       });
 
-      testWidgets('onChanged preserves existing values on partial edit',
-          (tester) async {
+      testWidgets('onChanged preserves existing values on partial edit', (
+        tester,
+      ) async {
         Map<String, dynamic>? received;
 
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(
-            field: columnField,
-            data: const CmsData(
-              value: {'street': 'Original', 'city': 'OldCity'},
-              path: 'address',
+        await tester.pumpWidget(
+          buildInputApp(
+            CmsObjectInput(
+              field: columnField,
+              data: const CmsData(
+                value: {'street': 'Original', 'city': 'OldCity'},
+                path: 'address',
+              ),
+              onChanged: (v) => received = v,
             ),
-            onChanged: (v) => received = v,
           ),
-        ));
+        );
         await tester.pumpAndSettle();
 
         // Edit only the city field (second input)
@@ -474,20 +498,23 @@ void main() {
         expect(received!['city'], 'NewCity');
       });
 
-      testWidgets('onChanged emits a new map reference, not the internal map',
-          (tester) async {
+      testWidgets('onChanged emits a new map reference, not the internal map', (
+        tester,
+      ) async {
         final received = <Map<String, dynamic>?>[];
 
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(
-            field: columnField,
-            data: const CmsData(
-              value: {'street': 'Original', 'city': 'A'},
-              path: 'address',
+        await tester.pumpWidget(
+          buildInputApp(
+            CmsObjectInput(
+              field: columnField,
+              data: const CmsData(
+                value: {'street': 'Original', 'city': 'A'},
+                path: 'address',
+              ),
+              onChanged: received.add,
             ),
-            onChanged: received.add,
           ),
-        ));
+        );
         await tester.pumpAndSettle();
 
         final inputs = find.byType(CmsStringInput);
@@ -516,32 +543,37 @@ void main() {
         expect(received.last!['city'], 'Edit 2');
       });
 
-      testWidgets('updates child fields when data changes externally',
-          (tester) async {
+      testWidgets('updates child fields when data changes externally', (
+        tester,
+      ) async {
         const field = columnField;
 
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(
-            field: field,
-            data: const CmsData(
-              value: {'street': 'First', 'city': 'A'},
-              path: 'address',
+        await tester.pumpWidget(
+          buildInputApp(
+            CmsObjectInput(
+              field: field,
+              data: const CmsData(
+                value: {'street': 'First', 'city': 'A'},
+                path: 'address',
+              ),
             ),
           ),
-        ));
+        );
         await tester.pumpAndSettle();
         expect(find.text('First'), findsOneWidget);
 
         // Rebuild with new data
-        await tester.pumpWidget(buildInputApp(
-          CmsObjectInput(
-            field: field,
-            data: const CmsData(
-              value: {'street': 'Second', 'city': 'B'},
-              path: 'address',
+        await tester.pumpWidget(
+          buildInputApp(
+            CmsObjectInput(
+              field: field,
+              data: const CmsData(
+                value: {'street': 'Second', 'city': 'B'},
+                path: 'address',
+              ),
             ),
           ),
-        ));
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('Second'), findsOneWidget);
@@ -553,23 +585,41 @@ void main() {
       test('CmsObjectOption.fields collects all leaf fields', () {
         const option = CmsObjectOption(
           children: [
-            ColumnFields(children: [
-              CmsStringField(name: 'a', title: 'A', option: CmsStringOption()),
-            ]),
-            RowFields(children: [
-              CmsStringField(name: 'b', title: 'B', option: CmsStringOption()),
-              CmsStringField(name: 'c', title: 'C', option: CmsStringOption()),
-            ]),
+            ColumnFields(
+              children: [
+                CmsStringField(
+                  name: 'a',
+                  title: 'A',
+                  option: CmsStringOption(),
+                ),
+              ],
+            ),
+            RowFields(
+              children: [
+                CmsStringField(
+                  name: 'b',
+                  title: 'B',
+                  option: CmsStringOption(),
+                ),
+                CmsStringField(
+                  name: 'c',
+                  title: 'C',
+                  option: CmsStringOption(),
+                ),
+              ],
+            ),
             GroupFields(
               title: 'Group',
               children: [
-                ColumnFields(children: [
-                  CmsStringField(
-                    name: 'd',
-                    title: 'D',
-                    option: CmsStringOption(),
-                  ),
-                ]),
+                ColumnFields(
+                  children: [
+                    CmsStringField(
+                      name: 'd',
+                      title: 'D',
+                      option: CmsStringOption(),
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
@@ -589,18 +639,20 @@ void main() {
                 GroupFields(
                   title: 'Inner',
                   children: [
-                    RowFields(children: [
-                      CmsStringField(
-                        name: 'x',
-                        title: 'X',
-                        option: CmsStringOption(),
-                      ),
-                      CmsStringField(
-                        name: 'y',
-                        title: 'Y',
-                        option: CmsStringOption(),
-                      ),
-                    ]),
+                    RowFields(
+                      children: [
+                        CmsStringField(
+                          name: 'x',
+                          title: 'X',
+                          option: CmsStringOption(),
+                        ),
+                        CmsStringField(
+                          name: 'y',
+                          title: 'Y',
+                          option: CmsStringOption(),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ],

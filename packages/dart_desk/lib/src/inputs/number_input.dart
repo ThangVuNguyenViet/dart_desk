@@ -46,10 +46,12 @@ class _CmsNumberInputState extends State<CmsNumberInput> {
     if (value.isEmpty) return null;
     if (double.tryParse(value) == null) return 'Please enter a valid number';
     final numValue = double.parse(value);
-    if (widget.field.option.min != null && numValue < widget.field.option.min!) {
+    if (widget.field.option.min != null &&
+        numValue < widget.field.option.min!) {
       return 'Value must be at least ${widget.field.option.min}';
     }
-    if (widget.field.option.max != null && numValue > widget.field.option.max!) {
+    if (widget.field.option.max != null &&
+        numValue > widget.field.option.max!) {
       return 'Value must be at most ${widget.field.option.max}';
     }
     if (widget.field.option.validation != null) {

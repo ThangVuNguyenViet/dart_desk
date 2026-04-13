@@ -741,18 +741,15 @@ class MixedConfig {
 
 /// Matches a string that contains [substring] exactly [count] times.
 Matcher _containsExactCount(String substring, int count) =>
-    predicate(
-      (dynamic s) {
-        var occurrences = 0;
-        var index = 0;
-        while ((index = s.indexOf(substring, index)) != -1) {
-          occurrences++;
-          index += substring.length;
-        }
-        return occurrences == count;
-      },
-      'contains "$substring" exactly $count time(s)',
-    );
+    predicate((dynamic s) {
+      var occurrences = 0;
+      var index = 0;
+      while ((index = s.indexOf(substring, index)) != -1) {
+        occurrences++;
+        index += substring.length;
+      }
+      return occurrences == count;
+    }, 'contains "$substring" exactly $count time(s)');
 
 String _fixture(String body) =>
     '''

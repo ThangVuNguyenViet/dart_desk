@@ -37,10 +37,7 @@ class CmsBreadcrumbs extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: CmsSpacing.sm),
               child: Text(
                 '/',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: theme.colorScheme.border,
-                ),
+                style: TextStyle(fontSize: 16, color: theme.colorScheme.border),
               ),
             ),
           _BreadcrumbItem(

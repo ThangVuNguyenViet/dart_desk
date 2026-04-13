@@ -12,7 +12,8 @@ class CmsGeopointField extends CmsField {
   });
 
   @override
-  CmsGeopointOption get option => (super.option as CmsGeopointOption?) ?? const CmsGeopointOption();
+  CmsGeopointOption get option =>
+      (super.option as CmsGeopointOption?) ?? const CmsGeopointOption();
 }
 
 class CmsGeopointFieldConfig extends CmsFieldConfig {

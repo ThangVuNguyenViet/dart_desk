@@ -31,10 +31,10 @@ enum DocumentVersionStatus {
 /// version history, publishing workflows, and scheduling.
 class DocumentVersion {
   /// Database ID (null for new versions not yet persisted)
-  final int? id;
+  final String? id;
 
   /// The ID of the document this version belongs to
-  final int documentId;
+  final String documentId;
 
   /// The version number (1, 2, 3, etc.)
   final int versionNumber;
@@ -61,7 +61,7 @@ class DocumentVersion {
   final DateTime? createdAt;
 
   /// ID of the user who created this version
-  final int? createdByUserId;
+  final String? createdByUserId;
 
   const DocumentVersion({
     this.id,
@@ -87,12 +87,13 @@ class DocumentVersion {
   bool get isArchived => status == DocumentVersionStatus.archived;
 
   /// Whether this version is scheduled for future publishing
-  bool get isScheduled => status == DocumentVersionStatus.scheduled && scheduledAt != null;
+  bool get isScheduled =>
+      status == DocumentVersionStatus.scheduled && scheduledAt != null;
 
   /// Creates a copy of this version with the given fields replaced.
   DocumentVersion copyWith({
-    int? id,
-    int? documentId,
+    String? id,
+    String? documentId,
     int? versionNumber,
     DocumentVersionStatus? status,
     Map<String, dynamic>? data,
@@ -101,7 +102,7 @@ class DocumentVersion {
     DateTime? scheduledAt,
     DateTime? archivedAt,
     DateTime? createdAt,
-    int? createdByUserId,
+    String? createdByUserId,
   }) {
     return DocumentVersion(
       id: id ?? this.id,
@@ -121,8 +122,8 @@ class DocumentVersion {
   /// Creates a [DocumentVersion] from a JSON map.
   factory DocumentVersion.fromJson(Map<String, dynamic> json) {
     return DocumentVersion(
-      id: json['id'] as int?,
-      documentId: json['documentId'] as int,
+      id: json['id']?.toString(),
+      documentId: json['documentId'].toString(),
       versionNumber: json['versionNumber'] as int,
       status: DocumentVersionStatus.fromString(json['status'] as String),
       data: json['data'] as Map<String, dynamic>?,
@@ -139,7 +140,7 @@ class DocumentVersion {
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : null,
-      createdByUserId: json['createdByUserId'] as int?,
+      createdByUserId: json['createdByUserId']?.toString(),
     );
   }
 

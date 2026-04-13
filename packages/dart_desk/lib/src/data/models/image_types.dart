@@ -11,7 +11,12 @@ enum MediaSort { dateDesc, dateAsc, nameAsc, nameDesc, sizeDesc, sizeAsc }
 class PaletteColor {
   final int r, g, b;
   final String hex;
-  const PaletteColor({required this.r, required this.g, required this.b, required this.hex});
+  const PaletteColor({
+    required this.r,
+    required this.g,
+    required this.b,
+    required this.hex,
+  });
   factory PaletteColor.fromJson(Map<String, dynamic> json) => PaletteColor(
     r: json['r'] as int,
     g: json['g'] as int,
@@ -24,12 +29,21 @@ class PaletteColor {
 class MediaPalette {
   final PaletteColor dominant;
   final PaletteColor? vibrant, muted, darkMuted;
-  const MediaPalette({required this.dominant, this.vibrant, this.muted, this.darkMuted});
+  const MediaPalette({
+    required this.dominant,
+    this.vibrant,
+    this.muted,
+    this.darkMuted,
+  });
   factory MediaPalette.fromJson(Map<String, dynamic> json) => MediaPalette(
     dominant: PaletteColor.fromJson(json['dominant']),
-    vibrant: json['vibrant'] != null ? PaletteColor.fromJson(json['vibrant']) : null,
+    vibrant: json['vibrant'] != null
+        ? PaletteColor.fromJson(json['vibrant'])
+        : null,
     muted: json['muted'] != null ? PaletteColor.fromJson(json['muted']) : null,
-    darkMuted: json['darkMuted'] != null ? PaletteColor.fromJson(json['darkMuted']) : null,
+    darkMuted: json['darkMuted'] != null
+        ? PaletteColor.fromJson(json['darkMuted'])
+        : null,
   );
   Map<String, dynamic> toJson() => {
     'dominant': dominant.toJson(),
@@ -42,10 +56,11 @@ class MediaPalette {
 class MediaGeoLocation {
   final double lat, lng;
   const MediaGeoLocation({required this.lat, required this.lng});
-  factory MediaGeoLocation.fromJson(Map<String, dynamic> json) => MediaGeoLocation(
-    lat: (json['lat'] as num).toDouble(),
-    lng: (json['lng'] as num).toDouble(),
-  );
+  factory MediaGeoLocation.fromJson(Map<String, dynamic> json) =>
+      MediaGeoLocation(
+        lat: (json['lat'] as num).toDouble(),
+        lng: (json['lng'] as num).toDouble(),
+      );
   Map<String, dynamic> toJson() => {'lat': lat, 'lng': lng};
 }
 

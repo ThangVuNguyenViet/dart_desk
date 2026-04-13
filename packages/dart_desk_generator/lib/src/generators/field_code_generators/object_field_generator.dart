@@ -57,14 +57,7 @@ class ObjectFieldGenerator implements FieldCodeGenerator {
     final typeElement = fieldType is InterfaceType ? fieldType.element : null;
     if (typeElement is ClassElement) {
       final typeName = typeElement.displayName;
-      const primitives = {
-        'String',
-        'int',
-        'num',
-        'double',
-        'bool',
-        'DateTime',
-      };
+      const primitives = {'String', 'int', 'num', 'double', 'bool', 'DateTime'};
       if (!primitives.contains(typeName)) {
         final hasFromMap = typeElement.methods.any(
           (m) => m.isStatic && m.name == r'$fromMap',

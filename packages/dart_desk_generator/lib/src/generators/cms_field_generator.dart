@@ -37,14 +37,7 @@ import 'field_code_registry.dart'
 import 'type_inference_engine.dart';
 import 'utils.dart';
 
-const _primitiveTypes = {
-  'String',
-  'int',
-  'num',
-  'double',
-  'bool',
-  'DateTime',
-};
+const _primitiveTypes = {'String', 'int', 'num', 'double', 'bool', 'DateTime'};
 
 /// Generates CmsField lists from classes annotated with @CmsConfig.
 /// This generator processes the @CmsFieldConfig annotations on fields to create
@@ -374,7 +367,8 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
       }
 
       // For non-primitive array item types, require a static $fromMap method.
-      final isPrimitive = _arrayPrimitiveFields.containsKey(itemTypeName) ||
+      final isPrimitive =
+          _arrayPrimitiveFields.containsKey(itemTypeName) ||
           _isImageReferenceType(itemTypeName);
       String? fromMapCode;
       if (!isPrimitive) {
@@ -1077,8 +1071,9 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
 
           // For non-primitive multi-dropdown types, require a static $fromMap method.
           String? multiFromMapCode;
-          final multiDropdownClassElement =
-              _classElementFromType(_arrayItemDartType(field));
+          final multiDropdownClassElement = _classElementFromType(
+            _arrayItemDartType(field),
+          );
           if (!_primitiveTypes.contains(genericType) &&
               multiDropdownClassElement != null) {
             final hasFromMap = multiDropdownClassElement.methods.any(

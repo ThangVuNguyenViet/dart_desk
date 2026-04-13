@@ -25,7 +25,8 @@ class CmsObjectField extends CmsField {
   final Function(Map<String, dynamic>)? fromMap;
 
   @override
-  CmsObjectOption get option => (super.option as CmsObjectOption?) ?? const CmsObjectOption(children: []);
+  CmsObjectOption get option =>
+      (super.option as CmsObjectOption?) ?? const CmsObjectOption(children: []);
 }
 
 class CmsObjectFieldConfig extends CmsFieldConfig {
@@ -33,9 +34,7 @@ class CmsObjectFieldConfig extends CmsFieldConfig {
     super.name,
     super.title,
     super.description,
-    CmsObjectOption super.option = const CmsObjectOption(
-      children: [],
-    ),
+    CmsObjectOption super.option = const CmsObjectOption(children: []),
   });
 
   @override

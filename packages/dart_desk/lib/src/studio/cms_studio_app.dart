@@ -103,9 +103,21 @@ class _CmsStudioAppState extends State<CmsStudioApp> {
           builder: (context, child) => ResponsiveBreakpoints.builder(
             child: child!,
             breakpoints: [
-              const Breakpoint(start: 0, end: CmsBreakpoints.mobile, name: CmsBreakpoints.mobileTag),
-              const Breakpoint(start: CmsBreakpoints.mobile, end: CmsBreakpoints.tablet, name: CmsBreakpoints.tabletTag),
-              const Breakpoint(start: CmsBreakpoints.tablet, end: double.infinity, name: CmsBreakpoints.desktopTag),
+              const Breakpoint(
+                start: 0,
+                end: CmsBreakpoints.mobile,
+                name: CmsBreakpoints.mobileTag,
+              ),
+              const Breakpoint(
+                start: CmsBreakpoints.mobile,
+                end: CmsBreakpoints.tablet,
+                name: CmsBreakpoints.tabletTag,
+              ),
+              const Breakpoint(
+                start: CmsBreakpoints.tablet,
+                end: double.infinity,
+                name: CmsBreakpoints.desktopTag,
+              ),
             ],
           ),
         ),

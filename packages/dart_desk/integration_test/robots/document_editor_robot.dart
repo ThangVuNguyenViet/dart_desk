@@ -94,10 +94,7 @@ class DocumentEditorRobot {
 
     expect(find.text('Version History'), findsOneWidget);
     // At least one version entry exists (e.g. "v1", "v2")
-    expect(
-      find.textContaining(RegExp(r'^v\d+$')),
-      findsAtLeastNWidgets(1),
-    );
+    expect(find.textContaining(RegExp(r'^v\d+$')), findsAtLeastNWidgets(1));
 
     // Close the popover.
     await tester.tap(find.byKey(const ValueKey('version_history_button')));

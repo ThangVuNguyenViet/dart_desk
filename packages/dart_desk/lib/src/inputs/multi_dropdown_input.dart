@@ -169,8 +169,10 @@ class _CmsMultiDropdownInputState<T> extends State<_CmsMultiDropdownInput<T>> {
     }
 
     final selectOptions = options
-        .map((option) =>
-            ShadOption<T>(value: option.value, child: Text(option.label)))
+        .map(
+          (option) =>
+              ShadOption<T>(value: option.value, child: Text(option.label)),
+        )
         .toList();
 
     final currentCount = _controller.value.length;
@@ -198,9 +200,11 @@ class _CmsMultiDropdownInputState<T> extends State<_CmsMultiDropdownInput<T>> {
           options: selectOptions,
           selectedOptionsBuilder: (context, values) {
             final labels = values
-                .map((v) =>
-                    options.firstWhereOrNull((o) => o.value == v)?.label ??
-                    v.toString())
+                .map(
+                  (v) =>
+                      options.firstWhereOrNull((o) => o.value == v)?.label ??
+                      v.toString(),
+                )
                 .join(', ');
             return Text(labels);
           },

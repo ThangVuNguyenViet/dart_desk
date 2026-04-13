@@ -26,15 +26,34 @@ class BrandThemeScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Color palette
-                const Text('Color Palette', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: -0.2)),
+                const Text(
+                  'Color Palette',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -0.2,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    _ColorSwatch(color: config.primaryColor, label: 'Primary', hex: _toHex(config.primaryColor)),
+                    _ColorSwatch(
+                      color: config.primaryColor,
+                      label: 'Primary',
+                      hex: _toHex(config.primaryColor),
+                    ),
                     const SizedBox(width: 10),
-                    _ColorSwatch(color: config.secondaryColor, label: 'Secondary', hex: _toHex(config.secondaryColor)),
+                    _ColorSwatch(
+                      color: config.secondaryColor,
+                      label: 'Secondary',
+                      hex: _toHex(config.secondaryColor),
+                    ),
                     const SizedBox(width: 10),
-                    _ColorSwatch(color: config.accentColor, label: 'Accent', hex: _toHex(config.accentColor)),
+                    _ColorSwatch(
+                      color: config.accentColor,
+                      label: 'Accent',
+                      hex: _toHex(config.accentColor),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 28),
@@ -87,7 +106,10 @@ class _ThemeHero extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.black.withValues(alpha: 0.1), Colors.transparent],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.1),
+                    Colors.transparent,
+                  ],
                 ),
               ),
             ),
@@ -114,14 +136,22 @@ class _ThemeHero extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     isDark ? 'DARK MODE' : 'LIGHT MODE',
-                    style: const TextStyle(fontSize: 9, color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 1),
+                    style: const TextStyle(
+                      fontSize: 9,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -145,7 +175,11 @@ class _ThemeHero extends StatelessWidget {
 }
 
 class _ColorSwatch extends StatelessWidget {
-  const _ColorSwatch({required this.color, required this.label, required this.hex});
+  const _ColorSwatch({
+    required this.color,
+    required this.label,
+    required this.hex,
+  });
   final Color color;
   final String label;
   final String hex;
@@ -161,13 +195,27 @@ class _ColorSwatch extends StatelessWidget {
               color: color,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
-                BoxShadow(color: color.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 4)),
+                BoxShadow(
+                  color: color.withValues(alpha: 0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 8),
-          Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-          Text(hex, style: TextStyle(fontSize: 10, color: Colors.grey[500], fontFamily: 'monospace')),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+          ),
+          Text(
+            hex,
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey[500],
+              fontFamily: 'monospace',
+            ),
+          ),
         ],
       ),
     );
@@ -194,13 +242,25 @@ class _TypographySection extends StatelessWidget {
             children: [
               const Icon(Icons.text_fields, size: 16, color: Colors.grey),
               const SizedBox(width: 8),
-              const Text('Typography', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
+              const Text(
+                'Typography',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
           Text(
             'Headline Font',
-            style: TextStyle(fontSize: 10, color: Colors.grey[500], fontWeight: FontWeight.w600, letterSpacing: 0.5),
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey[500],
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -213,13 +273,21 @@ class _TypographySection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(config.headlineFont, style: TextStyle(fontSize: 11, color: Colors.grey[400])),
+          Text(
+            config.headlineFont,
+            style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+          ),
           const SizedBox(height: 16),
           Container(height: 1, color: Colors.grey[200]),
           const SizedBox(height: 16),
           Text(
             'Body Font',
-            style: TextStyle(fontSize: 10, color: Colors.grey[500], fontWeight: FontWeight.w600, letterSpacing: 0.5),
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey[500],
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -232,7 +300,10 @@ class _TypographySection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(config.bodyFont, style: TextStyle(fontSize: 11, color: Colors.grey[400])),
+          Text(
+            config.bodyFont,
+            style: TextStyle(fontSize: 11, color: Colors.grey[400]),
+          ),
         ],
       ),
     );
@@ -249,7 +320,14 @@ class _LivePreviewCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Live Preview', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: -0.2)),
+        const Text(
+          'Live Preview',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.2,
+          ),
+        ),
         const SizedBox(height: 12),
         Container(
           decoration: BoxDecoration(
@@ -257,7 +335,11 @@ class _LivePreviewCard extends StatelessWidget {
             borderRadius: radius,
             border: Border.all(color: Colors.grey[200]!),
             boxShadow: [
-              BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 12, offset: const Offset(0, 4)),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
             ],
           ),
           child: Column(
@@ -278,7 +360,11 @@ class _LivePreviewCard extends StatelessWidget {
                   ),
                 ),
                 child: Center(
-                  child: Icon(Icons.restaurant, size: 36, color: config.primaryColor.withValues(alpha: 0.4)),
+                  child: Icon(
+                    Icons.restaurant,
+                    size: 36,
+                    color: config.primaryColor.withValues(alpha: 0.4),
+                  ),
                 ),
               ),
               Padding(
@@ -316,7 +402,10 @@ class _LivePreviewCard extends StatelessWidget {
                           ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
                           decoration: BoxDecoration(
                             color: config.primaryColor,
                             borderRadius: radius,
@@ -359,11 +448,23 @@ class _SettingsSection extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _SettingRow(icon: Icons.rounded_corner, label: 'Corner Radius', value: '${config.cornerRadius}px'),
+          _SettingRow(
+            icon: Icons.rounded_corner,
+            label: 'Corner Radius',
+            value: '${config.cornerRadius}px',
+          ),
           Divider(height: 20, color: Colors.grey[200]),
-          _SettingRow(icon: Icons.title, label: 'Headline Font', value: config.headlineFont),
+          _SettingRow(
+            icon: Icons.title,
+            label: 'Headline Font',
+            value: config.headlineFont,
+          ),
           Divider(height: 20, color: Colors.grey[200]),
-          _SettingRow(icon: Icons.text_snippet_outlined, label: 'Body Font', value: config.bodyFont),
+          _SettingRow(
+            icon: Icons.text_snippet_outlined,
+            label: 'Body Font',
+            value: config.bodyFont,
+          ),
         ],
       ),
     );
@@ -371,7 +472,11 @@ class _SettingsSection extends StatelessWidget {
 }
 
 class _SettingRow extends StatelessWidget {
-  const _SettingRow({required this.icon, required this.label, required this.value});
+  const _SettingRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
   final IconData icon;
   final String label;
   final String value;
@@ -384,7 +489,10 @@ class _SettingRow extends StatelessWidget {
         const SizedBox(width: 10),
         Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
         const Spacer(),
-        Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        ),
       ],
     );
   }

@@ -40,12 +40,7 @@ class DocumentList {
 
   /// Creates an empty list
   factory DocumentList.empty() {
-    return const DocumentList(
-      documents: [],
-      total: 0,
-      page: 1,
-      pageSize: 20,
-    );
+    return const DocumentList(documents: [], total: 0, page: 1, pageSize: 20);
   }
 
   /// Creates a copy of this list with the given fields replaced.

@@ -12,9 +12,5 @@ class CmsConfig {
   /// Optional unique identifier for this configuration.
   final String? id;
 
-  const CmsConfig({
-    required this.title,
-    required this.description,
-    this.id,
-  });
+  const CmsConfig({required this.title, required this.description, this.id});
 }

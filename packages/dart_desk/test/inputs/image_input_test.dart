@@ -10,6 +10,21 @@ import '../helpers/input_test_helpers.dart';
 
 class MockDataSource extends Mock implements DataSource {}
 
+MediaAsset _testAsset({String assetId = 'asset-hero'}) => MediaAsset(
+  id: '1',
+  assetId: assetId,
+  fileName: 'test.png',
+  mimeType: 'image/png',
+  fileSize: 1024,
+  publicUrl: 'https://cdn.example.com/test.png',
+  width: 100,
+  height: 100,
+  hasAlpha: false,
+  blurHash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj',
+  createdAt: DateTime(2026),
+  metadataStatus: MediaAssetMetadataStatus.complete,
+);
+
 void main() {
   setUpAll(() {
     initTestPngBytes();
@@ -42,6 +57,17 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const ValueKey('upload_button')), findsOneWidget);
+    });
+
+    testWidgets('shows editable URL field in empty state', (tester) async {
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsImageInput(field: field, dataSource: MockDataSource()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('url_input')), findsOneWidget);
     });
 
     testWidgets('remove fires onChanged null (with pre-loaded image)', (
@@ -84,6 +110,8 @@ void main() {
       tester,
     ) async {
       final dataSource = MockDataSource();
+      when(() => dataSource.getMediaAsset('asset-hero'))
+          .thenAnswer((_) async => _testAsset());
 
       await tester.pumpWidget(
         buildInputApp(
@@ -111,6 +139,8 @@ void main() {
       tester,
     ) async {
       final dataSource = MockDataSource();
+      when(() => dataSource.getMediaAsset('asset-hero'))
+          .thenAnswer((_) async => _testAsset());
 
       await tester.pumpWidget(
         buildInputApp(
@@ -147,12 +177,143 @@ void main() {
 
       // Tap the upload button — the full async pipeline (pick → metadata
       // extraction via compute/isolate → upload) can't complete in widget
-      // tests. Full upload is verified via Marionette QA integration tests.
+      // tests. Full upload is verified via integration tests.
       await tester.tap(find.byKey(const ValueKey('upload_button')));
       await tester.pump();
 
       // No crash — widget handled the tap
       expect(find.byKey(const ValueKey('upload_button')), findsOneWidget);
+    });
+
+    testWidgets('external URL data shows editable URL field with value', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsImageInput(
+            field: field,
+            data: const CmsData(
+              value: {
+                '_type': 'imageReference',
+                'externalUrl': 'https://example.com/photo.jpg',
+              },
+              path: 'hero',
+            ),
+            dataSource: MockDataSource(),
+          ),
+        ),
+      );
+
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      // URL input should be present (editable mode for external URLs)
+      expect(find.byKey(const ValueKey('url_input')), findsOneWidget);
+      // Remove button should appear since we have a value
+      expect(find.byKey(const ValueKey('remove_button')), findsOneWidget);
+    });
+
+    testWidgets('asset mode shows read-only URL field with copy button', (
+      tester,
+    ) async {
+      final dataSource = MockDataSource();
+      when(
+        () => dataSource.getMediaAsset('asset-hero'),
+      ).thenAnswer((_) async => _testAsset());
+
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsImageInput(
+            field: field,
+            data: const CmsData(
+              value: {'_type': 'imageReference', 'assetId': 'asset-hero'},
+              path: 'hero',
+            ),
+            dataSource: dataSource,
+          ),
+        ),
+      );
+
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      // Read-only URL display should be present (not the editable url_input)
+      expect(find.byKey(const ValueKey('url_display')), findsOneWidget);
+      expect(find.byKey(const ValueKey('url_input')), findsNothing);
+    });
+
+    testWidgets('remove clears both asset and external URL', (tester) async {
+      Map<String, dynamic>? received = {'sentinel': true};
+
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsImageInput(
+            field: field,
+            data: const CmsData(
+              value: {
+                '_type': 'imageReference',
+                'externalUrl': 'https://example.com/photo.jpg',
+              },
+              path: 'hero',
+            ),
+            dataSource: MockDataSource(),
+            onChanged: (v) => received = v,
+          ),
+        ),
+      );
+
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+
+      final removeButton = find.byKey(const ValueKey('remove_button'));
+      expect(removeButton, findsOneWidget);
+      await tester.tap(removeButton);
+      await tester.pump();
+
+      expect(received, isNull);
+      // Should be back to editable URL input
+      expect(find.byKey(const ValueKey('url_input')), findsOneWidget);
+    });
+
+    testWidgets('typing URL fires onChanged with externalUrl', (tester) async {
+      Map<String, dynamic>? received;
+
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsImageInput(
+            field: field,
+            dataSource: MockDataSource(),
+            onChanged: (v) => received = v,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+        find.byKey(const ValueKey('url_input')),
+        'https://example.com/img.png',
+      );
+      await tester.pump();
+
+      expect(received, isNotNull);
+      expect(received!['externalUrl'], 'https://example.com/img.png');
+      expect(received!['_type'], 'imageReference');
+    });
+
+    testWidgets('no tabs present in unified layout', (tester) async {
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsImageInput(field: field, dataSource: MockDataSource()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tabs should not exist in the unified layout
+      expect(find.text('Upload'), findsOneWidget); // button text
+      expect(find.text('URL'), findsNothing); // tab text gone
     });
   });
 }

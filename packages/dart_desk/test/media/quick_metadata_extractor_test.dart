@@ -14,6 +14,52 @@ void main() {
     testPngBytes = Uint8List.fromList(img.encodePng(image));
   });
 
+  group('QuickMetadataExtractor (large image)', () {
+    late Uint8List largePngBytes;
+
+    setUpAll(() {
+      // Simulate a 4000x3000 photo (12 MP) — typical phone camera output.
+      final large = img.Image(width: 4000, height: 3000);
+      // Fill with a gradient so BlurHash has real data to process.
+      for (var y = 0; y < large.height; y++) {
+        for (var x = 0; x < large.width; x++) {
+          large.setPixelRgb(
+            x,
+            y,
+            (x * 255 ~/ large.width),
+            (y * 255 ~/ large.height),
+            128,
+          );
+        }
+      }
+      largePngBytes = Uint8List.fromList(img.encodePng(large));
+    });
+
+    test('extracts correct dimensions from large image', () async {
+      final metadata = await QuickMetadataExtractor.extract(largePngBytes);
+      expect(metadata.width, 4000);
+      expect(metadata.height, 3000);
+    });
+
+    test('completes within 10 seconds for a 12MP image', () async {
+      final sw = Stopwatch()..start();
+      final metadata = await QuickMetadataExtractor.extract(largePngBytes);
+      sw.stop();
+      // With the thumbnail optimization, BlurHash on a 64px thumbnail should
+      // be fast. The bulk of time is the image decode (pure Dart).
+      expect(sw.elapsedMilliseconds, lessThan(10000));
+      expect(metadata.blurHash, isNotEmpty);
+      expect(metadata.contentHash.length, 64);
+    });
+
+    test('produces valid blurHash from large image', () async {
+      final metadata = await QuickMetadataExtractor.extract(largePngBytes);
+      // BlurHash should be non-trivial (not all same chars)
+      expect(metadata.blurHash.length, greaterThan(6));
+      expect(metadata.blurHash.split('').toSet().length, greaterThan(1));
+    });
+  });
+
   group('QuickMetadataExtractor', () {
     test('extracts width and height from PNG', () async {
       final metadata = await QuickMetadataExtractor.extract(testPngBytes);

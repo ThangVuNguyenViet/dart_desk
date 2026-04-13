@@ -24,7 +24,8 @@ class CmsNumberField extends CmsField {
   });
 
   @override
-  CmsNumberOption get option => (super.option as CmsNumberOption?) ?? const CmsNumberOption();
+  CmsNumberOption get option =>
+      (super.option as CmsNumberOption?) ?? const CmsNumberOption();
 }
 
 class CmsNumberFieldConfig extends CmsFieldConfig {

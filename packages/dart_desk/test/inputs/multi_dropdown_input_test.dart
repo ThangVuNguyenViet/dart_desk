@@ -19,66 +19,72 @@ void main() {
   );
 
   group('CmsMultiDropdownInput', () {
-    testWidgets('static options render correctly — shows placeholder and all 3 options on tap', (tester) async {
-      await tester.pumpWidget(
-        buildInputApp(
-          CmsMultiDropdownInput<String>(field: field),
-        ),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'static options render correctly — shows placeholder and all 3 options on tap',
+      (tester) async {
+        await tester.pumpWidget(
+          buildInputApp(CmsMultiDropdownInput<String>(field: field)),
+        );
+        await tester.pumpAndSettle();
 
-      // Placeholder is visible before opening
-      expect(find.text('Select tags'), findsOneWidget);
+        // Placeholder is visible before opening
+        expect(find.text('Select tags'), findsOneWidget);
 
-      // Tap to open
-      await tester.tap(find.text('Select tags'));
-      await tester.pumpAndSettle();
+        // Tap to open
+        await tester.tap(find.text('Select tags'));
+        await tester.pumpAndSettle();
 
-      // All 3 options should be visible
-      expect(find.text('Option A'), findsWidgets);
-      expect(find.text('Option B'), findsWidgets);
-      expect(find.text('Option C'), findsWidgets);
-    });
+        // All 3 options should be visible
+        expect(find.text('Option A'), findsWidgets);
+        expect(find.text('Option B'), findsWidgets);
+        expect(find.text('Option C'), findsWidgets);
+      },
+    );
 
-    testWidgets('multi-select: selecting two options shows comma-joined labels and fires onChanged', (tester) async {
-      List<String>? received;
+    testWidgets(
+      'multi-select: selecting two options shows comma-joined labels and fires onChanged',
+      (tester) async {
+        List<String>? received;
 
-      await tester.pumpWidget(
-        buildInputApp(
-          CmsMultiDropdownInput<String>(
-            field: field,
-            onChanged: (v) => received = v,
+        await tester.pumpWidget(
+          buildInputApp(
+            CmsMultiDropdownInput<String>(
+              field: field,
+              onChanged: (v) => received = v,
+            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      // Open dropdown
-      await tester.tap(find.text('Select tags'));
-      await tester.pumpAndSettle();
+        // Open dropdown
+        await tester.tap(find.text('Select tags'));
+        await tester.pumpAndSettle();
 
-      // Select Option A
-      await tester.tap(find.text('Option A').last);
-      await tester.pumpAndSettle();
+        // Select Option A
+        await tester.tap(find.text('Option A').last);
+        await tester.pumpAndSettle();
 
-      // Select Option B (dropdown stays open due to closeOnSelect: false)
-      await tester.tap(find.text('Option B').last);
-      await tester.pumpAndSettle();
+        // Select Option B (dropdown stays open due to closeOnSelect: false)
+        await tester.tap(find.text('Option B').last);
+        await tester.pumpAndSettle();
 
-      // Both values should have been emitted
-      expect(received, containsAll(['a', 'b']));
-      expect(received, hasLength(2));
+        // Both values should have been emitted
+        expect(received, containsAll(['a', 'b']));
+        expect(received, hasLength(2));
 
-      // Close the dropdown and check selected display
-      await tester.tapAt(const Offset(10, 10));
-      await tester.pumpAndSettle();
+        // Close the dropdown and check selected display
+        await tester.tapAt(const Offset(10, 10));
+        await tester.pumpAndSettle();
 
-      // The selected options display should show comma-joined labels
-      expect(find.textContaining('Option A'), findsWidgets);
-      expect(find.textContaining('Option B'), findsWidgets);
-    });
+        // The selected options display should show comma-joined labels
+        expect(find.textContaining('Option A'), findsWidgets);
+        expect(find.textContaining('Option B'), findsWidgets);
+      },
+    );
 
-    testWidgets('empty options list shows "No options available"', (tester) async {
+    testWidgets('empty options list shows "No options available"', (
+      tester,
+    ) async {
       const emptyField = CmsMultiDropdownField<String>(
         name: 'empty',
         title: 'Empty',
@@ -86,22 +92,19 @@ void main() {
       );
 
       await tester.pumpWidget(
-        buildInputApp(
-          CmsMultiDropdownInput<String>(field: emptyField),
-        ),
+        buildInputApp(CmsMultiDropdownInput<String>(field: emptyField)),
       );
       await tester.pumpAndSettle();
 
       expect(find.text('No options available'), findsOneWidget);
     });
 
-    testWidgets('didUpdateWidget updates controller when data changes', (tester) async {
+    testWidgets('didUpdateWidget updates controller when data changes', (
+      tester,
+    ) async {
       Widget buildWithData(CmsData? data) => buildInputApp(
-            CmsMultiDropdownInput<String>(
-              field: field,
-              data: data,
-            ),
-          );
+        CmsMultiDropdownInput<String>(field: field, data: data),
+      );
 
       // Build with initial data ['a']
       await tester.pumpWidget(
@@ -122,30 +125,33 @@ void main() {
       expect(find.text('Option B'), findsOneWidget);
     });
 
-    testWidgets('deselection works: selecting an already-selected option removes it', (tester) async {
-      List<String>? received;
+    testWidgets(
+      'deselection works: selecting an already-selected option removes it',
+      (tester) async {
+        List<String>? received;
 
-      await tester.pumpWidget(
-        buildInputApp(
-          CmsMultiDropdownInput<String>(
-            field: field,
-            data: const CmsData(value: ['a'], path: 'tags'),
-            onChanged: (v) => received = v,
+        await tester.pumpWidget(
+          buildInputApp(
+            CmsMultiDropdownInput<String>(
+              field: field,
+              data: const CmsData(value: ['a'], path: 'tags'),
+              onChanged: (v) => received = v,
+            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      // 'Option A' is already selected — open dropdown
-      await tester.tap(find.text('Option A'));
-      await tester.pumpAndSettle();
+        // 'Option A' is already selected — open dropdown
+        await tester.tap(find.text('Option A'));
+        await tester.pumpAndSettle();
 
-      // Tap 'Option A' again to deselect it
-      await tester.tap(find.text('Option A').last);
-      await tester.pumpAndSettle();
+        // Tap 'Option A' again to deselect it
+        await tester.tap(find.text('Option A').last);
+        await tester.pumpAndSettle();
 
-      // onChanged should have been called with an empty list
-      expect(received, isEmpty);
-    });
+        // onChanged should have been called with an empty list
+        expect(received, isEmpty);
+      },
+    );
   });
 }

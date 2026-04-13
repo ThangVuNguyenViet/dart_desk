@@ -6,7 +6,7 @@ import 'dart:convert';
 /// backend implementation (Serverpod, local database, etc.).
 class CmsDocumentData {
   /// Database ID (null for new documents not yet persisted)
-  final int? id;
+  final String? id;
 
   /// The document type identifier (e.g., 'article', 'page', 'product')
   final String documentType;
@@ -21,10 +21,10 @@ class CmsDocumentData {
   final DateTime? updatedAt;
 
   /// ID of the user who created this document
-  final int? createdByUserId;
+  final String? createdByUserId;
 
   /// ID of the user who last updated this document
-  final int? updatedByUserId;
+  final String? updatedByUserId;
 
   const CmsDocumentData({
     this.id,
@@ -38,13 +38,13 @@ class CmsDocumentData {
 
   /// Creates a copy of this document with the given fields replaced.
   CmsDocumentData copyWith({
-    int? id,
+    String? id,
     String? documentType,
     Map<String, dynamic>? data,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    String? createdByUserId,
+    String? updatedByUserId,
   }) {
     return CmsDocumentData(
       id: id ?? this.id,
@@ -71,7 +71,7 @@ class CmsDocumentData {
     }
 
     return CmsDocumentData(
-      id: json['id'] as int?,
+      id: json['id']?.toString(),
       documentType: json['documentType'] as String,
       data: parsedData,
       createdAt: json['createdAt'] != null
@@ -80,8 +80,8 @@ class CmsDocumentData {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
           : null,
-      createdByUserId: json['createdByUserId'] as int?,
-      updatedByUserId: json['updatedByUserId'] as int?,
+      createdByUserId: json['createdByUserId']?.toString(),
+      updatedByUserId: json['updatedByUserId']?.toString(),
     );
   }
 

@@ -81,9 +81,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
       }
     } catch (e) {
       if (mounted) {
-        ShadToaster.of(
-          context,
-        ).show(
+        ShadToaster.of(context).show(
           ShadToast(
             description: Text('Failed to ${publish ? 'publish' : 'save'}: $e'),
           ),

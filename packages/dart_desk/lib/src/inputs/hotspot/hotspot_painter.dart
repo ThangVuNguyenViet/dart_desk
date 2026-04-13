@@ -15,18 +15,17 @@ class HotspotPainter extends CustomPainter {
     final rx = hotspot.width * size.width / 2;
     final ry = hotspot.height * size.height / 2;
 
-    final ellipseRect =
-        Rect.fromCenter(center: center, width: rx * 2, height: ry * 2);
+    final ellipseRect = Rect.fromCenter(
+      center: center,
+      width: rx * 2,
+      height: ry * 2,
+    );
 
     // Subtle fill with a radial gradient — bright center fading out
-    final gradient = ui.Gradient.radial(
-      center,
-      (rx + ry) / 2,
-      [
-        Colors.white.withValues(alpha: 0.15),
-        Colors.white.withValues(alpha: 0.04),
-      ],
-    );
+    final gradient = ui.Gradient.radial(center, (rx + ry) / 2, [
+      Colors.white.withValues(alpha: 0.15),
+      Colors.white.withValues(alpha: 0.04),
+    ]);
     canvas.drawOval(ellipseRect, Paint()..shader = gradient);
 
     // Ellipse border — white with slight shadow for contrast on any bg
@@ -63,11 +62,7 @@ class HotspotPainter extends CustomPainter {
       crossPaint,
     );
     // Center dot
-    canvas.drawCircle(
-      center,
-      2.5,
-      Paint()..color = Colors.white,
-    );
+    canvas.drawCircle(center, 2.5, Paint()..color = Colors.white);
     canvas.drawCircle(
       center,
       2.5,

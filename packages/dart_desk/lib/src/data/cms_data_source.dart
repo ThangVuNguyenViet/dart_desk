@@ -65,7 +65,7 @@ abstract class DataSource {
   /// Returns the [CmsDocument] if found, or null if not found.
   ///
   /// Throws [CmsDataSourceException] if the operation fails.
-  Future<CmsDocument?> getDocument(int documentId);
+  Future<CmsDocument?> getDocument(String documentId);
 
   /// Creates a new document with an initial version.
   ///
@@ -100,7 +100,7 @@ abstract class DataSource {
   /// Throws [CmsDataSourceException] if the operation fails.
   /// Throws [CmsAuthenticationException] if authentication is required.
   Future<CmsDocument?> updateDocument(
-    int documentId, {
+    String documentId, {
     String? title,
     String? slug,
     bool? isDefault,
@@ -114,13 +114,13 @@ abstract class DataSource {
   ///
   /// Throws [CmsDataSourceException] if the operation fails.
   /// Throws [CmsAuthenticationException] if authentication is required.
-  Future<bool> deleteDocument(int documentId);
+  Future<bool> deleteDocument(String documentId);
 
   /// Atomically unsets the current default for [documentTypeSlug] and sets
   /// [documentId] as the new default. Returns the updated document.
   Future<CmsDocument> setDefaultDocument(
     String documentTypeSlug,
-    int documentId,
+    String documentId,
   );
 
   /// Suggests a unique slug for a document based on its title.
@@ -157,7 +157,7 @@ abstract class DataSource {
   ///
   /// Throws [CmsDataSourceException] if the operation fails.
   Future<DocumentVersionList> getDocumentVersions(
-    int documentId, {
+    String documentId, {
     int limit = 20,
     int offset = 0,
   });
@@ -169,11 +169,11 @@ abstract class DataSource {
   /// Returns the [DocumentVersion] if found, or null if not found.
   ///
   /// Throws [CmsDataSourceException] if the operation fails.
-  Future<DocumentVersion?> getDocumentVersion(int versionId);
+  Future<DocumentVersion?> getDocumentVersion(String versionId);
 
   /// Get the document data for a specific version
   /// Reconstructs data from CRDT operations at the version's HLC snapshot
-  Future<Map<String, dynamic>?> getDocumentVersionData(int versionId);
+  Future<Map<String, dynamic>?> getDocumentVersionData(String versionId);
 
   /// Creates a new version snapshot for a document at the current state.
   ///
@@ -189,7 +189,7 @@ abstract class DataSource {
   /// Throws [CmsDataSourceException] if the operation fails.
   /// Throws [CmsAuthenticationException] if authentication is required.
   Future<DocumentVersion> createDocumentVersion(
-    int documentId, {
+    String documentId, {
     String status = 'draft',
     String? changeLog,
   });
@@ -208,7 +208,7 @@ abstract class DataSource {
   /// Throws [CmsDataSourceException] if the operation fails.
   /// Throws [CmsAuthenticationException] if authentication is required.
   Future<CmsDocument> updateDocumentData(
-    int documentId,
+    String documentId,
     Map<String, dynamic> updates, {
     String? sessionId,
   });
@@ -221,7 +221,7 @@ abstract class DataSource {
   ///
   /// Throws [CmsDataSourceException] if the operation fails.
   /// Throws [CmsAuthenticationException] if authentication is required.
-  Future<DocumentVersion?> publishDocumentVersion(int versionId);
+  Future<DocumentVersion?> publishDocumentVersion(String versionId);
 
   /// Archives a document version.
   ///
@@ -231,7 +231,7 @@ abstract class DataSource {
   ///
   /// Throws [CmsDataSourceException] if the operation fails.
   /// Throws [CmsAuthenticationException] if authentication is required.
-  Future<DocumentVersion?> archiveDocumentVersion(int versionId);
+  Future<DocumentVersion?> archiveDocumentVersion(String versionId);
 
   /// Deletes a document version.
   ///
@@ -241,7 +241,7 @@ abstract class DataSource {
   ///
   /// Throws [CmsDataSourceException] if the operation fails.
   /// Throws [CmsAuthenticationException] if authentication is required.
-  Future<bool> deleteDocumentVersion(int versionId);
+  Future<bool> deleteDocumentVersion(String versionId);
 
   // ============================================================
   // Media Operations

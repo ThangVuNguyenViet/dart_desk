@@ -423,19 +423,26 @@ void main() {
     testWidgets('shows resolved title in document_ref_dropdown preview', (
       tester,
     ) async {
+      final docs = await dataSource.getDocuments('test_all_fields');
+      final betaDoc = docs.documents.firstWhere(
+        (d) => d.title == 'Test Document Beta',
+      );
+
       await tester.pumpWidget(
         buildEditorPreviewTestApp(
           dataSource: dataSource,
           docType: allFieldsDocumentType,
           seedData: {
-            'document_ref_dropdown': ['2'],
+            'document_ref_dropdown': [betaDoc.id!],
           },
         ),
       );
       await tester.pumpAndSettle();
 
       expect(
-        find.text('preview:document_ref_dropdown: [2] (Test Document Beta)'),
+        find.text(
+          'preview:document_ref_dropdown: [${betaDoc.id}] (Test Document Beta)',
+        ),
         findsOneWidget,
       );
     });
@@ -443,19 +450,29 @@ void main() {
     testWidgets('updates preview when document_ref_dropdown changes', (
       tester,
     ) async {
+      final docs = await dataSource.getDocuments('test_all_fields');
+      final alphaDoc = docs.documents.firstWhere(
+        (d) => d.title == 'Test Document Alpha',
+      );
+      final gammaDoc = docs.documents.firstWhere(
+        (d) => d.title == 'Test Document Gamma',
+      );
+
       await tester.pumpWidget(
         buildEditorPreviewTestApp(
           dataSource: dataSource,
           docType: allFieldsDocumentType,
           seedData: {
-            'document_ref_dropdown': ['1'],
+            'document_ref_dropdown': [alphaDoc.id!],
           },
         ),
       );
       await tester.pumpAndSettle();
 
       expect(
-        find.text('preview:document_ref_dropdown: [1] (Test Document Alpha)'),
+        find.text(
+          'preview:document_ref_dropdown: [${alphaDoc.id}] (Test Document Alpha)',
+        ),
         findsOneWidget,
       );
 
@@ -463,12 +480,14 @@ void main() {
       final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
       editedData.value = {
         ...editedData.value,
-        'document_ref_dropdown': ['3'],
+        'document_ref_dropdown': [gammaDoc.id!],
       };
       await tester.pumpAndSettle();
 
       expect(
-        find.text('preview:document_ref_dropdown: [3] (Test Document Gamma)'),
+        find.text(
+          'preview:document_ref_dropdown: [${gammaDoc.id}] (Test Document Gamma)',
+        ),
         findsOneWidget,
       );
     });

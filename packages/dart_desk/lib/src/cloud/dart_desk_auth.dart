@@ -246,13 +246,13 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
       _forgotError = null;
     });
     try {
-      _resetRequestId =
-          await _client.emailIdp.startPasswordReset(email: email);
+      _resetRequestId = await _client.emailIdp.startPasswordReset(email: email);
       if (mounted) setState(() => _forgotStep = 1);
     } catch (e) {
       if (mounted) {
         setState(
-            () => _forgotError = 'Failed to send reset code. Please try again.');
+          () => _forgotError = 'Failed to send reset code. Please try again.',
+        );
       }
     } finally {
       if (mounted) setState(() => _isForgotLoading = false);
@@ -277,8 +277,10 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
       if (mounted) setState(() => _forgotStep = 2);
     } catch (e) {
       if (mounted) {
-        setState(() => _forgotError =
-            'Invalid or expired verification code. Please try again.');
+        setState(
+          () => _forgotError =
+              'Invalid or expired verification code. Please try again.',
+        );
       }
     } finally {
       if (mounted) setState(() => _isForgotLoading = false);
@@ -311,8 +313,9 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
       }
     } catch (e) {
       if (mounted) {
-        setState(() =>
-            _forgotError = 'Failed to reset password. Please try again.');
+        setState(
+          () => _forgotError = 'Failed to reset password. Please try again.',
+        );
       }
     } finally {
       if (mounted) setState(() => _isForgotLoading = false);
@@ -392,11 +395,11 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
   }
 
   String _forgotStepDescription() => switch (_forgotStep) {
-        0 => 'Enter your email to receive a reset code',
-        1 => 'We sent a code to ${_forgotEmailController.text.trim()}',
-        2 => 'Set your new password',
-        _ => '',
-      };
+    0 => 'Enter your email to receive a reset code',
+    1 => 'We sent a code to ${_forgotEmailController.text.trim()}',
+    2 => 'Set your new password',
+    _ => '',
+  };
 
   List<Widget> _buildForgotStepContent(ShadThemeData theme) =>
       switch (_forgotStep) {
@@ -407,146 +410,151 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
       };
 
   List<Widget> _buildForgotEmailStep(ShadThemeData theme) => [
-        ShadInput(
-          controller: _forgotEmailController,
-          placeholder: const Text('Email'),
-          keyboardType: TextInputType.emailAddress,
-          onSubmitted: (_) => _handleStartReset(),
-        ),
-        const SizedBox(height: 16),
-        ShadButton(
-          onPressed: _isForgotLoading ? null : _handleStartReset,
-          child: _isForgotLoading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Send reset code'),
-        ),
-        const SizedBox(height: 12),
-        Center(
-          child: GestureDetector(
-            onTap: _hideForgotPasswordFlow,
-            child: Text(
-              'Back to sign in',
-              style: theme.textTheme.muted.copyWith(
-                fontSize: 12,
-                decoration: TextDecoration.underline,
-              ),
-            ),
+    ShadInput(
+      controller: _forgotEmailController,
+      placeholder: const Text('Email'),
+      keyboardType: TextInputType.emailAddress,
+      onSubmitted: (_) => _handleStartReset(),
+    ),
+    const SizedBox(height: 16),
+    ShadButton(
+      onPressed: _isForgotLoading ? null : _handleStartReset,
+      child: _isForgotLoading
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Text('Send reset code'),
+    ),
+    const SizedBox(height: 12),
+    Center(
+      child: GestureDetector(
+        onTap: _hideForgotPasswordFlow,
+        child: Text(
+          'Back to sign in',
+          style: theme.textTheme.muted.copyWith(
+            fontSize: 12,
+            decoration: TextDecoration.underline,
           ),
         ),
-      ];
+      ),
+    ),
+  ];
 
   List<Widget> _buildForgotCodeStep(ShadThemeData theme) => [
-        ShadInput(
-          controller: _forgotCodeController,
-          placeholder: const Text('Verification code'),
-          onSubmitted: (_) => _handleVerifyResetCode(),
-        ),
-        const SizedBox(height: 16),
-        ShadButton(
-          onPressed: _isForgotLoading ? null : _handleVerifyResetCode,
-          child: _isForgotLoading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Verify code'),
-        ),
-        const SizedBox(height: 8),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: GestureDetector(
-            onTap: _isForgotLoading ? null : _handleStartReset,
-            child: Text(
-              'Resend code',
-              style: theme.textTheme.muted.copyWith(
-                fontSize: 12,
-                decoration: TextDecoration.underline,
-              ),
-            ),
+    ShadInput(
+      controller: _forgotCodeController,
+      placeholder: const Text('Verification code'),
+      onSubmitted: (_) => _handleVerifyResetCode(),
+    ),
+    const SizedBox(height: 16),
+    ShadButton(
+      onPressed: _isForgotLoading ? null : _handleVerifyResetCode,
+      child: _isForgotLoading
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Text('Verify code'),
+    ),
+    const SizedBox(height: 8),
+    Align(
+      alignment: Alignment.centerLeft,
+      child: GestureDetector(
+        onTap: _isForgotLoading ? null : _handleStartReset,
+        child: Text(
+          'Resend code',
+          style: theme.textTheme.muted.copyWith(
+            fontSize: 12,
+            decoration: TextDecoration.underline,
           ),
         ),
-        const SizedBox(height: 12),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: GestureDetector(
-            onTap: _forgotGoBack,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(LucideIcons.arrowLeft,
-                    size: 14, color: theme.colorScheme.mutedForeground),
-                const SizedBox(width: 4),
-                Text('Back', style: theme.textTheme.muted.copyWith(fontSize: 12)),
-              ],
+      ),
+    ),
+    const SizedBox(height: 12),
+    Align(
+      alignment: Alignment.centerLeft,
+      child: GestureDetector(
+        onTap: _forgotGoBack,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              LucideIcons.arrowLeft,
+              size: 14,
+              color: theme.colorScheme.mutedForeground,
             ),
-          ),
+            const SizedBox(width: 4),
+            Text('Back', style: theme.textTheme.muted.copyWith(fontSize: 12)),
+          ],
         ),
-      ];
+      ),
+    ),
+  ];
 
   List<Widget> _buildForgotNewPasswordStep(ShadThemeData theme) => [
-        ShadInput(
-          controller: _forgotPasswordController,
-          placeholder: const Text('New password'),
-          obscureText: _obscureForgotPassword,
-          trailing: GestureDetector(
-            onTap: () =>
-                setState(() => _obscureForgotPassword = !_obscureForgotPassword),
-            child: Icon(
-              _obscureForgotPassword ? LucideIcons.eyeOff : LucideIcons.eye,
-              size: 16,
+    ShadInput(
+      controller: _forgotPasswordController,
+      placeholder: const Text('New password'),
+      obscureText: _obscureForgotPassword,
+      trailing: GestureDetector(
+        onTap: () =>
+            setState(() => _obscureForgotPassword = !_obscureForgotPassword),
+        child: Icon(
+          _obscureForgotPassword ? LucideIcons.eyeOff : LucideIcons.eye,
+          size: 16,
+        ),
+      ),
+    ),
+    const SizedBox(height: 12),
+    ShadInput(
+      controller: _forgotConfirmPasswordController,
+      placeholder: const Text('Confirm new password'),
+      obscureText: _obscureForgotConfirmPassword,
+      onSubmitted: (_) => _handleFinishReset(),
+      trailing: GestureDetector(
+        onTap: () => setState(
+          () => _obscureForgotConfirmPassword = !_obscureForgotConfirmPassword,
+        ),
+        child: Icon(
+          _obscureForgotConfirmPassword ? LucideIcons.eyeOff : LucideIcons.eye,
+          size: 16,
+        ),
+      ),
+    ),
+    const SizedBox(height: 16),
+    ShadButton(
+      onPressed: _isForgotLoading ? null : _handleFinishReset,
+      child: _isForgotLoading
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Text('Reset password'),
+    ),
+    const SizedBox(height: 12),
+    Align(
+      alignment: Alignment.centerLeft,
+      child: GestureDetector(
+        onTap: _forgotGoBack,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              LucideIcons.arrowLeft,
+              size: 14,
+              color: theme.colorScheme.mutedForeground,
             ),
-          ),
+            const SizedBox(width: 4),
+            Text('Back', style: theme.textTheme.muted.copyWith(fontSize: 12)),
+          ],
         ),
-        const SizedBox(height: 12),
-        ShadInput(
-          controller: _forgotConfirmPasswordController,
-          placeholder: const Text('Confirm new password'),
-          obscureText: _obscureForgotConfirmPassword,
-          onSubmitted: (_) => _handleFinishReset(),
-          trailing: GestureDetector(
-            onTap: () => setState(() =>
-                _obscureForgotConfirmPassword = !_obscureForgotConfirmPassword),
-            child: Icon(
-              _obscureForgotConfirmPassword
-                  ? LucideIcons.eyeOff
-                  : LucideIcons.eye,
-              size: 16,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        ShadButton(
-          onPressed: _isForgotLoading ? null : _handleFinishReset,
-          child: _isForgotLoading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Reset password'),
-        ),
-        const SizedBox(height: 12),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: GestureDetector(
-            onTap: _forgotGoBack,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(LucideIcons.arrowLeft,
-                    size: 14, color: theme.colorScheme.mutedForeground),
-                const SizedBox(width: 4),
-                Text('Back', style: theme.textTheme.muted.copyWith(fontSize: 12)),
-              ],
-            ),
-          ),
-        ),
-      ];
+      ),
+    ),
+  ];
 
   @override
   void dispose() {

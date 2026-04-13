@@ -78,7 +78,9 @@ class DocumentTypeItem extends StatelessWidget {
                         documentType.title,
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                          fontWeight: isSelected
+                              ? FontWeight.w500
+                              : FontWeight.normal,
                           color: isSelected
                               ? theme.colorScheme.foreground
                               : theme.colorScheme.mutedForeground,
@@ -93,10 +95,7 @@ class DocumentTypeItem extends StatelessWidget {
     );
 
     if (isCollapsed) {
-      return Tooltip(
-        message: documentType.title,
-        child: item,
-      );
+      return Tooltip(message: documentType.title, child: item);
     }
 
     return item;

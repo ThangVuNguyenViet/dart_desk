@@ -118,7 +118,8 @@ class ImageReference {
           altText == other.altText;
 
   @override
-  int get hashCode => Object.hash(assetId, externalUrl, publicUrl, hotspot, crop, altText);
+  int get hashCode =>
+      Object.hash(assetId, externalUrl, publicUrl, hotspot, crop, altText);
 
   @override
   String toString() =>

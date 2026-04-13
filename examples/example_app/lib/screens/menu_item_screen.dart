@@ -64,7 +64,10 @@ class MenuItemScreen extends StatelessWidget {
                         ),
                         Text(
                           '${config.calories} cal',
-                          style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[500],
+                          ),
                         ),
                       ],
                     ),
@@ -78,10 +81,20 @@ class MenuItemScreen extends StatelessWidget {
                   runSpacing: 6,
                   children: [
                     if (config.isVegetarian)
-                      _Tag(label: 'Vegetarian', icon: Icons.eco, color: const Color(0xFF16A34A)),
+                      _Tag(
+                        label: 'Vegetarian',
+                        icon: Icons.eco,
+                        color: const Color(0xFF16A34A),
+                      ),
                     if (config.isGlutenFree)
-                      _Tag(label: 'Gluten-free', icon: Icons.grain, color: const Color(0xFFEA580C)),
-                    ...config.tags.map((t) => _Tag(label: t, color: const Color(0xFF7C3AED))),
+                      _Tag(
+                        label: 'Gluten-free',
+                        icon: Icons.grain,
+                        color: const Color(0xFFEA580C),
+                      ),
+                    ...config.tags.map(
+                      (t) => _Tag(label: t, color: const Color(0xFF7C3AED)),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -97,7 +110,8 @@ class MenuItemScreen extends StatelessWidget {
                 ],
 
                 // Variants
-                if (config.variants.isNotEmpty) _VariantsSection(variants: config.variants),
+                if (config.variants.isNotEmpty)
+                  _VariantsSection(variants: config.variants),
               ],
             ),
           ),
@@ -137,7 +151,10 @@ class _PhotoHero extends StatelessWidget {
                 children: [
                   Icon(Icons.restaurant, size: 48, color: Colors.brown[200]),
                   const SizedBox(height: 8),
-                  Text('No photo', style: TextStyle(fontSize: 12, color: Colors.brown[300])),
+                  Text(
+                    'No photo',
+                    style: TextStyle(fontSize: 12, color: Colors.brown[300]),
+                  ),
                 ],
               ),
             ),
@@ -164,11 +181,17 @@ class _PhotoHero extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: config.isAvailable ? const Color(0xFF16A34A) : const Color(0xFFDC2626),
+                color: config.isAvailable
+                    ? const Color(0xFF16A34A)
+                    : const Color(0xFFDC2626),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: (config.isAvailable ? const Color(0xFF16A34A) : const Color(0xFFDC2626)).withValues(alpha: 0.3),
+                    color:
+                        (config.isAvailable
+                                ? const Color(0xFF16A34A)
+                                : const Color(0xFFDC2626))
+                            .withValues(alpha: 0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -180,12 +203,19 @@ class _PhotoHero extends StatelessWidget {
                   Container(
                     width: 6,
                     height: 6,
-                    decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                    ),
                   ),
                   const SizedBox(width: 6),
                   Text(
                     config.isAvailable ? 'Available' : 'Unavailable',
-                    style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -203,7 +233,12 @@ class _PhotoHero extends StatelessWidget {
               ),
               child: Text(
                 config.sku,
-                style: const TextStyle(fontSize: 10, color: Colors.white70, fontWeight: FontWeight.w500, letterSpacing: 0.5),
+                style: const TextStyle(
+                  fontSize: 10,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
           ),
@@ -234,7 +269,14 @@ class _Tag extends StatelessWidget {
             Icon(icon, size: 13, color: color),
             const SizedBox(width: 4),
           ],
-          Text(label, style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -247,7 +289,10 @@ class _NutritionSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final total = config.nutritionInfo.protein + config.nutritionInfo.carbs + config.nutritionInfo.fat;
+    final total =
+        config.nutritionInfo.protein +
+        config.nutritionInfo.carbs +
+        config.nutritionInfo.fat;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -260,7 +305,11 @@ class _NutritionSection extends StatelessWidget {
         children: [
           const Text(
             'Nutrition',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: -0.2),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.2,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -320,7 +369,11 @@ class _NutritionSection extends StatelessWidget {
 }
 
 class _MacroItem extends StatelessWidget {
-  const _MacroItem({required this.label, required this.value, required this.color});
+  const _MacroItem({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
   final String label;
   final String value;
   final Color color;
@@ -333,17 +386,23 @@ class _MacroItem extends StatelessWidget {
           Container(
             width: 8,
             height: 8,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color,
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: color),
           ),
           const SizedBox(width: 6),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
-              Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[500])),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                label,
+                style: TextStyle(fontSize: 10, color: Colors.grey[500]),
+              ),
             ],
           ),
         ],
@@ -367,7 +426,11 @@ class _AllergensSection extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded, size: 18, color: Color(0xFFDC2626)),
+          const Icon(
+            Icons.warning_amber_rounded,
+            size: 18,
+            color: Color(0xFFDC2626),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -375,11 +438,18 @@ class _AllergensSection extends StatelessWidget {
               children: [
                 const Text(
                   'Allergens',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFFDC2626)),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFFDC2626),
+                  ),
                 ),
                 Text(
                   allergens.join(', '),
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF991B1B)),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Color(0xFF991B1B),
+                  ),
                 ),
               ],
             ),
@@ -399,7 +469,14 @@ class _VariantsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Size Options', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: -0.2)),
+        const Text(
+          'Size Options',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.2,
+          ),
+        ),
         const SizedBox(height: 12),
         ...variants.asMap().entries.map((entry) {
           final v = entry.value;
@@ -411,7 +488,9 @@ class _VariantsSection extends StatelessWidget {
               color: isFirst ? const Color(0xFFF0F7F3) : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isFirst ? const Color(0xFF496455).withValues(alpha: 0.3) : Colors.grey[200]!,
+                color: isFirst
+                    ? const Color(0xFF496455).withValues(alpha: 0.3)
+                    : Colors.grey[200]!,
               ),
             ),
             child: Row(
@@ -422,17 +501,31 @@ class _VariantsSection extends StatelessWidget {
                     if (isFirst)
                       Container(
                         margin: const EdgeInsets.only(right: 10),
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: const Color(0xFF496455),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Text(
                           'DEFAULT',
-                          style: TextStyle(fontSize: 8, color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+                          style: TextStyle(
+                            fontSize: 8,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
+                          ),
                         ),
                       ),
-                    Text(v.label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+                    Text(
+                      v.label,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
                 ),
                 Text(

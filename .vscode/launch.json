@@ -5,10 +5,36 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "cms_app",
+            "name": "cms_app cloud",
             "cwd": "examples/cms_app",
             "request": "launch",
             "type": "dart",
+            "args": [
+                "--dart-define",
+                "SERVER_URL=https://api.dartdesk.dev/",
+                "--dart-define",
+                "API_KEY=cms_w_wb5eRQIKc8uBNSXoR4KmQi599S7LSilrgNv8ypQgCn0",
+                "-d",
+                "chrome",
+                "--web-port",
+                "60367"
+            ]
+        },
+        {
+            "name": "cms_app local",
+            "cwd": "examples/cms_app",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define",
+                "SERVER_URL=http://localhost:8080/",
+                "--dart-define",
+                "API_KEY=cms_w_vDraUkpjJrIbdU-nm6g5ySMNAw8R6jd95pe2Co06W5o",
+                "-d",
+                "chrome",
+                "--web-port",
+                "60367"
+            ]
         },
         {
             "name": "CMS App",

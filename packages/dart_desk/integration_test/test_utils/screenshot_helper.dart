@@ -34,8 +34,7 @@ class ScreenshotHelper {
       final renderView = binding.renderViews.first;
       final layer = renderView.debugLayer! as OffsetLayer;
       final image = await layer.toImage(renderView.paintBounds);
-      final byteData =
-          await image.toByteData(format: ui.ImageByteFormat.png);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
       final dir = Directory('integration_test/screenshots');
       if (!dir.existsSync()) dir.createSync(recursive: true);

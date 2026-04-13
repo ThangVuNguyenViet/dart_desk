@@ -12,16 +12,15 @@ extension ImageReferenceFromAsset on ImageReference {
     Hotspot? hotspot,
     CropRect? crop,
     String? altText,
-  }) =>
-      ImageReference(
-        assetId: asset.assetId,
-        publicUrl: asset.publicUrl,
-        width: asset.width,
-        height: asset.height,
-        blurHash: asset.blurHash,
-        lqip: asset.lqip,
-        hotspot: hotspot,
-        crop: crop,
-        altText: altText,
-      );
+  }) => ImageReference(
+    assetId: asset.assetId,
+    publicUrl: asset.publicUrl,
+    width: asset.width,
+    height: asset.height,
+    blurHash: asset.blurHash,
+    lqip: asset.lqip,
+    hotspot: hotspot,
+    crop: crop,
+    altText: altText,
+  );
 }

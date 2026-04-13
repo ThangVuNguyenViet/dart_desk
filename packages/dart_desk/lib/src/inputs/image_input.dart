@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:typed_data';
-
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
@@ -20,8 +19,6 @@ import 'hotspot/framing_controller.dart';
 import 'hotspot/framing_status.dart';
 
 enum _UploadState { idle, extractingMetadata, uploading, done, error }
-
-enum _InputTab { upload, url }
 
 class CmsImageInput extends StatefulWidget {
   final CmsImageField field;
@@ -50,7 +47,6 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
   late final _errorMessage = createSignal<String?>(null);
   late final _isDragOver = createSignal<bool>(false);
   late final _lastFramingMode = createSignal<FramingMode>(FramingMode.focus);
-  late final _activeTab = createSignal<_InputTab>(_InputTab.upload);
   late final _externalUrl = createSignal<String?>(null);
 
   /// Temporary blurHash from the quick metadata extraction, used during upload.
@@ -76,7 +72,6 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       _uploadState.value = _UploadState.idle;
       _errorMessage.value = null;
       _uploadBlurHash.value = null;
-      _activeTab.value = _InputTab.upload;
       _externalUrl.value = null;
       _initFromData();
     }
@@ -88,9 +83,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
         ImageReference.isImageReference(value)) {
       // Check for externalUrl first
       if (value['externalUrl'] != null) {
-        _activeTab.value = _InputTab.url;
         _externalUrl.value = value['externalUrl'] as String;
-        // Do NOT call _tryLoadImageReferenceFromData for externalUrl mode
       } else {
         // New format: ImageReference map with assetId. We have the assetId but
         // need the full MediaAsset to reconstruct. If dataSource is available,
@@ -233,7 +226,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     _errorMessage.value = null;
 
     try {
-      // Step 1: Extract quick metadata
+      // Step 1: Extract quick metadata (runs in isolate)
       _uploadState.value = _UploadState.extractingMetadata;
       final metadata = await QuickMetadataExtractor.extract(bytes);
       _uploadBlurHash.value = metadata.blurHash;
@@ -254,6 +247,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       final imageRef = ImageReferenceFromAsset.fromAsset(asset);
       _asset.value = asset;
       _imageRef.value = imageRef;
+      _externalUrl.value = null;
       _uploadState.value = _UploadState.done;
       _uploadBlurHash.value = null;
 
@@ -309,13 +303,10 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
 
   void _removeImage() {
     _imageRef.value = null;
+    _asset.value = null;
     _uploadState.value = _UploadState.idle;
     _errorMessage.value = null;
     _uploadBlurHash.value = null;
-    widget.onChanged?.call(null);
-  }
-
-  void _removeExternalUrl() {
     _externalUrl.value = null;
     widget.onChanged?.call(null);
   }
@@ -362,6 +353,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
             final imageRef = ImageReferenceFromAsset.fromAsset(asset);
             _asset.value = asset;
             _imageRef.value = imageRef;
+            _externalUrl.value = null;
             _uploadState.value = _UploadState.done;
             widget.onChanged?.call(imageRef.toMap());
             Navigator.of(context).pop();
@@ -541,6 +533,36 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       );
     }
 
+    // External URL state: show network image preview
+    final extUrl = _externalUrl.value;
+    if (extUrl != null && extUrl.isNotEmpty) {
+      return Image.network(
+        extUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FaIcon(
+                  FontAwesomeIcons.imagePortrait,
+                  size: 48,
+                  color: theme.colorScheme.mutedForeground,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Failed to load image',
+                  style: theme.textTheme.small.copyWith(
+                    color: theme.colorScheme.mutedForeground,
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+
     // Empty state: placeholder
     return Center(
       child: Column(
@@ -559,66 +581,6 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildUrlPreviewArea(ShadThemeData theme, String? url) {
-    return Container(
-      width: double.infinity,
-      height: 200,
-      decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.border),
-        borderRadius: BorderRadius.circular(8),
-        color: theme.colorScheme.muted.withValues(alpha: 0.3),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(7),
-        child: url != null && url.isNotEmpty
-            ? Image.network(
-                url,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        FaIcon(
-                          FontAwesomeIcons.imagePortrait,
-                          size: 48,
-                          color: theme.colorScheme.mutedForeground,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Failed to load image',
-                          style: theme.textTheme.small.copyWith(
-                            color: theme.colorScheme.mutedForeground,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              )
-            : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    FaIcon(
-                      FontAwesomeIcons.cloudArrowUp,
-                      size: 32,
-                      color: theme.colorScheme.mutedForeground,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Enter a URL above to preview',
-                      style: theme.textTheme.small.copyWith(
-                        color: theme.colorScheme.mutedForeground,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
       ),
     );
   }
@@ -672,155 +634,15 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     final ref = _imageRef.watch(context);
     final state = _uploadState.watch(context);
     final error = _errorMessage.watch(context);
-    final activeTab = _activeTab.watch(context);
     final externalUrl = _externalUrl.watch(context);
     final hasImage = ref != null;
+    final hasExternalUrl = externalUrl != null && externalUrl.isNotEmpty;
+    final hasAnyValue = hasImage || hasExternalUrl;
     final hotspotEnabled = widget.field.option?.hotspot ?? false;
     final isUploading =
         state == _UploadState.extractingMetadata ||
         state == _UploadState.uploading;
-
-    // Build the upload tab content
-    final uploadTabContent = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 8),
-
-        // Image preview area
-        GestureDetector(
-          onTap: isUploading ? null : _handlePickFile,
-          child: _buildImagePreviewArea(theme),
-        ),
-
-        if (ref != null && hotspotEnabled) ...[
-          const SizedBox(height: 8),
-          _buildFramingStatusChip(theme, ref),
-        ],
-
-        // Error message
-        if (error != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            error,
-            style: theme.textTheme.small.copyWith(
-              color: theme.colorScheme.destructive,
-            ),
-          ),
-        ],
-
-        const SizedBox(height: 8),
-
-        // Action buttons row
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            // Upload button
-            ShadButton.outline(
-              key: const ValueKey('upload_button'),
-              onPressed: isUploading ? null : _handlePickFile,
-              size: ShadButtonSize.sm,
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FaIcon(FontAwesomeIcons.cloudArrowUp, size: 14),
-                  SizedBox(width: 4),
-                  Text('Upload'),
-                ],
-              ),
-            ),
-
-            // Browse media button
-            ShadButton.outline(
-              key: const ValueKey('browse_media_button'),
-              onPressed: isUploading ? null : _browseMedia,
-              size: ShadButtonSize.sm,
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FaIcon(FontAwesomeIcons.images, size: 14),
-                  SizedBox(width: 4),
-                  Text('Browse media'),
-                ],
-              ),
-            ),
-
-            // Edit framing button (only if hotspot enabled and image loaded)
-            if (hotspotEnabled && hasImage)
-              ShadButton.outline(
-                key: const ValueKey('edit_framing_button'),
-                onPressed: _editCrop,
-                size: ShadButtonSize.sm,
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FaIcon(FontAwesomeIcons.cropSimple, size: 14),
-                    SizedBox(width: 4),
-                    Text('Edit framing'),
-                  ],
-                ),
-              ),
-
-            // Remove button (only if image loaded)
-            if (hasImage)
-              ShadButton.destructive(
-                key: const ValueKey('remove_button'),
-                onPressed: _removeImage,
-                size: ShadButtonSize.sm,
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FaIcon(FontAwesomeIcons.trash, size: 14),
-                    SizedBox(width: 4),
-                    Text('Remove'),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      ],
-    );
-
-    // Build the URL tab content
-    final urlTabContent = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 8),
-        ShadInputFormField(
-          key: const ValueKey('url_input'),
-          placeholder: const Text('https://example.com/image.lottie'),
-          initialValue: externalUrl ?? '',
-          onChanged: (value) {
-            _externalUrl.value = value.isEmpty ? null : value;
-            if (value.isNotEmpty) {
-              widget.onChanged?.call(
-                ImageReference(externalUrl: value).toMap(),
-              );
-            } else {
-              widget.onChanged?.call(null);
-            }
-          },
-        ),
-        const SizedBox(height: 8),
-        _buildUrlPreviewArea(theme, externalUrl),
-        if (externalUrl != null) ...[
-          const SizedBox(height: 8),
-          ShadButton.destructive(
-            key: const ValueKey('remove_url_button'),
-            onPressed: _removeExternalUrl,
-            size: ShadButtonSize.sm,
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FaIcon(FontAwesomeIcons.trash, size: 14),
-                SizedBox(width: 4),
-                Text('Remove'),
-              ],
-            ),
-          ),
-        ],
-      ],
-    );
+    final isAssetMode = hasImage && ref.publicUrl != null;
 
     return DropRegion(
       formats: Formats.standardFormats,
@@ -847,37 +669,136 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           ),
           SizedBox(height: CmsSpacing.md),
 
-          // Tabs
-          ShadTabs<String>(
-            value: activeTab == _InputTab.upload ? 'upload' : 'url',
-            onChanged: (value) {
-              if (value == 'upload' && activeTab == _InputTab.url) {
-                // Switching from url to upload: clear external URL
-                _externalUrl.value = null;
-                _activeTab.value = _InputTab.upload;
-                widget.onChanged?.call(null);
-              } else if (value == 'url' && activeTab == _InputTab.upload) {
-                // Switching from upload to url: clear image ref
-                _imageRef.value = null;
-                _uploadState.value = _UploadState.idle;
-                _errorMessage.value = null;
-                _activeTab.value = _InputTab.url;
-                widget.onChanged?.call(null);
-              }
-            },
-            tabs: [
-              ShadTab(
-                value: 'upload',
-                content: uploadTabContent,
-                child: const Text('Upload'),
+          // Image preview area
+          GestureDetector(
+            onTap: isUploading ? null : _handlePickFile,
+            child: _buildImagePreviewArea(theme),
+          ),
+
+          if (ref != null && hotspotEnabled) ...[
+            const SizedBox(height: 8),
+            _buildFramingStatusChip(theme, ref),
+          ],
+
+          // Error message
+          if (error != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              error,
+              style: theme.textTheme.small.copyWith(
+                color: theme.colorScheme.destructive,
               ),
-              ShadTab(
-                value: 'url',
-                content: urlTabContent,
-                child: const Text('URL'),
+            ),
+          ],
+
+          const SizedBox(height: 8),
+
+          // Action buttons row
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              ShadButton.outline(
+                key: const ValueKey('upload_button'),
+                onPressed: isUploading ? null : _handlePickFile,
+                size: ShadButtonSize.sm,
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FaIcon(FontAwesomeIcons.cloudArrowUp, size: 14),
+                    SizedBox(width: 4),
+                    Text('Upload'),
+                  ],
+                ),
               ),
+              ShadButton.outline(
+                key: const ValueKey('browse_media_button'),
+                onPressed: isUploading ? null : _browseMedia,
+                size: ShadButtonSize.sm,
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FaIcon(FontAwesomeIcons.images, size: 14),
+                    SizedBox(width: 4),
+                    Text('Browse media'),
+                  ],
+                ),
+              ),
+              if (hotspotEnabled && hasImage)
+                ShadButton.outline(
+                  key: const ValueKey('edit_framing_button'),
+                  onPressed: _editCrop,
+                  size: ShadButtonSize.sm,
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FaIcon(FontAwesomeIcons.cropSimple, size: 14),
+                      SizedBox(width: 4),
+                      Text('Edit framing'),
+                    ],
+                  ),
+                ),
+              if (hasAnyValue)
+                ShadButton.destructive(
+                  key: const ValueKey('remove_button'),
+                  onPressed: _removeImage,
+                  size: ShadButtonSize.sm,
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FaIcon(FontAwesomeIcons.trash, size: 14),
+                      SizedBox(width: 4),
+                      Text('Remove'),
+                    ],
+                  ),
+                ),
             ],
           ),
+
+          const SizedBox(height: 8),
+
+          // Unified URL field
+          if (isAssetMode)
+            ShadInput(
+              key: const ValueKey('url_display'),
+              initialValue: ref.publicUrl!,
+              readOnly: true,
+              trailing: ShadButton.ghost(
+                size: ShadButtonSize.sm,
+                width: 32,
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: ref.publicUrl!));
+                  ShadToaster.of(context).show(
+                    const ShadToast(
+                      description: Text('URL copied to clipboard'),
+                    ),
+                  );
+                },
+                child: const FaIcon(FontAwesomeIcons.copy, size: 14),
+              ),
+            )
+          else
+            ShadInputFormField(
+              key: const ValueKey('url_input'),
+              placeholder: const Text('https://example.com/image.png'),
+              initialValue: externalUrl ?? '',
+              onChanged: (value) {
+                _externalUrl.value = value.isEmpty ? null : value;
+                if (hasImage) {
+                  _imageRef.value = null;
+                  _asset.value = null;
+                  _uploadState.value = _UploadState.idle;
+                }
+                if (value.isNotEmpty) {
+                  widget.onChanged?.call(
+                    ImageReference(externalUrl: value).toMap(),
+                  );
+                } else {
+                  widget.onChanged?.call(null);
+                }
+              },
+            ),
         ],
       ),
     );

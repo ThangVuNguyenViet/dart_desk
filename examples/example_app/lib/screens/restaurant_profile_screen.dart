@@ -120,14 +120,23 @@ class _HeroSection extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.2),
+                        ),
                       ),
                       child: config.logo != null
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(14),
-                              child: Image.network(config.logo!.url!, fit: BoxFit.cover),
+                              child: Image.network(
+                                config.logo!.url!,
+                                fit: BoxFit.cover,
+                              ),
                             )
-                          : const Icon(Icons.restaurant, color: Colors.white70, size: 28),
+                          : const Icon(
+                              Icons.restaurant,
+                              color: Colors.white70,
+                              size: 28,
+                            ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -164,7 +173,9 @@ class _HeroSection extends StatelessWidget {
                   children: [
                     _HeroPill(
                       label: config.isActive ? 'Open Now' : 'Closed',
-                      color: config.isActive ? const Color(0xFF4ADE80) : const Color(0xFFF87171),
+                      color: config.isActive
+                          ? const Color(0xFF4ADE80)
+                          : const Color(0xFFF87171),
                     ),
                     if (config.acceptsOnlineOrders) ...[
                       const SizedBox(width: 8),
@@ -220,7 +231,11 @@ class _HeroPill extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 11,
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -294,11 +309,19 @@ class _QuickInfoItem extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: TextStyle(fontSize: 10, color: Colors.grey[500], fontWeight: FontWeight.w600, letterSpacing: 0.5),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.grey[500],
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                   Text(
                     value,
-                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -325,7 +348,11 @@ class _ContactCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -339,14 +366,24 @@ class _ContactCard extends StatelessWidget {
                   color: const Color(0xFFECF5F0),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.phone_outlined, size: 16, color: Color(0xFF496455)),
+                child: const Icon(
+                  Icons.phone_outlined,
+                  size: 16,
+                  color: Color(0xFF496455),
+                ),
               ),
               const SizedBox(width: 8),
-              const Text('Contact', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              const Text(
+                'Contact',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
           const SizedBox(height: 14),
-          Text(config.contactInfo.phone, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+          Text(
+            config.contactInfo.phone,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+          ),
           const SizedBox(height: 6),
           Text(
             config.contactInfo.email,
@@ -373,7 +410,11 @@ class _AddressCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -387,14 +428,24 @@ class _AddressCard extends StatelessWidget {
                   color: const Color(0xFFECF5F0),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF496455)),
+                child: const Icon(
+                  Icons.location_on_outlined,
+                  size: 16,
+                  color: Color(0xFF496455),
+                ),
               ),
               const SizedBox(width: 8),
-              const Text('Address', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              const Text(
+                'Address',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
           const SizedBox(height: 14),
-          Text(config.address.street, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+          Text(
+            config.address.street,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+          ),
           const SizedBox(height: 4),
           Text(
             '${config.address.city}, ${config.address.state} ${config.address.zipCode}',
@@ -413,7 +464,15 @@ class _OperatingHoursCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Determine current day for highlighting
-    final today = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][DateTime.now().weekday - 1];
+    final today = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ][DateTime.now().weekday - 1];
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -422,7 +481,11 @@ class _OperatingHoursCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: Colors.grey[200]!),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -436,10 +499,17 @@ class _OperatingHoursCard extends StatelessWidget {
                   color: const Color(0xFFECF5F0),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.schedule, size: 16, color: Color(0xFF496455)),
+                child: const Icon(
+                  Icons.schedule,
+                  size: 16,
+                  color: Color(0xFF496455),
+                ),
               ),
               const SizedBox(width: 8),
-              const Text('Hours', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+              const Text(
+                'Hours',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -471,8 +541,12 @@ class _OperatingHoursCard extends StatelessWidget {
                         h.day,
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: isToday ? FontWeight.w600 : FontWeight.w400,
-                          color: isToday ? const Color(0xFF1B3A2D) : Colors.grey[700],
+                          fontWeight: isToday
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                          color: isToday
+                              ? const Color(0xFF1B3A2D)
+                              : Colors.grey[700],
                         ),
                       ),
                     ],
@@ -485,8 +559,8 @@ class _OperatingHoursCard extends StatelessWidget {
                       color: h.isClosed
                           ? Colors.red[400]
                           : isToday
-                              ? const Color(0xFF1B3A2D)
-                              : Colors.grey[600],
+                          ? const Color(0xFF1B3A2D)
+                          : Colors.grey[600],
                     ),
                   ),
                 ],

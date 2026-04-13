@@ -14,12 +14,14 @@ void main() {
 
   group('CmsUrlInput', () {
     testWidgets('renders with initial URL', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsUrlInput(
-          field: field,
-          data: const CmsData(value: 'https://example.com', path: 'website'),
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsUrlInput(
+            field: field,
+            data: const CmsData(value: 'https://example.com', path: 'website'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('https://example.com'), findsOneWidget);
@@ -28,12 +30,11 @@ void main() {
     testWidgets('onChanged fires on valid URL entry', (tester) async {
       String? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsUrlInput(
-          field: field,
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsUrlInput(field: field, onChanged: (v) => received = v),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.enterText(
@@ -45,22 +46,19 @@ void main() {
       expect(received, 'https://flutter.dev');
     });
 
-    testWidgets('onChanged fires for invalid URL without crashing',
-        (tester) async {
+    testWidgets('onChanged fires for invalid URL without crashing', (
+      tester,
+    ) async {
       String? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsUrlInput(
-          field: field,
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsUrlInput(field: field, onChanged: (v) => received = v),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
-      await tester.enterText(
-        find.byType(ShadInputFormField),
-        'not-a-url',
-      );
+      await tester.enterText(find.byType(ShadInputFormField), 'not-a-url');
       await tester.pump();
 
       // onChanged fires even for invalid URLs
@@ -70,18 +68,14 @@ void main() {
     testWidgets('onChanged fires even for invalid URL', (tester) async {
       String? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsUrlInput(
-          field: field,
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsUrlInput(field: field, onChanged: (v) => received = v),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
-      await tester.enterText(
-        find.byType(ShadInputFormField),
-        'ftp://bad',
-      );
+      await tester.enterText(find.byType(ShadInputFormField), 'ftp://bad');
       await tester.pump();
 
       expect(received, 'ftp://bad');

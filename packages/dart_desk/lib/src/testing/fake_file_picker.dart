@@ -22,7 +22,8 @@ Uint8List _generateTestPng() {
 /// ```dart
 /// FakeFilePickerPlatform.install();
 /// ```
-class FakeFilePickerPlatform extends FilePicker with MockPlatformInterfaceMixin {
+class FakeFilePickerPlatform extends FilePicker
+    with MockPlatformInterfaceMixin {
   /// The result that [pickFiles] will return.
   /// Set to `null` to simulate user cancellation.
   FilePickerResult? resultToReturn;

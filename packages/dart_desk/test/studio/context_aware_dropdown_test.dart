@@ -454,8 +454,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('count: 3'), findsOneWidget);
 
-      // Delete the first document (ID 1)
-      await viewModel.deleteDocument.run(1);
+      // Delete the first document
+      final docs = await dataSource.getDocuments('test_all_fields');
+      await viewModel.deleteDocument.run(docs.documents.first.id!);
 
       await tester.pumpAndSettle();
       expect(find.text('count: 2'), findsOneWidget);

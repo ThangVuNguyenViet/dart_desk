@@ -29,13 +29,25 @@ void main() {
       final image = ImageFieldRobot(tester);
 
       await sidebar.tapDocumentType('Integration Test');
+      await ss.take(tester, 'document_type_selected');
+
       await docList.createDocument('Media Test Doc');
+      await ss.take(tester, 'document_created');
+
       await docList.tapDocument('Media Test Doc');
       await ss.take(tester, 'doc_opened');
+
+      // Verify empty state with unified layout
+      image.expectFieldEmpty('image_field');
+      await ss.take(tester, 'empty_state');
 
       await image.tapUpload('image_field');
       await image.expectImagePreview('image_field');
       await ss.take(tester, 'image_uploaded');
+
+      // Verify read-only URL after upload
+      image.expectReadOnlyUrl('image_field');
+      await ss.take(tester, 'url_readonly');
 
       await editor.tapSave();
       editor.expectSaveConfirmation();
@@ -53,11 +65,11 @@ void main() {
         final editor = DocumentEditorRobot(tester);
 
         await sidebar.tapDocumentType('Integration Test');
-        await docList.tapDocument('Media Test Doc');
+        await ss.take(tester, 'document_type_selected');
 
-        // FileFieldRobot does not exist yet; using find.byKey directly as an
-        // accepted exception per the integration test plan (Task 5 spec).
-        // FakeImagePickerPlatform installed by pumpTestApp handles the picker.
+        await docList.tapDocument('Media Test Doc');
+        await ss.take(tester, 'doc_opened');
+
         await tester.tap(find.byKey(const ValueKey('file_field')));
         await tester.settle(const Duration(seconds: 3));
         await ss.take(tester, 'file_uploaded');
@@ -79,15 +91,21 @@ void main() {
       final image = ImageFieldRobot(tester);
 
       await sidebar.tapDocumentType('Integration Test');
-      await docList.tapDocument('Media Test Doc');
+      await ss.take(tester, 'document_type_selected');
 
-      // Verify image preview exists before removal (uploaded in TC-02-01)
+      await docList.tapDocument('Media Test Doc');
+      await ss.take(tester, 'doc_opened');
+
       await image.expectImagePreview('image_field');
       await ss.take(tester, 'image_present');
 
       await image.tapRemove('image_field');
       image.expectFieldEmpty('image_field');
       await ss.take(tester, 'image_removed');
+
+      // Verify editable URL field is back
+      image.expectEditableUrl('image_field');
+      await ss.take(tester, 'url_editable_after_remove');
     });
 
     testWidgets('TC-E2E-02-04: Image persists after save and reload', (
@@ -102,8 +120,13 @@ void main() {
       final image = ImageFieldRobot(tester);
 
       await sidebar.tapDocumentType('Integration Test');
+      await ss.take(tester, 'document_type_selected');
+
       await docList.createDocument('Persist Media Doc');
+      await ss.take(tester, 'document_created');
+
       await docList.tapDocument('Persist Media Doc');
+      await ss.take(tester, 'doc_opened');
 
       await image.tapUpload('image_field');
       await image.expectImagePreview('image_field');
@@ -111,13 +134,17 @@ void main() {
 
       await editor.tapSave();
       editor.expectSaveConfirmation();
+      await ss.take(tester, 'saved');
 
       await editor.navigateBack();
+      await ss.take(tester, 'navigated_back');
 
-      // Re-open document and verify image still present
       await docList.tapDocument('Persist Media Doc');
       await image.expectImagePreview('image_field');
       await ss.take(tester, 'image_persisted');
+
+      image.expectReadOnlyUrl('image_field');
+      await ss.take(tester, 'url_readonly_after_reload');
     });
   });
 }

@@ -18,8 +18,9 @@ class MediaToolbar extends StatefulWidget {
 }
 
 class _MediaToolbarState extends State<MediaToolbar> {
-  late final _searchController =
-      TextEditingController(text: widget.state.search.value);
+  late final _searchController = TextEditingController(
+    text: widget.state.search.value,
+  );
   Timer? _debounce;
 
   @override
@@ -80,8 +81,7 @@ class _MediaToolbarState extends State<MediaToolbar> {
             options: MediaTypeFilter.values
                 .map((t) => ShadOption(value: t, child: Text(_typeLabel(t))))
                 .toList(),
-            selectedOptionBuilder: (context, value) =>
-                Text(_typeLabel(value)),
+            selectedOptionBuilder: (context, value) => Text(_typeLabel(value)),
           ),
           const SizedBox(width: 8),
 
@@ -93,11 +93,9 @@ class _MediaToolbarState extends State<MediaToolbar> {
               widget.state.sort.value = value;
             },
             options: MediaSort.values
-                .map(
-                    (s) => ShadOption(value: s, child: Text(_sortLabel(s))))
+                .map((s) => ShadOption(value: s, child: Text(_sortLabel(s))))
                 .toList(),
-            selectedOptionBuilder: (context, value) =>
-                Text(_sortLabel(value)),
+            selectedOptionBuilder: (context, value) => Text(_sortLabel(value)),
           ),
           const SizedBox(width: 8),
 
@@ -106,12 +104,9 @@ class _MediaToolbarState extends State<MediaToolbar> {
             final isGrid = widget.state.isGridView.watch(context);
             return ShadButton.outline(
               size: ShadButtonSize.sm,
-              onPressed: () =>
-                  widget.state.isGridView.value = !isGrid,
+              onPressed: () => widget.state.isGridView.value = !isGrid,
               child: FaIcon(
-                isGrid
-                    ? FontAwesomeIcons.list
-                    : FontAwesomeIcons.tableColumns,
+                isGrid ? FontAwesomeIcons.list : FontAwesomeIcons.tableColumns,
                 size: 14,
               ),
             );
@@ -122,18 +117,18 @@ class _MediaToolbarState extends State<MediaToolbar> {
   }
 
   String _typeLabel(MediaTypeFilter type) => switch (type) {
-        MediaTypeFilter.all => 'All types',
-        MediaTypeFilter.image => 'Images',
-        MediaTypeFilter.video => 'Videos',
-        MediaTypeFilter.file => 'Files',
-      };
+    MediaTypeFilter.all => 'All types',
+    MediaTypeFilter.image => 'Images',
+    MediaTypeFilter.video => 'Videos',
+    MediaTypeFilter.file => 'Files',
+  };
 
   String _sortLabel(MediaSort sort) => switch (sort) {
-        MediaSort.dateDesc => 'Newest first',
-        MediaSort.dateAsc => 'Oldest first',
-        MediaSort.nameAsc => 'Name A-Z',
-        MediaSort.nameDesc => 'Name Z-A',
-        MediaSort.sizeDesc => 'Largest',
-        MediaSort.sizeAsc => 'Smallest',
-      };
+    MediaSort.dateDesc => 'Newest first',
+    MediaSort.dateAsc => 'Oldest first',
+    MediaSort.nameAsc => 'Name A-Z',
+    MediaSort.nameDesc => 'Name Z-A',
+    MediaSort.sizeDesc => 'Largest',
+    MediaSort.sizeAsc => 'Smallest',
+  };
 }

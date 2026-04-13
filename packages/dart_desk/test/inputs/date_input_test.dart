@@ -15,30 +15,28 @@ void main() {
 
   group('CmsDateInput', () {
     testWidgets('renders with initial date', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsDateInput(
-          field: field,
-          data: const CmsData(value: '2026-03-01', path: 'date'),
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsDateInput(
+            field: field,
+            data: const CmsData(value: '2026-03-01', path: 'date'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(ShadDatePickerFormField), findsOneWidget);
     });
 
     testWidgets('renders empty when no data', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsDateInput(field: field),
-      ));
+      await tester.pumpWidget(buildInputApp(CmsDateInput(field: field)));
       await tester.pumpAndSettle();
 
       expect(find.byType(ShadDatePickerFormField), findsOneWidget);
     });
 
     testWidgets('calendar popup opens on tap', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsDateInput(field: field),
-      ));
+      await tester.pumpWidget(buildInputApp(CmsDateInput(field: field)));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(ShadDatePickerFormField));
@@ -58,12 +56,11 @@ void main() {
 
       DateTime? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsDateInput(
-          field: field,
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsDateInput(field: field, onChanged: (v) => received = v),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Open calendar

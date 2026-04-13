@@ -111,7 +111,9 @@ void main() {
       await ss.take(tester, 'published_from_history');
     });
 
-    testWidgets('TC-E2E-01-06: Save and Publish document button', (tester) async {
+    testWidgets('TC-E2E-01-06: Save and Publish document button', (
+      tester,
+    ) async {
       final ss = ScreenshotHelper(binding, 'tc_01_06');
       await pumpTestApp(tester);
 

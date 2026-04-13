@@ -17,9 +17,9 @@ import 'test_document_types.dart';
 /// Pre-seeded with 3 documents from [testDocumentSeedData].
 /// All operations are synchronous in-memory. No network calls.
 class MockDataSource implements DataSource {
-  final Map<int, CmsDocument> _documents = {};
-  final Map<int, Map<int, DocumentVersion>> _versions = {};
-  final Map<int, Map<String, dynamic>> _versionData = {};
+  final Map<String, CmsDocument> _documents = {};
+  final Map<String, Map<String, DocumentVersion>> _versions = {};
+  final Map<String, Map<String, dynamic>> _versionData = {};
   final Map<String, MediaAsset> _media = {};
   int _nextDocId = 1;
   int _nextVersionId = 1;
@@ -29,19 +29,23 @@ class MockDataSource implements DataSource {
     _seed();
   }
 
+  String _genDocId() => 'doc-${_nextDocId++}';
+  String _genVersionId() => 'ver-${_nextVersionId++}';
+  String _genMediaId() => 'media-${_nextMediaId++}';
+
   void _seed() {
     for (final seed in testDocumentSeedData) {
-      final docId = _nextDocId++;
-      final versionId = _nextVersionId++;
+      final docId = _genDocId();
+      final versionId = _genVersionId();
       final now = DateTime.now();
 
       _documents[docId] = CmsDocument(
         id: docId,
-        clientId: 1,
+        clientId: 'mock-client-1',
         documentType: 'test_all_fields',
         title: seed['title'] as String,
         slug: seed['slug'] as String,
-        isDefault: docId == 1,
+        isDefault: _nextDocId == 2, // first doc
         activeVersionData: seed['data'] as Map<String, dynamic>,
         createdAt: now,
         updatedAt: now,
@@ -52,12 +56,12 @@ class MockDataSource implements DataSource {
           id: versionId,
           documentId: docId,
           versionNumber: 1,
-          status: docId == 1
+          status: _nextDocId == 2
               ? DocumentVersionStatus.published
               : DocumentVersionStatus.draft,
           changeLog: 'Initial version',
           createdAt: now,
-          publishedAt: docId == 1 ? now : null,
+          publishedAt: _nextDocId == 2 ? now : null,
         ),
       };
 
@@ -66,11 +70,12 @@ class MockDataSource implements DataSource {
       );
     }
 
-    // Add a second version to document 1 (draft on top of published)
-    final secondVersionId = _nextVersionId++;
-    _versions[1]![secondVersionId] = DocumentVersion(
+    // Add a second version to first document (draft on top of published)
+    final firstDocId = _documents.keys.first;
+    final secondVersionId = _genVersionId();
+    _versions[firstDocId]![secondVersionId] = DocumentVersion(
       id: secondVersionId,
-      documentId: 1,
+      documentId: firstDocId,
       versionNumber: 2,
       status: DocumentVersionStatus.draft,
       changeLog: 'Updated string field',
@@ -83,7 +88,7 @@ class MockDataSource implements DataSource {
 
     // Seed media assets for testing
     _media['asset-hero'] = MediaAsset(
-      id: _nextMediaId++,
+      id: _genMediaId(),
       assetId: 'asset-hero',
       fileName: 'hero-banner.jpg',
       mimeType: 'image/jpeg',
@@ -97,7 +102,7 @@ class MockDataSource implements DataSource {
       metadataStatus: MediaAssetMetadataStatus.complete,
     );
     _media['asset-profile'] = MediaAsset(
-      id: _nextMediaId++,
+      id: _genMediaId(),
       assetId: 'asset-profile',
       fileName: 'profile-photo.png',
       mimeType: 'image/png',
@@ -111,7 +116,7 @@ class MockDataSource implements DataSource {
       metadataStatus: MediaAssetMetadataStatus.complete,
     );
     _media['asset-landscape'] = MediaAsset(
-      id: _nextMediaId++,
+      id: _genMediaId(),
       assetId: 'asset-landscape',
       fileName: 'mountain-landscape.jpg',
       mimeType: 'image/jpeg',
@@ -125,7 +130,7 @@ class MockDataSource implements DataSource {
       metadataStatus: MediaAssetMetadataStatus.complete,
     );
     _media['asset-icon'] = MediaAsset(
-      id: _nextMediaId++,
+      id: _genMediaId(),
       assetId: 'asset-icon',
       fileName: 'app-icon.png',
       mimeType: 'image/png',
@@ -180,7 +185,7 @@ class MockDataSource implements DataSource {
   }
 
   @override
-  Future<CmsDocument?> getDocument(int documentId) async {
+  Future<CmsDocument?> getDocument(String documentId) async {
     return _documents[documentId];
   }
 
@@ -192,18 +197,19 @@ class MockDataSource implements DataSource {
     String? slug,
     bool isDefault = false,
   }) async {
-    final docId = _nextDocId++;
-    final versionId = _nextVersionId++;
+    final docId = _genDocId();
+    final versionId = _genVersionId();
     final now = DateTime.now();
 
     // Determine effective isDefault: auto-assign if this is the first doc for this type
-    final isFirstForType =
-        !_documents.values.any((d) => d.documentType == documentType);
+    final isFirstForType = !_documents.values.any(
+      (d) => d.documentType == documentType,
+    );
     final effectiveIsDefault = isDefault || isFirstForType;
 
     final doc = CmsDocument(
       id: docId,
-      clientId: 1,
+      clientId: 'mock-client-1',
       documentType: documentType,
       title: title,
       slug: slug ?? _generateSlug(title),
@@ -231,7 +237,7 @@ class MockDataSource implements DataSource {
 
   @override
   Future<CmsDocument?> updateDocument(
-    int documentId, {
+    String documentId, {
     String? title,
     String? slug,
     bool? isDefault,
@@ -252,15 +258,16 @@ class MockDataSource implements DataSource {
   @override
   Future<CmsDocument> setDefaultDocument(
     String documentTypeSlug,
-    int documentId,
+    String documentId,
   ) async {
     // Unset any existing default for this type
     final currentDefault = _documents.values.firstWhereOrNull(
       (d) => d.documentType == documentTypeSlug && d.isDefault,
     );
     if (currentDefault?.id != null) {
-      _documents[currentDefault!.id!] =
-          currentDefault.copyWith(isDefault: false);
+      _documents[currentDefault!.id!] = currentDefault.copyWith(
+        isDefault: false,
+      );
     }
 
     // Set new default
@@ -277,7 +284,7 @@ class MockDataSource implements DataSource {
   }
 
   @override
-  Future<bool> deleteDocument(int documentId) async {
+  Future<bool> deleteDocument(String documentId) async {
     final doc = _documents[documentId];
     if (doc == null) return false;
 
@@ -293,8 +300,9 @@ class MockDataSource implements DataSource {
 
     // Auto-assign default to the sole remaining document if needed
     if (wasDefault) {
-      final remaining =
-          _documents.values.where((d) => d.documentType == docType).toList();
+      final remaining = _documents.values
+          .where((d) => d.documentType == docType)
+          .toList();
       if (remaining.length == 1) {
         final newDefault = remaining.first;
         _documents[newDefault.id!] = newDefault.copyWith(isDefault: true);
@@ -316,7 +324,7 @@ class MockDataSource implements DataSource {
 
   @override
   Future<DocumentVersionList> getDocumentVersions(
-    int documentId, {
+    String documentId, {
     int limit = 20,
     int offset = 0,
   }) async {
@@ -332,7 +340,7 @@ class MockDataSource implements DataSource {
   }
 
   @override
-  Future<DocumentVersion?> getDocumentVersion(int versionId) async {
+  Future<DocumentVersion?> getDocumentVersion(String versionId) async {
     for (final docVersions in _versions.values) {
       if (docVersions.containsKey(versionId)) {
         return docVersions[versionId];
@@ -342,23 +350,23 @@ class MockDataSource implements DataSource {
   }
 
   @override
-  Future<Map<String, dynamic>?> getDocumentVersionData(int versionId) async {
+  Future<Map<String, dynamic>?> getDocumentVersionData(String versionId) async {
     return _versionData[versionId];
   }
 
   @override
   Future<DocumentVersion> createDocumentVersion(
-    int documentId, {
+    String documentId, {
     String status = 'draft',
     String? changeLog,
   }) async {
-    final versionId = _nextVersionId++;
+    final versionId = _genVersionId();
     final existingVersions = _versions[documentId]?.values ?? [];
     final maxVersion = existingVersions.isEmpty
         ? 0
         : existingVersions
-            .map((v) => v.versionNumber)
-            .reduce((a, b) => a > b ? a : b);
+              .map((v) => v.versionNumber)
+              .reduce((a, b) => a > b ? a : b);
 
     final parsedStatus = DocumentVersionStatus.values.firstWhere(
       (s) => s.name == status,
@@ -383,7 +391,7 @@ class MockDataSource implements DataSource {
 
   @override
   Future<CmsDocument> updateDocumentData(
-    int documentId,
+    String documentId,
     Map<String, dynamic> updates, {
     String? sessionId,
   }) async {
@@ -408,17 +416,17 @@ class MockDataSource implements DataSource {
   }
 
   @override
-  Future<DocumentVersion?> publishDocumentVersion(int versionId) async {
+  Future<DocumentVersion?> publishDocumentVersion(String versionId) async {
     return _updateVersionStatus(versionId, DocumentVersionStatus.published);
   }
 
   @override
-  Future<DocumentVersion?> archiveDocumentVersion(int versionId) async {
+  Future<DocumentVersion?> archiveDocumentVersion(String versionId) async {
     return _updateVersionStatus(versionId, DocumentVersionStatus.archived);
   }
 
   @override
-  Future<bool> deleteDocumentVersion(int versionId) async {
+  Future<bool> deleteDocumentVersion(String versionId) async {
     for (final docVersions in _versions.values) {
       if (docVersions.containsKey(versionId)) {
         docVersions.remove(versionId);
@@ -435,8 +443,11 @@ class MockDataSource implements DataSource {
     Uint8List fileData,
     QuickImageMetadata metadata,
   ) async {
-    final ext = fileName.contains('.') ? fileName.split('.').last.toLowerCase() : 'bin';
-    final assetId = '${metadata.contentHash}-${metadata.width}x${metadata.height}.$ext';
+    final ext = fileName.contains('.')
+        ? fileName.split('.').last.toLowerCase()
+        : 'bin';
+    final assetId =
+        '${metadata.contentHash}-${metadata.width}x${metadata.height}.$ext';
 
     // Deduplication: return existing if found
     if (_media.containsKey(assetId)) {
@@ -452,7 +463,7 @@ class MockDataSource implements DataSource {
       _ => 'image/$ext',
     };
 
-    final id = _nextMediaId++;
+    final id = _genMediaId();
     final asset = MediaAsset(
       id: id,
       assetId: assetId,
@@ -472,11 +483,10 @@ class MockDataSource implements DataSource {
   }
 
   @override
-  Future<MediaAsset> uploadFile(
-    String fileName,
-    Uint8List fileData,
-  ) async {
-    final ext = fileName.contains('.') ? fileName.split('.').last.toLowerCase() : 'bin';
+  Future<MediaAsset> uploadFile(String fileName, Uint8List fileData) async {
+    final ext = fileName.contains('.')
+        ? fileName.split('.').last.toLowerCase()
+        : 'bin';
     final hash = fileData.length.toRadixString(16); // simple mock hash
     final assetId = 'file-$hash-$ext';
 
@@ -487,14 +497,16 @@ class MockDataSource implements DataSource {
     final mimeType = switch (ext) {
       'pdf' => 'application/pdf',
       'doc' => 'application/msword',
-      'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'docx' =>
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'txt' => 'text/plain',
       'csv' => 'text/csv',
-      'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'xlsx' =>
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       _ => 'application/octet-stream',
     };
 
-    final id = _nextMediaId++;
+    final id = _genMediaId();
     final asset = MediaAsset(
       id: id,
       assetId: assetId,
@@ -542,7 +554,9 @@ class MockDataSource implements DataSource {
     // Filter by search
     if (search != null && search.isNotEmpty) {
       final query = search.toLowerCase();
-      items = items.where((a) => a.fileName.toLowerCase().contains(query)).toList();
+      items = items
+          .where((a) => a.fileName.toLowerCase().contains(query))
+          .toList();
     }
 
     // Filter by type
@@ -551,7 +565,9 @@ class MockDataSource implements DataSource {
         return switch (type) {
           MediaTypeFilter.image => a.mimeType.startsWith('image/'),
           MediaTypeFilter.video => a.mimeType.startsWith('video/'),
-          MediaTypeFilter.file => !a.mimeType.startsWith('image/') && !a.mimeType.startsWith('video/'),
+          MediaTypeFilter.file =>
+            !a.mimeType.startsWith('image/') &&
+                !a.mimeType.startsWith('video/'),
           MediaTypeFilter.all => true,
         };
       }).toList();
@@ -562,8 +578,12 @@ class MockDataSource implements DataSource {
       return switch (sort) {
         MediaSort.dateDesc => b.createdAt.compareTo(a.createdAt),
         MediaSort.dateAsc => a.createdAt.compareTo(b.createdAt),
-        MediaSort.nameAsc => a.fileName.toLowerCase().compareTo(b.fileName.toLowerCase()),
-        MediaSort.nameDesc => b.fileName.toLowerCase().compareTo(a.fileName.toLowerCase()),
+        MediaSort.nameAsc => a.fileName.toLowerCase().compareTo(
+          b.fileName.toLowerCase(),
+        ),
+        MediaSort.nameDesc => b.fileName.toLowerCase().compareTo(
+          a.fileName.toLowerCase(),
+        ),
         MediaSort.sizeDesc => b.fileSize.compareTo(a.fileSize),
         MediaSort.sizeAsc => a.fileSize.compareTo(b.fileSize),
       };
@@ -575,10 +595,16 @@ class MockDataSource implements DataSource {
   }
 
   @override
-  Future<MediaAsset> updateMediaAsset(String assetId, {String? fileName}) async {
+  Future<MediaAsset> updateMediaAsset(
+    String assetId, {
+    String? fileName,
+  }) async {
     final existing = _media[assetId];
     if (existing == null) {
-      throw CmsNotFoundException(resourceType: 'MediaAsset', resourceId: assetId);
+      throw CmsNotFoundException(
+        resourceType: 'MediaAsset',
+        resourceId: assetId,
+      );
     }
 
     if (fileName != null) {
@@ -616,7 +642,7 @@ class MockDataSource implements DataSource {
   }
 
   DocumentVersion? _updateVersionStatus(
-    int versionId,
+    String versionId,
     DocumentVersionStatus status,
   ) {
     for (final docVersions in _versions.values) {
@@ -642,5 +668,4 @@ class MockDataSource implements DataSource {
     }
     return null;
   }
-
 }

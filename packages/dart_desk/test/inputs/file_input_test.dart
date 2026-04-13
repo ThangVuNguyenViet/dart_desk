@@ -13,18 +13,14 @@ void main() {
 
   group('CmsFileInput', () {
     testWidgets('renders upload button when no file', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsFileInput(field: field),
-      ));
+      await tester.pumpWidget(buildInputApp(CmsFileInput(field: field)));
       await tester.pumpAndSettle();
 
       expect(find.text('Upload File'), findsOneWidget);
     });
 
     testWidgets('renders title label', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsFileInput(field: field),
-      ));
+      await tester.pumpWidget(buildInputApp(CmsFileInput(field: field)));
       await tester.pumpAndSettle();
 
       expect(find.text('Document Upload'), findsOneWidget);

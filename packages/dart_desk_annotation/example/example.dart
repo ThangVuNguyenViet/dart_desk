@@ -17,10 +17,10 @@ class BlogPost with Serializable<BlogPost> {
 
   @override
   Map<String, dynamic> toMap() => {
-        'title': title,
-        'body': body,
-        'published': published,
-      };
+    'title': title,
+    'body': body,
+    'published': published,
+  };
 }
 
 // Define the CMS document type with field configurations

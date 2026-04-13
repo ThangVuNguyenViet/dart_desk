@@ -16,7 +16,7 @@ class CmsDocumentViewModel {
   final DataSource dataSource;
 
   /// Signal for the document ID
-  final documentId = Signal<int?>(null, debugLabel: 'documentId');
+  final documentId = Signal<String?>(null, debugLabel: 'documentId');
 
   /// FutureSignal for the currently selected document
   late final selectedDocument = AwaitableFutureSignal<CmsDocument?>(() async {
@@ -90,7 +90,7 @@ class CmsDocumentViewModel {
   /// Fetches versions for a document and auto-loads the latest data.
   /// Sets [editedData] from the document's active version data and
   /// updates [cmsVM.selectedVersionId].
-  Future<void> _autoLoadLatestData(CmsViewModel cmsVM, int docId) async {
+  Future<void> _autoLoadLatestData(CmsViewModel cmsVM, String docId) async {
     try {
       final versions = await dataSource.getDocumentVersions(docId);
       if (versions.versions.isNotEmpty) {
@@ -116,51 +116,54 @@ class CmsDocumentViewModel {
   }
 
   /// Updates the document metadata (title, slug, isDefault).
-  late final updateMetadata = mutationSignal<
-      CmsDocument?,
-      ({
-        int documentId,
-        String? newTitle,
-        String? newSlug,
-        bool? newIsDefault,
-      })>((args) async {
-    final result = await dataSource.updateDocument(
-      args.documentId,
-      title: args.newTitle,
-      slug: args.newSlug,
-      isDefault: args.newIsDefault,
-    );
+  late final updateMetadata =
+      mutationSignal<
+        CmsDocument?,
+        ({
+          String documentId,
+          String? newTitle,
+          String? newSlug,
+          bool? newIsDefault,
+        })
+      >((args) async {
+        final result = await dataSource.updateDocument(
+          args.documentId,
+          title: args.newTitle,
+          slug: args.newSlug,
+          isDefault: args.newIsDefault,
+        );
 
-    if (result != null && args.documentId == documentId.value) {
-      // Update local signals if we're still on the same document
-      if (args.newTitle != null) title.value = args.newTitle!;
-      if (args.newSlug != null) slug.value = args.newSlug!;
-      if (args.newIsDefault != null) isDefault.value = args.newIsDefault!;
-    }
+        if (result != null && args.documentId == documentId.value) {
+          // Update local signals if we're still on the same document
+          if (args.newTitle != null) title.value = args.newTitle!;
+          if (args.newSlug != null) slug.value = args.newSlug!;
+          if (args.newIsDefault != null) isDefault.value = args.newIsDefault!;
+        }
 
-    return result;
-  }, debugLabel: 'updateMetadata');
+        return result;
+      }, debugLabel: 'updateMetadata');
 
   /// Updates the document data using CRDT operations.
-  late final updateData = mutationSignal<
-      CmsDocument,
-      ({
-        int documentId,
-        Map<String, dynamic> updates,
-      })>((args) async {
-    final result =
-        await dataSource.updateDocumentData(args.documentId, args.updates);
+  late final updateData =
+      mutationSignal<
+        CmsDocument,
+        ({String documentId, Map<String, dynamic> updates})
+      >((args) async {
+        final result = await dataSource.updateDocumentData(
+          args.documentId,
+          args.updates,
+        );
 
-    return result;
-  }, debugLabel: 'updateData');
+        return result;
+      }, debugLabel: 'updateData');
 
   /// Deletes the document.
-  late final delete = mutationSignal<bool, int>((docId) async {
+  late final delete = mutationSignal<bool, String>((docId) async {
     return await dataSource.deleteDocument(docId);
   }, debugLabel: 'delete');
 
   /// Loads a document by ID and updates the signals
-  Future<CmsDocument?> loadDocument(int id) async {
+  Future<CmsDocument?> loadDocument(String id) async {
     documentId.value = id;
 
     final doc = await dataSource.getDocument(id);

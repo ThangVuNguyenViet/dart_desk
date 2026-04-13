@@ -13,7 +13,8 @@ class CmsBooleanField extends CmsField {
   });
 
   @override
-  CmsBooleanOption get option => (super.option as CmsBooleanOption?) ?? const CmsBooleanOption();
+  CmsBooleanOption get option =>
+      (super.option as CmsBooleanOption?) ?? const CmsBooleanOption();
 }
 
 class CmsBooleanFieldConfig extends CmsFieldConfig {

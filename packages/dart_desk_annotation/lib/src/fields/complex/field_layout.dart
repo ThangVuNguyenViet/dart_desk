@@ -18,11 +18,7 @@ sealed class CmsFieldLayout {
 class RowFields extends CmsFieldLayout {
   final List<CmsField> children;
 
-  const RowFields({
-    required this.children,
-    super.collapsible,
-    super.collapsed,
-  });
+  const RowFields({required this.children, super.collapsible, super.collapsed});
 
   @override
   List<CmsField> get flatFields => children;

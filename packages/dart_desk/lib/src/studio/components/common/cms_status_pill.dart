@@ -37,31 +37,31 @@ class CmsStatusPill extends StatelessWidget {
           )
         : switch (status) {
             DocumentVersionStatus.published => (
-                isDark
-                    ? const Color(0xFF22c55e).withValues(alpha: 0.1)
-                    : const Color(0xFF22c55e).withValues(alpha: 0.08),
-                isDark ? const Color(0xFF22c55e) : const Color(0xFF16a34a),
-                'published',
-              ),
+              isDark
+                  ? const Color(0xFF22c55e).withValues(alpha: 0.1)
+                  : const Color(0xFF22c55e).withValues(alpha: 0.08),
+              isDark ? const Color(0xFF22c55e) : const Color(0xFF16a34a),
+              'published',
+            ),
             DocumentVersionStatus.draft => (
-                isDark
-                    ? const Color(0xFFeab308).withValues(alpha: 0.1)
-                    : const Color(0xFFeab308).withValues(alpha: 0.08),
-                isDark ? const Color(0xFFeab308) : const Color(0xFFb45309),
-                'draft',
-              ),
+              isDark
+                  ? const Color(0xFFeab308).withValues(alpha: 0.1)
+                  : const Color(0xFFeab308).withValues(alpha: 0.08),
+              isDark ? const Color(0xFFeab308) : const Color(0xFFb45309),
+              'draft',
+            ),
             DocumentVersionStatus.archived => (
-                theme.colorScheme.muted.withValues(alpha: 0.3),
-                theme.colorScheme.mutedForeground,
-                'archived',
-              ),
+              theme.colorScheme.muted.withValues(alpha: 0.3),
+              theme.colorScheme.mutedForeground,
+              'archived',
+            ),
             DocumentVersionStatus.scheduled => (
-                isDark
-                    ? const Color(0xFF8b5cf6).withValues(alpha: 0.1)
-                    : const Color(0xFF8b5cf6).withValues(alpha: 0.08),
-                isDark ? const Color(0xFF8b5cf6) : const Color(0xFF7c3aed),
-                'scheduled',
-              ),
+              isDark
+                  ? const Color(0xFF8b5cf6).withValues(alpha: 0.1)
+                  : const Color(0xFF8b5cf6).withValues(alpha: 0.08),
+              isDark ? const Color(0xFF8b5cf6) : const Color(0xFF7c3aed),
+              'scheduled',
+            ),
           };
 
     return Container(

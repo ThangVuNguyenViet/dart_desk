@@ -31,31 +31,13 @@ const daysOfWeek = [
 ];
 
 // Menu categories for Menu Item dropdown
-const menuCategories = [
-  'Appetizer',
-  'Main',
-  'Dessert',
-  'Drink',
-];
+const menuCategories = ['Appetizer', 'Main', 'Dessert', 'Drink'];
 
 // Allergens for Menu Item multi-dropdown
-const allergenTypes = [
-  'Nuts',
-  'Dairy',
-  'Gluten',
-  'Soy',
-  'Shellfish',
-  'Eggs',
-];
+const allergenTypes = ['Nuts', 'Dairy', 'Gluten', 'Soy', 'Shellfish', 'Eggs'];
 
 // Tags for Menu Item multi-dropdown
-const menuTags = [
-  'Spicy',
-  'Popular',
-  'New',
-  "Chef's Pick",
-  'Seasonal',
-];
+const menuTags = ['Spicy', 'Popular', 'New', "Chef's Pick", 'Seasonal'];
 
 // Discount types for Promotion Campaign dropdown
 const discountTypes = [
@@ -74,10 +56,4 @@ const headlineFonts = [
   'Raleway',
 ];
 
-const bodyFonts = [
-  'Manrope',
-  'Inter',
-  'Open Sans',
-  'Roboto',
-  'Lato',
-];
+const bodyFonts = ['Manrope', 'Inter', 'Open Sans', 'Roboto', 'Lato'];

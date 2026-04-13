@@ -43,8 +43,11 @@ class MediaBrowserState {
     if (initialTypeFilter != null) typeFilter.value = initialTypeFilter;
   }
 
-  Future<MediaAsset> uploadFile(String fileName, Uint8List bytes,
-      QuickImageMetadata metadata) async {
+  Future<MediaAsset> uploadFile(
+    String fileName,
+    Uint8List bytes,
+    QuickImageMetadata metadata,
+  ) async {
     final asset = await dataSource.uploadImage(fileName, bytes, metadata);
     assetsData.awaitableReload();
     return asset;
@@ -61,7 +64,9 @@ class MediaBrowserState {
   MediaAsset? get selectedAsset {
     final id = selectedAssetId.value;
     if (id == null) return null;
-    return assetsData.value.value?.items.where((a) => a.assetId == id).firstOrNull;
+    return assetsData.value.value?.items
+        .where((a) => a.assetId == id)
+        .firstOrNull;
   }
 
   int get totalPages =>

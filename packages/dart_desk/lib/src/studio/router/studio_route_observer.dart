@@ -42,11 +42,9 @@ class StudioRouteObserver extends AutoRouterObserver {
       batch(() {
         vm.currentDocumentTypeSlug.value = docTypeSlug;
         vm.currentDocumentId.value = docId;
-        vm.selectedDocumentId.value =
-            docId != null ? int.tryParse(docId) : null;
+        vm.selectedDocumentId.value = docId;
         vm.currentVersionId.value = versionId;
-        vm.selectedVersionId.value =
-            versionId != null ? int.tryParse(versionId) : null;
+        vm.selectedVersionId.value = versionId;
       });
     });
   }

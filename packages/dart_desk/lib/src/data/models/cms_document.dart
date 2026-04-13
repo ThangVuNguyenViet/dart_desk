@@ -6,10 +6,10 @@ import 'dart:convert';
 /// The content is stored in DocumentVersion objects.
 class CmsDocument {
   /// Database ID (null for new documents not yet persisted)
-  final int? id;
+  final String? id;
 
   /// Client ID (multi-tenant support)
-  final int clientId;
+  final String clientId;
 
   /// The document type identifier (e.g., 'article', 'page', 'product')
   final String documentType;
@@ -33,10 +33,10 @@ class CmsDocument {
   final DateTime? updatedAt;
 
   /// ID of the user who created this document
-  final int? createdByUserId;
+  final String? createdByUserId;
 
   /// ID of the user who last updated this document
-  final int? updatedByUserId;
+  final String? updatedByUserId;
 
   const CmsDocument({
     this.id,
@@ -54,8 +54,8 @@ class CmsDocument {
 
   /// Creates a copy of this document with the given fields replaced.
   CmsDocument copyWith({
-    int? id,
-    int? clientId,
+    String? id,
+    String? clientId,
     String? documentType,
     String? title,
     String? slug,
@@ -63,8 +63,8 @@ class CmsDocument {
     Map<String, dynamic>? activeVersionData,
     DateTime? createdAt,
     DateTime? updatedAt,
-    int? createdByUserId,
-    int? updatedByUserId,
+    String? createdByUserId,
+    String? updatedByUserId,
   }) {
     return CmsDocument(
       id: id ?? this.id,
@@ -73,7 +73,8 @@ class CmsDocument {
       title: title ?? this.title,
       slug: slug ?? this.slug,
       isDefault: isDefault ?? this.isDefault,
-      activeVersionData: activeVersionData ??
+      activeVersionData:
+          activeVersionData ??
           (this.activeVersionData != null
               ? Map<String, dynamic>.from(this.activeVersionData!)
               : null),
@@ -100,8 +101,8 @@ class CmsDocument {
     }
 
     return CmsDocument(
-      id: json['id'] as int?,
-      clientId: json['clientId'] as int,
+      id: json['id']?.toString(),
+      clientId: json['clientId'].toString(),
       documentType: json['documentType'] as String,
       title: json['title'] as String,
       slug: json['slug'] as String?,
@@ -113,8 +114,8 @@ class CmsDocument {
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
           : null,
-      createdByUserId: json['createdByUserId'] as int?,
-      updatedByUserId: json['updatedByUserId'] as int?,
+      createdByUserId: json['createdByUserId']?.toString(),
+      updatedByUserId: json['updatedByUserId']?.toString(),
     );
   }
 

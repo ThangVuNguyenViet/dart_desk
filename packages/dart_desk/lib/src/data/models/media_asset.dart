@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'image_types.dart';
 
 class MediaAsset {
-  final int id;
+  final String id;
   final String assetId;
   final String fileName;
   final String mimeType;
@@ -17,7 +17,7 @@ class MediaAsset {
   final MediaPalette? palette;
   final Map<String, dynamic>? exif;
   final MediaGeoLocation? location;
-  final int? uploadedByUserId;
+  final String? uploadedByUserId;
   final DateTime createdAt;
   final MediaAssetMetadataStatus metadataStatus;
 
@@ -45,7 +45,9 @@ class MediaAsset {
 
   String get fileSizeFormatted {
     if (fileSize < 1024) return '${fileSize}B';
-    if (fileSize < 1024 * 1024) return '${(fileSize / 1024).toStringAsFixed(1)}KB';
+    if (fileSize < 1024 * 1024) {
+      return '${(fileSize / 1024).toStringAsFixed(1)}KB';
+    }
     return '${(fileSize / (1024 * 1024)).toStringAsFixed(1)}MB';
   }
 
@@ -53,7 +55,9 @@ class MediaAsset {
     MediaPalette? palette;
     if (json['paletteJson'] != null) {
       final paletteJson = json['paletteJson'] as String;
-      palette = MediaPalette.fromJson(jsonDecode(paletteJson) as Map<String, dynamic>);
+      palette = MediaPalette.fromJson(
+        jsonDecode(paletteJson) as Map<String, dynamic>,
+      );
     }
 
     Map<String, dynamic>? exif;
@@ -71,7 +75,7 @@ class MediaAsset {
     }
 
     return MediaAsset(
-      id: json['id'] as int,
+      id: json['id'].toString(),
       assetId: json['assetId'] as String,
       fileName: json['fileName'] as String,
       mimeType: json['mimeType'] as String,
@@ -85,9 +89,11 @@ class MediaAsset {
       palette: palette,
       exif: exif,
       location: location,
-      uploadedByUserId: json['uploadedByUserId'] as int?,
+      uploadedByUserId: json['uploadedByUserId']?.toString(),
       createdAt: DateTime.parse(json['createdAt'] as String),
-      metadataStatus: MediaAssetMetadataStatus.values.byName(json['metadataStatus'] as String),
+      metadataStatus: MediaAssetMetadataStatus.values.byName(
+        json['metadataStatus'] as String,
+      ),
     );
   }
 
@@ -95,7 +101,7 @@ class MediaAsset {
   /// Fields not present in the inline format use safe zero-value defaults.
   factory MediaAsset.fromInlineJson(Map<String, dynamic> json) {
     return MediaAsset(
-      id: 0,
+      id: '',
       assetId: json['assetId'] as String,
       fileName: '',
       mimeType: 'image/*',

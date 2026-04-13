@@ -175,4 +175,3 @@ class _CmsColorInputState extends State<CmsColorInput> {
     );
   }
 }
-

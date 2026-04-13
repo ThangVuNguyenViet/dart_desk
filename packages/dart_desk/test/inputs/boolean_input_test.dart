@@ -14,12 +14,14 @@ void main() {
 
   group('CmsBooleanInput', () {
     testWidgets('renders with true value', (tester) async {
-      await tester.pumpWidget(buildInputApp(
-        CmsBooleanInput(
-          field: field,
-          data: const CmsData(value: true, path: 'is_active'),
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsBooleanInput(
+            field: field,
+            data: const CmsData(value: true, path: 'is_active'),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       final switchFinder = find.byType(ShadSwitch);
@@ -32,13 +34,15 @@ void main() {
     testWidgets('onChanged fires false on tap (true→false)', (tester) async {
       bool? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsBooleanInput(
-          field: field,
-          data: const CmsData(value: true, path: 'is_active'),
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsBooleanInput(
+            field: field,
+            data: const CmsData(value: true, path: 'is_active'),
+            onChanged: (v) => received = v,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(ShadSwitch));
@@ -50,13 +54,15 @@ void main() {
     testWidgets('onChanged fires true on tap (false→true)', (tester) async {
       bool? received;
 
-      await tester.pumpWidget(buildInputApp(
-        CmsBooleanInput(
-          field: field,
-          data: const CmsData(value: false, path: 'is_active'),
-          onChanged: (v) => received = v,
+      await tester.pumpWidget(
+        buildInputApp(
+          CmsBooleanInput(
+            field: field,
+            data: const CmsData(value: false, path: 'is_active'),
+            onChanged: (v) => received = v,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(ShadSwitch));
@@ -72,9 +78,9 @@ void main() {
         option: CmsBooleanOption(hidden: true),
       );
 
-      await tester.pumpWidget(buildInputApp(
-        CmsBooleanInput(field: hiddenField),
-      ));
+      await tester.pumpWidget(
+        buildInputApp(CmsBooleanInput(field: hiddenField)),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(ShadSwitch), findsNothing);

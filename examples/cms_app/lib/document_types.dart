@@ -14,7 +14,9 @@ final brandThemeDocumentType = brandThemeTypeSpec.build(
 final restaurantProfileDocumentType = restaurantProfileTypeSpec.build(
   builder: (data) {
     final merged = {...RestaurantProfile.defaultValue.toMap(), ...data};
-    return RestaurantProfileScreen(config: RestaurantProfileMapper.fromMap(merged));
+    return RestaurantProfileScreen(
+      config: RestaurantProfileMapper.fromMap(merged),
+    );
   },
 );
 
@@ -28,6 +30,8 @@ final menuItemDocumentType = menuItemTypeSpec.build(
 final promotionCampaignDocumentType = promotionCampaignTypeSpec.build(
   builder: (data) {
     final merged = {...PromotionCampaign.defaultValue.toMap(), ...data};
-    return PromotionCampaignScreen(config: PromotionCampaignMapper.fromMap(merged));
+    return PromotionCampaignScreen(
+      config: PromotionCampaignMapper.fromMap(merged),
+    );
   },
 );

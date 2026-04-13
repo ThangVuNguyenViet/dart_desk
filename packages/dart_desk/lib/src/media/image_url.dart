@@ -3,8 +3,8 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import '../data/models/image_types.dart' show FitMode;
 import 'image_transform_params.dart';
 
-typedef TransformUrlBuilder = String Function(
-    String publicUrl, ImageTransformParams params);
+typedef TransformUrlBuilder =
+    String Function(String publicUrl, ImageTransformParams params);
 
 /// CDN transform wrapper around [ImageReference].
 ///
@@ -19,7 +19,7 @@ class ImageUrl {
   final TransformUrlBuilder? _transformUrl;
 
   const ImageUrl({required this.imageRef, TransformUrlBuilder? transformUrl})
-      : _transformUrl = transformUrl;
+    : _transformUrl = transformUrl;
 
   /// Decodes a stored or resolved imageReference JSON node into an [ImageUrl].
   factory ImageUrl.fromMap(Map<String, dynamic> map) =>

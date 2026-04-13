@@ -10,9 +10,9 @@ class DocumentListRobot {
 
   /// Scopes a finder to within the document list panel.
   Finder _inList(Finder finder) => find.descendant(
-        of: find.byKey(const ValueKey('document_list_view')),
-        matching: finder,
-      );
+    of: find.byKey(const ValueKey('document_list_view')),
+    matching: finder,
+  );
 
   /// Taps the "+" icon button to open the inline create form.
   Future<void> tapCreateButton() async {
@@ -24,10 +24,7 @@ class DocumentListRobot {
   Future<void> createDocument(String title) async {
     await tapCreateButton();
     // Enter the document title in the first input (placeholder: "Document title")
-    await tester.enterText(
-      findShadInput('Document title'),
-      title,
-    );
+    await tester.enterText(findShadInput('Document title'), title);
     await tester.settle();
     // Wait for slug auto-generation
     await tester.pump(const Duration(milliseconds: 600));
