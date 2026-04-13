@@ -1,3 +1,7 @@
+## 0.1.4
+
+ - **FEAT**: redesign image hotspot/crop editor UI with golden tests.
+
 ## 0.1.3
 
 - Pin dependency versions: `dart_desk_annotation: ^0.1.1`, `dart_desk_client: ^0.1.1`
