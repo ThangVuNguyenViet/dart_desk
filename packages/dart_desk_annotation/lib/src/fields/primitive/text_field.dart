@@ -7,8 +7,6 @@ class CmsTextOption extends CmsOption {
   final String? initialValue;
   final bool readOnly;
   final String? deprecatedReason;
-  /// Whether the text field is optional (can be null/unset).
-  final bool optional;
 
   const CmsTextOption({
     this.rows = 1,
@@ -17,7 +15,7 @@ class CmsTextOption extends CmsOption {
     this.initialValue,
     this.readOnly = false,
     this.deprecatedReason,
-    this.optional = false,
+    super.optional,
   });
 }
 

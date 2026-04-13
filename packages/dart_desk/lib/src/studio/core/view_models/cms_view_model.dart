@@ -84,10 +84,7 @@ class CmsViewModel {
   // Constructor
   // ============================================================
 
-  CmsViewModel({
-    required this.dataSource,
-    required this.documentTypes,
-  });
+  CmsViewModel({required this.dataSource, required this.documentTypes});
 
   // ============================================================
   // Internal Fetch Methods
@@ -108,7 +105,10 @@ class CmsViewModel {
     return version.copyWith(data: data);
   }
 
-  final selectedDocumentId = Signal<int?>(null, debugLabel: 'selectedDocumentId');
+  final selectedDocumentId = Signal<int?>(
+    null,
+    debugLabel: 'selectedDocumentId',
+  );
   final selectedVersionId = Signal<int?>(null, debugLabel: 'selectedVersionId');
 
   // ============================================================
@@ -121,174 +121,178 @@ class CmsViewModel {
     return await dataSource.suggestSlug(title, docType.name);
   }
 
-  late final createDocument = mutationSignal<
-      CmsDocument?,
-      ({
-        String title,
-        Map<String, dynamic> data,
-        String? slug,
-        bool isDefault,
-        bool publish,
-      })>((args) async {
-    final docType = currentDocumentType.value;
-    if (docType == null) return null;
+  late final createDocument =
+      mutationSignal<
+        CmsDocument?,
+        ({
+          String title,
+          Map<String, dynamic> data,
+          String? slug,
+          bool isDefault,
+          bool publish,
+        })
+      >((args) async {
+        final docType = currentDocumentType.value;
+        if (docType == null) return null;
 
-    final document = await dataSource.createDocument(
-      docType.name,
-      args.title,
-      args.data,
-      slug: args.slug,
-      isDefault: args.isDefault,
-    );
+        final document = await dataSource.createDocument(
+          docType.name,
+          args.title,
+          args.data,
+          slug: args.slug,
+          isDefault: args.isDefault,
+        );
 
-    selectedDocumentId.value = document.id;
+        selectedDocumentId.value = document.id;
 
-    final versions = await dataSource.getDocumentVersions(document.id!);
-    if (versions.versions.isNotEmpty) {
-      final versionId = versions.versions.first.id!;
-      selectedVersionId.value = versionId;
+        final versions = await dataSource.getDocumentVersions(document.id!);
+        if (versions.versions.isNotEmpty) {
+          final versionId = versions.versions.first.id!;
+          selectedVersionId.value = versionId;
 
-      if (args.publish) {
-        await dataSource.publishDocumentVersion(versionId);
-      }
-    }
+          if (args.publish) {
+            await dataSource.publishDocumentVersion(versionId);
+          }
+        }
 
-    documentsContainer(currentDocumentType.value?.name ?? '')
-        .awaitableReload();
+        documentsContainer(
+          currentDocumentType.value?.name ?? '',
+        ).awaitableReload();
 
-    return document;
-  }, debugLabel: 'createDocument');
+        return document;
+      }, debugLabel: 'createDocument');
 
-  late final setDefaultDocument = mutationSignal<CmsDocument?, int>(
-    (documentId) async {
-      final docTypeName = currentDocumentType.value?.name ?? '';
-      final updated =
-          await dataSource.setDefaultDocument(docTypeName, documentId);
-      documentsContainer(docTypeName).awaitableReload();
-      return updated;
-    },
-    debugLabel: 'setDefaultDocument',
-  );
-
-  late final deleteDocument = mutationSignal<
-      ({bool deleted, CmsDocument? newDefault}),
-      int>((documentId) async {
+  late final setDefaultDocument = mutationSignal<CmsDocument?, int>((
+    documentId,
+  ) async {
     final docTypeName = currentDocumentType.value?.name ?? '';
-
-    // Snapshot whether this doc is currently the default
-    final snapshot = untracked(() => documentsContainer(docTypeName).value);
-    final wasDefault = snapshot.map(
-      data: (d) =>
-          d.documents.any((doc) => doc.id == documentId && doc.isDefault),
-      loading: () => false,
-      error: (_, _) => false,
+    final updated = await dataSource.setDefaultDocument(
+      docTypeName,
+      documentId,
     );
+    documentsContainer(docTypeName).awaitableReload();
+    return updated;
+  }, debugLabel: 'setDefaultDocument');
 
-    final result = await dataSource.deleteDocument(documentId);
-    if (!result) return (deleted: false, newDefault: null);
+  late final deleteDocument =
+      mutationSignal<({bool deleted, CmsDocument? newDefault}), int>((
+        documentId,
+      ) async {
+        final docTypeName = currentDocumentType.value?.name ?? '';
 
-    if (selectedDocumentId.value == documentId) {
-      selectedDocumentId.value = null;
-      selectedVersionId.value = null;
-    }
-    await documentsContainer(docTypeName).awaitableReload();
+        // Snapshot whether this doc is currently the default
+        final snapshot = untracked(() => documentsContainer(docTypeName).value);
+        final wasDefault = snapshot.map(
+          data: (d) =>
+              d.documents.any((doc) => doc.id == documentId && doc.isDefault),
+          loading: () => false,
+          error: (_, _) => false,
+        );
 
-    if (wasDefault) {
-      final refreshed = untracked(() => documentsContainer(docTypeName).value);
-      final newDefault = refreshed.map(
-        data: (d) => d.documents.firstWhereOrNull((doc) => doc.isDefault),
-        loading: () => null,
-        error: (_, _) => null,
-      );
-      return (deleted: true, newDefault: newDefault);
-    }
+        final result = await dataSource.deleteDocument(documentId);
+        if (!result) return (deleted: false, newDefault: null);
 
-    return (deleted: true, newDefault: null);
-  }, debugLabel: 'deleteDocument');
+        if (selectedDocumentId.value == documentId) {
+          selectedDocumentId.value = null;
+          selectedVersionId.value = null;
+        }
+        await documentsContainer(docTypeName).awaitableReload();
 
-  late final updateDocumentData = mutationSignal<
-      CmsDocument?,
-      ({
-        int documentId,
-        Map<String, dynamic> data,
-        bool publish,
-      })>((args) async {
-    final result = await dataSource.updateDocumentData(args.documentId, args.data);
+        if (wasDefault) {
+          final refreshed = untracked(
+            () => documentsContainer(docTypeName).value,
+          );
+          final newDefault = refreshed.map(
+            data: (d) => d.documents.firstWhereOrNull((doc) => doc.isDefault),
+            loading: () => null,
+            error: (_, _) => null,
+          );
+          return (deleted: true, newDefault: newDefault);
+        }
 
-    if (args.publish) {
-      final newVersion = await dataSource.createDocumentVersion(
-        args.documentId,
-        changeLog: 'Saved and published',
-      );
-      await dataSource.publishDocumentVersion(newVersion.id!);
-      selectedVersionId.value = newVersion.id;
-    }
+        return (deleted: true, newDefault: null);
+      }, debugLabel: 'deleteDocument');
 
-    documentsContainer(currentDocumentType.value?.name ?? '')
-        .awaitableReload();
+  late final updateDocumentData =
+      mutationSignal<
+        CmsDocument?,
+        ({int documentId, Map<String, dynamic> data, bool publish})
+      >((args) async {
+        final result = await dataSource.updateDocumentData(
+          args.documentId,
+          args.data,
+        );
 
-    if (args.publish) {
-      versionsContainer(args.documentId).awaitableReload();
-      final versionId = selectedVersionId.value;
-      if (versionId != null) {
-        documentDataContainer(versionId).awaitableReload();
-      }
-    }
+        if (args.publish) {
+          final newVersion = await dataSource.createDocumentVersion(
+            args.documentId,
+            changeLog: 'Saved and published',
+          );
+          await dataSource.publishDocumentVersion(newVersion.id!);
+          selectedVersionId.value = newVersion.id;
+        }
 
-    return result;
-  }, debugLabel: 'updateDocumentData');
+        documentsContainer(
+          currentDocumentType.value?.name ?? '',
+        ).awaitableReload();
+
+        if (args.publish) {
+          versionsContainer(args.documentId).awaitableReload();
+          final versionId = selectedVersionId.value;
+          if (versionId != null) {
+            documentDataContainer(versionId).awaitableReload();
+          }
+        }
+
+        return result;
+      }, debugLabel: 'updateDocumentData');
 
   // ============================================================
   // Version Status Operations
   // ============================================================
 
-  late final publishVersion = mutationSignal<DocumentVersion?, int>(
-    (versionId) async {
-      final result = await dataSource.publishDocumentVersion(versionId);
+  late final publishVersion = mutationSignal<DocumentVersion?, int>((
+    versionId,
+  ) async {
+    final result = await dataSource.publishDocumentVersion(versionId);
+
+    final docId = selectedDocumentId.value;
+    if (docId != null) {
+      versionsContainer(docId).awaitableReload();
+    }
+    documentDataContainer(versionId).awaitableReload();
+
+    return result;
+  }, debugLabel: 'publishVersion');
+
+  late final archiveVersion = mutationSignal<DocumentVersion?, int>((
+    versionId,
+  ) async {
+    final result = await dataSource.archiveDocumentVersion(versionId);
+
+    final docId = selectedDocumentId.value;
+    if (docId != null) {
+      versionsContainer(docId).awaitableReload();
+    }
+    documentDataContainer(versionId).awaitableReload();
+
+    return result;
+  }, debugLabel: 'archiveVersion');
+
+  late final deleteVersion = mutationSignal<bool, int>((versionId) async {
+    final result = await dataSource.deleteDocumentVersion(versionId);
+    if (result) {
+      if (selectedVersionId.value == versionId) {
+        selectedVersionId.value = null;
+      }
 
       final docId = selectedDocumentId.value;
       if (docId != null) {
         versionsContainer(docId).awaitableReload();
       }
-      documentDataContainer(versionId).awaitableReload();
-
-      return result;
-    },
-    debugLabel: 'publishVersion',
-  );
-
-  late final archiveVersion = mutationSignal<DocumentVersion?, int>(
-    (versionId) async {
-      final result = await dataSource.archiveDocumentVersion(versionId);
-
-      final docId = selectedDocumentId.value;
-      if (docId != null) {
-        versionsContainer(docId).awaitableReload();
-      }
-      documentDataContainer(versionId).awaitableReload();
-
-      return result;
-    },
-    debugLabel: 'archiveVersion',
-  );
-
-  late final deleteVersion = mutationSignal<bool, int>(
-    (versionId) async {
-      final result = await dataSource.deleteDocumentVersion(versionId);
-      if (result) {
-        if (selectedVersionId.value == versionId) {
-          selectedVersionId.value = null;
-        }
-
-        final docId = selectedDocumentId.value;
-        if (docId != null) {
-          versionsContainer(docId).awaitableReload();
-        }
-      }
-      return result;
-    },
-    debugLabel: 'deleteVersion',
-  );
+    }
+    return result;
+  }, debugLabel: 'deleteVersion');
 
   // ============================================================
   // Refresh Methods
@@ -330,4 +334,3 @@ class CmsViewModel {
     documentListVisible.dispose();
   }
 }
-

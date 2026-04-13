@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -86,9 +85,7 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
           // Header row: title + mode toggle
           Row(
             children: [
-              Expanded(
-                child: Text('Edit Framing', style: theme.textTheme.h4),
-              ),
+              Expanded(child: Text('Edit Framing', style: theme.textTheme.h4)),
               FramingModeToggle(
                 mode: draft.mode,
                 onChanged: (mode) {
@@ -129,11 +126,13 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                             onPanStart: draft.mode == FramingMode.preview
                                 ? null
                                 : (details) =>
-                                    _onPanStart(details, constraints.biggest),
+                                      _onPanStart(details, constraints.biggest),
                             onPanUpdate: draft.mode == FramingMode.preview
                                 ? null
-                                : (details) =>
-                                    _onPanUpdate(details, constraints.biggest),
+                                : (details) => _onPanUpdate(
+                                    details,
+                                    constraints.biggest,
+                                  ),
                             onPanEnd: (_) => _dragTarget = null,
                             child: Stack(
                               children: [
@@ -144,10 +143,10 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                                     errorBuilder: (context, error, stackTrace) {
                                       WidgetsBinding.instance
                                           .addPostFrameCallback((_) {
-                                        if (mounted) {
-                                          _loadFailed.value = true;
-                                        }
-                                      });
+                                            if (mounted) {
+                                              _loadFailed.value = true;
+                                            }
+                                          });
                                       return const SizedBox.shrink();
                                     },
                                   ),
@@ -164,8 +163,9 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                                 if (draft.mode != FramingMode.crop)
                                   Positioned.fill(
                                     child: CustomPaint(
-                                      painter:
-                                          HotspotPainter(hotspot: draft.hotspot),
+                                      painter: HotspotPainter(
+                                        hotspot: draft.hotspot,
+                                      ),
                                     ),
                                   ),
                               ],

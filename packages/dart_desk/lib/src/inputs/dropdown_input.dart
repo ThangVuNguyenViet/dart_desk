@@ -123,11 +123,14 @@ class _CmsDropdownInput<T> extends StatefulWidget {
 
 class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
   late ShadSelectController<T> _controller;
+  List<DropdownOption<T>> _filteredOptions = [];
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _controller = ShadSelectController<T>(initialValue: _resolveInitialSet());
+    _filteredOptions = widget.options;
   }
 
   @override
@@ -137,6 +140,27 @@ class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
       final resolved = _resolveInitialSet();
       _controller.value = resolved;
     }
+    if (widget.options != oldWidget.options) {
+      _applySearch();
+    }
+  }
+
+  void _onSearchChanged(String query) {
+    _searchQuery = query;
+    _applySearch();
+  }
+
+  void _applySearch() {
+    setState(() {
+      if (_searchQuery.isEmpty) {
+        _filteredOptions = widget.options;
+      } else {
+        final lower = _searchQuery.toLowerCase();
+        _filteredOptions = widget.options
+            .where((opt) => opt.label.toLowerCase().contains(lower))
+            .toList();
+      }
+    });
   }
 
   @override
@@ -191,7 +215,7 @@ class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
     }
 
     // Convert dropdown options to select options
-    final selectOptions = options
+    final selectOptions = _filteredOptions
         .map(
           (option) =>
               ShadOption<T>(value: option.value, child: Text(option.label)),
@@ -208,8 +232,10 @@ class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
           ),
           const SizedBox(height: 8),
         ],
-        ShadSelect<T>(
+        ShadSelect<T>.withSearch(
           controller: _controller,
+          searchPlaceholder: const Text('Search...'),
+          onSearchChanged: _onSearchChanged,
           placeholder: Text(
             widget.placeholder ?? 'Select an option...',
             style: theme.textTheme.muted,

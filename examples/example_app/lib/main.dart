@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
 
   static const apiKey = String.fromEnvironment(
     'API_KEY',
-    defaultValue: 'cms_w_CY0WD8R9kw1L2Te1kjsQcqhUMARniVaBhZwdpK3uO3w',
+    defaultValue: 'cms_w_5cRn9tCk-cdHTP0KM5Wiia02WhNMTL2rCzrz8guMVgk',
   );
 
   @override

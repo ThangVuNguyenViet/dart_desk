@@ -1,10 +1,7 @@
 import '../base/field.dart';
 
 class CmsUrlOption extends CmsOption {
-  /// Whether the URL field is optional (can be null/unset).
-  final bool optional;
-
-  const CmsUrlOption({this.optional = false, super.hidden});
+  const CmsUrlOption({super.optional, super.hidden});
 }
 
 class CmsUrlField extends CmsField {

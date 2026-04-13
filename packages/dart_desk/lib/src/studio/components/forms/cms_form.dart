@@ -269,12 +269,18 @@ class _CmsFormState extends State<CmsForm> {
                     if (widget.title != null)
                       Text(widget.title!, style: theme.textTheme.h2),
                     const SizedBox(height: 12),
-                    ...widget.fields.map((field) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: _buildFieldInput(context, field),
-                      );
-                    }),
+                    ...widget.fields
+                        .where((field) {
+                          final condition = field.option?.condition;
+                          return condition == null ||
+                              condition.evaluate(widget.data);
+                        })
+                        .map((field) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: _buildFieldInput(context, field),
+                          );
+                        }),
                   ],
                 ),
               ),

@@ -1,10 +1,7 @@
 import '../base/field.dart';
 
 class CmsStringOption extends CmsOption {
-  /// Whether the string field is optional (can be null/unset).
-  final bool optional;
-
-  const CmsStringOption({this.optional = false, super.hidden});
+  const CmsStringOption({super.optional, super.hidden});
 }
 
 class CmsStringField extends CmsField {

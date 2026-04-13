@@ -5,15 +5,13 @@ class CmsNumberOption extends CmsOption {
   final CmsValidator? validation;
   final double? min;
   final double? max;
-  /// Whether the number field is optional (can be null/unset).
-  final bool optional;
 
   const CmsNumberOption({
     this.validation,
     this.min,
     this.max,
     super.hidden,
-    this.optional = false,
+    super.optional,
   });
 }
 

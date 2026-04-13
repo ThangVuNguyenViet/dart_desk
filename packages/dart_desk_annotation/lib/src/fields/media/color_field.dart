@@ -9,13 +9,10 @@ class CmsColorOption extends CmsOption {
   /// List of preset colors to show in the picker
   final List<Color>? presetColors;
 
-  /// Whether the color field is optional (can be null/unset)
-  final bool optional;
-
   const CmsColorOption({
     this.showAlpha = false,
     this.presetColors,
-    this.optional = false,
+    super.optional,
     super.hidden,
   });
 }
