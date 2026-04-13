@@ -60,10 +60,10 @@ class CloudDataSource implements DataSource {
       );
 
       return DocumentList(
-        documents: response.documents.map(_toCmsDocument).toList(),
+        documents: response.items.map(_toCmsDocument).toList(),
         total: response.total,
-        page: response.page,
-        pageSize: response.pageSize,
+        page: offset ~/ limit,
+        pageSize: limit,
       );
     } catch (e, st) {
       _throw('Failed to get documents', e, st);
@@ -74,8 +74,10 @@ class CloudDataSource implements DataSource {
   Future<CmsDocument?> getDocument(int documentId) async {
     try {
       final response = await _client.document.getDocument(documentId);
-      if (response == null) return null;
       return _toCmsDocument(response);
+    } on serverpod.ServerpodClientException catch (e) {
+      if (e.statusCode == 404 || e.statusCode == 410) return null;
+      rethrow;
     } catch (e, st) {
       _throw('Failed to get document', e, st);
     }
@@ -238,9 +240,10 @@ class CloudDataSource implements DataSource {
   Future<DocumentVersion?> getDocumentVersion(int versionId) async {
     try {
       final response = await _client.document.getDocumentVersion(versionId);
-      if (response == null) return null;
-
       return _toDocumentVersion(response);
+    } on serverpod.ServerpodClientException catch (e) {
+      if (e.statusCode == 404 || e.statusCode == 410) return null;
+      rethrow;
     } catch (e, st) {
       _throw('Failed to get document version', e, st);
     }
