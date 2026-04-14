@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -35,33 +36,68 @@ class DocumentListRobot {
   }
 
   /// Taps a document row by its title text.
+  ///
+  /// If the doc isn't visible (e.g. long list on prod), types the title into
+  /// the search field to filter the list first.
   Future<void> tapDocument(String title) async {
-    await tester.tap(_inList(find.text(title)));
+    var finder = _inList(find.text(title));
+    if (finder.evaluate().isEmpty) {
+      await tester.enterText(findShadInput('Search documents...'), title);
+      await tester.settle();
+      finder = _inList(find.text(title));
+    }
+    // After search, there may be 2 matches (search field EditableText + doc
+    // title Text). The doc title is the last one in the widget tree.
+    await tester.tap(finder.last);
     await tester.settle();
+    // Clear search so the full list is visible for subsequent operations.
+    final searchField = findShadInput('Search documents...');
+    if (searchField.evaluate().isNotEmpty) {
+      await tester.enterText(searchField, '');
+      await tester.settle();
+    }
   }
 
   /// Opens the per-document popup menu and taps "Delete".
+  ///
+  /// Best-effort cleanup — if the document can't be found or deleted, the
+  /// error is swallowed so it doesn't mask the real test result.
   Future<void> deleteDocument(String title) async {
-    // Find the document title within the list (use first match if briefly doubled).
-    final titleFinder = _inList(find.text(title)).first;
-    await tester.settle();
+    try {
+      // Search to ensure the doc is visible in a long list.
+      if (_inList(find.text(title)).evaluate().isEmpty) {
+        await tester.enterText(findShadInput('Search documents...'), title);
+        await tester.settle();
+      }
+      // Use .last to skip the search EditableText and land on the doc Text.
+      final titleFinder = _inList(find.text(title)).last;
 
-    // Find the PopupMenuButton in the same GestureDetector ancestor as the title
-    final menuButton = find.descendant(
-      of: find.ancestor(
-        of: titleFinder,
-        matching: find.byType(GestureDetector),
-      ),
-      matching: find.byType(PopupMenuButton<String>),
-    );
-    await tester.tap(menuButton.first);
-    await tester.settle();
-    // Tap the "Delete" menu item
-    await tester.tap(findByKey('delete_document_button'));
-    await tester.settle();
-    // Confirm in the delete confirmation dialog
-    await tester.tap(find.text('Delete').last);
-    await tester.settle();
+      // Find the PopupMenuButton in the same GestureDetector ancestor.
+      final menuButton = find.descendant(
+        of: find.ancestor(
+          of: titleFinder,
+          matching: find.byType(GestureDetector),
+        ),
+        matching: find.byType(PopupMenuButton<String>),
+      );
+      await tester.tap(menuButton.first);
+      await tester.settle();
+      // Tap the "Delete" menu item
+      await tester.tap(findByKey('delete_document_button'));
+      await tester.settle();
+      // Confirm in the delete confirmation dialog
+      await tester.tap(find.text('Delete').last);
+      await tester.settle();
+      // Clear search
+      final searchField = findShadInput('Search documents...');
+      if (searchField.evaluate().isNotEmpty) {
+        await tester.enterText(searchField, '');
+        await tester.settle();
+      }
+    } catch (e) {
+      // Cleanup is best-effort; don't fail the test.
+      debugPrint('[cleanup] Failed to delete "$title": $e');
+    }
   }
 
   void expectDocumentVisible(String title) {

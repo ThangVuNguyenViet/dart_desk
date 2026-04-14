@@ -1,18 +1,24 @@
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'robots/document_editor_robot.dart';
 import 'robots/document_list_robot.dart';
 import 'robots/image_field_robot.dart';
 import 'robots/sidebar_robot.dart';
-import 'test_utils/db_helper.dart';
 import 'test_utils/screenshot_helper.dart';
 import 'test_utils/test_app.dart';
+
+/// Generates a unique document name to avoid collisions with existing data.
+String _uniqueName(String prefix) {
+  final suffix = Random().nextInt(99999).toString().padLeft(5, '0');
+  return '$prefix $suffix';
+}
 
 void main() {
   final binding = ensureTestInitialized();
 
-  setUpAll(() async => DbHelper.reset());
-  tearDownAll(() async => DbHelper.reset());
+  // No DbHelper.reset() — tests are self-cleaning.
 
   group('07 - Image Upload E2E', () {
     testWidgets('TC-E2E-07-01: Upload image and verify preview', (
@@ -25,13 +31,15 @@ void main() {
       final docList = DocumentListRobot(tester);
       final image = ImageFieldRobot(tester);
 
+      final docName = _uniqueName('Upload Test');
+
       await sidebar.tapDocumentType('Integration Test');
       await ss.take(tester, 'document_type_selected');
 
-      await docList.createDocument('Upload Test Doc A');
+      await docList.createDocument(docName);
       await ss.take(tester, 'document_created');
 
-      await docList.tapDocument('Upload Test Doc A');
+      await docList.tapDocument(docName);
       await ss.take(tester, 'document_opened');
 
       // Verify empty state: editable URL field present
@@ -45,6 +53,11 @@ void main() {
       // After upload, URL field should be read-only showing public URL
       image.expectReadOnlyUrl('image_field');
       await ss.take(tester, 'url_field_readonly');
+
+      // Clean up: navigate back and delete
+      final editor = DocumentEditorRobot(tester);
+      await editor.navigateBack();
+      await docList.deleteDocument(docName);
     });
 
     testWidgets('TC-E2E-07-02: Uploaded image persists after save and reload', (
@@ -58,10 +71,13 @@ void main() {
       final editor = DocumentEditorRobot(tester);
       final image = ImageFieldRobot(tester);
 
+      final docName = _uniqueName('Persist Test');
+
       await sidebar.tapDocumentType('Integration Test');
       await ss.take(tester, 'document_type_selected');
 
-      await docList.tapDocument('Upload Test Doc A');
+      await docList.createDocument(docName);
+      await docList.tapDocument(docName);
       await ss.take(tester, 'document_opened');
 
       await image.tapUpload('image_field');
@@ -76,13 +92,17 @@ void main() {
       await ss.take(tester, 'navigated_back');
 
       // Re-open and verify image persists
-      await docList.tapDocument('Upload Test Doc A');
+      await docList.tapDocument(docName);
       await image.expectImagePreview('image_field');
       await ss.take(tester, 'image_persisted');
 
       // URL field should be read-only with public URL
       image.expectReadOnlyUrl('image_field');
       await ss.take(tester, 'url_readonly_after_reload');
+
+      // Clean up
+      await editor.navigateBack();
+      await docList.deleteDocument(docName);
     });
 
     testWidgets(
@@ -96,12 +116,20 @@ void main() {
         final editor = DocumentEditorRobot(tester);
         final image = ImageFieldRobot(tester);
 
+        final docName = _uniqueName('Remove Test');
+
         await sidebar.tapDocumentType('Integration Test');
         await ss.take(tester, 'document_type_selected');
 
-        await docList.tapDocument('Upload Test Doc A');
-        await ss.take(tester, 'document_opened');
+        // Create doc, upload image, save
+        await docList.createDocument(docName);
+        await docList.tapDocument(docName);
+        await image.tapUpload('image_field');
+        await editor.tapSave();
+        await editor.navigateBack();
 
+        // Re-open and remove the image
+        await docList.tapDocument(docName);
         await image.expectImagePreview('image_field');
         await ss.take(tester, 'image_present');
 
@@ -117,9 +145,13 @@ void main() {
         await ss.take(tester, 'navigated_back');
 
         // Re-open and verify field is still empty
-        await docList.tapDocument('Upload Test Doc A');
+        await docList.tapDocument(docName);
         image.expectFieldEmpty('image_field');
         await ss.take(tester, 'field_still_empty');
+
+        // Clean up
+        await editor.navigateBack();
+        await docList.deleteDocument(docName);
       },
     );
 
@@ -134,11 +166,15 @@ void main() {
         final editor = DocumentEditorRobot(tester);
         final image = ImageFieldRobot(tester);
 
+        final docNameA = _uniqueName('Dedup A');
+        final docNameB = _uniqueName('Dedup B');
+
         await sidebar.tapDocumentType('Integration Test');
         await ss.take(tester, 'document_type_selected');
 
         // Upload image to doc A
-        await docList.tapDocument('Upload Test Doc A');
+        await docList.createDocument(docNameA);
+        await docList.tapDocument(docNameA);
         await ss.take(tester, 'doc_a_opened');
 
         await image.tapUpload('image_field');
@@ -152,11 +188,11 @@ void main() {
         await editor.navigateBack();
         await ss.take(tester, 'back_to_list');
 
-        // Create doc B and upload the same image (FakePicker returns same test PNG)
-        await docList.createDocument('Upload Test Doc B');
+        // Create doc B and upload the same image
+        await docList.createDocument(docNameB);
         await ss.take(tester, 'doc_b_created');
 
-        await docList.tapDocument('Upload Test Doc B');
+        await docList.tapDocument(docNameB);
         await ss.take(tester, 'doc_b_opened');
 
         await image.tapUpload('image_field');
@@ -171,9 +207,14 @@ void main() {
         await ss.take(tester, 'back_to_list_again');
 
         // Navigate back to doc A and confirm image preview is still present
-        await docList.tapDocument('Upload Test Doc A');
+        await docList.tapDocument(docNameA);
         await image.expectImagePreview('image_field');
         await ss.take(tester, 'doc_a_image_still_present');
+
+        // Clean up both docs
+        await editor.navigateBack();
+        await docList.deleteDocument(docNameA);
+        await docList.deleteDocument(docNameB);
       },
     );
 
@@ -188,13 +229,15 @@ void main() {
       final editor = DocumentEditorRobot(tester);
       final image = ImageFieldRobot(tester);
 
+      final docName = _uniqueName('URL Test');
+
       await sidebar.tapDocumentType('Integration Test');
       await ss.take(tester, 'document_type_selected');
 
-      await docList.createDocument('URL Test Doc');
+      await docList.createDocument(docName);
       await ss.take(tester, 'document_created');
 
-      await docList.tapDocument('URL Test Doc');
+      await docList.tapDocument(docName);
       await ss.take(tester, 'document_opened');
 
       // Verify empty state
@@ -218,12 +261,16 @@ void main() {
       await editor.navigateBack();
       await ss.take(tester, 'navigated_back');
 
-      await docList.tapDocument('URL Test Doc');
+      await docList.tapDocument(docName);
       await ss.take(tester, 'reopened');
 
       // URL field should be editable with the external URL
       image.expectEditableUrl('image_field');
       await ss.take(tester, 'url_persisted');
+
+      // Clean up
+      await editor.navigateBack();
+      await docList.deleteDocument(docName);
     });
 
     testWidgets(
@@ -234,15 +281,18 @@ void main() {
 
         final sidebar = SidebarRobot(tester);
         final docList = DocumentListRobot(tester);
+        final editor = DocumentEditorRobot(tester);
         final image = ImageFieldRobot(tester);
+
+        final docName = _uniqueName('Replace Test');
 
         await sidebar.tapDocumentType('Integration Test');
         await ss.take(tester, 'document_type_selected');
 
-        await docList.createDocument('Replace Test Doc');
+        await docList.createDocument(docName);
         await ss.take(tester, 'document_created');
 
-        await docList.tapDocument('Replace Test Doc');
+        await docList.tapDocument(docName);
         await ss.take(tester, 'document_opened');
 
         // Enter external URL first
@@ -264,6 +314,10 @@ void main() {
         image.expectFieldEmpty('image_field');
         image.expectEditableUrl('image_field');
         await ss.take(tester, 'everything_cleared');
+
+        // Clean up
+        await editor.navigateBack();
+        await docList.deleteDocument(docName);
       },
     );
   });
