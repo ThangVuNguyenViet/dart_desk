@@ -172,9 +172,8 @@ void main() {
         await sidebar.tapDocumentType('Integration Test');
         await ss.take(tester, 'document_type_selected');
 
-        // Upload image to doc A
+        // Upload image to doc A (createDocument auto-opens the new doc)
         await docList.createDocument(docNameA);
-        await docList.tapDocument(docNameA);
         await ss.take(tester, 'doc_a_opened');
 
         await image.tapUpload('image_field');
@@ -188,11 +187,8 @@ void main() {
         await editor.navigateBack();
         await ss.take(tester, 'back_to_list');
 
-        // Create doc B and upload the same image
+        // Create doc B and upload the same image (auto-opens doc B)
         await docList.createDocument(docNameB);
-        await ss.take(tester, 'doc_b_created');
-
-        await docList.tapDocument(docNameB);
         await ss.take(tester, 'doc_b_opened');
 
         await image.tapUpload('image_field');

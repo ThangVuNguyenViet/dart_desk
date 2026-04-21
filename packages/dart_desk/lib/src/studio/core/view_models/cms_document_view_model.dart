@@ -93,6 +93,7 @@ class CmsDocumentViewModel {
   Future<void> _autoLoadLatestData(CmsViewModel cmsVM, String docId) async {
     try {
       final versions = await dataSource.getDocumentVersions(docId);
+      if (editedData.disposed) return;
       if (versions.versions.isNotEmpty) {
         final versionId = versions.versions.first.id!;
 
@@ -100,6 +101,7 @@ class CmsDocumentViewModel {
         // CRDT-merged state, rather than getDocumentVersionData which only
         // reconstructs state up to the version's snapshot HLC.
         final doc = await dataSource.getDocument(docId);
+        if (editedData.disposed) return;
         final docData = doc?.activeVersionData;
         if (docData != null && docData.isNotEmpty) {
           editedData.value = Map<String, dynamic>.from(docData);
