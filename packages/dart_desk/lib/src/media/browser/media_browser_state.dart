@@ -43,12 +43,8 @@ class MediaBrowserState {
     if (initialTypeFilter != null) typeFilter.value = initialTypeFilter;
   }
 
-  Future<MediaAsset> uploadFile(
-    String fileName,
-    Uint8List bytes,
-    QuickImageMetadata metadata,
-  ) async {
-    final asset = await dataSource.uploadImage(fileName, bytes, metadata);
+  Future<MediaAsset> uploadFile(String fileName, Uint8List bytes) async {
+    final asset = await dataSource.uploadImage(fileName, bytes);
     assetsData.awaitableReload();
     return asset;
   }

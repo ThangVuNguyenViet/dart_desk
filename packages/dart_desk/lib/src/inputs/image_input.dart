@@ -14,11 +14,10 @@ import '../data/cms_data_source.dart';
 import '../data/models/image_reference.dart';
 import '../data/models/image_types.dart';
 import '../data/models/media_asset.dart';
-import '../media/quick_metadata_extractor.dart';
 import 'hotspot/framing_controller.dart';
 import 'hotspot/framing_status.dart';
 
-enum _UploadState { idle, extractingMetadata, uploading, done, error }
+enum _UploadState { idle, uploading, done, error }
 
 class CmsImageInput extends StatefulWidget {
   final CmsImageField field;
@@ -49,8 +48,8 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
   late final _lastFramingMode = createSignal<FramingMode>(FramingMode.focus);
   late final _externalUrl = createSignal<String?>(null);
 
-  /// Temporary blurHash from the quick metadata extraction, used during upload.
-  late final _uploadBlurHash = createSignal<String?>(null);
+  /// Raw bytes of the in-flight upload, used for local preview during upload.
+  late final _pickedBytes = createSignal<Uint8List?>(null);
 
   @override
   void initState() {
@@ -71,7 +70,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       _asset.value = null;
       _uploadState.value = _UploadState.idle;
       _errorMessage.value = null;
-      _uploadBlurHash.value = null;
+      _pickedBytes.value = null;
       _externalUrl.value = null;
       _initFromData();
     }
@@ -226,36 +225,26 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     _errorMessage.value = null;
 
     try {
-      // Step 1: Extract quick metadata (runs in isolate)
-      _uploadState.value = _UploadState.extractingMetadata;
-      final metadata = await QuickMetadataExtractor.extract(bytes);
-      _uploadBlurHash.value = metadata.blurHash;
-
-      if (!mounted) return;
-
-      // Step 2: Upload
+      _pickedBytes.value = bytes;
       _uploadState.value = _UploadState.uploading;
-      final asset = await widget.dataSource.uploadImage(
-        fileName,
-        bytes,
-        metadata,
-      );
+
+      final asset = await widget.dataSource.uploadImage(fileName, bytes);
 
       if (!mounted) return;
 
-      // Step 3: Create ImageReference
       final imageRef = ImageReferenceFromAsset.fromAsset(asset);
       _asset.value = asset;
       _imageRef.value = imageRef;
       _externalUrl.value = null;
       _uploadState.value = _UploadState.done;
-      _uploadBlurHash.value = null;
+      _pickedBytes.value = null;
 
       widget.onChanged?.call(imageRef.toMap());
     } catch (e) {
       if (!mounted) return;
       _uploadState.value = _UploadState.error;
       _errorMessage.value = 'Upload failed: $e';
+      _pickedBytes.value = null;
     }
   }
 
@@ -306,7 +295,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     _asset.value = null;
     _uploadState.value = _UploadState.idle;
     _errorMessage.value = null;
-    _uploadBlurHash.value = null;
+    _pickedBytes.value = null;
     _externalUrl.value = null;
     widget.onChanged?.call(null);
   }
@@ -367,7 +356,6 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
   Widget _buildImagePreviewArea(ShadThemeData theme) {
     final ref = _imageRef.value;
     final state = _uploadState.value;
-    final blurHash = _uploadBlurHash.value;
     final dragOver = _isDragOver.value;
 
     return Container(
@@ -385,7 +373,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(7),
-        child: _buildPreviewContent(theme, ref, state, blurHash),
+        child: _buildPreviewContent(theme, ref, state),
       ),
     );
   }
@@ -405,18 +393,13 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     ShadThemeData theme,
     ImageReference? ref,
     _UploadState state,
-    String? blurHash,
   ) {
-    // Uploading state: show blurHash placeholder with spinner
-    if (state == _UploadState.extractingMetadata ||
-        state == _UploadState.uploading) {
+    // Uploading state: show local bytes preview with spinner
+    if (state == _UploadState.uploading) {
       return Stack(
         fit: StackFit.expand,
         children: [
-          if (blurHash != null)
-            _buildBlurHashPlaceholder(blurHash)
-          else
-            Container(color: theme.colorScheme.muted),
+          _buildLocalBytesPreview(theme),
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -424,9 +407,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
                 const CircularProgressIndicator(),
                 const SizedBox(height: 8),
                 Text(
-                  state == _UploadState.extractingMetadata
-                      ? 'Extracting metadata...'
-                      : 'Uploading...',
+                  'Uploading...',
                   style: theme.textTheme.small.copyWith(
                     color: Colors.white,
                     shadows: [
@@ -525,7 +506,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
           return Stack(
             fit: StackFit.expand,
             children: [
-              _buildBlurHashPlaceholder(ref.blurHash ?? ''),
+              Container(color: theme.colorScheme.muted),
               const Center(child: CircularProgressIndicator()),
             ],
           );
@@ -585,43 +566,12 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     );
   }
 
-  Widget _buildBlurHashPlaceholder(String hash) {
-    // Decode blurHash to a small image for display as placeholder.
-    // For simplicity, use a colored container based on the hash.
-    // A full blurHash decode would require the blurhash_dart package at
-    // render time. We use a simple solid color derived from the hash instead
-    // to keep widget rendering synchronous.
-    final color = _colorFromBlurHash(hash);
-    return Container(color: color);
-  }
-
-  /// Derive a rough dominant color from a blurHash string.
-  /// The first 4 characters of a blurHash encode the DC component (average color).
-  Color _colorFromBlurHash(String hash) {
-    if (hash.length < 6) return Colors.grey;
-    try {
-      // The DC value is encoded in characters 2..5 (base-83, 4 chars = up to 83^4)
-      final dcValue = _decode83(hash.substring(2, 6));
-      final r = (dcValue >> 16) & 0xFF;
-      final g = (dcValue >> 8) & 0xFF;
-      final b = dcValue & 0xFF;
-      return Color.fromARGB(255, r, g, b);
-    } catch (_) {
-      return Colors.grey;
+  Widget _buildLocalBytesPreview(ShadThemeData theme) {
+    final bytes = _pickedBytes.watch(context);
+    if (bytes == null) {
+      return Container(color: theme.colorScheme.muted);
     }
-  }
-
-  static const _base83Chars =
-      '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#\$%*+,-.:;=?@[]^_{|}~';
-
-  int _decode83(String str) {
-    var value = 0;
-    for (final c in str.codeUnits) {
-      final idx = _base83Chars.indexOf(String.fromCharCode(c));
-      if (idx == -1) return 0;
-      value = value * 83 + idx;
-    }
-    return value;
+    return Image.memory(bytes, fit: BoxFit.cover, gaplessPlayback: true);
   }
 
   @override
@@ -639,9 +589,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
     final hasExternalUrl = externalUrl != null && externalUrl.isNotEmpty;
     final hasAnyValue = hasImage || hasExternalUrl;
     final hotspotEnabled = widget.field.option?.hotspot ?? false;
-    final isUploading =
-        state == _UploadState.extractingMetadata ||
-        state == _UploadState.uploading;
+    final isUploading = state == _UploadState.uploading;
     final isAssetMode = hasImage && ref.publicUrl != null;
 
     return DropRegion(

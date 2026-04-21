@@ -11,7 +11,6 @@ import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import '../../data/cms_data_source.dart';
 import '../../data/models/image_types.dart';
 import '../../data/models/media_asset.dart';
-import '../quick_metadata_extractor.dart';
 import 'asset_detail_panel.dart';
 import 'media_browser_state.dart';
 import 'media_grid.dart';
@@ -68,8 +67,7 @@ class _MediaBrowserState extends State<MediaBrowser> {
   }
 
   Future<void> _uploadBytes(String fileName, Uint8List bytes) async {
-    final metadata = await QuickMetadataExtractor.extract(bytes);
-    await _state.uploadFile(fileName, bytes, metadata);
+    await _state.uploadFile(fileName, bytes);
   }
 
   Future<void> _handleDrop(PerformDropEvent event) async {

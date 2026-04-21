@@ -357,22 +357,10 @@ class CloudDataSource implements DataSource {
   // ============================================================
 
   @override
-  Future<MediaAsset> uploadImage(
-    String fileName,
-    Uint8List fileData,
-    QuickImageMetadata metadata,
-  ) async {
+  Future<MediaAsset> uploadImage(String fileName, Uint8List fileData) async {
     try {
       final byteData = ByteData.view(fileData.buffer);
-      final response = await _client.media.uploadImage(
-        fileName,
-        byteData,
-        metadata.width,
-        metadata.height,
-        metadata.hasAlpha,
-        metadata.blurHash,
-        metadata.contentHash,
-      );
+      final response = await _client.media.uploadImage(fileName, byteData);
       return _toMediaAsset(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {

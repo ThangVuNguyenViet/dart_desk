@@ -247,13 +247,9 @@ abstract class DataSource {
   // Media Operations
   // ============================================================
 
-  /// Upload an image with client-extracted quick metadata.
+  /// Upload an image. The server computes all derived metadata.
   /// Returns the MediaAsset (existing if deduplicated, new otherwise).
-  Future<MediaAsset> uploadImage(
-    String fileName,
-    Uint8List fileData,
-    QuickImageMetadata metadata,
-  );
+  Future<MediaAsset> uploadImage(String fileName, Uint8List fileData);
 
   /// Upload a non-image file.
   Future<MediaAsset> uploadFile(String fileName, Uint8List fileData);

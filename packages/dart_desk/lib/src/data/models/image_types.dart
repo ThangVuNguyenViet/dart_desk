@@ -64,15 +64,3 @@ class MediaGeoLocation {
   Map<String, dynamic> toJson() => {'lat': lat, 'lng': lng};
 }
 
-class QuickImageMetadata {
-  final int width, height;
-  final bool hasAlpha;
-  final String blurHash, contentHash;
-  const QuickImageMetadata({
-    required this.width,
-    required this.height,
-    required this.hasAlpha,
-    required this.blurHash,
-    required this.contentHash,
-  });
-}

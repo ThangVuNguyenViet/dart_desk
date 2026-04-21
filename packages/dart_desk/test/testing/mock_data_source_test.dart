@@ -98,26 +98,15 @@ void main() {
   // ============================================================
 
   group('Media upload with dedup', () {
-    final metadata = const QuickImageMetadata(
-      width: 100,
-      height: 100,
-      hasAlpha: false,
-      blurHash: 'test',
-      contentHash: 'abc123',
-    );
-
     test(
-      'uploadImage creates a new asset and returns it with correct dimensions',
+      'uploadImage creates a new asset and returns it with correct fileName',
       () async {
         final fileData = Uint8List.fromList([0, 1, 2, 3]);
         final asset = await dataSource.uploadImage(
           'test-image.png',
           fileData,
-          metadata,
         );
 
-        expect(asset.width, 100);
-        expect(asset.height, 100);
         expect(asset.fileName, 'test-image.png');
 
         final list = await dataSource.listMedia();
@@ -126,19 +115,17 @@ void main() {
     );
 
     test(
-      'uploadImage with same content hash returns existing asset (dedup)',
+      'uploadImage with same bytes returns existing asset (dedup)',
       () async {
         final fileData = Uint8List.fromList([0, 1, 2, 3]);
 
         final first = await dataSource.uploadImage(
           'test-image.png',
           fileData,
-          metadata,
         );
         final second = await dataSource.uploadImage(
           'test-image.png',
           fileData,
-          metadata,
         );
 
         // Same asset returned — same assetId and id

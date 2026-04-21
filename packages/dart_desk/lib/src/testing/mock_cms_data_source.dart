@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
+import 'package:crypto/crypto.dart';
+import 'package:image/image.dart' as img;
 
 import '../data/cms_data_source.dart';
 import '../data/models/cms_document.dart';
@@ -438,21 +440,29 @@ class MockDataSource implements DataSource {
   }
 
   @override
-  Future<MediaAsset> uploadImage(
-    String fileName,
-    Uint8List fileData,
-    QuickImageMetadata metadata,
-  ) async {
+  Future<MediaAsset> uploadImage(String fileName, Uint8List fileData) async {
     final ext = fileName.contains('.')
         ? fileName.split('.').last.toLowerCase()
         : 'bin';
-    final assetId =
-        '${metadata.contentHash}-${metadata.width}x${metadata.height}.$ext';
+    final contentHash = sha256.convert(fileData).toString();
 
-    // Deduplication: return existing if found
-    if (_media.containsKey(assetId)) {
-      return _media[assetId]!;
+    // Try to decode for dimensions; fall back to zeros for non-images.
+    int width = 0;
+    int height = 0;
+    bool hasAlpha = false;
+    try {
+      final decoded = img.decodeImage(fileData);
+      if (decoded != null) {
+        width = decoded.width;
+        height = decoded.height;
+        hasAlpha = decoded.hasAlpha;
+      }
+    } catch (_) {
+      // ignore
     }
+
+    final assetId = 'image-$contentHash-${width}x$height-$ext';
+    if (_media.containsKey(assetId)) return _media[assetId]!;
 
     final mimeType = switch (ext) {
       'jpg' || 'jpeg' => 'image/jpeg',
@@ -471,10 +481,10 @@ class MockDataSource implements DataSource {
       mimeType: mimeType,
       fileSize: fileData.length,
       publicUrl: 'https://mock-cdn.test/media/$assetId/$fileName',
-      width: metadata.width,
-      height: metadata.height,
-      hasAlpha: metadata.hasAlpha,
-      blurHash: metadata.blurHash,
+      width: width,
+      height: height,
+      hasAlpha: hasAlpha,
+      blurHash: 'L00000fQfQfQfQfQfQfQfQfQfQ', // placeholder
       createdAt: DateTime.now(),
       metadataStatus: MediaAssetMetadataStatus.complete,
     );
