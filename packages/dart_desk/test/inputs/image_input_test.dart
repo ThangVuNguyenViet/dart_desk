@@ -7,6 +7,7 @@ import 'package:dart_desk/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../helpers/input_test_helpers.dart';
 
@@ -347,6 +348,52 @@ void main() {
       // Tabs should not exist in the unified layout
       expect(find.text('Upload'), findsOneWidget); // button text
       expect(find.text('URL'), findsNothing); // tab text gone
+    });
+  });
+
+  group('CmsImageInput keep-alive', () {
+    testWidgets('stays alive when scrolled out of a ListView and back',
+        (tester) async {
+      // Build a CmsImageInput inside a ListView.builder with many tall spacers.
+      // Scroll the image_input off-screen, then back. Assert the State object
+      // identity is preserved (would fail without AutomaticKeepAliveClientMixin).
+      await tester.pumpWidget(
+        ShadApp(
+          home: Scaffold(
+            body: ShadToaster(
+              child: ListView.builder(
+                itemCount: 51,
+                itemBuilder: (ctx, i) {
+                  if (i == 0) {
+                    return SizedBox(
+                      height: 400,
+                      child: CmsImageInput(
+                        field: field,
+                        dataSource: MockDataSource(),
+                      ),
+                    );
+                  }
+                  return const SizedBox(height: 400, child: Placeholder());
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final finder = find.byType(CmsImageInput);
+      final stateBefore = tester.state(finder);
+
+      await tester.drag(find.byType(ListView), const Offset(0, -5000));
+      await tester.pump();
+      await tester.drag(find.byType(ListView), const Offset(0, 5000));
+      await tester.pump();
+
+      final stateAfter = tester.state(finder);
+      expect(identical(stateBefore, stateAfter), isTrue,
+          reason:
+              'CmsImageInput State should be kept alive across scroll');
     });
   });
 }

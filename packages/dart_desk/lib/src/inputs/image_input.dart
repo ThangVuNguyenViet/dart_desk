@@ -39,7 +39,10 @@ class CmsImageInput extends StatefulWidget {
   State<CmsImageInput> createState() => _CmsImageInputState();
 }
 
-class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
+class _CmsImageInputState extends State<CmsImageInput>
+    with SignalsMixin, AutomaticKeepAliveClientMixin<CmsImageInput> {
+  @override
+  bool get wantKeepAlive => true;
   late final _imageRef = createSignal<ImageReference?>(null);
   late final _asset = createSignal<MediaAsset?>(null);
   late final _uploadState = createSignal<_UploadState>(_UploadState.idle);
@@ -576,6 +579,7 @@ class _CmsImageInputState extends State<CmsImageInput> with SignalsMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // required by AutomaticKeepAliveClientMixin
     if (widget.field.option?.hidden ?? false) {
       return const SizedBox.shrink();
     }
