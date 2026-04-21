@@ -1,35 +1,39 @@
-import 'dart:developer' as developer;
-
 import 'package:dart_desk_client/dart_desk_client.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
-import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+import 'package:signals/signals_flutter.dart';
+
+import 'dart_desk_auth_view_model.dart';
 
 /// A widget that provides authentication guard functionality using Serverpod's
 /// IDP authentication system with Google Sign-In and email/password support.
 ///
-/// The sign-in screen shows both Google Sign-In and email/password options.
+/// Reads a [DartDeskAuthViewModel] from [GetIt]. The caller is responsible for
+/// registering the view model (and disposing it) before this widget mounts —
+/// typically done once at app startup.
 ///
 /// Example usage:
 /// ```dart
+/// GetIt.I.registerSingleton(
+///   DartDeskAuthViewModel.fromConfig(serverUrl: ..., apiKey: ...),
+/// );
+///
 /// DartDeskAuth(
-///   serverUrl: 'http://localhost:8080/',
 ///   builder: (context, client, signOut) => MyAuthenticatedApp(
 ///     client: client,
 ///     onSignOut: signOut,
 ///   ),
-/// )
+/// );
 /// ```
 class DartDeskAuth extends StatefulWidget {
-  final String serverUrl;
   final Widget Function(
     BuildContext context,
     Client client,
     VoidCallback signOut,
   )
   builder;
-  final String apiKey;
   final String title;
   final String? subtitle;
   final Widget? logo;
@@ -37,9 +41,7 @@ class DartDeskAuth extends StatefulWidget {
 
   const DartDeskAuth({
     super.key,
-    required this.serverUrl,
     required this.builder,
-    required this.apiKey,
     this.title = 'Welcome to Dart Desk',
     this.subtitle,
     this.logo,
@@ -51,12 +53,8 @@ class DartDeskAuth extends StatefulWidget {
 }
 
 class _DartDeskAuthState extends State<DartDeskAuth> {
-  late final Client _client;
-  late final FlutterAuthSessionManager _sessionManager;
-  bool _isLoading = true;
-  bool _isEnsuringUser = false;
+  late final DartDeskAuthViewModel _authVM = GetIt.I<DartDeskAuthViewModel>();
   bool _isEmailSigningIn = false;
-  String? _errorMessage;
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -76,146 +74,29 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
   bool _obscureForgotPassword = true;
   bool _obscureForgotConfirmPassword = true;
 
-  FlutterAuthSessionManager get _auth => _sessionManager;
-
   @override
   void initState() {
     super.initState();
-    _initializeClient();
-  }
-
-  Future<void> _initializeClient() async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-
-      _sessionManager = FlutterAuthSessionManager();
-
-      _client =
-          Client(
-              widget.serverUrl,
-              onFailedCall: (context, error, stackTrace) {
-                developer.log(
-                  'API call failed: ${context.endpointName}.${context.methodName}',
-                  name: 'ServerpodClient',
-                  error: error,
-                  stackTrace: stackTrace,
-                );
-              },
-              onSucceededCall: (context) {
-                developer.log(
-                  'API call succeeded: ${context.endpointName}.${context.methodName}',
-                  name: 'ServerpodClient',
-                );
-              },
-            )
-            ..connectivityMonitor = FlutterConnectivityMonitor()
-            ..authSessionManager = _sessionManager
-            ..authKeyProvider = DartDeskAuthKeyProvider(
-              apiKey: widget.apiKey,
-              inner: _sessionManager,
-            );
-
-      await _sessionManager.initialize();
-      await _sessionManager.initializeGoogleSignIn();
-
-      _auth.authInfoListenable.addListener(_onAuthChanged);
-
-      // If already authenticated, ensure user exists
-      if (_auth.isAuthenticated) {
-        await _ensureUser();
-      }
-
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Failed to initialize: ${e.toString()}';
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _onAuthChanged() {
-    if (mounted) {
-      if (_auth.isAuthenticated && !_isEnsuringUser) {
-        _ensureUser();
-      }
-      setState(() {});
-    }
-  }
-
-  Future<void> _ensureUser() async {
-    _isEnsuringUser = true;
-    try {
-      await _client.user.getCurrentUser();
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Failed to initialize user: ${e.toString()}';
-        });
-      }
-    } finally {
-      _isEnsuringUser = false;
-    }
-  }
-
-  Future<void> _signInWithEmail(String email, String password) async {
-    setState(() {
-      _isEmailSigningIn = true;
-      _errorMessage = null;
-    });
-
-    try {
-      final authSuccess = await _client.emailIdp.login(
-        email: email,
-        password: password,
-      );
-      await _auth.updateSignedInUser(authSuccess);
-      // _onAuthChanged will handle ensureUser
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Email sign-in failed. Error: ${e.toString()}';
-        });
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isEmailSigningIn = false;
-        });
-      }
-    }
+    _authVM.start();
   }
 
   Future<void> _handleEmailSubmit() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
-    if (email.isEmpty || password.isEmpty) {
-      setState(() {
-        _errorMessage = 'Please enter both email and password.';
-      });
-      return;
+    setState(() => _isEmailSigningIn = true);
+    try {
+      await _authVM.signInWithEmail(email: email, password: password);
+    } finally {
+      if (mounted) setState(() => _isEmailSigningIn = false);
     }
-    await _signInWithEmail(email, password);
   }
 
-  Future<void> _handleSignOut() async {
-    try {
-      await _auth.signOutDevice();
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = 'Failed to sign out: ${e.toString()}';
-        });
-      }
-    }
-  }
+  Future<void> _handleSignOut() => _authVM.signOut();
 
   void _showForgotPasswordFlow() {
+    // Clear any top-level error so it doesn't reappear when the user returns
+    // from the forgot-password flow.
+    _authVM.clearError();
     setState(() {
       _showForgotPassword = true;
       _forgotStep = 0;
@@ -246,7 +127,7 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
       _forgotError = null;
     });
     try {
-      _resetRequestId = await _client.emailIdp.startPasswordReset(email: email);
+      _resetRequestId = await _authVM.client.emailIdp.startPasswordReset(email: email);
       if (mounted) setState(() => _forgotStep = 1);
     } catch (e) {
       if (mounted) {
@@ -270,7 +151,7 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
       _forgotError = null;
     });
     try {
-      _finishResetToken = await _client.emailIdp.verifyPasswordResetCode(
+      _finishResetToken = await _authVM.client.emailIdp.verifyPasswordResetCode(
         passwordResetRequestId: _resetRequestId!,
         verificationCode: code,
       );
@@ -303,13 +184,12 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
       _forgotError = null;
     });
     try {
-      await _client.emailIdp.finishPasswordReset(
+      await _authVM.client.emailIdp.finishPasswordReset(
         finishPasswordResetToken: _finishResetToken!,
         newPassword: password,
       );
       if (mounted) {
         _hideForgotPasswordFlow();
-        setState(() => _errorMessage = null);
       }
     } catch (e) {
       if (mounted) {
@@ -558,7 +438,7 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
 
   @override
   void dispose() {
-    _auth.authInfoListenable.removeListener(_onAuthChanged);
+    // VM is owned by the service locator — don't dispose it here.
     _emailController.dispose();
     _passwordController.dispose();
     _forgotEmailController.dispose();
@@ -570,19 +450,28 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return _buildLoadingScreen();
+    final state = _authVM.getCurrentUser.watch(context);
+
+    if (state is AsyncLoading<User?>) return _buildLoadingScreen();
+
+    if (state is AsyncData<User?> && state.value != null) {
+      return widget.builder(context, _authVM.client, _handleSignOut);
     }
 
-    if (_auth.isAuthenticated) {
-      return widget.builder(context, _client, _handleSignOut);
-    }
+    if (_showForgotPassword) return _buildForgotPasswordFlow();
 
-    if (_showForgotPassword) {
-      return _buildForgotPasswordFlow();
-    }
+    return _buildSignInScreen(errorMessage: _errorMessageFor(state));
+  }
 
-    return _buildSignInScreen();
+  String? _errorMessageFor(AsyncState<User?> state) {
+    if (state is! AsyncError<User?>) return null;
+    final error = state.error;
+    if (error is ServerpodClientException && error.statusCode == 404) {
+      return 'Your account does not have access to this project. '
+          'Please contact your administrator.';
+    }
+    if (error is String) return error;
+    return 'Something went wrong: $error';
   }
 
   Widget _buildLoadingScreen() {
@@ -601,7 +490,7 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
     );
   }
 
-  Widget _buildSignInScreen() {
+  Widget _buildSignInScreen({String? errorMessage}) {
     return ShadApp(
       theme: widget.theme,
       home: Builder(
@@ -647,27 +536,26 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 24),
-                          if (_errorMessage != null) ...[
+                          if (errorMessage != null) ...[
                             ShadAlert.destructive(
                               icon: Icon(LucideIcons.circleAlert),
                               title: const Text('Error'),
-                              description: Text(_errorMessage!),
+                              description: Text(errorMessage),
                             ),
                             const SizedBox(height: 16),
                           ],
                           // Google Sign-In
                           GoogleSignInWidget(
-                            client: _client,
+                            client: _authVM.client,
                             scopes: const [],
                             onAuthenticated: () {
-                              if (mounted) setState(() {});
+                              // _onAuthChanged will pick up the new session.
                             },
                             onError: (error) {
                               debugPrint('Google Sign-In error: $error');
-                              setState(() {
-                                _errorMessage =
-                                    'Google Sign-In failed. Please try again.';
-                              });
+                              _authVM.reportError(
+                                'Google Sign-In failed. Please try again.',
+                              );
                             },
                           ),
                           const SizedBox(height: 20),

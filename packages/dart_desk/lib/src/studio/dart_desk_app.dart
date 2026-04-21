@@ -1,9 +1,12 @@
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../cloud/cloud_data_source.dart';
 import '../cloud/dart_desk_auth.dart';
+import '../cloud/dart_desk_auth_view_model.dart';
 import '../data/cms_data_source.dart';
 import 'cms_studio_app.dart';
 import 'dart_desk_config.dart';
@@ -34,13 +37,13 @@ import 'dart_desk_config.dart';
 ///   ),
 /// )
 /// ```
-class DartDeskApp extends StatelessWidget {
-  final String? _serverUrl;
-  final DataSource? _dataSource;
-  final VoidCallback? _onSignOut;
-  final DartDeskConfig _config;
-  final String? _apiKey;
-  final ShadThemeData? _theme;
+class DartDeskApp extends StatefulWidget {
+  final String? serverUrl;
+  final DataSource? dataSource;
+  final VoidCallback? onSignOut;
+  final DartDeskConfig config;
+  final String? apiKey;
+  final ShadThemeData? theme;
 
   /// Creates a DartDeskApp with built-in Serverpod IDP authentication.
   ///
@@ -48,16 +51,12 @@ class DartDeskApp extends StatelessWidget {
   /// and wraps the studio UI with auth context.
   const DartDeskApp({
     super.key,
-    required String serverUrl,
-    required DartDeskConfig config,
-    required String apiKey,
-    ShadThemeData? theme,
-  }) : _serverUrl = serverUrl,
-       _dataSource = null,
-       _onSignOut = null,
-       _config = config,
-       _apiKey = apiKey,
-       _theme = theme;
+    required String this.serverUrl,
+    required this.config,
+    required String this.apiKey,
+    this.theme,
+  }) : dataSource = null,
+       onSignOut = null;
 
   /// Creates a DartDeskApp with an external data source and auth.
   ///
@@ -65,26 +64,64 @@ class DartDeskApp extends StatelessWidget {
   /// (Firebase, Clerk, Auth0, etc.) and provides its own [DataSource].
   const DartDeskApp.withDataSource({
     super.key,
-    required DataSource dataSource,
-    required VoidCallback onSignOut,
-    required DartDeskConfig config,
-    ShadThemeData? theme,
-  }) : _serverUrl = null,
-       _dataSource = dataSource,
-       _onSignOut = onSignOut,
-       _config = config,
-       _apiKey = null,
-       _theme = theme;
+    required DataSource this.dataSource,
+    required VoidCallback this.onSignOut,
+    required this.config,
+    this.theme,
+  }) : serverUrl = null,
+       apiKey = null;
+
+  @override
+  State<DartDeskApp> createState() => _DartDeskAppState();
+}
+
+class _DartDeskAppState extends State<DartDeskApp> {
+  DartDeskAuthViewModel? _authVM;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.serverUrl != null) {
+      ImageReference.defaultAssetResolver =
+          (id) => '${widget.serverUrl}files/$id';
+      final vm = DartDeskAuthViewModel.fromConfig(
+        serverUrl: widget.serverUrl!,
+        apiKey: widget.apiKey!,
+      );
+      _authVM = vm;
+      final getIt = GetIt.I;
+      if (getIt.isRegistered<DartDeskAuthViewModel>()) {
+        getIt.unregister<DartDeskAuthViewModel>();
+      }
+      getIt.registerSingleton<DartDeskAuthViewModel>(vm);
+
+      // Warm up Google Sign-In plumbing — fire-and-forget, required before
+      // rendering the Google sign-in button.
+      vm.sessionManager.initializeGoogleSignIn();
+    }
+  }
+
+  @override
+  void dispose() {
+    final vm = _authVM;
+    if (vm != null) {
+      final getIt = GetIt.I;
+      if (getIt.isRegistered<DartDeskAuthViewModel>() &&
+          identical(getIt<DartDeskAuthViewModel>(), vm)) {
+        getIt.unregister<DartDeskAuthViewModel>();
+      }
+      vm.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (_serverUrl != null) {
-      ImageReference.defaultAssetResolver = (id) => '${_serverUrl}files/$id';
+    if (widget.serverUrl != null) {
       return DartDeskAuth(
-        serverUrl: _serverUrl,
-        apiKey: _apiKey!,
-        title: _config.title,
-        subtitle: _config.subtitle,
+        title: widget.config.title,
+        subtitle: widget.config.subtitle,
+        theme: widget.theme,
         builder: (context, client, signOut) {
           final dataSource = CloudDataSource(client);
           return _buildStudio(dataSource, signOut);
@@ -92,18 +129,18 @@ class DartDeskApp extends StatelessWidget {
       );
     }
 
-    return _buildStudio(_dataSource!, _onSignOut!);
+    return _buildStudio(widget.dataSource!, widget.onSignOut!);
   }
 
   Widget _buildStudio(DataSource dataSource, VoidCallback signOut) {
     return CmsStudioApp(
       dataSource: dataSource,
-      documentTypes: _config.documentTypes,
-      documentTypeDecorations: _config.documentTypeDecorations,
-      title: _config.title,
-      subtitle: _config.subtitle,
-      icon: _config.icon,
-      theme: _theme,
+      documentTypes: widget.config.documentTypes,
+      documentTypeDecorations: widget.config.documentTypeDecorations,
+      title: widget.config.title,
+      subtitle: widget.config.subtitle,
+      icon: widget.config.icon,
+      theme: widget.theme,
       onSignOut: signOut,
     );
   }
