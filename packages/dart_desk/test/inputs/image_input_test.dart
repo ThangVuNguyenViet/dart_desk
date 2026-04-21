@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_desk/testing.dart';
@@ -27,6 +29,7 @@ MediaAsset _testAsset({String assetId = 'asset-hero'}) => MediaAsset(
 
 void main() {
   setUpAll(() {
+    registerFallbackValue(Uint8List(0));
     initTestPngBytes();
     HttpOverrides.global = FakeHttpOverrides();
   });
@@ -183,6 +186,36 @@ void main() {
 
       // No crash — widget handled the tap
       expect(find.byKey(const ValueKey('upload_button')), findsOneWidget);
+    });
+
+    testWidgets('shows Image.memory preview during upload', (tester) async {
+      final dataSource = MockDataSource();
+      FakeFilePickerPlatform.install();
+
+      final completer = Completer<MediaAsset>();
+      when(
+        () => dataSource.uploadImage(any(), any()),
+      ).thenAnswer((_) => completer.future);
+
+      await tester.pumpWidget(
+        buildInputApp(CmsImageInput(field: field, dataSource: dataSource)),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const ValueKey('upload_button')));
+      // Pump enough for FilePicker to resolve and _UploadState.uploading to be set.
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+
+      // While upload is in progress, widget shows Image.memory from picked bytes.
+      expect(
+        find.byWidgetPredicate((w) => w is Image && w.image is MemoryImage),
+        findsOneWidget,
+      );
+
+      completer.complete(_testAsset());
+      await tester.pumpAndSettle();
     });
 
     testWidgets('external URL data shows editable URL field with value', (
