@@ -16,8 +16,8 @@ final brandThemeFields = [
     option: CmsColorOption(),
   ),
   CmsColorField(
-    name: 'secondaryColor',
-    title: 'Secondary Color',
+    name: 'surfaceColor',
+    title: 'Surface Color',
     option: CmsColorOption(),
   ),
   CmsColorField(
@@ -25,6 +25,7 @@ final brandThemeFields = [
     title: 'Accent Color',
     option: CmsColorOption(),
   ),
+  CmsColorField(name: 'inkColor', title: 'Ink Color', option: CmsColorOption()),
   CmsDropdownField<String>(
     name: 'headlineFont',
     title: 'Headline Font',
@@ -42,12 +43,6 @@ final brandThemeFields = [
     title: 'Corner Radius',
     option: CmsNumberOption(min: 0, max: 24),
   ),
-  CmsDropdownField<String>(
-    name: 'themeMode',
-    title: 'Theme Mode',
-
-    option: ThemeModeDropdownOption(),
-  ),
   CmsImageField(
     name: 'logo',
     title: 'Logo',
@@ -60,7 +55,7 @@ final brandThemeFields = [
 final brandThemeTypeSpec = DocumentTypeSpec<BrandTheme>(
   name: 'brandTheme',
   title: 'Brand Theme',
-  description: 'Visual identity — colors, fonts, and logo for the app',
+  description: 'Colors and typography shared across every Aura screen.',
   fields: brandThemeFields,
   defaultValue: BrandTheme.defaultValue,
 );
@@ -73,12 +68,12 @@ class BrandThemeCmsConfig {
   BrandThemeCmsConfig({
     required this.name,
     required this.primaryColor,
-    required this.secondaryColor,
+    required this.surfaceColor,
     required this.accentColor,
+    required this.inkColor,
     required this.headlineFont,
     required this.bodyFont,
     required this.cornerRadius,
-    required this.themeMode,
     required this.logo,
   });
 
@@ -86,17 +81,17 @@ class BrandThemeCmsConfig {
 
   final CmsData<Color> primaryColor;
 
-  final CmsData<Color> secondaryColor;
+  final CmsData<Color> surfaceColor;
 
   final CmsData<Color> accentColor;
+
+  final CmsData<Color> inkColor;
 
   final CmsData<String> headlineFont;
 
   final CmsData<String> bodyFont;
 
   final CmsData<num> cornerRadius;
-
-  final CmsData<String> themeMode;
 
   final CmsData<ImageReference?> logo;
 }

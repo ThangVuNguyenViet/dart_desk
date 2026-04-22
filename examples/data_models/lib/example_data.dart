@@ -2,4 +2,22 @@ library;
 
 export 'src/configs/cms_content.dart';
 export 'src/configs/brand_theme.dart' hide BrandThemeColorMapper;
-// Re-added incrementally as configs land:
+export 'src/seed/aura_assets.dart';
+export 'src/seed/aura_enums.dart';
+export 'src/seed/aura_copy.dart';
+export 'src/configs/home_config.dart';
+export 'src/shared/cta_action.dart';
+export 'src/shared/featured_dish.dart';
+export 'src/shared/store_callout.dart';
+export 'src/configs/kiosk_config.dart';
+export 'src/shared/kiosk_product.dart';
+export 'src/shared/order_line.dart';
+export 'src/configs/chef_config.dart';
+export 'src/shared/chef_profile.dart';
+export 'src/shared/curated_dish.dart';
+export 'src/configs/menu_config.dart';
+export 'src/shared/menu_item_entry.dart';
+export 'src/shared/store_hours_entry.dart';
+export 'src/configs/rewards_config.dart';
+export 'src/shared/coupon.dart';
+export 'src/shared/loyalty_tier.dart';

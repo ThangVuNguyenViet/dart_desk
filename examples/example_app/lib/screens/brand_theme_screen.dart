@@ -1,73 +1,64 @@
 import 'package:data_models/example_data.dart';
 import 'package:flutter/material.dart';
 
+import '../widgets/aura/aura_button.dart';
+import '../widgets/aura/aura_theme.dart';
+import '../widgets/aura/aura_tokens.dart';
+import '../widgets/aura/aura_wordmark.dart';
+import '../widgets/aura/photo.dart';
+
 class BrandThemeScreen extends StatelessWidget {
   const BrandThemeScreen({super.key, required this.config});
-
   final BrandTheme config;
-
-  String _toHex(Color color) =>
-      '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(config.cornerRadius.toDouble());
-    final isDark = config.themeMode.toLowerCase() == 'dark';
+    return AuraTheme.wrap(
+      config,
+      child: Builder(builder: (context) => _Body(config: config)),
+    );
+  }
+}
+
+class _Body extends StatelessWidget {
+  const _Body({required this.config});
+  final BrandTheme config;
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = AuraTokens.of(context);
+    final scheme = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Hero
-          _ThemeHero(config: config, isDark: isDark),
+          _HeroStrip(config: config, scheme: scheme),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+            padding: const EdgeInsets.all(24),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Color palette
-                const Text(
-                  'Color Palette',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -0.2,
-                  ),
-                ),
+                _SectionLabel(text: 'COLOR PALETTE'),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _ColorSwatch(
-                      color: config.primaryColor,
-                      label: 'Primary',
-                      hex: _toHex(config.primaryColor),
-                    ),
-                    const SizedBox(width: 10),
-                    _ColorSwatch(
-                      color: config.secondaryColor,
-                      label: 'Secondary',
-                      hex: _toHex(config.secondaryColor),
-                    ),
-                    const SizedBox(width: 10),
-                    _ColorSwatch(
-                      color: config.accentColor,
-                      label: 'Accent',
-                      hex: _toHex(config.accentColor),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 28),
-
-                // Typography specimen
-                _TypographySection(config: config),
-                const SizedBox(height: 28),
-
-                // Live preview card
-                _LivePreviewCard(config: config, radius: radius),
-                const SizedBox(height: 24),
-
-                // Settings
-                _SettingsSection(config: config),
+                _ColorPaletteRow(config: config),
+                const SizedBox(height: 32),
+                _SectionLabel(text: 'TYPOGRAPHY'),
+                const SizedBox(height: 12),
+                _TypographySample(config: config, scheme: scheme),
+                const SizedBox(height: 32),
+                _SectionLabel(text: 'BUTTONS'),
+                const SizedBox(height: 12),
+                _ButtonsRow(config: config, scheme: scheme),
+                const SizedBox(height: 32),
+                _SectionLabel(text: 'CARD SAMPLE'),
+                const SizedBox(height: 12),
+                _CardSample(config: config, tokens: tokens, scheme: scheme),
+                const SizedBox(height: 32),
+                _SectionLabel(text: 'LOGO'),
+                const SizedBox(height: 12),
+                _LogoPreview(config: config, tokens: tokens),
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -77,95 +68,47 @@ class BrandThemeScreen extends StatelessWidget {
   }
 }
 
-class _ThemeHero extends StatelessWidget {
-  const _ThemeHero({required this.config, required this.isDark});
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 10.5,
+        letterSpacing: 2.5,
+        fontWeight: FontWeight.w700,
+        color: Theme.of(context).colorScheme.secondary,
+      ),
+    );
+  }
+}
+
+// 1. Hero strip
+class _HeroStrip extends StatelessWidget {
+  const _HeroStrip({required this.config, required this.scheme});
   final BrandTheme config;
-  final bool isDark;
+  final ColorScheme scheme;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 160,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            config.primaryColor,
-            Color.lerp(config.primaryColor, config.secondaryColor, 0.5)!,
-            config.secondaryColor,
-          ],
-        ),
-      ),
-      child: Stack(
+      color: config.primaryColor,
+      padding: const EdgeInsets.fromLTRB(24, 52, 24, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Noise texture overlay
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.1),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-          // Decorative accent dot
-          Positioned(
-            right: 30,
-            top: 30,
-            child: Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: config.accentColor.withValues(alpha: 0.4),
-              ),
-            ),
-          ),
-          // Content
-          Positioned(
-            bottom: 20,
-            left: 20,
-            right: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    isDark ? 'DARK MODE' : 'LIGHT MODE',
-                    style: const TextStyle(
-                      fontSize: 9,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  config.name,
-                  style: TextStyle(
-                    fontFamily: config.headlineFont,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-              ],
+          AuraWordmark(color: config.surfaceColor, size: 22),
+          const SizedBox(height: 12),
+          Text(
+            'Brand Theme · live',
+            style: TextStyle(
+              color: config.surfaceColor.withValues(alpha: 0.7),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.5,
             ),
           ),
         ],
@@ -174,326 +117,271 @@ class _ThemeHero extends StatelessWidget {
   }
 }
 
-class _ColorSwatch extends StatelessWidget {
-  const _ColorSwatch({
-    required this.color,
-    required this.label,
-    required this.hex,
-  });
-  final Color color;
-  final String label;
-  final String hex;
+// 2. Color palette row
+class _ColorPaletteRow extends StatelessWidget {
+  const _ColorPaletteRow({required this.config});
+  final BrandTheme config;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          Container(
-            height: 72,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.3),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+    final swatches = [
+      (config.primaryColor, 'Primary'),
+      (config.surfaceColor, 'Surface'),
+      (config.accentColor, 'Accent'),
+      (config.inkColor, 'Ink'),
+    ];
+    return Row(
+      children: swatches
+          .map(
+            (s) => Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: _Swatch(color: s.$1, label: s.$2),
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
-          ),
-          Text(
-            hex,
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey[500],
-              fontFamily: 'monospace',
-            ),
-          ),
-        ],
-      ),
+          )
+          .toList(),
     );
   }
 }
 
-class _TypographySection extends StatelessWidget {
-  const _TypographySection({required this.config});
+class _Swatch extends StatelessWidget {
+  const _Swatch({required this.color, required this.label});
+  final Color color;
+  final String label;
+
+  String get _hex {
+    final argb = color.toARGB32();
+    return '#${argb.toRadixString(16).substring(2).toUpperCase()}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final inkColor = Theme.of(context).colorScheme.onSurface;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AspectRatio(
+          aspectRatio: 1,
+          child: Container(
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: inkColor.withValues(alpha: 0.08),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+            color: inkColor,
+          ),
+        ),
+        Text(
+          _hex,
+          style: TextStyle(
+            fontSize: 9.5,
+            color: inkColor.withValues(alpha: 0.55),
+            letterSpacing: 0.3,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// 3. Typography sample
+class _TypographySample extends StatelessWidget {
+  const _TypographySample({required this.config, required this.scheme});
   final BrandTheme config;
+  final ColorScheme scheme;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFFAFAFA),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey[200]!),
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: scheme.onSurface.withValues(alpha: 0.08)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.text_fields, size: 16, color: Colors.grey),
-              const SizedBox(width: 8),
-              const Text(
-                'Typography',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
           Text(
-            'Headline Font',
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey[500],
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'The Art of Fine Dining',
+            'A table for the long evening.',
             style: TextStyle(
               fontFamily: config.headlineFont,
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
+              fontSize: 48,
+              fontStyle: FontStyle.italic,
+              height: 1.05,
               letterSpacing: -0.5,
+              color: scheme.onSurface,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 14),
           Text(
-            config.headlineFont,
-            style: TextStyle(fontSize: 11, color: Colors.grey[400]),
-          ),
-          const SizedBox(height: 16),
-          Container(height: 1, color: Colors.grey[200]),
-          const SizedBox(height: 16),
-          Text(
-            'Body Font',
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey[500],
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Experience culinary excellence crafted with the finest seasonal ingredients from around the world.',
+            'The quick brown fox jumps over the lazy dog. '
+            'Configured in ${config.bodyFont} at 16pt regular.',
             style: TextStyle(
               fontFamily: config.bodyFont,
-              fontSize: 14,
-              height: 1.6,
-              color: Colors.grey[700],
+              fontSize: 16,
+              height: 1.55,
+              color: scheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            config.bodyFont,
-            style: TextStyle(fontSize: 11, color: Colors.grey[400]),
-          ),
         ],
       ),
     );
   }
 }
 
-class _LivePreviewCard extends StatelessWidget {
-  const _LivePreviewCard({required this.config, required this.radius});
+// 4. Buttons row
+class _ButtonsRow extends StatelessWidget {
+  const _ButtonsRow({required this.config, required this.scheme});
   final BrandTheme config;
-  final BorderRadius radius;
+  final ColorScheme scheme;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
       children: [
-        const Text(
-          'Live Preview',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            letterSpacing: -0.2,
-          ),
+        AuraButton(
+          label: 'Reserve',
+          style: AuraButtonStyle.solid,
+          showArrow: false,
         ),
-        const SizedBox(height: 12),
         Container(
+          padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: radius,
-            border: Border.all(color: Colors.grey[200]!),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            color: config.primaryColor,
+            borderRadius: BorderRadius.circular(999),
           ),
-          child: Column(
-            children: [
-              // Mini image placeholder
-              Container(
-                height: 120,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      config.primaryColor.withValues(alpha: 0.15),
-                      config.accentColor.withValues(alpha: 0.1),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.only(
-                    topLeft: radius.topLeft,
-                    topRight: radius.topRight,
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.restaurant,
-                    size: 36,
-                    color: config.primaryColor.withValues(alpha: 0.4),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Truffle Risotto',
-                      style: TextStyle(
-                        fontFamily: config.headlineFont,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Creamy arborio rice with black truffle',
-                      style: TextStyle(
-                        fontFamily: config.bodyFont,
-                        fontSize: 13,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '\$34.50',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w800,
-                            color: config.primaryColor,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color: config.primaryColor,
-                            borderRadius: radius,
-                          ),
-                          child: Text(
-                            'Add to Cart',
-                            style: TextStyle(
-                              fontFamily: config.bodyFont,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          child: AuraButton(
+            label: 'Menu',
+            style: AuraButtonStyle.ghost,
+            showArrow: false,
           ),
+        ),
+        AuraButton(
+          label: 'Learn more',
+          style: AuraButtonStyle.dark,
+          showArrow: true,
         ),
       ],
     );
   }
 }
 
-class _SettingsSection extends StatelessWidget {
-  const _SettingsSection({required this.config});
-  final BrandTheme config;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: Column(
-        children: [
-          _SettingRow(
-            icon: Icons.rounded_corner,
-            label: 'Corner Radius',
-            value: '${config.cornerRadius}px',
-          ),
-          Divider(height: 20, color: Colors.grey[200]),
-          _SettingRow(
-            icon: Icons.title,
-            label: 'Headline Font',
-            value: config.headlineFont,
-          ),
-          Divider(height: 20, color: Colors.grey[200]),
-          _SettingRow(
-            icon: Icons.text_snippet_outlined,
-            label: 'Body Font',
-            value: config.bodyFont,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SettingRow extends StatelessWidget {
-  const _SettingRow({
-    required this.icon,
-    required this.label,
-    required this.value,
+// 5. Card sample
+class _CardSample extends StatelessWidget {
+  const _CardSample({
+    required this.config,
+    required this.tokens,
+    required this.scheme,
   });
-  final IconData icon;
-  final String label;
-  final String value;
+  final BrandTheme config;
+  final AuraTokens tokens;
+  final ColorScheme scheme;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: Colors.grey[400]),
-        const SizedBox(width: 10),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-        const Spacer(),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+    final radius = config.cornerRadius.toDouble();
+    return SizedBox(
+      width: 200,
+      child: Container(
+        decoration: BoxDecoration(
+          color: tokens.creamWarm,
+          borderRadius: BorderRadius.circular(radius),
+          border: Border.all(color: tokens.line),
         ),
-      ],
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Photo(
+              fallbackUrl: AuraAssets.dish1,
+              width: 200,
+              height: 140,
+              radius: 0,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Charred Brassicas',
+                    style: TextStyle(
+                      fontFamily: config.headlineFont,
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
+                      letterSpacing: -0.1,
+                      color: scheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '\$16',
+                    style: TextStyle(
+                      fontFamily: config.headlineFont,
+                      fontSize: 13,
+                      fontStyle: FontStyle.italic,
+                      color: scheme.secondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// 6. Logo preview
+class _LogoPreview extends StatelessWidget {
+  const _LogoPreview({required this.config, required this.tokens});
+  final BrandTheme config;
+  final AuraTokens tokens;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    if (config.logo != null) {
+      return Photo(
+        reference: config.logo,
+        width: 96,
+        height: 96,
+        radius: 12,
+      );
+    }
+    return Container(
+      width: 96,
+      height: 96,
+      decoration: BoxDecoration(
+        color: tokens.creamWarm,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: tokens.line),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        'No logo\nuploaded',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 11,
+          color: scheme.onSurface.withValues(alpha: 0.45),
+          height: 1.4,
+        ),
+      ),
     );
   }
 }
