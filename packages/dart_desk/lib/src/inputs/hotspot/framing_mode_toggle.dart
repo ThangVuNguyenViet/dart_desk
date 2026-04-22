@@ -82,7 +82,7 @@ class _SegmentButton extends StatelessWidget {
           boxShadow: selected
               ? [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
+                    color: theme.colorScheme.foreground.withValues(alpha: 0.06),
                     blurRadius: 2,
                     offset: const Offset(0, 1),
                   ),

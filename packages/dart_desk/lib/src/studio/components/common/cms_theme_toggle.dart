@@ -88,7 +88,7 @@ class _ToggleSegment extends StatelessWidget {
               icon,
               size: 12,
               color: isSun
-                  ? const Color(0xFFeab308)
+                  ? theme.colorScheme.accent
                   : isActive
                   ? theme.colorScheme.foreground
                   : theme.colorScheme.mutedForeground,

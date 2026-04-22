@@ -188,13 +188,15 @@ class _MediaTileState extends State<_MediaTile> {
                         horizontal: 4,
                         vertical: 2,
                       ),
-                      color: Colors.black54,
+                      color: theme.colorScheme.background.withValues(
+                        alpha: 0.55,
+                      ),
                       child: Text(
                         asset.fileName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: theme.colorScheme.foreground,
                           fontSize: 10,
                         ),
                       ),
@@ -210,16 +212,18 @@ class _MediaTileState extends State<_MediaTile> {
                     child: ShadTooltip(
                       builder: (_) => const Text('Delete'),
                       child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.black38,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.background.withValues(
+                            alpha: 0.4,
+                          ),
                           shape: BoxShape.circle,
                         ),
                         child: ShadIconButton.ghost(
                           key: ValueKey('media_grid_trash_${asset.assetId}'),
-                          icon: const FaIcon(
+                          icon: FaIcon(
                             FontAwesomeIcons.trash,
                             size: 14,
-                            color: Colors.white,
+                            color: theme.colorScheme.foreground,
                           ),
                           onPressed: _handleDelete,
                         ),

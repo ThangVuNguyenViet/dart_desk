@@ -93,6 +93,14 @@ class _CmsStudioAppState extends State<CmsStudioApp> {
         icon: widget.icon,
         child: ShadApp.router(
           theme: resolvedTheme,
+          materialThemeBuilder: (context, mTheme) {
+            final isDark = resolvedTheme.brightness == Brightness.dark;
+            return mTheme.copyWith(
+              extensions: <ThemeExtension<dynamic>>[
+                isDark ? DartDeskPalette.dark : DartDeskPalette.light,
+              ],
+            );
+          },
           routeInformationParser: _router.defaultRouteParser(),
           routerDelegate: _router.delegate(
             // Builder called once per Navigator (root + each nested shell).
