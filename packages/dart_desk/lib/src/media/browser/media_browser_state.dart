@@ -57,6 +57,20 @@ class MediaBrowserState {
     assetsData.awaitableReload();
   }
 
+  /// Fetches the usage count for [assetId], then invokes [confirm] with that
+  /// count. If [confirm] resolves to `true`, deletes the asset via [deleteAsset].
+  /// Returns `true` iff a deletion actually occurred.
+  Future<bool> confirmAndDelete({
+    required String assetId,
+    required Future<bool> Function(int usageCount) confirm,
+  }) async {
+    final usageCount = await dataSource.getMediaUsageCount(assetId);
+    final shouldDelete = await confirm(usageCount);
+    if (!shouldDelete) return false;
+    await deleteAsset(assetId);
+    return true;
+  }
+
   MediaAsset? get selectedAsset {
     final id = selectedAssetId.value;
     if (id == null) return null;

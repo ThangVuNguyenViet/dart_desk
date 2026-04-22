@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../data/models/media_asset.dart';
+import 'asset_delete_confirm_dialog.dart';
 import 'media_browser_state.dart';
 
 class MediaGrid extends StatelessWidget {
@@ -16,7 +18,6 @@ class MediaGrid extends StatelessWidget {
     final theme = ShadTheme.of(context);
     final asyncState = state.assetsData.watch(context);
     final assets = asyncState.value?.items ?? [];
-    final selectedId = state.selectedAssetId.watch(context);
 
     if (asyncState.isLoading && assets.isEmpty) {
       return const Center(child: CircularProgressIndicator());
@@ -38,100 +39,34 @@ class MediaGrid extends StatelessWidget {
       itemCount: assets.length,
       itemBuilder: (context, index) {
         final asset = assets[index];
-        final isSelected = asset.assetId == selectedId;
-
-        return GestureDetector(
-          key: ValueKey('media_grid_item_${asset.assetId}'),
-          onTap: () => state.selectedAssetId.value = asset.assetId,
-          onDoubleTap: onDoubleClick != null
-              ? () => onDoubleClick!(asset)
-              : null,
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.border,
-                width: isSelected ? 2 : 1,
-              ),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(5),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  // BlurHash placeholder color
-                  Container(color: _colorFromBlurHash(asset.blurHash)),
-                  // Actual image
-                  if (asset.isImage)
-                    Image.network(
-                      asset.publicUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => Center(
-                        child: Icon(
-                          Icons.broken_image,
-                          color: theme.colorScheme.mutedForeground,
-                        ),
-                      ),
-                    )
-                  else
-                    Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.insert_drive_file,
-                            size: 32,
-                            color: theme.colorScheme.mutedForeground,
-                          ),
-                          const SizedBox(height: 4),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4),
-                            child: Text(
-                              asset.fileName,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.small,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  // Filename overlay at bottom
-                  if (asset.isImage)
-                    Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 2,
-                        ),
-                        color: Colors.black54,
-                        child: Text(
-                          asset.fileName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
+        return _MediaTile(
+          asset: asset,
+          state: state,
+          onDoubleClick: onDoubleClick,
         );
       },
     );
   }
+}
 
-  /// Derive a rough dominant color from a blurHash string.
+class _MediaTile extends StatefulWidget {
+  final MediaAsset asset;
+  final MediaBrowserState state;
+  final ValueChanged<MediaAsset>? onDoubleClick;
+
+  const _MediaTile({
+    required this.asset,
+    required this.state,
+    this.onDoubleClick,
+  });
+
+  @override
+  State<_MediaTile> createState() => _MediaTileState();
+}
+
+class _MediaTileState extends State<_MediaTile> {
+  bool _hovered = false;
+
   static const _base83Chars =
       '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#\$%*+,-.:;=?@[]^_{|}~';
 
@@ -153,5 +88,150 @@ class MediaGrid extends StatelessWidget {
     } catch (_) {
       return Colors.grey;
     }
+  }
+
+  Future<void> _handleDelete() async {
+    await widget.state.confirmAndDelete(
+      assetId: widget.asset.assetId,
+      confirm: (usageCount) async {
+        if (!mounted) return false;
+        final result = await showShadDialog<bool>(
+          context: context,
+          builder: (_) => AssetDeleteConfirmDialog(
+            asset: widget.asset,
+            usageCount: usageCount,
+          ),
+        );
+        return result ?? false;
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
+    final asset = widget.asset;
+    final selectedId = widget.state.selectedAssetId.watch(context);
+    final isSelected = asset.assetId == selectedId;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: GestureDetector(
+        key: ValueKey('media_grid_item_${asset.assetId}'),
+        onTap: () => widget.state.selectedAssetId.value = asset.assetId,
+        onDoubleTap: widget.onDoubleClick != null
+            ? () => widget.onDoubleClick!(asset)
+            : null,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.border,
+              width: isSelected ? 2 : 1,
+            ),
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                // BlurHash placeholder color
+                Container(color: _colorFromBlurHash(asset.blurHash)),
+                // Actual image
+                if (asset.isImage)
+                  Image.network(
+                    asset.publicUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, _, _) => Center(
+                      child: Icon(
+                        Icons.broken_image,
+                        color: theme.colorScheme.mutedForeground,
+                      ),
+                    ),
+                  )
+                else
+                  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.insert_drive_file,
+                          size: 32,
+                          color: theme.colorScheme.mutedForeground,
+                        ),
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            asset.fileName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.small,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                // Filename overlay at bottom
+                if (asset.isImage)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 2,
+                      ),
+                      color: Colors.black54,
+                      child: Text(
+                        asset.fileName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                  ),
+                // Hover-reveal trash button
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 120),
+                    opacity: _hovered ? 1.0 : 0.0,
+                    child: ShadTooltip(
+                      builder: (_) => const Text('Delete'),
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.black38,
+                          shape: BoxShape.circle,
+                        ),
+                        child: ShadIconButton.ghost(
+                          key: ValueKey('media_grid_trash_${asset.assetId}'),
+                          icon: const FaIcon(
+                            FontAwesomeIcons.trash,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                          onPressed: _handleDelete,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

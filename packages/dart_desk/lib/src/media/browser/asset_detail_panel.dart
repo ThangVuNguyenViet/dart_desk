@@ -76,11 +76,16 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(left: BorderSide(color: theme.colorScheme.border)),
+        color: theme.colorScheme.background,
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           // Preview
           if (_asset.isImage)
             ClipRRect(
@@ -173,7 +178,7 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
               Expanded(
                 child: ShadButton.destructive(
                   size: ShadButtonSize.sm,
-                  onPressed: _usageCount > 0 ? null : widget.onDelete,
+                  onPressed: widget.onDelete,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -197,6 +202,7 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
               ),
             ),
         ],
+        ),
       ),
     );
   }

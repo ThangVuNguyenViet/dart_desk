@@ -4,11 +4,13 @@ import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
-import '../seed/seed_data.dart';
 import 'cms_content.dart';
 
 part 'brand_theme.cms.g.dart';
 part 'brand_theme.mapper.dart';
+
+const headlineFonts = ['Noto Serif', 'Playfair Display', 'Montserrat', 'Lora', 'Raleway'];
+const bodyFonts = ['Manrope', 'Inter', 'Open Sans', 'Roboto', 'Lato'];
 
 @CmsConfig(
   title: 'Brand Theme',

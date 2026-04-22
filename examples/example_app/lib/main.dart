@@ -2,7 +2,7 @@
 /// and deserializing with dart_mappable's `discriminatorValue`.
 ///
 /// `publicContent.getDefaultContents()` returns `Map<String, PublicDocument>`
-/// keyed by document type (e.g. `"restaurantProfile"`, `"menuItem"`).
+/// keyed by document type (e.g. `"brandTheme"`).
 ///
 /// We inject the key as `"documentType"` into the JSON payload, then call
 /// `CmsContentMapper.fromMap(json)` — dart_mappable automatically resolves
@@ -14,9 +14,6 @@ import 'dart:convert';
 import 'package:dart_desk_client/dart_desk_client.dart';
 import 'package:data_models/example_data.dart';
 import 'package:example_app/screens/brand_theme_screen.dart';
-import 'package:example_app/screens/menu_item_screen.dart';
-import 'package:example_app/screens/promotion_campaign_screen.dart';
-import 'package:example_app/screens/restaurant_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
@@ -62,10 +59,11 @@ class CmsHomePage extends StatefulWidget {
 }
 
 const _screens = <({Type type, String label, IconData icon})>[
-  (type: RestaurantProfile, label: 'Profile', icon: Icons.store),
-  (type: MenuItem, label: 'Menu', icon: Icons.restaurant_menu),
-  (type: PromotionCampaign, label: 'Promo', icon: Icons.campaign),
   (type: BrandTheme, label: 'Theme', icon: Icons.palette),
+  // Re-added incrementally as configs land:
+  // (type: RestaurantProfile, label: 'Profile', icon: Icons.store),
+  // (type: MenuItem, label: 'Menu', icon: Icons.restaurant_menu),
+  // (type: PromotionCampaign, label: 'Promo', icon: Icons.campaign),
 ];
 
 class _CmsHomePageState extends State<CmsHomePage> {
@@ -134,9 +132,6 @@ class _CmsHomePageState extends State<CmsHomePage> {
 
   Widget _buildScreen(CmsContent config) {
     return switch (config) {
-      RestaurantProfile c => RestaurantProfileScreen(config: c),
-      MenuItem c => MenuItemScreen(config: c),
-      PromotionCampaign c => PromotionCampaignScreen(config: c),
       BrandTheme c => BrandThemeScreen(config: c),
       _ => Center(child: Text('Unknown: ${config.runtimeType}')),
     };
