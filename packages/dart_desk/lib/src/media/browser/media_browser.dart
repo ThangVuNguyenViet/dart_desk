@@ -11,6 +11,7 @@ import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import '../../data/cms_data_source.dart';
 import '../../data/models/image_types.dart';
 import '../../data/models/media_asset.dart';
+import 'asset_delete_confirm_dialog.dart';
 import 'asset_detail_panel.dart';
 import 'media_browser_state.dart';
 import 'media_grid.dart';
@@ -104,6 +105,23 @@ class _MediaBrowserState extends State<MediaBrowser> {
     }
   }
 
+  Future<void> _handleDeleteSelected(MediaAsset asset) async {
+    await _state.confirmAndDelete(
+      assetId: asset.assetId,
+      confirm: (usageCount) async {
+        if (!mounted) return false;
+        final result = await showShadDialog<bool>(
+          context: context,
+          builder: (_) => AssetDeleteConfirmDialog(
+            asset: asset,
+            usageCount: usageCount,
+          ),
+        );
+        return result ?? false;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
@@ -183,14 +201,12 @@ class _MediaBrowserState extends State<MediaBrowser> {
             );
           }),
 
-          // Body
+          // Body: grid/list on the left, always-reserved detail column on the right
           Expanded(
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Grid or List
                 Expanded(
-                  flex: 2,
                   child: Watch((context) {
                     final isGrid = _state.isGridView.watch(context);
                     if (isGrid) {
@@ -205,34 +221,41 @@ class _MediaBrowserState extends State<MediaBrowser> {
                     );
                   }),
                 ),
-                // Detail panel
-                Watch((context) {
-                  final selected = _state.selectedAssetId.watch(context);
-                  final asyncState = _state.assetsData.watch(context);
-                  final assets = asyncState.value?.items ?? [];
-                  if (selected == null) return const SizedBox.shrink();
-
-                  final asset = assets
-                      .where((a) => a.assetId == selected)
-                      .firstOrNull;
-                  if (asset == null) return const SizedBox.shrink();
-
-                  return SizedBox(
-                    width: 280,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border(
-                          left: BorderSide(color: theme.colorScheme.border),
+                SizedBox(
+                  width: 320,
+                  child: Watch((context) {
+                    final selectedId = _state.selectedAssetId.watch(context);
+                    final assets =
+                        _state.assetsData.watch(context).value?.items ?? [];
+                    final asset = selectedId != null
+                        ? assets
+                              .where((a) => a.assetId == selectedId)
+                              .firstOrNull
+                        : null;
+                    if (asset == null) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            left: BorderSide(color: theme.colorScheme.border),
+                          ),
                         ),
-                      ),
-                      child: AssetDetailPanel(
-                        asset: asset,
-                        dataSource: widget.dataSource,
-                        onDelete: () => _state.deleteAsset(asset.assetId),
-                      ),
-                    ),
-                  );
-                }),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          'Select an asset to see details',
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.muted,
+                        ),
+                      );
+                    }
+                    return AssetDetailPanel(
+                      key: ValueKey(asset.assetId),
+                      asset: asset,
+                      dataSource: widget.dataSource,
+                      onDelete: () => _handleDeleteSelected(asset),
+                    );
+                  }),
+                ),
               ],
             ),
           ),

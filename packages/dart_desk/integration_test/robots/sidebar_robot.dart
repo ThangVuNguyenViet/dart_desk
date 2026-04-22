@@ -12,6 +12,11 @@ class SidebarRobot {
     await tester.pumpAndSettle();
   }
 
+  Future<void> tapMediaLibrary() async {
+    await tester.tap(find.byKey(const ValueKey('sidebar_media_button')));
+    await tester.pumpAndSettle();
+  }
+
   void expectDocumentTypeVisible(String name) {
     expect(find.text(name), findsWidgets);
   }

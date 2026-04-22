@@ -80,5 +80,44 @@ void main() {
     test('dispose cleans up without errors', () {
       expect(() => state.dispose(), returnsNormally);
     });
+
+    test('confirmAndDelete does not call deleteMedia when dialog is canceled',
+        () async {
+      await state.assetsData.future;
+      await state.confirmAndDelete(
+        assetId: 'asset-icon',
+        confirm: (usageCount) async => false,
+      );
+      await state.assetsData.future;
+      expect(state.assetsData.value.value?.items, hasLength(4));
+    });
+
+    test('confirmAndDelete deletes and reloads when confirmed (usage=0)',
+        () async {
+      await state.assetsData.future;
+      await state.confirmAndDelete(
+        assetId: 'asset-icon',
+        confirm: (usageCount) async {
+          expect(usageCount, equals(0));
+          return true;
+        },
+      );
+      await state.assetsData.future;
+      expect(state.assetsData.value.value?.items, hasLength(3));
+    });
+
+    test('confirmAndDelete passes usageCount from dataSource to confirm callback',
+        () async {
+      await state.assetsData.future;
+      int? seen;
+      await state.confirmAndDelete(
+        assetId: 'asset-icon',
+        confirm: (usageCount) async {
+          seen = usageCount;
+          return false;
+        },
+      );
+      expect(seen, isNotNull);
+    });
   });
 }
