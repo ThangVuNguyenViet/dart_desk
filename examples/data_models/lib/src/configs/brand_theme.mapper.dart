@@ -34,15 +34,20 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
     'primaryColor',
     _$primaryColor,
   );
-  static Color _$secondaryColor(BrandTheme v) => v.secondaryColor;
-  static const Field<BrandTheme, Color> _f$secondaryColor = Field(
-    'secondaryColor',
-    _$secondaryColor,
+  static Color _$surfaceColor(BrandTheme v) => v.surfaceColor;
+  static const Field<BrandTheme, Color> _f$surfaceColor = Field(
+    'surfaceColor',
+    _$surfaceColor,
   );
   static Color _$accentColor(BrandTheme v) => v.accentColor;
   static const Field<BrandTheme, Color> _f$accentColor = Field(
     'accentColor',
     _$accentColor,
+  );
+  static Color _$inkColor(BrandTheme v) => v.inkColor;
+  static const Field<BrandTheme, Color> _f$inkColor = Field(
+    'inkColor',
+    _$inkColor,
   );
   static String _$headlineFont(BrandTheme v) => v.headlineFont;
   static const Field<BrandTheme, String> _f$headlineFont = Field(
@@ -59,11 +64,6 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
     'cornerRadius',
     _$cornerRadius,
   );
-  static String _$themeMode(BrandTheme v) => v.themeMode;
-  static const Field<BrandTheme, String> _f$themeMode = Field(
-    'themeMode',
-    _$themeMode,
-  );
   static ImageReference? _$logo(BrandTheme v) => v.logo;
   static const Field<BrandTheme, ImageReference> _f$logo = Field(
     'logo',
@@ -75,12 +75,12 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
   final MappableFields<BrandTheme> fields = const {
     #name: _f$name,
     #primaryColor: _f$primaryColor,
-    #secondaryColor: _f$secondaryColor,
+    #surfaceColor: _f$surfaceColor,
     #accentColor: _f$accentColor,
+    #inkColor: _f$inkColor,
     #headlineFont: _f$headlineFont,
     #bodyFont: _f$bodyFont,
     #cornerRadius: _f$cornerRadius,
-    #themeMode: _f$themeMode,
     #logo: _f$logo,
   };
 
@@ -95,12 +95,12 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
     return BrandTheme(
       name: data.dec(_f$name),
       primaryColor: data.dec(_f$primaryColor),
-      secondaryColor: data.dec(_f$secondaryColor),
+      surfaceColor: data.dec(_f$surfaceColor),
       accentColor: data.dec(_f$accentColor),
+      inkColor: data.dec(_f$inkColor),
       headlineFont: data.dec(_f$headlineFont),
       bodyFont: data.dec(_f$bodyFont),
       cornerRadius: data.dec(_f$cornerRadius),
-      themeMode: data.dec(_f$themeMode),
       logo: data.dec(_f$logo),
     );
   }
@@ -169,12 +169,12 @@ abstract class BrandThemeCopyWith<$R, $In extends BrandTheme, $Out>
   $R call({
     String? name,
     Color? primaryColor,
-    Color? secondaryColor,
+    Color? surfaceColor,
     Color? accentColor,
+    Color? inkColor,
     String? headlineFont,
     String? bodyFont,
     num? cornerRadius,
-    String? themeMode,
     ImageReference? logo,
   });
   BrandThemeCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
@@ -192,23 +192,23 @@ class _BrandThemeCopyWithImpl<$R, $Out>
   $R call({
     String? name,
     Color? primaryColor,
-    Color? secondaryColor,
+    Color? surfaceColor,
     Color? accentColor,
+    Color? inkColor,
     String? headlineFont,
     String? bodyFont,
     num? cornerRadius,
-    String? themeMode,
     Object? logo = $none,
   }) => $apply(
     FieldCopyWithData({
       if (name != null) #name: name,
       if (primaryColor != null) #primaryColor: primaryColor,
-      if (secondaryColor != null) #secondaryColor: secondaryColor,
+      if (surfaceColor != null) #surfaceColor: surfaceColor,
       if (accentColor != null) #accentColor: accentColor,
+      if (inkColor != null) #inkColor: inkColor,
       if (headlineFont != null) #headlineFont: headlineFont,
       if (bodyFont != null) #bodyFont: bodyFont,
       if (cornerRadius != null) #cornerRadius: cornerRadius,
-      if (themeMode != null) #themeMode: themeMode,
       if (logo != $none) #logo: logo,
     }),
   );
@@ -216,12 +216,12 @@ class _BrandThemeCopyWithImpl<$R, $Out>
   BrandTheme $make(CopyWithData data) => BrandTheme(
     name: data.get(#name, or: $value.name),
     primaryColor: data.get(#primaryColor, or: $value.primaryColor),
-    secondaryColor: data.get(#secondaryColor, or: $value.secondaryColor),
+    surfaceColor: data.get(#surfaceColor, or: $value.surfaceColor),
     accentColor: data.get(#accentColor, or: $value.accentColor),
+    inkColor: data.get(#inkColor, or: $value.inkColor),
     headlineFont: data.get(#headlineFont, or: $value.headlineFont),
     bodyFont: data.get(#bodyFont, or: $value.bodyFont),
     cornerRadius: data.get(#cornerRadius, or: $value.cornerRadius),
-    themeMode: data.get(#themeMode, or: $value.themeMode),
     logo: data.get(#logo, or: $value.logo),
   );
 

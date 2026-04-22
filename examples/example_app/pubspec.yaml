@@ -19,6 +19,8 @@ dependencies:
     git:
       url: https://github.com/ThangVuNguyenViet/dart_desk.git
       path: examples/data_models
+  dart_desk:
+    path: ../../packages/dart_desk
   dart_desk_client:
     git:
       url: https://github.com/ThangVuNguyenViet/dart_desk_be.git
