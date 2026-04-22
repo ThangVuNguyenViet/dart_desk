@@ -4,17 +4,15 @@ import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
+import '../seed/aura_enums.dart';
 import 'cms_content.dart';
 
 part 'brand_theme.cms.g.dart';
 part 'brand_theme.mapper.dart';
 
-const headlineFonts = ['Noto Serif', 'Playfair Display', 'Montserrat', 'Lora', 'Raleway'];
-const bodyFonts = ['Manrope', 'Inter', 'Open Sans', 'Roboto', 'Lato'];
-
 @CmsConfig(
   title: 'Brand Theme',
-  description: 'Visual identity — colors, fonts, and logo for the app',
+  description: 'Colors and typography shared across every Aura screen.',
 )
 @MappableClass(
   ignoreNull: false,
@@ -27,49 +25,49 @@ class BrandTheme extends CmsContent
   final String name;
 
   @CmsColorFieldConfig(
-    description: 'Primary brand color used for buttons and accents',
+    description: 'Primary — buttons, accents, dark surfaces',
     option: CmsColorOption(),
   )
   final Color primaryColor;
 
   @CmsColorFieldConfig(
-    description: 'Secondary brand color for backgrounds and cards',
+    description: 'Surface — page backgrounds',
     option: CmsColorOption(),
   )
-  final Color secondaryColor;
+  final Color surfaceColor;
 
   @CmsColorFieldConfig(
-    description: 'Accent color for highlights and badges',
+    description: 'Accent — prices, tags, warm highlights',
     option: CmsColorOption(),
   )
   final Color accentColor;
 
+  @CmsColorFieldConfig(
+    description: 'Ink — body text and headlines',
+    option: CmsColorOption(),
+  )
+  final Color inkColor;
+
   @CmsDropdownFieldConfig<String>(
-    description: 'Font family for headlines',
+    description: 'Headline font',
     option: HeadlineFontDropdownOption(),
   )
   final String headlineFont;
 
   @CmsDropdownFieldConfig<String>(
-    description: 'Font family for body text',
+    description: 'Body font',
     option: BodyFontDropdownOption(),
   )
   final String bodyFont;
 
   @CmsNumberFieldConfig(
-    description: 'Corner radius for cards and buttons in pixels',
+    description: 'Corner radius in px',
     option: CmsNumberOption(min: 0, max: 24),
   )
   final num cornerRadius;
 
-  @CmsDropdownFieldConfig<String>(
-    description: 'App theme mode',
-    option: ThemeModeDropdownOption(),
-  )
-  final String themeMode;
-
   @CmsImageFieldConfig(
-    description: 'Brand logo',
+    description: 'Logo (square)',
     option: CmsImageOption(hotspot: false),
   )
   final ImageReference? logo;
@@ -77,24 +75,24 @@ class BrandTheme extends CmsContent
   const BrandTheme({
     required this.name,
     required this.primaryColor,
-    required this.secondaryColor,
+    required this.surfaceColor,
     required this.accentColor,
+    required this.inkColor,
     required this.headlineFont,
     required this.bodyFont,
     required this.cornerRadius,
-    required this.themeMode,
     this.logo,
   });
 
-  static BrandTheme defaultValue = BrandTheme(
+  static BrandTheme defaultValue = const BrandTheme(
     name: 'Aura Gastronomy',
-    primaryColor: const Color(0xFF496455),
-    secondaryColor: const Color(0xFFFAF9F7),
-    accentColor: const Color(0xFFD4A574),
+    primaryColor: Color(0xFF496455),
+    surfaceColor: Color(0xFFF6F1E7),
+    accentColor: Color(0xFFC67A4A),
+    inkColor: Color(0xFF1E1B14),
     headlineFont: 'Noto Serif',
     bodyFont: 'Manrope',
-    cornerRadius: 8,
-    themeMode: 'light',
+    cornerRadius: 16,
     logo: null,
   );
 }
@@ -119,59 +117,28 @@ class BrandThemeColorMapper extends SimpleMapper<Color> {
 
 class HeadlineFontDropdownOption extends CmsDropdownOption<String> {
   const HeadlineFontDropdownOption({super.hidden});
-
   @override
   bool get allowNull => false;
-
   @override
   FutureOr<String?>? get defaultValue => 'Noto Serif';
-
   @override
-  FutureOr<List<DropdownOption<String>>> options(BuildContext context) =>
-      Future.value([
+  FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
         for (final f in headlineFonts) DropdownOption(value: f, label: f),
-      ]);
-
+      ];
   @override
-  String? get placeholder => 'Select headline font';
+  String? get placeholder => 'Headline font';
 }
 
 class BodyFontDropdownOption extends CmsDropdownOption<String> {
   const BodyFontDropdownOption({super.hidden});
-
   @override
   bool get allowNull => false;
-
   @override
   FutureOr<String?>? get defaultValue => 'Manrope';
-
   @override
-  FutureOr<List<DropdownOption<String>>> options(BuildContext context) =>
-      Future.value([
+  FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
         for (final f in bodyFonts) DropdownOption(value: f, label: f),
-      ]);
-
+      ];
   @override
-  String? get placeholder => 'Select body font';
-}
-
-class ThemeModeDropdownOption extends CmsDropdownOption<String> {
-  const ThemeModeDropdownOption({super.hidden});
-
-  @override
-  bool get allowNull => false;
-
-  @override
-  FutureOr<String?>? get defaultValue => 'light';
-
-  @override
-  FutureOr<List<DropdownOption<String>>> options(BuildContext context) =>
-      Future.value([
-        DropdownOption(value: 'light', label: 'Light'),
-        DropdownOption(value: 'dark', label: 'Dark'),
-        DropdownOption(value: 'system', label: 'System'),
-      ]);
-
-  @override
-  String? get placeholder => 'Select theme mode';
+  String? get placeholder => 'Body font';
 }

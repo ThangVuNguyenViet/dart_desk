@@ -34,9 +34,34 @@ class MyApp extends StatelessWidget {
       apiKey: apiKey,
       config: DartDeskConfig(
         documentTypes: [
+          homeDocumentType,
+          kioskDocumentType,
+          chefDocumentType,
+          menuDocumentType,
+          rewardsDocumentType,
           brandThemeDocumentType,
         ],
         documentTypeDecorations: [
+          DocumentTypeDecoration(
+            documentType: homeDocumentType,
+            icon: Icons.home,
+          ),
+          DocumentTypeDecoration(
+            documentType: kioskDocumentType,
+            icon: Icons.tv_rounded,
+          ),
+          DocumentTypeDecoration(
+            documentType: chefDocumentType,
+            icon: Icons.restaurant,
+          ),
+          DocumentTypeDecoration(
+            documentType: menuDocumentType,
+            icon: Icons.menu_book,
+          ),
+          DocumentTypeDecoration(
+            documentType: rewardsDocumentType,
+            icon: Icons.star,
+          ),
           DocumentTypeDecoration(
             documentType: brandThemeDocumentType,
             icon: Icons.palette,
