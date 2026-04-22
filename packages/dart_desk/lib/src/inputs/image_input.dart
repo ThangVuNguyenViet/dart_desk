@@ -412,9 +412,14 @@ class _CmsImageInputState extends State<CmsImageInput>
                 Text(
                   'Uploading...',
                   style: theme.textTheme.small.copyWith(
-                    color: Colors.white,
+                    color: theme.colorScheme.foreground,
                     shadows: [
-                      const Shadow(blurRadius: 4, color: Colors.black54),
+                      Shadow(
+                        blurRadius: 4,
+                        color: theme.colorScheme.background.withValues(
+                          alpha: 0.5,
+                        ),
+                      ),
                     ],
                   ),
                 ),

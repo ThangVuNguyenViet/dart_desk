@@ -4,11 +4,30 @@ import 'package:flutter/material.dart';
 
 import '../../data/models/image_types.dart';
 
+/// Colors the crop overlay painter draws with. Supplied by the caller so the
+/// painter stays theme-aware without reaching into `BuildContext`.
+@immutable
+class CropOverlayColors {
+  const CropOverlayColors({required this.line, required this.scrim});
+
+  /// The bracket/grid line color (typically `theme.foreground`).
+  final Color line;
+
+  /// The dimming scrim over areas outside the crop (typically
+  /// `theme.background`). Alpha is applied inside the painter.
+  final Color scrim;
+}
+
 class CropOverlayPainter extends CustomPainter {
   final CropRect crop;
   final Size imageSize;
+  final CropOverlayColors colors;
 
-  CropOverlayPainter({required this.crop, required this.imageSize});
+  CropOverlayPainter({
+    required this.crop,
+    required this.imageSize,
+    required this.colors,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -19,29 +38,26 @@ class CropOverlayPainter extends CustomPainter {
       size.height - crop.bottom * size.height,
     );
 
-    // Dim overlay outside crop region
     canvas.saveLayer(Offset.zero & size, Paint());
     canvas.drawRect(
       Offset.zero & size,
-      Paint()..color = const Color(0x99000000),
+      Paint()..color = colors.scrim.withValues(alpha: 0.6),
     );
     canvas.drawRect(cropRect, Paint()..blendMode = BlendMode.clear);
     canvas.restore();
 
-    // Crop border — crisp white line
     canvas.drawRect(
       cropRect,
       Paint()
-        ..color = Colors.white
+        ..color = colors.line
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5,
     );
 
-    // Rule-of-thirds grid — very subtle
     final thirdW = cropRect.width / 3;
     final thirdH = cropRect.height / 3;
     final gridPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.18)
+      ..color = colors.line.withValues(alpha: 0.18)
       ..strokeWidth = 0.5;
 
     for (var i = 1; i < 3; i++) {
@@ -57,17 +73,14 @@ class CropOverlayPainter extends CustomPainter {
       );
     }
 
-    // Corner bracket handles (Sanity-style)
     _drawCornerBrackets(canvas, cropRect);
-
-    // Edge midpoint handles — small bars
     _drawEdgeMidpoints(canvas, cropRect);
   }
 
   void _drawCornerBrackets(Canvas canvas, Rect rect) {
     const bracketLen = 16.0;
     final paint = Paint()
-      ..color = Colors.white
+      ..color = colors.line
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.5
       ..strokeCap = ui.StrokeCap.square;
@@ -88,12 +101,11 @@ class CropOverlayPainter extends CustomPainter {
   void _drawEdgeMidpoints(Canvas canvas, Rect rect) {
     const barLen = 12.0;
     final paint = Paint()
-      ..color = Colors.white
+      ..color = colors.line
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0
       ..strokeCap = ui.StrokeCap.round;
 
-    // Top/bottom midpoints — horizontal bars
     canvas.drawLine(
       Offset(rect.center.dx - barLen / 2, rect.top),
       Offset(rect.center.dx + barLen / 2, rect.top),
@@ -104,7 +116,6 @@ class CropOverlayPainter extends CustomPainter {
       Offset(rect.center.dx + barLen / 2, rect.bottom),
       paint,
     );
-    // Left/right midpoints — vertical bars
     canvas.drawLine(
       Offset(rect.left, rect.center.dy - barLen / 2),
       Offset(rect.left, rect.center.dy + barLen / 2),
@@ -119,5 +130,7 @@ class CropOverlayPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CropOverlayPainter oldDelegate) =>
-      crop != oldDelegate.crop || imageSize != oldDelegate.imageSize;
+      crop != oldDelegate.crop ||
+      imageSize != oldDelegate.imageSize ||
+      colors != oldDelegate.colors;
 }
