@@ -30,9 +30,9 @@ Packages with other changes:
 
  - **REFACTOR**: update examples for unified ImageReference.
  - **REFACTOR**(data_models): remove configBuilder and example_app dependency.
- - **FIX**: deduplicate field lists for @CmsConfig-annotated classes.
+ - **FIX**: deduplicate field lists for @DeskModel-annotated classes.
  - **FIX**: correctly handle unannotated fields in object array items.
- - **FIX**: restore Serializable bound, fix cms_app errors, unify workspace.
+ - **FIX**: restore Serializable bound, fix desk_app errors, unify workspace.
  - **FIX**: restore Serializable bound and fix analysis errors.
  - **FIX**(generator): support external projects outside workspace.
  - **FIX**: fix letOrNull returning null unconditionally and update dropdown API.
@@ -48,7 +48,7 @@ Packages with other changes:
  - **FEAT**: add seed data for products and coupons.
  - **FEAT**(examples): migrate HomeScreenConfig image fields to ImageUrl.
  - **FEAT**: add DartDeskApp widget, DartDeskConfig, DartDesk InheritedWidget.
- - **FEAT**: extract CmsCollapseBar widget, fix editor button bar and panel layout.
+ - **FEAT**: extract DeskCollapseBar widget, fix editor button bar and panel layout.
  - **FEAT**: upgrade shadcn_ui to 0.52.1 and improve CMS input components.
  - **FEAT**: Add core data models for CMS including document, version, and media file management.
 
@@ -57,19 +57,19 @@ Packages with other changes:
  - **REFACTOR**: rename dart_desk_be_client to dart_desk_client.
  - **REFACTOR**: consolidate DartDeskBuiltInApp into DartDeskApp.
  - **REFACTOR**: replace dart_desk_be_client dep with onSignOut callback on StudioCoordinator.
- - **FIX**: restore Serializable bound, fix cms_app errors, unify workspace.
+ - **FIX**: restore Serializable bound, fix desk_app errors, unify workspace.
  - **FIX**(generator): support external projects outside workspace.
  - **FIX**: correct dependency paths and add marionette_flutter dep.
  - **FIX**: integration fixes for CMS studio architecture alignment.
  - **FEAT**: redesign example app with restaurant-themed data models.
  - **FEAT**: use flutter_colorpicker package for color input.
- - **FEAT**: wire up new document types in cms_app.
+ - **FEAT**: wire up new document types in desk_app.
  - **FEAT**: send API key via Authorization header using DartDesk scheme.
  - **FEAT**: pass API_KEY from dart-define to DartDeskApp.
- - **FEAT**(cms_app): supply preview builder via DocumentTypeSpec.build().
+ - **FEAT**(desk_app): supply preview builder via DocumentTypeSpec.build().
  - **FEAT**: add field layout system for object inputs with row/column/group support.
  - **FEAT**: add cloud module with Serverpod IDP auth integration.
- - **FEAT**: render MediaBrowser for standalone media route in CmsStudio.
+ - **FEAT**: render MediaBrowser for standalone media route in DeskStudio.
  - **FEAT**: add DartDeskApp widget, DartDeskConfig, DartDesk InheritedWidget.
  - **FEAT**: add media browser, hotspot input, E2E test infrastructure, and bug fixes.
  - **FEAT**: upgrade shadcn_ui to 0.52.1 and improve CMS input components.
@@ -84,7 +84,7 @@ Packages with other changes:
  - **REFACTOR**: move Hotspot and CropRect to dart_desk_annotation.
  - **REFACTOR**: clean up unused imports, remove onDashboardPressed, switch to Zinc color scheme.
  - **FIX**: update example_app main.dart to use KioskPreview.
- - **FIX**: restore Serializable bound, fix cms_app errors, unify workspace.
+ - **FIX**: restore Serializable bound, fix desk_app errors, unify workspace.
  - **FEAT**: redesign example app with restaurant-themed data models.
  - **FEAT**: use flutter_colorpicker package for color input.
  - **FEAT**: add RewardPreview widget.
@@ -93,7 +93,7 @@ Packages with other changes:
  - **FEAT**: add KioskPreview widget.
  - **FEAT**: add BrandThemePreview widget.
  - **FEAT**(examples): migrate HomeScreenConfig image fields to ImageUrl.
- - **FEAT**: extract CmsCollapseBar widget, fix editor button bar and panel layout.
+ - **FEAT**: extract DeskCollapseBar widget, fix editor button bar and panel layout.
  - **FEAT**: Update CMS app with auth integration and dependency updates.
  - **FEAT**: Add core data models for CMS including document, version, and media file management.
 
@@ -116,13 +116,13 @@ Packages with other changes:
 
 #### `dart_desk` - `v0.1.2`
 
- - **REFACTOR**: rename FlutterCmsAuth to DartDeskAuth and remove context extension.
+ - **REFACTOR**: rename FlutterDeskAuth to DartDeskAuth and remove context extension.
  - **REFACTOR**: update CMS editor, resolver, and barrel exports for unified ImageReference.
  - **REFACTOR**: replace dart_desk ImageReference with re-export + MediaAsset bridge.
  - **REFACTOR**: update ImageUrl to wrap annotation-layer ImageReference.
  - **REFACTOR**: move Hotspot and CropRect to dart_desk_annotation.
  - **REFACTOR**: make DataSource non-null and consolidate editedData initialization.
- - **REFACTOR**: decouple CmsViewModel from CmsDocumentViewModel, depend on signals directly.
+ - **REFACTOR**: decouple DeskViewModel from DeskDocumentViewModel, depend on signals directly.
  - **REFACTOR**: update TestStringArrayOption and field declarations to use typed generics.
  - **REFACTOR**: replace dart_desk_be_client dep with onSignOut callback on StudioCoordinator.
  - **REFACTOR**: move QA test automation to packages/dart_desk/tests/qa/.
@@ -130,7 +130,7 @@ Packages with other changes:
  - **REFACTOR**(dart_desk): replace addListener with AutoRouterObserver for signal sync.
  - **REFACTOR**: clean up unused imports, remove onDashboardPressed, switch to Zinc color scheme.
  - **REFACTOR**: rename dart_desk_be_client to dart_desk_client.
- - **REFACTOR**: update document_ref_dropdown to CmsMultiDropdownField.
+ - **REFACTOR**: update document_ref_dropdown to DeskMultiDropdownField.
  - **REFACTOR**: remove marionette_flutter from published API surface.
  - **REFACTOR**: replace disco with get_it in StudioProvider.
  - **REFACTOR**: move test reports, delete stale execution plan.
@@ -139,16 +139,16 @@ Packages with other changes:
  - **REFACTOR**: migrate test files from disco to get_it.
  - **REFACTOR**: move E2E tests to packages/dart_desk/tests/e2e/.
  - **REFACTOR**: consolidate DartDeskBuiltInApp into DartDeskApp.
- - **REFACTOR**: CmsViewModel owns selectedDocumentId, remove signal params.
+ - **REFACTOR**: DeskViewModel owns selectedDocumentId, remove signal params.
  - **REFACTOR**: wire reactive VM communication in StudioProvider.
  - **REFACTOR**(dart_desk): migrate media browser and view models to signals.
- - **REFACTOR**(dart_desk): drop coordinator from CmsDocumentTypeSidebar.
- - **REFACTOR**(dart_desk): remove setRouteParams from CmsViewModel.
- - **FIX**(dart_desk): replace setRouteParams with router navigation in CmsVersionHistory.
+ - **REFACTOR**(dart_desk): drop coordinator from DeskDocumentTypeSidebar.
+ - **REFACTOR**(dart_desk): remove setRouteParams from DeskViewModel.
+ - **FIX**(dart_desk): replace setRouteParams with router navigation in DeskVersionHistory.
  - **FIX**(dart_desk): resolve analysis errors post auto_route migration.
  - **FIX**(dart_desk): move initial redirect from guard to StudioShellScreen.
  - **FIX**(dart_desk): configure replaceInRouteName for ScreenRoute suffix.
- - **FIX**(dart_desk): guard CmsViewModel access until StudioProvider builds.
+ - **FIX**(dart_desk): guard DeskViewModel access until StudioProvider builds.
  - **FIX**(dart_desk): flatten route tree, responsive layout, eliminate infinite loop.
  - **FIX**(dart_desk): sync signals after inner-router navigation.
  - **FIX**(dart_desk): mirror CRDT parent/child fix and fix TC-E2E-07-04.
@@ -156,15 +156,15 @@ Packages with other changes:
  - **FIX**(auth): wire DartDeskAuthKeyProvider into client for compound bearer token.
  - **FIX**(e2e): scope reset to e2e project only instead of TRUNCATE all.
  - **FIX**(e2e): add combined test runner and fix documents_data reset.
- - **FIX**: resolve analyzer warnings and dual round-trip in CmsViewModel.
- - **FIX**: restore Serializable bound, fix cms_app errors, unify workspace.
+ - **FIX**: resolve analyzer warnings and dual round-trip in DeskViewModel.
+ - **FIX**: restore Serializable bound, fix desk_app errors, unify workspace.
  - **FIX**: restore Serializable bound and fix analysis errors.
  - **FIX**: address code review issues for type-safe array field.
  - **FIX**(dart_desk): update for Serverpod 3.4.5 tenant refactor.
  - **FIX**: fix letOrNull returning null unconditionally and update dropdown API.
  - **FIX**: update stale test directory references in pubignore and docs.
- - **FIX**: use ShadThemeData in CmsFileInput and fix worktree path overrides.
- - **FIX**(widget): clear errorMessage when switching to URL tab in CmsImageInput.
+ - **FIX**: use ShadThemeData in DeskFileInput and fix worktree path overrides.
+ - **FIX**(widget): clear errorMessage when switching to URL tab in DeskImageInput.
  - **FIX**: correct dependency paths and add marionette_flutter dep.
  - **FIX**: update stale test_e2e paths in error resilience test spec.
  - **FIX**: update path references in test skills and setup scripts.
@@ -172,27 +172,27 @@ Packages with other changes:
  - **FIX**(widget): remove redundant CrossAxisAlignment.center from OptionalFieldWrapper Row.
  - **FEAT**(dart_desk): redesign image framing editor ux.
  - **FEAT**: handle auto-default toast in delete handlers.
- - **FEAT**(widget): add URL tab and fix initial data loading in CmsImageInput.
- - **FEAT**: add setDefaultDocument and update deleteDocument return in CmsViewModel.
+ - **FEAT**(widget): add URL tab and fix initial data loading in DeskImageInput.
+ - **FEAT**: add setDefaultDocument and update deleteDocument return in DeskViewModel.
  - **FEAT**(dart_desk): implement VersionScreen.
  - **FEAT**(dart_desk): implement DocumentScreen.
  - **FEAT**(dart_desk): implement DocumentTypeScreen.
  - **FEAT**(dart_desk): implement MediaScreen.
  - **FEAT**(dart_desk): implement StudioShellScreen.
- - **FEAT**(dart_desk): extract CmsTopBar from StudioLayout.
+ - **FEAT**(dart_desk): extract DeskTopBar from StudioLayout.
  - **FEAT**: auto-default on create and delete in MockDataSource.
  - **FEAT**(dart_desk): add StudioRouter with DefaultDocTypeGuard.
  - **FEAT**(dart_desk): add @RoutePage screen stubs.
  - **FEAT**(dart_desk): add StudioConfig.
  - **FEAT**: implement setDefaultDocument in MockDataSource.
  - **FEAT**: add setDefaultDocument to DataSource interface.
- - **FEAT**: CmsDocumentViewModel.listenTo() with reactive effect.
+ - **FEAT**: DeskDocumentViewModel.listenTo() with reactive effect.
  - **FEAT**: refactor mutations to use MutationSignal pattern and add publish button.
  - **FEAT**: add client-side MediaAsset, ImageReference, and supporting types.
- - **FEAT**(widget): add optional support to CmsDateInput, CmsDateTimeInput, CmsFileInput.
- - **FEAT**(widget): add optional support to CmsStringInput, CmsTextInput, CmsNumberInput, CmsUrlInput.
- - **FEAT**(array): enforce typed CmsArrayInput via generic function factory.
- - **FEAT**: update CmsDataSource interface and mock for MediaAsset.
+ - **FEAT**(widget): add optional support to DeskDateInput, DeskDateTimeInput, DeskFileInput.
+ - **FEAT**(widget): add optional support to DeskStringInput, DeskTextInput, DeskNumberInput, DeskUrlInput.
+ - **FEAT**(array): enforce typed DeskArrayInput via generic function factory.
+ - **FEAT**: update DeskDataSource interface and mock for MediaAsset.
  - **FEAT**: restore seed_data.sh with auth-only seed for E2E convenience.
  - **FEAT**(widget): add OptionalFieldWrapper for reusable optional input toggle.
  - **FEAT**: send API key via Authorization header using DartDesk scheme.
@@ -208,8 +208,8 @@ Packages with other changes:
  - **FEAT**(dart_desk): add MediaAsset.fromInlineJson for resolved image nodes.
  - **FEAT**: add type-dispatched default editors for primitive array types.
  - **FEAT**: add cloud module with Serverpod IDP auth integration.
- - **FEAT**(ui): refactor CmsArrayInput to use global registry for items.
- - **FEAT**: add CmsMultiDropdownField with ShadSelect.multiple support.
+ - **FEAT**(ui): refactor DeskArrayInput to use global registry for items.
+ - **FEAT**: add DeskMultiDropdownField with ShadSelect.multiple support.
  - **FEAT**: resolve selected document title in preview builder.
  - **FEAT**: add TestDocumentRefDropdownOption to test_document_types.
  - **FEAT**: wire CloudDataSource.setDefaultDocument to Serverpod client.
@@ -217,17 +217,17 @@ Packages with other changes:
  - **FEAT**: add ImageUrl builder and TransformUrlBuilder typedef.
  - **FEAT**: send API key via x-api-key custom header.
  - **FEAT**(dart_desk): add responsive_framework with CMS breakpoints.
- - **FEAT**: rewrite CmsImageInput with upload, blurHash, drop zone, ImageReference.
+ - **FEAT**: rewrite DeskImageInput with upload, blurHash, drop zone, ImageReference.
  - **FEAT**: show auto-default toast when first document is created.
  - **FEAT**: add Set as default to document tile overflow menu.
  - **FEAT**: replace Default text with ShadBadge in document tile.
- - **FEAT**(dart_desk): wire CmsStudioApp to StudioRouter + StudioConfig.
- - **FEAT**: render MediaBrowser for standalone media route in CmsStudio.
+ - **FEAT**(dart_desk): wire DeskStudioApp to StudioRouter + StudioConfig.
+ - **FEAT**: render MediaBrowser for standalone media route in DeskStudio.
  - **FEAT**: add DartDeskApp widget, DartDeskConfig, DartDesk InheritedWidget.
  - **FEAT**(testing): seed MockDataSource with 4 media assets for E2E tests.
  - **FEAT**: add Media Library button to sidebar footer.
  - **FEAT**: add media browser, hotspot input, E2E test infrastructure, and bug fixes.
- - **FEAT**(widget): add optional toggle switch to CmsColorInput.
+ - **FEAT**(widget): add optional toggle switch to DeskColorInput.
  - **DOCS**: update README descriptions for dart_desk.
  - **DOCS**: add QA test plans and clean up stale test reports.
  - **DOCS**: update E2E skill.md with seed command.

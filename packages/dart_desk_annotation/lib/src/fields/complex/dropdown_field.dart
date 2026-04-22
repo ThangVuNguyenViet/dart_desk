@@ -23,16 +23,16 @@ class DropdownOption<T> {
   int get hashCode => value.hashCode ^ label.hashCode;
 }
 
-abstract class CmsDropdownOption<T> extends CmsOption {
+abstract class DeskDropdownOption<T> extends DeskOption {
   FutureOr<List<DropdownOption<T>>> options(BuildContext context);
   FutureOr<T?>? get defaultValue;
   String? get placeholder;
   bool get allowNull;
 
-  const CmsDropdownOption({super.hidden});
+  const DeskDropdownOption({super.hidden});
 }
 
-class CmsDropdownSimpleOption<T> extends CmsDropdownOption<T> {
+class DeskDropdownSimpleOption<T> extends DeskDropdownOption<T> {
   final List<DropdownOption<T>> _options;
 
   @override
@@ -45,7 +45,7 @@ class CmsDropdownSimpleOption<T> extends CmsDropdownOption<T> {
   @override
   final bool allowNull;
 
-  const CmsDropdownSimpleOption({
+  const DeskDropdownSimpleOption({
     super.hidden,
     required List<DropdownOption<T>> options,
     this.defaultValue,
@@ -54,13 +54,13 @@ class CmsDropdownSimpleOption<T> extends CmsDropdownOption<T> {
   }) : _options = options;
 }
 
-class CmsDropdownField<T> extends CmsField {
-  const CmsDropdownField({
+class DeskDropdownField<T> extends DeskField {
+  const DeskDropdownField({
     required super.name,
     required super.title,
     super.description,
     this.fromMap,
-    required CmsDropdownOption<T> super.option,
+    required DeskDropdownOption<T> super.option,
   });
 
   /// Converts a raw [Map<String, dynamic>] to [T] for non-primitive dropdown
@@ -68,15 +68,15 @@ class CmsDropdownField<T> extends CmsField {
   final T Function(Map<String, dynamic>)? fromMap;
 
   @override
-  CmsDropdownOption<T>? get option => super.option as CmsDropdownOption<T>?;
+  DeskDropdownOption<T>? get option => super.option as DeskDropdownOption<T>?;
 }
 
-class CmsDropdownFieldConfig<T> extends CmsFieldConfig {
-  const CmsDropdownFieldConfig({
+class DeskDropdown<T> extends DeskFieldConfig {
+  const DeskDropdown({
     super.name,
     super.title,
     super.description,
-    required CmsDropdownOption<T> super.option,
+    required DeskDropdownOption<T> super.option,
   });
 
   @override

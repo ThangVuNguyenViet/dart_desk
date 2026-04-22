@@ -4,12 +4,12 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 /// Color picker input widget with full functionality
-class CmsColorInput extends StatefulWidget {
-  final CmsColorField field;
-  final CmsData? data;
+class DeskColorInput extends StatefulWidget {
+  final DeskColorField field;
+  final DeskData? data;
   final ValueChanged<String?>? onChanged;
 
-  const CmsColorInput({
+  const DeskColorInput({
     super.key,
     required this.field,
     this.data,
@@ -17,10 +17,10 @@ class CmsColorInput extends StatefulWidget {
   });
 
   @override
-  State<CmsColorInput> createState() => _CmsColorInputState();
+  State<DeskColorInput> createState() => _DeskColorInputState();
 }
 
-class _CmsColorInputState extends State<CmsColorInput> {
+class _DeskColorInputState extends State<DeskColorInput> {
   late Color _selectedColor;
   late bool _isEnabled;
 

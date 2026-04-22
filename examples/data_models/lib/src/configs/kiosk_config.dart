@@ -5,40 +5,40 @@ import '../seed/aura_assets.dart';
 import '../seed/aura_copy.dart';
 import '../shared/kiosk_product.dart';
 import '../shared/order_line.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'kiosk_config.cms.g.dart';
+part 'kiosk_config.desk.dart';
 part 'kiosk_config.mapper.dart';
 
-@CmsConfig(title: 'Kiosk screen', description: 'Tablet landscape in-store terminal')
+@DeskModel(title: 'Kiosk screen', description: 'Tablet landscape in-store terminal')
 @MappableClass(
   ignoreNull: false,
   discriminatorValue: 'kioskConfig',
   includeCustomMappers: [ImageReferenceMapper()],
 )
-class KioskConfig extends CmsContent with KioskConfigMappable, Serializable<KioskConfig> {
-  @CmsImageFieldConfig(description: 'Banner image', option: CmsImageOption(hotspot: true))
+class KioskConfig extends DeskContent with KioskConfigMappable, Serializable<KioskConfig> {
+  @DeskImage(description: 'Banner image', option: DeskImageOption(hotspot: true))
   final ImageReference? bannerImage;
 
-  @CmsStringFieldConfig(description: 'Banner headline', option: CmsStringOption())
+  @DeskString(description: 'Banner headline', option: DeskStringOption())
   final String bannerHeadline;
 
-  @CmsTextFieldConfig(description: 'Banner subtitle', option: CmsTextOption())
+  @DeskText(description: 'Banner subtitle', option: DeskTextOption())
   final String bannerSubtitle;
 
-  @CmsStringFieldConfig(description: 'Promo badge', option: CmsStringOption())
+  @DeskString(description: 'Promo badge', option: DeskStringOption())
   final String promoBadge;
 
-  @CmsArrayFieldConfig<KioskProduct>(description: 'Grid products')
+  @DeskArray<KioskProduct>(description: 'Grid products')
   final List<KioskProduct> gridProducts;
 
-  @CmsStringFieldConfig(description: 'Table label', option: CmsStringOption())
+  @DeskString(description: 'Table label', option: DeskStringOption())
   final String sidebarTableLabel;
 
-  @CmsArrayFieldConfig<OrderLine>(description: 'Sample order lines')
+  @DeskArray<OrderLine>(description: 'Sample order lines')
   final List<OrderLine> sidebarSampleOrder;
 
-  @CmsTextFieldConfig(description: 'Footer note', option: CmsTextOption())
+  @DeskText(description: 'Footer note', option: DeskTextOption())
   final String footerNote;
 
   const KioskConfig({

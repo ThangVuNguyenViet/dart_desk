@@ -6,7 +6,7 @@ A Flutter package for building embedded CMS studio interfaces. Define your conte
 
 ## Features
 
-- **Annotation-driven schema** — annotate plain Dart classes with `@CmsConfig` and field configs; the code generator produces the CMS schema automatically.
+- **Annotation-driven schema** — annotate plain Dart classes with `@DeskModel` and field configs; the code generator produces the CMS schema automatically.
 - **15+ input widgets** — text, rich text (Markdown), numbers, URLs, booleans, dates, dropdowns (single and multi), colors, images, files, geopoints, nested objects, and repeatable arrays.
 - **Image management** — upload from device or URL, drag-and-drop, focal point (hotspot) editor, crop framing, BlurHash placeholder, and a full media browser.
 - **Document versioning** — draft/published/archived/scheduled statuses with CRDT-backed partial updates and a version history panel.
@@ -14,7 +14,7 @@ A Flutter package for building embedded CMS studio interfaces. Define your conte
 - **Responsive layout** — mobile, tablet, and desktop breakpoints via `responsive_framework`.
 - **Themeable** — light/dark mode toggle persisted across sessions; full `ShadThemeData` customisation via `shadcn_ui`.
 - **BYO auth** — use Dart Desk Cloud (Serverpod IDP, Google + email/password) or supply your own `DataSource` with any auth provider.
-- **Testing utilities** — `MockCmsDataSource`, `FakeImagePicker`, and `TestDocumentTypes` for widget tests.
+- **Testing utilities** — `MockDeskDataSource`, `FakeImagePicker`, and `TestDocumentTypes` for widget tests.
 
 ---
 
@@ -38,7 +38,7 @@ The package is designed primarily as a **desktop/web** CMS authoring tool. Mobil
 | Package | Purpose |
 |---|---|
 | [`dart_desk_annotation`](https://pub.dev/packages/dart_desk_annotation) | Field annotations and core model types — add to your data model package |
-| [`dart_desk_generator`](https://pub.dev/packages/dart_desk_generator) | Code generator that reads `@CmsConfig` classes and emits `DocumentTypeSpec` instances |
+| [`dart_desk_generator`](https://pub.dev/packages/dart_desk_generator) | Code generator that reads `@DeskModel` classes and emits `DocumentTypeSpec` instances |
 | [`dart_desk_client`](https://pub.dev/packages/dart_desk_client) | Generated Serverpod client for Dart Desk Cloud (`CloudDataSource`) |
 
 ---
@@ -68,10 +68,10 @@ import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
-part 'storefront_config.cms.g.dart';
+part 'storefront_config.desk.dart';
 part 'storefront_config.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Storefront Config',
   description: 'Restaurant app home screen branding and display settings',
 )
@@ -80,21 +80,21 @@ part 'storefront_config.mapper.dart';
 )
 class StorefrontConfig
     with StorefrontConfigMappable, Serializable<StorefrontConfig> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Name of the restaurant',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String restaurantName;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Full-width hero image',
-    option: CmsImageOption(hotspot: true),
+    option: DeskImageOption(hotspot: true),
   )
   final ImageReference? heroImage;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Primary brand color',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color primaryColor;
 
@@ -112,7 +112,7 @@ class StorefrontConfig
 dart run build_runner build
 ```
 
-This produces `storefront_config.cms.g.dart` containing a `storefrontConfigTypeSpec` constant.
+This produces `storefront_config.desk.dart` containing a `storefrontConfigTypeSpec` constant.
 
 ### 3. Wire up the studio
 
@@ -120,7 +120,7 @@ This produces `storefront_config.cms.g.dart` containing a `storefrontConfigTypeS
 // lib/main.dart
 import 'package:dart_desk/studio.dart';
 import 'package:flutter/material.dart';
-import 'storefront_config.cms.g.dart'; // generated
+import 'storefront_config.desk.dart'; // generated
 
 void main() => runApp(const MyApp());
 
@@ -184,23 +184,23 @@ return DartDeskApp.withDataSource(
 
 | Annotation | Input widget | Description |
 |---|---|---|
-| `@CmsStringFieldConfig` | Single-line text | Plain text, optional validation |
-| `@CmsTextFieldConfig` | Multi-line textarea | Configurable row count |
-| `@CmsBlockFieldConfig` | Rich text editor | Markdown serialization via `super_editor` |
-| `@CmsNumberFieldConfig` | Number input | Integer or decimal |
-| `@CmsUrlFieldConfig` | URL input | With URL validation |
-| `@CmsBooleanFieldConfig` | Toggle switch | |
-| `@CmsCheckboxFieldConfig` | Checkbox | |
-| `@CmsDateFieldConfig` | Date picker | |
-| `@CmsDateTimeFieldConfig` | Date + time picker | |
-| `@CmsDropdownFieldConfig` | Single-select dropdown | |
-| `@CmsMultiDropdownFieldConfig` | Multi-select dropdown | |
-| `@CmsColorFieldConfig` | Color picker | Optional alpha channel |
-| `@CmsImageFieldConfig` | Image upload / browser | Hotspot editor, drag-and-drop, BlurHash |
-| `@CmsFileFieldConfig` | File upload | |
-| `@CmsGeopointFieldConfig` | Lat/lng coordinate | |
-| `@CmsObjectFieldConfig` | Inline nested object | |
-| `@CmsArrayFieldConfig` | Repeatable list of items | |
+| `@DeskString` | Single-line text | Plain text, optional validation |
+| `@DeskText` | Multi-line textarea | Configurable row count |
+| `@DeskBlock` | Rich text editor | Markdown serialization via `super_editor` |
+| `@DeskNumber` | Number input | Integer or decimal |
+| `@DeskUrl` | URL input | With URL validation |
+| `@DeskBoolean` | Toggle switch | |
+| `@DeskCheckbox` | Checkbox | |
+| `@DeskDate` | Date picker | |
+| `@DeskDateTime` | Date + time picker | |
+| `@DeskDropdown` | Single-select dropdown | |
+| `@DeskMultiDropdown` | Multi-select dropdown | |
+| `@DeskColor` | Color picker | Optional alpha channel |
+| `@DeskImage` | Image upload / browser | Hotspot editor, drag-and-drop, BlurHash |
+| `@DeskFile` | File upload | |
+| `@DeskGeopoint` | Lat/lng coordinate | |
+| `@DeskObject` | Inline nested object | |
+| `@DeskArray` | Repeatable list of items | |
 
 ---
 
@@ -232,7 +232,7 @@ Partial data updates use CRDT operations so concurrent edits are conflict-free.
 ```dart
 import 'package:dart_desk/testing.dart';
 
-final dataSource = MockCmsDataSource();
+final dataSource = MockDeskDataSource();
 // pre-populated with TestDocumentTypes fixtures
 // use FakeImagePicker to stub image selection in widget tests
 ```
@@ -244,11 +244,11 @@ final dataSource = MockCmsDataSource();
 The repository includes a complete working example under [`examples/`](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples):
 
 - **`data_models/`** — annotated content models and generated type specs
-- **`cms_app/`** — the `DartDeskApp` studio wired to 5 document types (Storefront, Menu Highlights, Promo Offers, App Theme, Delivery Settings)
+- **`desk_app/`** — the `DartDeskApp` studio wired to 5 document types (Storefront, Menu Highlights, Promo Offers, App Theme, Delivery Settings)
 - **`example_app/`** — consumer Flutter app that reads published content via `dart_desk_client`
 
 ```bash
-cd examples/cms_app
+cd examples/desk_app
 flutter run
 ```
 

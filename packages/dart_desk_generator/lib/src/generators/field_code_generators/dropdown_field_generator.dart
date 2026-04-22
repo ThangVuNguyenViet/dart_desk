@@ -9,7 +9,7 @@ const _primitiveTypes = {'String', 'int', 'num', 'double', 'bool', 'DateTime'};
 
 class DropdownFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsDropdownFieldConfig';
+  String get fieldConfigName => 'DeskDropdown';
 
   @override
   List<Type> get supportedTypes => [String];
@@ -42,7 +42,7 @@ class DropdownFieldGenerator implements FieldCodeGenerator {
     );
     if (!hasFromMap) {
       throw InvalidGenerationSourceError(
-        '$genericType is used as a CmsDropdownField/CmsMultiDropdownField '
+        '$genericType is used as a DeskDropdownField/DeskMultiDropdownField '
         'type but does not have a static \$fromMap method. Add:\n\n'
         '  static $genericType \$fromMap(Map<String, dynamic> map) => '
         '${genericType}Mapper.fromMap(map);\n',
@@ -67,7 +67,7 @@ class DropdownFieldGenerator implements FieldCodeGenerator {
 
     final configType = config?.type?.toString() ?? '';
     final genericTypeMatch = RegExp(
-      r'CmsDropdownFieldConfig<(.+?)>',
+      r'DeskDropdown<(.+?)>',
     ).firstMatch(configType);
     final genericType =
         genericTypeMatch?.group(1) ?? _displayType(field.type) ?? 'dynamic';
@@ -79,7 +79,7 @@ class DropdownFieldGenerator implements FieldCodeGenerator {
       field,
     );
 
-    return '''CmsDropdownField<$genericType>(
+    return '''DeskDropdownField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${fromMapCode ?? ''}
@@ -111,7 +111,7 @@ class DropdownFieldGenerator implements FieldCodeGenerator {
 
 class MultiDropdownFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsMultiDropdownFieldConfig';
+  String get fieldConfigName => 'DeskMultiDropdown';
 
   @override
   List<Type> get supportedTypes => [List];
@@ -147,7 +147,7 @@ class MultiDropdownFieldGenerator implements FieldCodeGenerator {
 
     final configType = config?.type?.toString() ?? '';
     final genericTypeMatch = RegExp(
-      r'CmsMultiDropdownFieldConfig<(.+?)>',
+      r'DeskMultiDropdown<(.+?)>',
     ).firstMatch(configType);
     final genericType =
         genericTypeMatch?.group(1) ??
@@ -163,7 +163,7 @@ class MultiDropdownFieldGenerator implements FieldCodeGenerator {
       field,
     );
 
-    return '''CmsMultiDropdownField<$genericType>(
+    return '''DeskMultiDropdownField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${fromMapCode ?? ''}

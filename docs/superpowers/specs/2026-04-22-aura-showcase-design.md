@@ -29,7 +29,7 @@ Designs come from Claude Design output at `~/Downloads/dart desk showcase/` — 
 
 ## Design Decisions
 
-- **One document per screen.** Each screen is backed by exactly one `@CmsConfig` document. No cross-document references for content lists — products live inline as arrays of objects.
+- **One document per screen.** Each screen is backed by exactly one `@DeskModel` document. No cross-document references for content lists — products live inline as arrays of objects.
 - **BrandTheme is a singleton.** Every screen reads it and rebuilds when it changes, simulating a live theme update from the CMS.
 - **Images use `ImageReference.external(url)` defaults.** The Unsplash URLs already in the JSX are preserved as seed data. A real deployment would swap for uploaded assets.
 - **Field variety beats DRYness.** Where a field could reasonably be either a `String` or a `block`, or a `List<String>` vs a multi-dropdown, we pick whichever is still unused — to land full coverage across the config set.
@@ -39,7 +39,7 @@ Designs come from Claude Design output at `~/Downloads/dart desk showcase/` — 
 
 ## Data Models
 
-All models extend `CmsContent` and use `@MappableClass` with `discriminatorValue` plus `includeCustomMappers: [ImageReferenceMapper(), ColorMapper()]` where relevant.
+All models extend `DeskContent` and use `@MappableClass` with `discriminatorValue` plus `includeCustomMappers: [ImageReferenceMapper(), ColorMapper()]` where relevant.
 
 ### `BrandTheme` (singleton)
 
@@ -47,15 +47,15 @@ Drives colors and typography for all screens.
 
 | Field | Type | Annotation |
 |---|---|---|
-| `name` | `String` | `@CmsStringFieldConfig` |
-| `primaryColor` | `Color` | `@CmsColorFieldConfig` |
-| `surfaceColor` | `Color` | `@CmsColorFieldConfig` |
-| `accentColor` | `Color` | `@CmsColorFieldConfig` |
-| `inkColor` | `Color` | `@CmsColorFieldConfig` |
-| `headlineFont` | `String` | `@CmsDropdownFieldConfig` (Noto Serif, Playfair Display, Cormorant Garamond, DM Serif Display) |
-| `bodyFont` | `String` | `@CmsDropdownFieldConfig` (Manrope, Inter, DM Sans) |
-| `cornerRadius` | `num` | `@CmsNumberFieldConfig(min: 0, max: 24)` |
-| `logo` | `ImageReference?` | `@CmsImageFieldConfig` |
+| `name` | `String` | `@DeskString` |
+| `primaryColor` | `Color` | `@DeskColor` |
+| `surfaceColor` | `Color` | `@DeskColor` |
+| `accentColor` | `Color` | `@DeskColor` |
+| `inkColor` | `Color` | `@DeskColor` |
+| `headlineFont` | `String` | `@DeskDropdown` (Noto Serif, Playfair Display, Cormorant Garamond, DM Serif Display) |
+| `bodyFont` | `String` | `@DeskDropdown` (Manrope, Inter, DM Sans) |
+| `cornerRadius` | `num` | `@DeskNumber(min: 0, max: 24)` |
+| `logo` | `ImageReference?` | `@DeskImage` |
 
 Defaults: Aura Gastronomy palette (green `#496455`, cream `#F6F1E7`, clay `#C67A4A`, ink `#1E1B14`, Noto Serif + Manrope, radius 16).
 
@@ -65,16 +65,16 @@ Mobile home screen.
 
 | Field | Type | Annotation |
 |---|---|---|
-| `heroImage` | `ImageReference?` | `@CmsImageFieldConfig(hotspot: true)` |
-| `heroEyebrow` | `String` | `@CmsStringFieldConfig` — "Spring Menu · N° 4" |
-| `heroHeadline` | `String` | `@CmsTextFieldConfig` — multi-line italic title |
-| `primaryCta` | `CtaAction` | `@CmsObjectFieldConfig` (label string + style dropdown: solid/ghost) |
-| `secondaryCta` | `CtaAction` | `@CmsObjectFieldConfig` |
-| `locationLabel` | `String` | `@CmsStringFieldConfig` — "Tribeca" pill |
-| `welcomeGreeting` | `String` | `@CmsStringFieldConfig` — "Evening, Jules" |
-| `featuredSectionTitle` | `String` | `@CmsStringFieldConfig` |
-| `featuredDishes` | `List<FeaturedDish>` | `@CmsArrayFieldConfig<FeaturedDish>` |
-| `storeCallout` | `StoreCallout` | `@CmsObjectFieldConfig` |
+| `heroImage` | `ImageReference?` | `@DeskImage(hotspot: true)` |
+| `heroEyebrow` | `String` | `@DeskString` — "Spring Menu · N° 4" |
+| `heroHeadline` | `String` | `@DeskText` — multi-line italic title |
+| `primaryCta` | `CtaAction` | `@DeskObject` (label string + style dropdown: solid/ghost) |
+| `secondaryCta` | `CtaAction` | `@DeskObject` |
+| `locationLabel` | `String` | `@DeskString` — "Tribeca" pill |
+| `welcomeGreeting` | `String` | `@DeskString` — "Evening, Jules" |
+| `featuredSectionTitle` | `String` | `@DeskString` |
+| `featuredDishes` | `List<FeaturedDish>` | `@DeskArray<FeaturedDish>` |
+| `storeCallout` | `StoreCallout` | `@DeskObject` |
 
 Nested `FeaturedDish`: `name` (string), `price` (number), `tag` (dropdown: New, Chef's Pick, Seasonal, Vegan), `image` (image).
 
@@ -88,14 +88,14 @@ Tablet landscape in-store terminal.
 
 | Field | Type | Annotation |
 |---|---|---|
-| `bannerImage` | `ImageReference?` | `@CmsImageFieldConfig` |
-| `bannerHeadline` | `String` | `@CmsStringFieldConfig` |
-| `bannerSubtitle` | `String` | `@CmsTextFieldConfig` |
-| `promoBadge` | `String` | `@CmsStringFieldConfig` |
-| `gridProducts` | `List<KioskProduct>` | `@CmsArrayFieldConfig<KioskProduct>` |
-| `sidebarTableLabel` | `String` | `@CmsStringFieldConfig` — "Table 12" |
-| `sidebarSampleOrder` | `List<OrderLine>` | `@CmsArrayFieldConfig<OrderLine>` |
-| `footerNote` | `String` | `@CmsTextFieldConfig` |
+| `bannerImage` | `ImageReference?` | `@DeskImage` |
+| `bannerHeadline` | `String` | `@DeskString` |
+| `bannerSubtitle` | `String` | `@DeskText` |
+| `promoBadge` | `String` | `@DeskString` |
+| `gridProducts` | `List<KioskProduct>` | `@DeskArray<KioskProduct>` |
+| `sidebarTableLabel` | `String` | `@DeskString` — "Table 12" |
+| `sidebarSampleOrder` | `List<OrderLine>` | `@DeskArray<OrderLine>` |
+| `footerNote` | `String` | `@DeskText` |
 
 Nested `KioskProduct`: `name`, `price` (number), `image`, `category` (dropdown: Signature, Starter, Drink, Sweet).
 
@@ -107,13 +107,13 @@ Mobile chef's choice / upsell.
 
 | Field | Type | Annotation |
 |---|---|---|
-| `headline` | `String` | `@CmsTextFieldConfig` — italic multi-line |
-| `intro` | `Object?` | `@CmsBlockFieldConfig` — rich text |
-| `chef` | `ChefProfile` | `@CmsObjectFieldConfig` |
-| `pullQuote` | `String` | `@CmsTextFieldConfig` |
-| `curatedDishes` | `List<CuratedDish>` | `@CmsArrayFieldConfig<CuratedDish>` |
-| `refreshCadence` | `String` | `@CmsStringFieldConfig` — "Refreshed every Thursday" |
-| `publishFrom` | `DateTime` | `@CmsDateFieldConfig` |
+| `headline` | `String` | `@DeskText` — italic multi-line |
+| `intro` | `Object?` | `@DeskBlock` — rich text |
+| `chef` | `ChefProfile` | `@DeskObject` |
+| `pullQuote` | `String` | `@DeskText` |
+| `curatedDishes` | `List<CuratedDish>` | `@DeskArray<CuratedDish>` |
+| `refreshCadence` | `String` | `@DeskString` — "Refreshed every Thursday" |
+| `publishFrom` | `DateTime` | `@DeskDate` |
 
 Nested `ChefProfile`: `name` (string), `role` (string), `portrait` (image), `bio` (text).
 
@@ -125,11 +125,11 @@ Mobile menu browse.
 
 | Field | Type | Annotation |
 |---|---|---|
-| `categories` | `List<String>` | `@CmsMultiDropdownFieldConfig<String>` (Starters, Mains, Sides, Desserts, Drinks) |
-| `filterTags` | `List<String>` | `@CmsMultiDropdownFieldConfig<String>` (Vegan, Gluten-free, Chef's Pick, Seasonal, Spicy) |
-| `items` | `List<MenuItemEntry>` | `@CmsArrayFieldConfig<MenuItemEntry>` |
-| `location` | `GeoPoint?` | `@CmsGeoPointFieldConfig` — for "find nearest" |
-| `storeHours` | `List<StoreHoursEntry>` | `@CmsArrayFieldConfig<StoreHoursEntry>` |
+| `categories` | `List<String>` | `@DeskMultiDropdown<String>` (Starters, Mains, Sides, Desserts, Drinks) |
+| `filterTags` | `List<String>` | `@DeskMultiDropdown<String>` (Vegan, Gluten-free, Chef's Pick, Seasonal, Spicy) |
+| `items` | `List<MenuItemEntry>` | `@DeskArray<MenuItemEntry>` |
+| `location` | `GeoPoint?` | `@DeskGeoPointFieldConfig` — for "find nearest" |
+| `storeHours` | `List<StoreHoursEntry>` | `@DeskArray<StoreHoursEntry>` |
 
 Nested `MenuItemEntry`: `name`, `price` (number), `shortDescription` (text), `image`, `tags` (multi-dropdown — same options as `filterTags`), `isAvailable` (boolean checkbox).
 
@@ -141,12 +141,12 @@ Mobile loyalty program.
 
 | Field | Type | Annotation |
 |---|---|---|
-| `programName` | `String` | `@CmsStringFieldConfig` |
-| `tiers` | `List<LoyaltyTier>` | `@CmsArrayFieldConfig<LoyaltyTier>` |
-| `currentUserPoints` | `num` | `@CmsNumberFieldConfig` — demo state |
-| `coupons` | `List<Coupon>` | `@CmsArrayFieldConfig<Coupon>` |
-| `termsUrl` | `String` | `@CmsUrlFieldConfig` |
-| `fineprint` | `Object?` | `@CmsBlockFieldConfig` |
+| `programName` | `String` | `@DeskString` |
+| `tiers` | `List<LoyaltyTier>` | `@DeskArray<LoyaltyTier>` |
+| `currentUserPoints` | `num` | `@DeskNumber` — demo state |
+| `coupons` | `List<Coupon>` | `@DeskArray<Coupon>` |
+| `termsUrl` | `String` | `@DeskUrl` |
+| `fineprint` | `Object?` | `@DeskBlock` |
 
 Nested `LoyaltyTier`: `name` (string), `threshold` (number), `tierColor` (color), `perks` (block).
 
@@ -158,21 +158,21 @@ Nested `Coupon`: `title` (string), `code` (string), `discountPercent` (number), 
 
 | Field type | Used in |
 |---|---|
-| `@CmsStringFieldConfig` | all |
-| `@CmsTextFieldConfig` | Home, Kiosk, Chef |
-| `@CmsNumberFieldConfig` | BrandTheme, Home, Kiosk, Chef, Rewards |
-| `@CmsBooleanFieldConfig` / `@CmsCheckboxFieldConfig` | Menu |
-| `@CmsDateFieldConfig` | Chef |
-| `@CmsDateTimeFieldConfig` | Rewards |
-| `@CmsUrlFieldConfig` | Rewards |
-| `@CmsColorFieldConfig` | BrandTheme, Rewards |
-| `@CmsImageFieldConfig` | BrandTheme, Home, Kiosk, Chef, Menu, Rewards |
-| `@CmsDropdownFieldConfig` | BrandTheme, Home, Kiosk, Menu |
-| `@CmsMultiDropdownFieldConfig` | Menu, Rewards |
-| `@CmsBlockFieldConfig` | Chef, Rewards |
-| `@CmsArrayFieldConfig` | Home, Kiosk, Chef, Menu, Rewards |
-| `@CmsObjectFieldConfig` | Home, Kiosk, Chef, Rewards |
-| `@CmsGeoPointFieldConfig` | Menu |
+| `@DeskString` | all |
+| `@DeskText` | Home, Kiosk, Chef |
+| `@DeskNumber` | BrandTheme, Home, Kiosk, Chef, Rewards |
+| `@DeskBoolean` / `@DeskCheckbox` | Menu |
+| `@DeskDate` | Chef |
+| `@DeskDateTime` | Rewards |
+| `@DeskUrl` | Rewards |
+| `@DeskColor` | BrandTheme, Rewards |
+| `@DeskImage` | BrandTheme, Home, Kiosk, Chef, Menu, Rewards |
+| `@DeskDropdown` | BrandTheme, Home, Kiosk, Menu |
+| `@DeskMultiDropdown` | Menu, Rewards |
+| `@DeskBlock` | Chef, Rewards |
+| `@DeskArray` | Home, Kiosk, Chef, Menu, Rewards |
+| `@DeskObject` | Home, Kiosk, Chef, Rewards |
+| `@DeskGeoPointFieldConfig` | Menu |
 
 Every field type lands at least once.
 
@@ -223,9 +223,9 @@ Each screen file stays under ~300 lines by delegating to these shared widgets.
 
 ### Integration into the CMS app
 
-`examples/cms_app/lib/document_types.dart` registers six document types: `BrandTheme`, `HomeConfig`, `KioskConfig`, `ChefConfig`, `MenuConfig`, `RewardsConfig`. `main.dart` lists them in the navigation with icons.
+`examples/desk_app/lib/document_types.dart` registers six document types: `BrandTheme`, `HomeConfig`, `KioskConfig`, `ChefConfig`, `MenuConfig`, `RewardsConfig`. `main.dart` lists them in the navigation with icons.
 
-The existing CMS wiring (`CmsDocumentRegistry`, preview plumbing) is reused as-is.
+The existing CMS wiring (`DeskDocumentRegistry`, preview plumbing) is reused as-is.
 
 ---
 
@@ -234,7 +234,7 @@ The existing CMS wiring (`CmsDocumentRegistry`, preview plumbing) is reused as-i
 ### Data models (`examples/data_models/lib/src/`)
 
 Create:
-- `configs/home_config.dart` (+ `.cms.g.dart`, `.mapper.dart`)
+- `configs/home_config.dart` (+ `.desk.dart`, `.mapper.dart`)
 - `configs/kiosk_config.dart` (+ generated)
 - `configs/chef_config.dart` (+ generated)
 - `configs/menu_config.dart` (+ generated)
@@ -281,7 +281,7 @@ Delete:
 - `screens/promotion_campaign_screen.dart`
 - `screens/restaurant_profile_screen.dart`
 
-### CMS app (`examples/cms_app/lib/`)
+### CMS app (`examples/desk_app/lib/`)
 
 Modify:
 - `document_types.dart` — register 6 doc types
@@ -304,7 +304,7 @@ All default values are seeded from the JSX:
 
 - Each screen gets a widget test that renders it with its `defaultValue` config and verifies no exceptions + golden snapshot at the artboard dimensions (390 × 844 or 1194 × 834).
 - Brand theme propagation test: swap `BrandTheme.primaryColor`, verify all five screens re-render with the new color.
-- Code generation smoke test: `dart run build_runner build` produces all `.cms.g.dart` and `.mapper.dart` files without errors.
+- Code generation smoke test: `dart run build_runner build` produces all `.desk.dart` and `.mapper.dart` files without errors.
 
 ---
 

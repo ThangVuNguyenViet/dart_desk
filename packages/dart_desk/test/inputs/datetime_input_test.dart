@@ -5,19 +5,19 @@ import 'package:flutter_test/flutter_test.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsDateTimeField(
+  const field = DeskDateTimeField(
     name: 'datetime',
     title: 'Date Time',
-    option: CmsDateTimeOption(),
+    option: DeskDateTimeOption(),
   );
 
-  group('CmsDateTimeInput', () {
+  group('DeskDateTimeInput', () {
     testWidgets('renders formatted datetime', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsDateTimeInput(
+          DeskDateTimeInput(
             field: field,
-            data: const CmsData(value: '2026-03-01T10:30:00', path: 'datetime'),
+            data: const DeskData(value: '2026-03-01T10:30:00', path: 'datetime'),
           ),
         ),
       );
@@ -27,14 +27,14 @@ void main() {
     });
 
     testWidgets('renders placeholder when no data', (tester) async {
-      await tester.pumpWidget(buildInputApp(CmsDateTimeInput(field: field)));
+      await tester.pumpWidget(buildInputApp(DeskDateTimeInput(field: field)));
       await tester.pumpAndSettle();
 
       expect(find.text('Select date and time'), findsOneWidget);
     });
 
     testWidgets('dialog opens on button tap', (tester) async {
-      await tester.pumpWidget(buildInputApp(CmsDateTimeInput(field: field)));
+      await tester.pumpWidget(buildInputApp(DeskDateTimeInput(field: field)));
       await tester.pumpAndSettle();
 
       // Tap the button to open the dialog
@@ -51,9 +51,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsDateTimeInput(
+          DeskDateTimeInput(
             field: field,
-            data: const CmsData(value: '2026-03-01T10:30:00', path: 'datetime'),
+            data: const DeskData(value: '2026-03-01T10:30:00', path: 'datetime'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -77,7 +77,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsDateTimeInput(field: field, onChanged: (v) => received = v),
+          DeskDateTimeInput(field: field, onChanged: (v) => received = v),
         ),
       );
       await tester.pumpAndSettle();

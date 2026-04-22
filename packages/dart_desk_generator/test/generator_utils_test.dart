@@ -29,19 +29,19 @@ void main() {
       expect(
         validatedBuildExtensionsFrom({
           'build_extensions': {
-            '.dart': ['.cms.g.dart'],
+            '.dart': ['.desk.dart'],
           },
         }, defaults),
         {
-          '.dart': ['.cms.g.dart'],
+          '.dart': ['.desk.dart'],
         },
       );
       expect(
         validatedBuildExtensionsFrom({
-          'build_extensions': {'.dart': '.cms.g.dart'},
+          'build_extensions': {'.dart': '.desk.dart'},
         }, defaults),
         {
-          '.dart': ['.cms.g.dart'],
+          '.dart': ['.desk.dart'],
         },
       );
 
@@ -82,8 +82,8 @@ void main() {
             'dart_desk_generator|lib/input.dart': '''
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 
-const stringAlias = CmsStringFieldConfig(
-  option: CmsStringOption(hidden: true),
+const stringAlias = DeskString(
+  option: DeskStringOption(hidden: true),
 );
 const indirectStringAlias = stringAlias;
 
@@ -104,7 +104,7 @@ class DerivedAnnotation extends BaseAnnotation {
 }
 
 class Example {
-  @CmsStringFieldConfig(option: CmsStringOption(hidden: true))
+  @DeskString(option: DeskStringOption(hidden: true))
   final String direct;
 
   @indirectStringAlias
@@ -119,14 +119,14 @@ class Example {
   const Example(
     this.direct,
     this.aliased, {
-    @CmsStringFieldConfig(option: CmsStringOption(hidden: true))
+    @DeskString(option: DeskStringOption(hidden: true))
     required this.nullableString,
     required this.dynamicValue,
     required this.genericValue,
   });
 }
 
-@CmsStringFieldConfig(option: CmsStringOption(hidden: true))
+@DeskString(option: DeskStringOption(hidden: true))
 class AnnotatedClass {}
 
 @TypeArgsAnnotation([String, int])
@@ -136,7 +136,7 @@ class TypeTarget {}
 class SuperTarget {}
 
 class RecordHolder {
-  final ({@CmsStringFieldConfig(option: CmsStringOption(hidden: true)) String value})
+  final ({@DeskString(option: DeskStringOption(hidden: true)) String value})
   record;
 
   const RecordHolder(this.record);
@@ -148,7 +148,7 @@ class RecordHolder {
           outputs: {
             'dart_desk_generator|lib/input.out': decodedMatches(
               contains(
-                'CmsStringOption(hidden: true)|CmsStringOption(hidden: true)',
+                'DeskStringOption(hidden: true)|DeskStringOption(hidden: true)',
               ),
             ),
           },

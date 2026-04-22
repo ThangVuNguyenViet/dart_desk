@@ -5,10 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsDropdownField<String>(
+  const field = DeskDropdownField<String>(
     name: 'category',
     title: 'Category',
-    option: CmsDropdownSimpleOption(
+    option: DeskDropdownSimpleOption(
       options: [
         DropdownOption(value: 'option_a', label: 'Option A'),
         DropdownOption(value: 'option_b', label: 'Option B'),
@@ -18,13 +18,13 @@ void main() {
     ),
   );
 
-  group('CmsDropdownInput', () {
+  group('DeskDropdownInput', () {
     testWidgets('renders selected value label', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsDropdownInput<String>(
+          DeskDropdownInput<String>(
             field: field,
-            data: const CmsData(value: 'option_a', path: 'category'),
+            data: const DeskData(value: 'option_a', path: 'category'),
           ),
         ),
       );
@@ -35,7 +35,7 @@ void main() {
 
     testWidgets('renders placeholder when no selection', (tester) async {
       await tester.pumpWidget(
-        buildInputApp(CmsDropdownInput<String>(field: field)),
+        buildInputApp(DeskDropdownInput<String>(field: field)),
       );
       await tester.pumpAndSettle();
 
@@ -44,7 +44,7 @@ void main() {
 
     testWidgets('dropdown opens on tap', (tester) async {
       await tester.pumpWidget(
-        buildInputApp(CmsDropdownInput<String>(field: field)),
+        buildInputApp(DeskDropdownInput<String>(field: field)),
       );
       await tester.pumpAndSettle();
 
@@ -63,7 +63,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsDropdownInput<String>(
+          DeskDropdownInput<String>(
             field: field,
             onChanged: (v) => received = v,
           ),

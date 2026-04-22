@@ -1,32 +1,32 @@
 import '../base/field.dart';
 
-class CmsStringOption extends CmsOption {
-  const CmsStringOption({super.optional, super.hidden});
+class DeskStringOption extends DeskOption {
+  const DeskStringOption({super.optional, super.hidden});
 }
 
-class CmsStringField extends CmsField {
-  const CmsStringField({
+class DeskStringField extends DeskField {
+  const DeskStringField({
     required super.name,
     required super.title,
     super.description,
-    CmsStringOption super.option = const CmsStringOption(),
+    DeskStringOption super.option = const DeskStringOption(),
   });
 
   @override
-  CmsStringOption get option =>
-      (super.option as CmsStringOption?) ?? const CmsStringOption();
+  DeskStringOption get option =>
+      (super.option as DeskStringOption?) ?? const DeskStringOption();
 }
 
-class CmsStringFieldConfig extends CmsFieldConfig {
-  /// Convenience param that sets [CmsStringOption.optional] = true when no
+class DeskString extends DeskFieldConfig {
+  /// Convenience param that sets [DeskStringOption.optional] = true when no
   /// explicit [option] is provided.
   final bool optional;
 
-  const CmsStringFieldConfig({
+  const DeskString({
     super.name,
     super.title,
     super.description,
-    CmsStringOption super.option = const CmsStringOption(),
+    DeskStringOption super.option = const DeskStringOption(),
     this.optional = false,
   });
 

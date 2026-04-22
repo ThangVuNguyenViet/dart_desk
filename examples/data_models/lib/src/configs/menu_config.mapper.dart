@@ -15,7 +15,7 @@ class MenuConfigMapper extends SubClassMapperBase<MenuConfig> {
   static MenuConfigMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = MenuConfigMapper._());
-      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
+      DeskContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([ImageReferenceMapper()]);
       MenuItemEntryMapper.ensureInitialized();
       StoreHoursEntryMapper.ensureInitialized();
@@ -67,7 +67,8 @@ class MenuConfigMapper extends SubClassMapperBase<MenuConfig> {
   @override
   final dynamic discriminatorValue = 'menuConfig';
   @override
-  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
+  late final ClassMapperBase superMapper =
+      DeskContentMapper.ensureInitialized();
 
   static MenuConfig _instantiate(DecodingData data) {
     return MenuConfig(
@@ -138,7 +139,7 @@ extension MenuConfigValueCopy<$R, $Out>
 }
 
 abstract class MenuConfigCopyWith<$R, $In extends MenuConfig, $Out>
-    implements CmsContentCopyWith<$R, $In, $Out> {
+    implements DeskContentCopyWith<$R, $In, $Out> {
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get categories;
   ListCopyWith<$R, String, ObjectCopyWith<$R, String, String>> get filterTags;
   ListCopyWith<

@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class ImageFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsImageFieldConfig';
+  String get fieldConfigName => 'DeskImage';
 
   @override
   List<Type> get supportedTypes => [];
@@ -24,7 +24,7 @@ class ImageFieldGenerator implements FieldCodeGenerator {
       throw InvalidGenerationSourceError('Field has no name', element: field);
     }
 
-    return '''CmsImageField(
+    return '''DeskImageField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}

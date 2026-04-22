@@ -1,22 +1,22 @@
 import '../base/field.dart';
 import 'field_layout.dart';
 
-class CmsObjectOption extends CmsOption {
-  final List<CmsFieldLayout> children;
+class DeskObjectOption extends DeskOption {
+  final List<DeskFieldLayout> children;
 
-  const CmsObjectOption({required this.children, super.hidden});
+  const DeskObjectOption({required this.children, super.hidden});
 
-  /// Walk the layout tree to collect all leaf [CmsField] instances.
-  List<CmsField> get fields => children.expand((c) => c.flatFields).toList();
+  /// Walk the layout tree to collect all leaf [DeskField] instances.
+  List<DeskField> get fields => children.expand((c) => c.flatFields).toList();
 }
 
-class CmsObjectField extends CmsField {
-  const CmsObjectField({
+class DeskObjectField extends DeskField {
+  const DeskObjectField({
     required super.name,
     required super.title,
     super.description,
     this.fromMap,
-    CmsObjectOption super.option = const CmsObjectOption(children: []),
+    DeskObjectOption super.option = const DeskObjectOption(children: []),
   });
 
   /// Converts a raw [Map<String, dynamic>] (e.g. from Firestore) back to a
@@ -25,16 +25,16 @@ class CmsObjectField extends CmsField {
   final Function(Map<String, dynamic>)? fromMap;
 
   @override
-  CmsObjectOption get option =>
-      (super.option as CmsObjectOption?) ?? const CmsObjectOption(children: []);
+  DeskObjectOption get option =>
+      (super.option as DeskObjectOption?) ?? const DeskObjectOption(children: []);
 }
 
-class CmsObjectFieldConfig extends CmsFieldConfig {
-  const CmsObjectFieldConfig({
+class DeskObject extends DeskFieldConfig {
+  const DeskObject({
     super.name,
     super.title,
     super.description,
-    CmsObjectOption super.option = const CmsObjectOption(children: []),
+    DeskObjectOption super.option = const DeskObjectOption(children: []),
   });
 
   @override

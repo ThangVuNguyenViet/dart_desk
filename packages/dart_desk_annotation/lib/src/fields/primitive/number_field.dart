@@ -1,12 +1,12 @@
 import '../base/field.dart';
 import '../../validators/validators.dart';
 
-class CmsNumberOption extends CmsOption {
-  final CmsValidator? validation;
+class DeskNumberOption extends DeskOption {
+  final DeskValidator? validation;
   final double? min;
   final double? max;
 
-  const CmsNumberOption({
+  const DeskNumberOption({
     this.validation,
     this.min,
     this.max,
@@ -15,29 +15,29 @@ class CmsNumberOption extends CmsOption {
   });
 }
 
-class CmsNumberField extends CmsField {
-  const CmsNumberField({
+class DeskNumberField extends DeskField {
+  const DeskNumberField({
     required super.name,
     required super.title,
     super.description,
-    CmsNumberOption super.option = const CmsNumberOption(),
+    DeskNumberOption super.option = const DeskNumberOption(),
   });
 
   @override
-  CmsNumberOption get option =>
-      (super.option as CmsNumberOption?) ?? const CmsNumberOption();
+  DeskNumberOption get option =>
+      (super.option as DeskNumberOption?) ?? const DeskNumberOption();
 }
 
-class CmsNumberFieldConfig extends CmsFieldConfig {
-  /// Convenience param that sets [CmsNumberOption.optional] = true when no
+class DeskNumber extends DeskFieldConfig {
+  /// Convenience param that sets [DeskNumberOption.optional] = true when no
   /// explicit [option] is provided.
   final bool optional;
 
-  const CmsNumberFieldConfig({
+  const DeskNumber({
     super.name,
     super.title,
     super.description,
-    CmsNumberOption super.option = const CmsNumberOption(),
+    DeskNumberOption super.option = const DeskNumberOption(),
     this.optional = false,
   });
 

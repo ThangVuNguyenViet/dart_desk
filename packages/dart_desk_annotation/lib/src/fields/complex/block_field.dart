@@ -1,26 +1,26 @@
 import '../base/field.dart';
 
-class CmsBlockOption extends CmsOption {
-  const CmsBlockOption();
+class DeskBlockOption extends DeskOption {
+  const DeskBlockOption();
 }
 
-class CmsBlockField extends CmsField {
-  const CmsBlockField({
+class DeskBlockField extends DeskField {
+  const DeskBlockField({
     required super.name,
     required super.title,
-    CmsBlockOption super.option = const CmsBlockOption(),
+    DeskBlockOption super.option = const DeskBlockOption(),
   });
 
   @override
-  CmsBlockOption get option =>
-      (super.option as CmsBlockOption?) ?? const CmsBlockOption();
+  DeskBlockOption get option =>
+      (super.option as DeskBlockOption?) ?? const DeskBlockOption();
 }
 
-class CmsBlockFieldConfig extends CmsFieldConfig {
-  const CmsBlockFieldConfig({
+class DeskBlock extends DeskFieldConfig {
+  const DeskBlock({
     super.name,
     super.title,
-    CmsBlockOption super.option = const CmsBlockOption(),
+    DeskBlockOption super.option = const DeskBlockOption(),
   });
 
   @override

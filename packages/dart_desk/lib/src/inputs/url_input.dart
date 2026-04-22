@@ -3,23 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-@Preview(name: 'CmsUrlInput')
+@Preview(name: 'DeskUrlInput')
 Widget preview() => ShadApp(
-  home: CmsUrlInput(
-    field: const CmsUrlField(
+  home: DeskUrlInput(
+    field: const DeskUrlField(
       name: 'website',
       title: 'Website URL',
-      option: CmsUrlOption(),
+      option: DeskUrlOption(),
     ),
   ),
 );
 
-class CmsUrlInput extends StatefulWidget {
-  final CmsUrlField field;
-  final CmsData? data;
+class DeskUrlInput extends StatefulWidget {
+  final DeskUrlField field;
+  final DeskData? data;
   final ValueChanged<String?>? onChanged;
 
-  const CmsUrlInput({
+  const DeskUrlInput({
     super.key,
     required this.field,
     this.data,
@@ -27,10 +27,10 @@ class CmsUrlInput extends StatefulWidget {
   });
 
   @override
-  State<CmsUrlInput> createState() => _CmsUrlInputState();
+  State<DeskUrlInput> createState() => _DeskUrlInputState();
 }
 
-class _CmsUrlInputState extends State<CmsUrlInput> {
+class _DeskUrlInputState extends State<DeskUrlInput> {
   late final TextEditingController _controller;
   late final UndoHistoryController _undoController;
   late bool _isEnabled;
@@ -75,7 +75,7 @@ class _CmsUrlInputState extends State<CmsUrlInput> {
   }
 
   @override
-  void didUpdateWidget(covariant CmsUrlInput oldWidget) {
+  void didUpdateWidget(covariant DeskUrlInput oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newText = widget.data?.value?.toString() ?? '';
     if (newText != _controller.text &&

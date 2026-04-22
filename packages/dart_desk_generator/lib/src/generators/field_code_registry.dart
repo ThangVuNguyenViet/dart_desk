@@ -31,7 +31,7 @@ class FieldCodeRegistry {
 
 class BlockFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsBlockFieldConfig';
+  String get fieldConfigName => 'DeskBlock';
 
   @override
   List<Type> get supportedTypes => [Object];
@@ -48,7 +48,7 @@ class BlockFieldGenerator implements FieldCodeGenerator {
     if (fieldName == null) {
       throw InvalidGenerationSourceError('Field has no name', element: field);
     }
-    return '''CmsBlockField(
+    return '''DeskBlockField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}
@@ -79,7 +79,7 @@ class BlockFieldGenerator implements FieldCodeGenerator {
 
 class CrossDatasetReferenceFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsCrossDatasetReferenceFieldConfig';
+  String get fieldConfigName => 'DeskCrossDatasetReferenceFieldConfig';
 
   @override
   List<Type> get supportedTypes => [String];
@@ -96,7 +96,7 @@ class CrossDatasetReferenceFieldGenerator implements FieldCodeGenerator {
     if (fieldName == null) {
       throw InvalidGenerationSourceError('Field has no name', element: field);
     }
-    return '''CmsCrossDatasetReferenceField(
+    return '''DeskCrossDatasetReferenceField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}
@@ -127,7 +127,7 @@ class CrossDatasetReferenceFieldGenerator implements FieldCodeGenerator {
 
 class GeopointFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsGeopointFieldConfig';
+  String get fieldConfigName => 'DeskGeopoint';
 
   @override
   List<Type> get supportedTypes => [Object];
@@ -144,7 +144,7 @@ class GeopointFieldGenerator implements FieldCodeGenerator {
     if (fieldName == null) {
       throw InvalidGenerationSourceError('Field has no name', element: field);
     }
-    return '''CmsGeopointField(
+    return '''DeskGeopointField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}

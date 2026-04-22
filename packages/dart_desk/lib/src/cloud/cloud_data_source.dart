@@ -33,12 +33,12 @@ class CloudDataSource implements DataSource {
   /// [client] - The Serverpod client instance configured with the server URL
   CloudDataSource(this._client);
 
-  /// Logs the error with stack trace and throws a [CmsDataSourceException].
+  /// Logs the error with stack trace and throws a [DeskDataSourceException].
   Never _throw(String message, Object error, [StackTrace? stack]) {
     final st = stack ?? StackTrace.current;
     debugPrint('[CloudDataSource] $message: $error');
     debugPrintStack(stackTrace: st, label: 'CloudDataSource');
-    throw CmsDataSourceException(message, error);
+    throw DeskDataSourceException(message, error);
   }
 
   // ============================================================
@@ -61,7 +61,7 @@ class CloudDataSource implements DataSource {
       );
 
       return DocumentList(
-        documents: response.items.map(_toCmsDocument).toList(),
+        documents: response.items.map(_toDeskDocument).toList(),
         total: response.total,
         page: offset ~/ limit,
         pageSize: limit,
@@ -72,13 +72,13 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<CmsDocument?> getDocument(String documentId) async {
+  Future<DeskDocument?> getDocument(String documentId) async {
     try {
       final response = await _client.document.getDocument(
         UuidValue.fromString(documentId),
       );
       if (response == null) return null;
-      return _toCmsDocument(response);
+      return _toDeskDocument(response);
     } on serverpod.ServerpodClientException catch (e) {
       if (e.statusCode == 404 || e.statusCode == 410) return null;
       rethrow;
@@ -88,7 +88,7 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<CmsDocument> createDocument(
+  Future<DeskDocument> createDocument(
     String documentType,
     String title,
     Map<String, dynamic> data, {
@@ -103,10 +103,10 @@ class CloudDataSource implements DataSource {
         slug: slug,
         isDefault: isDefault,
       );
-      return _toCmsDocument(response);
+      return _toDeskDocument(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to create document', e, st);
     } catch (e, st) {
@@ -115,7 +115,7 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<CmsDocument?> updateDocument(
+  Future<DeskDocument?> updateDocument(
     String documentId, {
     String? title,
     String? slug,
@@ -129,10 +129,10 @@ class CloudDataSource implements DataSource {
         isDefault: isDefault,
       );
       if (response == null) return null;
-      return _toCmsDocument(response);
+      return _toDeskDocument(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to update document', e, st);
     } catch (e, st) {
@@ -141,7 +141,7 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<CmsDocument> setDefaultDocument(
+  Future<DeskDocument> setDefaultDocument(
     String documentTypeSlug,
     String documentId,
   ) async {
@@ -150,9 +150,9 @@ class CloudDataSource implements DataSource {
         documentTypeSlug,
         UuidValue.fromString(documentId),
       );
-      return _toCmsDocument(doc);
+      return _toDeskDocument(doc);
     } on serverpod.ServerpodClientException catch (e, st) {
-      if (e.statusCode == 401) throw const CmsAuthenticationException();
+      if (e.statusCode == 401) throw const DeskAuthenticationException();
       _throw('Failed to set default document', e, st);
     } catch (e, st) {
       _throw('Failed to set default document', e, st);
@@ -167,7 +167,7 @@ class CloudDataSource implements DataSource {
       );
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to delete document', e, st);
     } catch (e, st) {
@@ -292,7 +292,7 @@ class CloudDataSource implements DataSource {
       return _toDocumentVersion(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to create document version', e, st);
     } catch (e, st) {
@@ -310,7 +310,7 @@ class CloudDataSource implements DataSource {
       return _toDocumentVersion(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to publish document version', e, st);
     } catch (e, st) {
@@ -328,7 +328,7 @@ class CloudDataSource implements DataSource {
       return _toDocumentVersion(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to archive document version', e, st);
     } catch (e, st) {
@@ -344,7 +344,7 @@ class CloudDataSource implements DataSource {
       );
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to delete document version', e, st);
     } catch (e, st) {
@@ -364,7 +364,7 @@ class CloudDataSource implements DataSource {
       return _toMediaAsset(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to upload image', e, st);
     } catch (e, st) {
@@ -380,7 +380,7 @@ class CloudDataSource implements DataSource {
       return _toMediaAsset(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to upload file', e, st);
     } catch (e, st) {
@@ -394,7 +394,7 @@ class CloudDataSource implements DataSource {
       return await _client.media.deleteMedia(assetId);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to delete media', e, st);
     } catch (e, st) {
@@ -468,7 +468,7 @@ class CloudDataSource implements DataSource {
       return _toMediaAsset(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to update media asset', e, st);
     } catch (e, st) {
@@ -489,8 +489,8 @@ class CloudDataSource implements DataSource {
   // Conversion Helpers
   // ============================================================
 
-  /// Converts a Serverpod Document to a platform-agnostic CmsDocument.
-  CmsDocument _toCmsDocument(serverpod.Document doc) {
+  /// Converts a Serverpod Document to a platform-agnostic DeskDocument.
+  DeskDocument _toDeskDocument(serverpod.Document doc) {
     // Parse the data JSON string into a map if present
     // Note: 'data' now contains the latest CRDT-merged document state
     Map<String, dynamic>? parsedData;
@@ -502,7 +502,7 @@ class CloudDataSource implements DataSource {
       }
     }
 
-    return CmsDocument(
+    return DeskDocument(
       id: doc.id.toString(),
       clientId: doc.projectId.toString(),
       documentType: doc.documentType,
@@ -659,7 +659,7 @@ class CloudDataSource implements DataSource {
   // ============================================================
 
   @override
-  Future<CmsDocument> updateDocumentData(
+  Future<DeskDocument> updateDocumentData(
     String documentId,
     Map<String, dynamic> updates, {
     String? sessionId,
@@ -670,10 +670,10 @@ class CloudDataSource implements DataSource {
         jsonEncode(updates),
         sessionId: sessionId,
       );
-      return _toCmsDocument(response);
+      return _toDeskDocument(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to update document data', e, st);
     } catch (e, st) {
@@ -700,7 +700,7 @@ class CloudDataSource implements DataSource {
   }
 
   /// Submit an edit (partial field updates) for collaborative editing
-  Future<CmsDocument> submitEdit(
+  Future<DeskDocument> submitEdit(
     String documentId,
     String sessionId,
     Map<String, dynamic> fieldUpdates,
@@ -711,10 +711,10 @@ class CloudDataSource implements DataSource {
         sessionId,
         jsonEncode(fieldUpdates),
       );
-      return _toCmsDocument(response);
+      return _toDeskDocument(response);
     } on serverpod.ServerpodClientException catch (e, st) {
       if (e.statusCode == 401) {
-        throw const CmsAuthenticationException();
+        throw const DeskAuthenticationException();
       }
       _throw('Failed to submit edit', e, st);
     } catch (e, st) {

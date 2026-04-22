@@ -1,32 +1,32 @@
 import '../base/field.dart';
 
-class CmsUrlOption extends CmsOption {
-  const CmsUrlOption({super.optional, super.hidden});
+class DeskUrlOption extends DeskOption {
+  const DeskUrlOption({super.optional, super.hidden});
 }
 
-class CmsUrlField extends CmsField {
-  const CmsUrlField({
+class DeskUrlField extends DeskField {
+  const DeskUrlField({
     required super.name,
     required super.title,
     super.description,
-    CmsUrlOption super.option = const CmsUrlOption(),
+    DeskUrlOption super.option = const DeskUrlOption(),
   });
 
   @override
-  CmsUrlOption get option =>
-      (super.option as CmsUrlOption?) ?? const CmsUrlOption();
+  DeskUrlOption get option =>
+      (super.option as DeskUrlOption?) ?? const DeskUrlOption();
 }
 
-class CmsUrlFieldConfig extends CmsFieldConfig {
-  /// Convenience param that sets [CmsUrlOption.optional] = true when no
+class DeskUrl extends DeskFieldConfig {
+  /// Convenience param that sets [DeskUrlOption.optional] = true when no
   /// explicit [option] is provided.
   final bool optional;
 
-  const CmsUrlFieldConfig({
+  const DeskUrl({
     super.name,
     super.title,
     super.description,
-    CmsUrlOption super.option = const CmsUrlOption(),
+    DeskUrlOption super.option = const DeskUrlOption(),
     this.optional = false,
   });
 

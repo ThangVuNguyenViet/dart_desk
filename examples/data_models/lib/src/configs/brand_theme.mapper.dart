@@ -15,7 +15,7 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
   static BrandThemeMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = BrandThemeMapper._());
-      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
+      DeskContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([
         BrandThemeColorMapper(),
         ImageReferenceMapper(),
@@ -89,7 +89,8 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
   @override
   final dynamic discriminatorValue = 'brandTheme';
   @override
-  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
+  late final ClassMapperBase superMapper =
+      DeskContentMapper.ensureInitialized();
 
   static BrandTheme _instantiate(DecodingData data) {
     return BrandTheme(
@@ -164,7 +165,7 @@ extension BrandThemeValueCopy<$R, $Out>
 }
 
 abstract class BrandThemeCopyWith<$R, $In extends BrandTheme, $Out>
-    implements CmsContentCopyWith<$R, $In, $Out> {
+    implements DeskContentCopyWith<$R, $In, $Out> {
   @override
   $R call({
     String? name,

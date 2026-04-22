@@ -5,32 +5,32 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../data/models/document_version.dart';
-import '../components/common/cms_button.dart';
-import '../components/forms/cms_form.dart';
-import '../core/view_models/cms_document_view_model.dart';
-import '../core/view_models/cms_view_model.dart';
+import '../components/common/desk_button.dart';
+import '../components/forms/desk_form.dart';
+import '../core/view_models/desk_document_view_model.dart';
+import '../core/view_models/desk_view_model.dart';
 
 /// Document editor widget that dynamically generates forms based on fields
-class CmsDocumentEditor extends StatefulWidget {
-  final List<CmsField> fields;
+class DeskDocumentEditor extends StatefulWidget {
+  final List<DeskField> fields;
   final String? title;
 
-  const CmsDocumentEditor({super.key, required this.fields, this.title});
+  const DeskDocumentEditor({super.key, required this.fields, this.title});
 
   @override
-  State<CmsDocumentEditor> createState() => _CmsDocumentEditorState();
+  State<DeskDocumentEditor> createState() => _DeskDocumentEditorState();
 }
 
-class _CmsDocumentEditorState extends State<CmsDocumentEditor>
+class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     with SignalsMixin {
   /// Shared edited data signal from the document view model.
   MapSignal<String, dynamic> get editedData =>
-      GetIt.I<CmsDocumentViewModel>().editedData;
+      GetIt.I<DeskDocumentViewModel>().editedData;
 
   Future<void> _performSave({required bool publish}) async {
-    final viewModel = GetIt.I<CmsViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
     try {
-      final documentViewModel = GetIt.I<CmsDocumentViewModel>();
+      final documentViewModel = GetIt.I<DeskDocumentViewModel>();
       final docId = documentViewModel.documentId.value;
 
       final dataToSave = editedData.value;
@@ -95,7 +95,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
 
   Future<void> _discardDocument() async {
     try {
-      final viewModel = GetIt.I<CmsViewModel>();
+      final viewModel = GetIt.I<DeskViewModel>();
       final versionId = viewModel.selectedVersionId.value;
 
       if (versionId != null) {
@@ -129,7 +129,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = GetIt.I<CmsViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
 
     final createStatus = viewModel.createDocument.watch(context);
     final updateStatus = viewModel.updateDocumentData.watch(context);
@@ -170,7 +170,7 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
     return Column(
       children: [
         Expanded(
-          child: CmsForm(
+          child: DeskForm(
             fields: widget.fields,
             data: Map<String, dynamic>.from(documentData),
             title: widget.title,
@@ -186,21 +186,21 @@ class _CmsDocumentEditorState extends State<CmsDocumentEditor>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                CmsButton(
+                DeskButton(
                   key: const ValueKey('discard_document_button'),
                   text: 'Discard',
                   variant: ShadButtonVariant.outline,
                   onPressed: isSaving ? null : _discardDocument,
                 ),
                 const SizedBox(width: 8),
-                CmsButton(
+                DeskButton(
                   key: const ValueKey('save_document_button'),
                   text: 'Save',
                   loading: isSaving,
                   onPressed: isSaving ? null : _saveDocument,
                 ),
                 const SizedBox(width: 8),
-                CmsButton(
+                DeskButton(
                   key: const ValueKey('publish_document_button'),
                   text: 'Publish',
                   loading: isSaving,

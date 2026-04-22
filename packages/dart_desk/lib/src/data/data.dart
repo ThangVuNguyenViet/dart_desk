@@ -20,14 +20,14 @@
 library;
 
 // Abstract interface
-export 'cms_data_source.dart';
+export 'desk_data_source.dart';
 
 // Serverpod implementation is in dart_desk_client package
 // export 'serverpod_data_source.dart';
 
 // Models
-export 'models/cms_document.dart';
-export 'models/cms_document_data.dart';
+export 'models/desk_document.dart';
+export 'models/desk_document_data.dart';
 export 'models/document_list.dart';
 export 'models/document_version.dart';
 export 'models/image_types.dart';

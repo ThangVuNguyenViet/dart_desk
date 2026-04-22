@@ -1,37 +1,37 @@
 import '../base/field.dart';
 import '../../models/image_ref.dart'; // exports ImageReference (and deprecated ImageRef typedef)
 
-enum CmsMediaType { image, svg, lottie, video }
+enum DeskMediaType { image, svg, lottie, video }
 
-class CmsImageOption extends CmsOption {
+class DeskImageOption extends DeskOption {
   final bool hotspot;
-  final List<CmsMediaType>? acceptedTypes; // null = all types (default)
+  final List<DeskMediaType>? acceptedTypes; // null = all types (default)
 
-  const CmsImageOption({
+  const DeskImageOption({
     required this.hotspot,
     this.acceptedTypes,
     super.hidden,
   });
 }
 
-class CmsImageField extends CmsField {
-  const CmsImageField({
+class DeskImageField extends DeskField {
+  const DeskImageField({
     required super.name,
     required super.title,
     super.description,
-    CmsImageOption? super.option,
+    DeskImageOption? super.option,
   });
 
   @override
-  CmsImageOption? get option => super.option as CmsImageOption?;
+  DeskImageOption? get option => super.option as DeskImageOption?;
 }
 
-class CmsImageFieldConfig extends CmsFieldConfig {
-  const CmsImageFieldConfig({
+class DeskImage extends DeskFieldConfig {
+  const DeskImage({
     super.name,
     super.title,
     super.description,
-    CmsImageOption? super.option,
+    DeskImageOption? super.option,
   });
 
   @override

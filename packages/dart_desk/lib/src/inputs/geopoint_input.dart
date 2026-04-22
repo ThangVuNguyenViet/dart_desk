@@ -5,23 +5,23 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-@Preview(name: 'CmsGeopointInput')
+@Preview(name: 'DeskGeopointInput')
 Widget preview() => ShadApp(
-  home: CmsGeopointInput(
-    field: const CmsGeopointField(
+  home: DeskGeopointInput(
+    field: const DeskGeopointField(
       name: 'location',
       title: 'Location',
-      option: CmsGeopointOption(),
+      option: DeskGeopointOption(),
     ),
   ),
 );
 
-class CmsGeopointInput extends StatefulWidget {
-  final CmsGeopointField field;
-  final CmsData? data;
+class DeskGeopointInput extends StatefulWidget {
+  final DeskGeopointField field;
+  final DeskData? data;
   final ValueChanged<Map<String, double>?>? onChanged;
 
-  const CmsGeopointInput({
+  const DeskGeopointInput({
     super.key,
     required this.field,
     this.data,
@@ -29,10 +29,10 @@ class CmsGeopointInput extends StatefulWidget {
   });
 
   @override
-  State<CmsGeopointInput> createState() => _CmsGeopointInputState();
+  State<DeskGeopointInput> createState() => _DeskGeopointInputState();
 }
 
-class _CmsGeopointInputState extends State<CmsGeopointInput> {
+class _DeskGeopointInputState extends State<DeskGeopointInput> {
   late TextEditingController _latController;
   late TextEditingController _lngController;
 

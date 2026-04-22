@@ -32,7 +32,7 @@ String get testBackendUrl => _testServerUrl;
 
 const _testApiKey = String.fromEnvironment(
   'TEST_API_KEY',
-  defaultValue: 'cms_w_e2eTestTokenForDartDeskIntegration00aaaa',
+  defaultValue: 'desk_w_e2eTestTokenForDartDeskIntegration00aaaa',
 );
 
 const _testEmail = String.fromEnvironment(

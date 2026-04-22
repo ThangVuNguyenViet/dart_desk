@@ -15,7 +15,7 @@
 ///   @override
 ///   Widget build(BuildContext context) {
 ///     return ShadApp(
-///       home: CmsStudioShell(
+///       home: DeskStudioShell(
 ///         documentTypes: [...],
 ///       ),
 ///     );
@@ -64,4 +64,4 @@ export 'src/inputs/url_input.dart' hide preview;
 // ============================================================================
 // STUDIO COMPONENTS
 // ============================================================================
-export 'src/studio/cms_studio_app.dart';
+export 'src/studio/desk_studio_app.dart';

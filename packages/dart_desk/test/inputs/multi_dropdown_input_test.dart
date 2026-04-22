@@ -5,10 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsMultiDropdownField<String>(
+  const field = DeskMultiDropdownField<String>(
     name: 'tags',
     title: 'Tags',
-    option: CmsMultiDropdownSimpleOption(
+    option: DeskMultiDropdownSimpleOption(
       options: [
         DropdownOption(value: 'a', label: 'Option A'),
         DropdownOption(value: 'b', label: 'Option B'),
@@ -18,12 +18,12 @@ void main() {
     ),
   );
 
-  group('CmsMultiDropdownInput', () {
+  group('DeskMultiDropdownInput', () {
     testWidgets(
       'static options render correctly — shows placeholder and all 3 options on tap',
       (tester) async {
         await tester.pumpWidget(
-          buildInputApp(CmsMultiDropdownInput<String>(field: field)),
+          buildInputApp(DeskMultiDropdownInput<String>(field: field)),
         );
         await tester.pumpAndSettle();
 
@@ -48,7 +48,7 @@ void main() {
 
         await tester.pumpWidget(
           buildInputApp(
-            CmsMultiDropdownInput<String>(
+            DeskMultiDropdownInput<String>(
               field: field,
               onChanged: (v) => received = v,
             ),
@@ -85,14 +85,14 @@ void main() {
     testWidgets('empty options list shows "No options available"', (
       tester,
     ) async {
-      const emptyField = CmsMultiDropdownField<String>(
+      const emptyField = DeskMultiDropdownField<String>(
         name: 'empty',
         title: 'Empty',
-        option: CmsMultiDropdownSimpleOption(options: []),
+        option: DeskMultiDropdownSimpleOption(options: []),
       );
 
       await tester.pumpWidget(
-        buildInputApp(CmsMultiDropdownInput<String>(field: emptyField)),
+        buildInputApp(DeskMultiDropdownInput<String>(field: emptyField)),
       );
       await tester.pumpAndSettle();
 
@@ -102,13 +102,13 @@ void main() {
     testWidgets('didUpdateWidget updates controller when data changes', (
       tester,
     ) async {
-      Widget buildWithData(CmsData? data) => buildInputApp(
-        CmsMultiDropdownInput<String>(field: field, data: data),
+      Widget buildWithData(DeskData? data) => buildInputApp(
+        DeskMultiDropdownInput<String>(field: field, data: data),
       );
 
       // Build with initial data ['a']
       await tester.pumpWidget(
-        buildWithData(const CmsData(value: ['a'], path: 'tags')),
+        buildWithData(const DeskData(value: ['a'], path: 'tags')),
       );
       await tester.pumpAndSettle();
 
@@ -117,7 +117,7 @@ void main() {
 
       // Update to data ['b']
       await tester.pumpWidget(
-        buildWithData(const CmsData(value: ['b'], path: 'tags')),
+        buildWithData(const DeskData(value: ['b'], path: 'tags')),
       );
       await tester.pumpAndSettle();
 
@@ -132,9 +132,9 @@ void main() {
 
         await tester.pumpWidget(
           buildInputApp(
-            CmsMultiDropdownInput<String>(
+            DeskMultiDropdownInput<String>(
               field: field,
-              data: const CmsData(value: ['a'], path: 'tags'),
+              data: const DeskData(value: ['a'], path: 'tags'),
               onChanged: (v) => received = v,
             ),
           ),

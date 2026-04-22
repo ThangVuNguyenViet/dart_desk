@@ -1,0 +1,3 @@
+dependency_overrides:
+  dart_desk_annotation:
+    path: ../dart_desk_annotation

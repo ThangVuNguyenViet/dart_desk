@@ -5,28 +5,28 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'coupon.cms.g.dart';
+part 'coupon.desk.dart';
 part 'coupon.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Coupon', description: 'Reward redeemable by the guest')
+@DeskModel(title: 'Coupon', description: 'Reward redeemable by the guest')
 class Coupon with CouponMappable implements Serializable<Coupon> {
-  @CmsStringFieldConfig(description: 'Title', option: CmsStringOption())
+  @DeskString(description: 'Title', option: DeskStringOption())
   final String title;
 
-  @CmsStringFieldConfig(description: 'Code', option: CmsStringOption())
+  @DeskString(description: 'Code', option: DeskStringOption())
   final String code;
 
-  @CmsNumberFieldConfig(description: 'Discount %', option: CmsNumberOption(min: 0, max: 100))
+  @DeskNumber(description: 'Discount %', option: DeskNumberOption(min: 0, max: 100))
   final num discountPercent;
 
-  @CmsDateTimeFieldConfig(description: 'Expires at', option: CmsDateTimeOption())
+  @DeskDateTime(description: 'Expires at', option: DeskDateTimeOption())
   final DateTime expiresAt;
 
-  @CmsImageFieldConfig(description: 'Artwork', option: CmsImageOption(hotspot: false))
+  @DeskImage(description: 'Artwork', option: DeskImageOption(hotspot: false))
   final ImageReference? image;
 
-  @CmsMultiDropdownFieldConfig<String>(description: 'Tags', option: CouponTagsOption())
+  @DeskMultiDropdown<String>(description: 'Tags', option: CouponTagsOption())
   final List<String> tags;
 
   const Coupon({
@@ -49,7 +49,7 @@ class Coupon with CouponMappable implements Serializable<Coupon> {
   static Coupon $fromMap(Map<String, dynamic> map) => CouponMapper.fromMap(map);
 }
 
-class CouponTagsOption extends CmsMultiDropdownOption<String> {
+class CouponTagsOption extends DeskMultiDropdownOption<String> {
   const CouponTagsOption({super.hidden});
   @override
   List<String>? get defaultValues => const [];

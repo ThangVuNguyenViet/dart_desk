@@ -7,13 +7,13 @@ import 'dropdown_field.dart';
 
 /// Annotation to mark a `List<T>` field as a multi-select dropdown in the CMS.
 ///
-/// Requires a [CmsMultiDropdownOption<T>] to supply the available options.
-class CmsMultiDropdownFieldConfig<T> extends CmsFieldConfig {
-  const CmsMultiDropdownFieldConfig({
+/// Requires a [DeskMultiDropdownOption<T>] to supply the available options.
+class DeskMultiDropdown<T> extends DeskFieldConfig {
+  const DeskMultiDropdown({
     super.name,
     super.title,
     super.description,
-    required CmsMultiDropdownOption<T> super.option,
+    required DeskMultiDropdownOption<T> super.option,
   });
 
   @override
@@ -21,18 +21,18 @@ class CmsMultiDropdownFieldConfig<T> extends CmsFieldConfig {
 }
 
 /// Abstract option class for multi-select dropdown fields.
-abstract class CmsMultiDropdownOption<T> extends CmsOption {
+abstract class DeskMultiDropdownOption<T> extends DeskOption {
   FutureOr<List<DropdownOption<T>>> options(BuildContext context);
   List<T>? get defaultValues;
   String? get placeholder;
   int? get minSelected;
   int? get maxSelected;
 
-  const CmsMultiDropdownOption({super.hidden});
+  const DeskMultiDropdownOption({super.hidden});
 }
 
 /// Simple multi-dropdown option with static options list.
-class CmsMultiDropdownSimpleOption<T> extends CmsMultiDropdownOption<T> {
+class DeskMultiDropdownSimpleOption<T> extends DeskMultiDropdownOption<T> {
   final List<DropdownOption<T>> _options;
 
   @override
@@ -47,7 +47,7 @@ class CmsMultiDropdownSimpleOption<T> extends CmsMultiDropdownOption<T> {
   @override
   final int? maxSelected;
 
-  const CmsMultiDropdownSimpleOption({
+  const DeskMultiDropdownSimpleOption({
     super.hidden,
     required List<DropdownOption<T>> options,
     this.defaultValues,
@@ -58,13 +58,13 @@ class CmsMultiDropdownSimpleOption<T> extends CmsMultiDropdownOption<T> {
 }
 
 /// A multi-select dropdown field that stores List<T> values.
-class CmsMultiDropdownField<T> extends CmsField {
-  const CmsMultiDropdownField({
+class DeskMultiDropdownField<T> extends DeskField {
+  const DeskMultiDropdownField({
     required super.name,
     required super.title,
     super.description,
     this.fromMap,
-    required CmsMultiDropdownOption<T> super.option,
+    required DeskMultiDropdownOption<T> super.option,
   });
 
   /// Converts a raw [Map<String, dynamic>] to [T] for non-primitive multi-dropdown
@@ -72,6 +72,6 @@ class CmsMultiDropdownField<T> extends CmsField {
   final T Function(Map<String, dynamic>)? fromMap;
 
   @override
-  CmsMultiDropdownOption<T>? get option =>
-      super.option as CmsMultiDropdownOption<T>?;
+  DeskMultiDropdownOption<T>? get option =>
+      super.option as DeskMultiDropdownOption<T>?;
 }

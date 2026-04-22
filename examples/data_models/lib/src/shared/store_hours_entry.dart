@@ -5,19 +5,19 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'store_hours_entry.cms.g.dart';
+part 'store_hours_entry.desk.dart';
 part 'store_hours_entry.mapper.dart';
 
 @MappableClass()
-@CmsConfig(title: 'Store hours entry', description: 'Open/close times for a single day')
+@DeskModel(title: 'Store hours entry', description: 'Open/close times for a single day')
 class StoreHoursEntry with StoreHoursEntryMappable implements Serializable<StoreHoursEntry> {
-  @CmsDropdownFieldConfig<String>(description: 'Day', option: DayOfWeekOption())
+  @DeskDropdown<String>(description: 'Day', option: DayOfWeekOption())
   final String day;
 
-  @CmsStringFieldConfig(description: 'Open (HH:mm)', option: CmsStringOption())
+  @DeskString(description: 'Open (HH:mm)', option: DeskStringOption())
   final String openTime;
 
-  @CmsStringFieldConfig(description: 'Close (HH:mm)', option: CmsStringOption())
+  @DeskString(description: 'Close (HH:mm)', option: DeskStringOption())
   final String closeTime;
 
   const StoreHoursEntry({required this.day, required this.openTime, required this.closeTime});
@@ -27,7 +27,7 @@ class StoreHoursEntry with StoreHoursEntryMappable implements Serializable<Store
   static StoreHoursEntry $fromMap(Map<String, dynamic> map) => StoreHoursEntryMapper.fromMap(map);
 }
 
-class DayOfWeekOption extends CmsDropdownOption<String> {
+class DayOfWeekOption extends DeskDropdownOption<String> {
   const DayOfWeekOption({super.hidden});
   @override
   bool get allowNull => false;

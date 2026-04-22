@@ -1,11 +1,11 @@
-import 'cms_document.dart';
+import 'desk_document.dart';
 
 /// Paginated list of CMS documents.
 ///
 /// Contains the documents for the current page along with pagination metadata.
 class DocumentList {
   /// The documents in the current page
-  final List<CmsDocument> documents;
+  final List<DeskDocument> documents;
 
   /// Total number of documents matching the query (across all pages)
   final int total;
@@ -45,7 +45,7 @@ class DocumentList {
 
   /// Creates a copy of this list with the given fields replaced.
   DocumentList copyWith({
-    List<CmsDocument>? documents,
+    List<DeskDocument>? documents,
     int? total,
     int? page,
     int? pageSize,
@@ -62,7 +62,7 @@ class DocumentList {
   factory DocumentList.fromJson(Map<String, dynamic> json) {
     return DocumentList(
       documents: (json['documents'] as List<dynamic>)
-          .map((e) => CmsDocument.fromJson(e as Map<String, dynamic>))
+          .map((e) => DeskDocument.fromJson(e as Map<String, dynamic>))
           .toList(),
       total: json['total'] as int,
       page: json['page'] as int,

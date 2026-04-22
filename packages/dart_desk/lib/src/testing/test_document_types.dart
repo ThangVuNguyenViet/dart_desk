@@ -4,7 +4,7 @@ import 'package:signals/signals_flutter.dart';
 
 import 'package:get_it/get_it.dart';
 
-import '../studio/core/view_models/cms_view_model.dart';
+import '../studio/core/view_models/desk_view_model.dart';
 
 /// Test document type that exercises all 16 CMS field types.
 /// Use this in test apps to get full field coverage.
@@ -14,79 +14,79 @@ final allFieldsDocumentType = DocumentType(
   description: 'Document type with all 16 field types for QA testing',
   fields: [
     // Primitive fields (8)
-    const CmsStringField(
+    const DeskStringField(
       name: 'string_field',
       title: 'String Field',
       description: 'A single-line string input',
-      option: CmsStringOption(),
+      option: DeskStringOption(),
     ),
-    const CmsTextField(
+    const DeskTextField(
       name: 'text_field',
       title: 'Text Field',
       description: 'A multi-line text area',
-      option: CmsTextOption(rows: 3),
+      option: DeskTextOption(rows: 3),
     ),
-    const CmsNumberField(
+    const DeskNumberField(
       name: 'number_field',
       title: 'Number Field',
       description: 'A numeric input',
-      option: CmsNumberOption(),
+      option: DeskNumberOption(),
     ),
-    const CmsBooleanField(
+    const DeskBooleanField(
       name: 'boolean_field',
       title: 'Boolean Field',
       description: 'A toggle switch',
-      option: CmsBooleanOption(),
+      option: DeskBooleanOption(),
     ),
-    const CmsCheckboxField(
+    const DeskCheckboxField(
       name: 'checkbox_field',
       title: 'Checkbox Field',
       description: 'A checkbox control',
-      option: CmsCheckboxOption(label: 'Enable this feature'),
+      option: DeskCheckboxOption(label: 'Enable this feature'),
     ),
-    const CmsUrlField(
+    const DeskUrlField(
       name: 'url_field',
       title: 'URL Field',
       description: 'A URL input',
-      option: CmsUrlOption(),
+      option: DeskUrlOption(),
     ),
-    const CmsDateField(
+    const DeskDateField(
       name: 'date_field',
       title: 'Date Field',
       description: 'A date picker',
-      option: CmsDateOption(),
+      option: DeskDateOption(),
     ),
-    const CmsDateTimeField(
+    const DeskDateTimeField(
       name: 'datetime_field',
       title: 'DateTime Field',
       description: 'A date and time picker',
-      option: CmsDateTimeOption(),
+      option: DeskDateTimeOption(),
     ),
     // Media fields (3)
-    const CmsColorField(
+    const DeskColorField(
       name: 'color_field',
       title: 'Color Field',
       description: 'A color picker',
-      option: CmsColorOption(showAlpha: true),
+      option: DeskColorOption(showAlpha: true),
     ),
-    const CmsImageField(
+    const DeskImageField(
       name: 'image_field',
       title: 'Image Field',
       description: 'An image upload/URL field',
-      option: CmsImageOption(hotspot: true),
+      option: DeskImageOption(hotspot: true),
     ),
-    const CmsFileField(
+    const DeskFileField(
       name: 'file_field',
       title: 'File Field',
       description: 'A file upload field',
-      option: CmsFileOption(),
+      option: DeskFileOption(),
     ),
     // Complex fields (5)
-    const CmsDropdownField<String>(
+    const DeskDropdownField<String>(
       name: 'dropdown_field',
       title: 'Dropdown Field',
       description: 'A dropdown select',
-      option: CmsDropdownSimpleOption(
+      option: DeskDropdownSimpleOption(
         options: [
           DropdownOption(value: 'option_a', label: 'Option A'),
           DropdownOption(value: 'option_b', label: 'Option B'),
@@ -95,46 +95,46 @@ final allFieldsDocumentType = DocumentType(
         placeholder: 'Select an option',
       ),
     ),
-    CmsMultiDropdownField<String>(
+    DeskMultiDropdownField<String>(
       name: 'document_ref_dropdown',
       title: 'Document Reference',
       description:
           'Context-aware multi-select dropdown that loads documents reactively',
       option: TestDocumentRefDropdownOption(),
     ),
-    CmsArrayField<String>(
+    DeskArrayField<String>(
       name: 'array_field',
       title: 'Array Field',
       description: 'A list of string items',
-      innerField: const CmsStringField(name: 'item', title: 'Item'),
+      innerField: const DeskStringField(name: 'item', title: 'Item'),
       option: const TestStringArrayOption(),
     ),
-    const CmsObjectField(
+    const DeskObjectField(
       name: 'object_field',
       title: 'Object Field',
       description: 'A nested object with sub-fields',
-      option: CmsObjectOption(
+      option: DeskObjectOption(
         children: [
           ColumnFields(
             children: [
-              CmsStringField(
+              DeskStringField(
                 name: 'nested_title',
                 title: 'Nested Title',
-                option: CmsStringOption(),
+                option: DeskStringOption(),
               ),
             ],
           ),
           RowFields(
             children: [
-              CmsNumberField(
+              DeskNumberField(
                 name: 'nested_count',
                 title: 'Nested Count',
-                option: CmsNumberOption(),
+                option: DeskNumberOption(),
               ),
-              CmsStringField(
+              DeskStringField(
                 name: 'nested_tag',
                 title: 'Nested Tag',
-                option: CmsStringOption(),
+                option: DeskStringOption(),
               ),
             ],
           ),
@@ -146,10 +146,10 @@ final allFieldsDocumentType = DocumentType(
             children: [
               ColumnFields(
                 children: [
-                  CmsStringField(
+                  DeskStringField(
                     name: 'nested_notes',
                     title: 'Nested Notes',
-                    option: CmsStringOption(),
+                    option: DeskStringOption(),
                   ),
                 ],
               ),
@@ -158,15 +158,15 @@ final allFieldsDocumentType = DocumentType(
         ],
       ),
     ),
-    const CmsBlockField(
+    const DeskBlockField(
       name: 'block_field',
       title: 'Block Field',
-      option: CmsBlockOption(),
+      option: DeskBlockOption(),
     ),
-    const CmsGeopointField(
+    const DeskGeopointField(
       name: 'geopoint_field',
       title: 'Geopoint Field',
-      option: CmsGeopointOption(),
+      option: DeskGeopointOption(),
     ),
   ],
   builder: _testAllFieldsBuilder,
@@ -179,7 +179,7 @@ Widget _testAllFieldsBuilder(Map<String, dynamic> data) {
       final selectedIds = data['document_ref_dropdown'];
       String? selectedDocTitles;
       if (selectedIds is List && selectedIds.isNotEmpty) {
-        final viewModel = GetIt.I<CmsViewModel>();
+        final viewModel = GetIt.I<DeskViewModel>();
         final state = viewModel
             .documentsContainer('test_all_fields')
             .watch(context);
@@ -232,23 +232,23 @@ Widget _testAllFieldsBuilder(Map<String, dynamic> data) {
   );
 }
 
-/// Concrete CmsArrayOption for testing string arrays.
-class TestStringArrayOption extends CmsArrayOption<String> {
+/// Concrete DeskArrayOption for testing string arrays.
+class TestStringArrayOption extends DeskArrayOption<String> {
   const TestStringArrayOption();
 
   @override
-  CmsArrayFieldItemBuilder<String> get itemBuilder =>
+  DeskArrayFieldItemBuilder<String> get itemBuilder =>
       (context, value) => Text(value);
 }
 
 /// Context-aware multi-dropdown option that resolves options reactively from
-/// the documents of type 'test_all_fields' via CmsViewModel signals.
-class TestDocumentRefDropdownOption extends CmsMultiDropdownOption<String> {
+/// the documents of type 'test_all_fields' via DeskViewModel signals.
+class TestDocumentRefDropdownOption extends DeskMultiDropdownOption<String> {
   const TestDocumentRefDropdownOption();
 
   @override
   List<DropdownOption<String>> options(BuildContext context) {
-    final viewModel = GetIt.I<CmsViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
     final state = viewModel
         .documentsContainer('test_all_fields')
         .watch(context);

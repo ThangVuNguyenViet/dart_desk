@@ -3,23 +3,23 @@ import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-@Preview(name: 'CmsCheckboxInput')
+@Preview(name: 'DeskCheckboxInput')
 Widget preview() => ShadApp(
-  home: CmsCheckboxInput(
-    field: const CmsCheckboxField(
+  home: DeskCheckboxInput(
+    field: const DeskCheckboxField(
       name: 'acceptTerms',
       title: 'Accept Terms',
-      option: CmsCheckboxOption(label: 'I agree to the terms and conditions'),
+      option: DeskCheckboxOption(label: 'I agree to the terms and conditions'),
     ),
   ),
 );
 
-class CmsCheckboxInput extends StatefulWidget {
-  final CmsCheckboxField field;
-  final CmsData? data;
+class DeskCheckboxInput extends StatefulWidget {
+  final DeskCheckboxField field;
+  final DeskData? data;
   final ValueChanged<bool?>? onChanged;
 
-  const CmsCheckboxInput({
+  const DeskCheckboxInput({
     super.key,
     required this.field,
     this.data,
@@ -27,10 +27,10 @@ class CmsCheckboxInput extends StatefulWidget {
   });
 
   @override
-  State<CmsCheckboxInput> createState() => _CmsCheckboxInputState();
+  State<DeskCheckboxInput> createState() => _DeskCheckboxInputState();
 }
 
-class _CmsCheckboxInputState extends State<CmsCheckboxInput> {
+class _DeskCheckboxInputState extends State<DeskCheckboxInput> {
   late bool _value;
 
   @override
@@ -40,7 +40,7 @@ class _CmsCheckboxInputState extends State<CmsCheckboxInput> {
   }
 
   @override
-  void didUpdateWidget(CmsCheckboxInput oldWidget) {
+  void didUpdateWidget(DeskCheckboxInput oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.data != oldWidget.data) {
       _value = widget.data?.value as bool? ?? widget.field.option.initialValue;

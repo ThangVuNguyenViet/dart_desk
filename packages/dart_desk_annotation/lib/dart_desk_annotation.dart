@@ -6,7 +6,7 @@ library dart_desk_annotation;
 
 // Core annotations and data types
 export 'src/annotations.dart';
-export 'src/cms_data.dart';
+export 'src/desk_data.dart';
 export 'src/config.dart';
 // Base field abstractions
 export 'src/fields/base/field.dart';

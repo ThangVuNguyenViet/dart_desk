@@ -1,22 +1,22 @@
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
-part 'store_callout.cms.g.dart';
+part 'store_callout.desk.dart';
 part 'store_callout.mapper.dart';
 
 @MappableClass()
-@CmsConfig(title: 'Store callout', description: 'Venue card on the home screen')
+@DeskModel(title: 'Store callout', description: 'Venue card on the home screen')
 class StoreCallout with StoreCalloutMappable implements Serializable<StoreCallout> {
-  @CmsStringFieldConfig(description: 'Venue name', option: CmsStringOption())
+  @DeskString(description: 'Venue name', option: DeskStringOption())
   final String venueName;
 
-  @CmsStringFieldConfig(description: 'Hours label', option: CmsStringOption())
+  @DeskString(description: 'Hours label', option: DeskStringOption())
   final String hoursLabel;
 
-  @CmsStringFieldConfig(description: 'Distance label', option: CmsStringOption())
+  @DeskString(description: 'Distance label', option: DeskStringOption())
   final String distanceLabel;
 
-  @CmsStringFieldConfig(description: 'Directions button label', option: CmsStringOption())
+  @DeskString(description: 'Directions button label', option: DeskStringOption())
   final String directionsLabel;
 
   const StoreCallout({

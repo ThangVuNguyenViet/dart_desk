@@ -8,7 +8,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
-import '../../data/cms_data_source.dart';
+import '../../data/desk_data_source.dart';
 import '../../data/models/image_types.dart';
 import '../../data/models/media_asset.dart';
 import 'asset_delete_confirm_dialog.dart';

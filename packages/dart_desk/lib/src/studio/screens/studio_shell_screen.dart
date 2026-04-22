@@ -6,11 +6,11 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../components/common/cms_collapse_bar.dart';
-import '../components/common/cms_top_bar.dart';
-import '../components/navigation/cms_document_type_sidebar.dart';
+import '../components/common/desk_collapse_bar.dart';
+import '../components/common/desk_top_bar.dart';
+import '../components/navigation/desk_document_type_sidebar.dart';
 import '../config/studio_config.dart';
-import '../core/view_models/cms_view_model.dart';
+import '../core/view_models/desk_view_model.dart';
 import '../providers/studio_provider.dart';
 import '../router/studio_router.dart';
 import '../screens/document_list.dart';
@@ -42,7 +42,7 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
   }
 
   Future<void> _deleteDocument(BuildContext context, {String? docId}) async {
-    final viewModel = GetIt.I<CmsViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
     final toaster = ShadToaster.of(context);
     if (docId == null) return;
 
@@ -112,7 +112,7 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
 
           return Column(
             children: [
-              const CmsTopBar(),
+              const DeskTopBar(),
               const Divider(height: 1),
               Expanded(
                 child: isMobile
@@ -128,14 +128,14 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
 
   Widget _buildDesktopLayout(BuildContext context, StudioConfig config) {
     final theme = ShadTheme.of(context);
-    final viewModel = GetIt.I<CmsViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
     final docType = viewModel.currentDocumentType.watch(context);
     final isListVisible = viewModel.documentListVisible.watch(context);
     final docTypeSlug = viewModel.currentDocumentTypeSlug.watch(context);
 
     return Row(
       children: [
-        CmsDocumentTypeSidebar(
+        DeskDocumentTypeSidebar(
           documentTypeDecorations: config.documentTypeDecorations,
           footer: ShadButton.ghost(
             key: const ValueKey('sidebar_media_button'),
@@ -143,7 +143,7 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
             child: const Row(
               children: [
                 FaIcon(FontAwesomeIcons.images, size: 14),
-                SizedBox(width: CmsSpacing.sm),
+                SizedBox(width: DeskSpacing.sm),
                 Text('Media Library'),
               ],
             ),
@@ -166,12 +166,12 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
               ? const SizedBox.shrink()
               : Padding(
                   padding: const EdgeInsets.fromLTRB(
-                    CmsSpacing.md,
-                    CmsSpacing.sm,
-                    CmsSpacing.md,
+                    DeskSpacing.md,
+                    DeskSpacing.sm,
+                    DeskSpacing.md,
                     0,
                   ),
-                  child: CmsDocumentListView(
+                  child: DeskDocumentListView(
                     selectedDocumentType: docType,
                     icon: FontAwesomeIcons.file,
                     onOpenDocument: (documentId) => context.router.navigate(
@@ -200,7 +200,7 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
             child: Column(
               children: [
                 const Spacer(),
-                CmsCollapseBar(
+                DeskCollapseBar(
                   isCollapsed: true,
                   onToggle: () => viewModel.documentListVisible.value = true,
                 ),

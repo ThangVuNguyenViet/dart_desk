@@ -145,11 +145,11 @@ void main() {
 
   group('Media delete blocks when referenced', () {
     test(
-      'deleteMedia on asset-hero throws CmsValidationException because document Alpha references it',
+      'deleteMedia on asset-hero throws DeskValidationException because document Alpha references it',
       () async {
         expect(
           () => dataSource.deleteMedia('asset-hero'),
-          throwsA(isA<CmsValidationException>()),
+          throwsA(isA<DeskValidationException>()),
         );
       },
     );
@@ -208,10 +208,10 @@ void main() {
       expect(result.isDefault, isTrue);
     });
 
-    test('throws CmsNotFoundException for unknown documentId', () async {
+    test('throws DeskNotFoundException for unknown documentId', () async {
       expect(
         () => dataSource.setDefaultDocument('test_all_fields', 'nonexistent'),
-        throwsA(isA<CmsNotFoundException>()),
+        throwsA(isA<DeskNotFoundException>()),
       );
     });
   });

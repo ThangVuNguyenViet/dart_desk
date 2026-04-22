@@ -1,32 +1,32 @@
 import '../base/field.dart';
 
-class CmsDateTimeOption extends CmsOption {
-  const CmsDateTimeOption({super.optional, super.hidden});
+class DeskDateTimeOption extends DeskOption {
+  const DeskDateTimeOption({super.optional, super.hidden});
 }
 
-class CmsDateTimeField extends CmsField {
-  const CmsDateTimeField({
+class DeskDateTimeField extends DeskField {
+  const DeskDateTimeField({
     required super.name,
     required super.title,
     super.description,
-    CmsDateTimeOption super.option = const CmsDateTimeOption(),
+    DeskDateTimeOption super.option = const DeskDateTimeOption(),
   });
 
   @override
-  CmsDateTimeOption get option =>
-      (super.option as CmsDateTimeOption?) ?? const CmsDateTimeOption();
+  DeskDateTimeOption get option =>
+      (super.option as DeskDateTimeOption?) ?? const DeskDateTimeOption();
 }
 
-class CmsDateTimeFieldConfig extends CmsFieldConfig {
-  /// Convenience param that sets [CmsDateTimeOption.optional] = true when no
+class DeskDateTime extends DeskFieldConfig {
+  /// Convenience param that sets [DeskDateTimeOption.optional] = true when no
   /// explicit [option] is provided.
   final bool optional;
 
-  const CmsDateTimeFieldConfig({
+  const DeskDateTime({
     super.name,
     super.title,
     super.description,
-    CmsDateTimeOption super.option = const CmsDateTimeOption(),
+    DeskDateTimeOption super.option = const DeskDateTimeOption(),
     this.optional = false,
   });
 

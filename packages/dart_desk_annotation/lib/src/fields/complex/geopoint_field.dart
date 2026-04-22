@@ -1,26 +1,26 @@
 import '../base/field.dart';
 
-class CmsGeopointOption extends CmsOption {
-  const CmsGeopointOption();
+class DeskGeopointOption extends DeskOption {
+  const DeskGeopointOption();
 }
 
-class CmsGeopointField extends CmsField {
-  const CmsGeopointField({
+class DeskGeopointField extends DeskField {
+  const DeskGeopointField({
     required super.name,
     required super.title,
-    CmsGeopointOption super.option = const CmsGeopointOption(),
+    DeskGeopointOption super.option = const DeskGeopointOption(),
   });
 
   @override
-  CmsGeopointOption get option =>
-      (super.option as CmsGeopointOption?) ?? const CmsGeopointOption();
+  DeskGeopointOption get option =>
+      (super.option as DeskGeopointOption?) ?? const DeskGeopointOption();
 }
 
-class CmsGeopointFieldConfig extends CmsFieldConfig {
-  const CmsGeopointFieldConfig({
+class DeskGeopoint extends DeskFieldConfig {
+  const DeskGeopoint({
     super.name,
     super.title,
-    CmsGeopointOption super.option = const CmsGeopointOption(),
+    DeskGeopointOption super.option = const DeskGeopointOption(),
   });
 
   @override

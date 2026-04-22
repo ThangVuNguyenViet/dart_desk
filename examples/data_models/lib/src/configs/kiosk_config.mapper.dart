@@ -15,7 +15,7 @@ class KioskConfigMapper extends SubClassMapperBase<KioskConfig> {
   static KioskConfigMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = KioskConfigMapper._());
-      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
+      DeskContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([ImageReferenceMapper()]);
       KioskProductMapper.ensureInitialized();
       OrderLineMapper.ensureInitialized();
@@ -84,7 +84,8 @@ class KioskConfigMapper extends SubClassMapperBase<KioskConfig> {
   @override
   final dynamic discriminatorValue = 'kioskConfig';
   @override
-  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
+  late final ClassMapperBase superMapper =
+      DeskContentMapper.ensureInitialized();
 
   static KioskConfig _instantiate(DecodingData data) {
     return KioskConfig(
@@ -158,7 +159,7 @@ extension KioskConfigValueCopy<$R, $Out>
 }
 
 abstract class KioskConfigCopyWith<$R, $In extends KioskConfig, $Out>
-    implements CmsContentCopyWith<$R, $In, $Out> {
+    implements DeskContentCopyWith<$R, $In, $Out> {
   ListCopyWith<
     $R,
     KioskProduct,

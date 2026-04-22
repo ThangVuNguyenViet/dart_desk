@@ -140,7 +140,7 @@ Used by `StorefrontConfig`, `MenuHighlight`, `PromoOffer`, `DeliverySettings`.
 // data_models/storefront_config.dart
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
 class StorefrontConfig with StorefrontConfigMappable, Serializable<StorefrontConfig> {
-  @CmsImageFieldConfig(description: 'Hero image', option: CmsImageOption(hotspot: true))
+  @DeskImage(description: 'Hero image', option: DeskImageOption(hotspot: true))
   final ImageReference? heroImage;
   // ...
 }
@@ -158,7 +158,7 @@ Used by `AppTheme` (brand logos, app icon — benefits from responsive sizing).
 // data_models/app_theme.dart
 @MappableClass(includeCustomMappers: [ImageUrlMapper(), AppThemeColorMapper()])
 class AppTheme with AppThemeMappable, Serializable<AppTheme> {
-  @CmsImageFieldConfig(description: 'Light mode logo', option: CmsImageOption(hotspot: false))
+  @DeskImage(description: 'Light mode logo', option: DeskImageOption(hotspot: false))
   final ImageUrl? logoLight;
   // ...
 }
@@ -185,8 +185,8 @@ Both patterns serialize identically. Switching between them is a field type chan
 ### Changed in `dart_desk`
 - `ImageUrl.fromJson` renamed to `ImageUrl.fromMap` for consistency
 - `ImageUrlMapper` delegates to `ImageReference.fromMap` instead of constructing via `MediaAsset`
-- CMS editor (`CmsImageInput`) holds `MediaAsset` as a separate local variable, writes `ImageReference.toMap()` to `onChanged`
-- `CmsImageField` supported types updated to include `ImageReference` (annotation) and `ImageUrl`
+- CMS editor (`DeskImageInput`) holds `MediaAsset` as a separate local variable, writes `ImageReference.toMap()` to `onChanged`
+- `DeskImageField` supported types updated to include `ImageReference` (annotation) and `ImageUrl`
 
 ### Changed in `dart_desk_be`
 - Server-side `_inlineAssets()` unchanged — it mutates JSON maps in-place, unaware of client types

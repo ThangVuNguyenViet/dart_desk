@@ -2,31 +2,31 @@ import '../base/field.dart';
 
 /// Base for layout nodes that control how fields are arranged in the UI.
 ///
-/// [RowFields] and [ColumnFields] hold [CmsField] leaves directly.
-/// [GroupFields] nests other [CmsFieldLayout] nodes for deeper structure.
-sealed class CmsFieldLayout {
+/// [RowFields] and [ColumnFields] hold [DeskField] leaves directly.
+/// [GroupFields] nests other [DeskFieldLayout] nodes for deeper structure.
+sealed class DeskFieldLayout {
   final bool collapsible;
   final bool collapsed;
 
-  const CmsFieldLayout({this.collapsible = false, this.collapsed = false});
+  const DeskFieldLayout({this.collapsible = false, this.collapsed = false});
 
-  /// Recursively collect all leaf [CmsField] instances from this layout.
-  List<CmsField> get flatFields;
+  /// Recursively collect all leaf [DeskField] instances from this layout.
+  List<DeskField> get flatFields;
 }
 
 /// Renders fields horizontally in a row.
-class RowFields extends CmsFieldLayout {
-  final List<CmsField> children;
+class RowFields extends DeskFieldLayout {
+  final List<DeskField> children;
 
   const RowFields({required this.children, super.collapsible, super.collapsed});
 
   @override
-  List<CmsField> get flatFields => children;
+  List<DeskField> get flatFields => children;
 }
 
 /// Renders fields vertically in a column.
-class ColumnFields extends CmsFieldLayout {
-  final List<CmsField> children;
+class ColumnFields extends DeskFieldLayout {
+  final List<DeskField> children;
 
   const ColumnFields({
     required this.children,
@@ -35,14 +35,14 @@ class ColumnFields extends CmsFieldLayout {
   });
 
   @override
-  List<CmsField> get flatFields => children;
+  List<DeskField> get flatFields => children;
 }
 
 /// Named group with a title header that nests other layouts.
-class GroupFields extends CmsFieldLayout {
+class GroupFields extends DeskFieldLayout {
   final String title;
   final String? description;
-  final List<CmsFieldLayout> children;
+  final List<DeskFieldLayout> children;
 
   const GroupFields({
     required this.title,
@@ -53,6 +53,6 @@ class GroupFields extends CmsFieldLayout {
   });
 
   @override
-  List<CmsField> get flatFields =>
+  List<DeskField> get flatFields =>
       children.expand((c) => c.flatFields).toList();
 }

@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class StringFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsStringFieldConfig';
+  String get fieldConfigName => 'DeskString';
 
   @override
   List<Type> get supportedTypes => [String];
@@ -27,17 +27,17 @@ class StringFieldGenerator implements FieldCodeGenerator {
 
     String? resolvedOption = optionSource;
     if (optional && resolvedOption == null) {
-      resolvedOption = 'CmsStringOption(optional: true)';
+      resolvedOption = 'DeskStringOption(optional: true)';
     } else if (optional && resolvedOption != null) {
       if (!resolvedOption.contains('optional')) {
         resolvedOption = resolvedOption.replaceFirst(
-          'CmsStringOption(',
-          'CmsStringOption(optional: true, ',
+          'DeskStringOption(',
+          'DeskStringOption(optional: true, ',
         );
       }
     }
 
-    return '''CmsStringField(
+    return '''DeskStringField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${resolvedOption != null ? 'option: $resolvedOption,' : ''}

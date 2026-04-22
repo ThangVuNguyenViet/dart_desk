@@ -5,28 +5,28 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'menu_item_entry.cms.g.dart';
+part 'menu_item_entry.desk.dart';
 part 'menu_item_entry.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Menu item', description: 'Row in the menu browse list')
+@DeskModel(title: 'Menu item', description: 'Row in the menu browse list')
 class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemEntry> {
-  @CmsStringFieldConfig(description: 'Name', option: CmsStringOption())
+  @DeskString(description: 'Name', option: DeskStringOption())
   final String name;
 
-  @CmsNumberFieldConfig(description: 'Price', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Price', option: DeskNumberOption(min: 0))
   final num price;
 
-  @CmsTextFieldConfig(description: 'Short description', option: CmsTextOption())
+  @DeskText(description: 'Short description', option: DeskTextOption())
   final String shortDescription;
 
-  @CmsImageFieldConfig(description: 'Photo', option: CmsImageOption(hotspot: true))
+  @DeskImage(description: 'Photo', option: DeskImageOption(hotspot: true))
   final ImageReference? image;
 
-  @CmsMultiDropdownFieldConfig<String>(description: 'Tags', option: MenuItemTagsOption())
+  @DeskMultiDropdown<String>(description: 'Tags', option: MenuItemTagsOption())
   final List<String> tags;
 
-  @CmsCheckboxFieldConfig(description: 'Available', option: CmsCheckboxOption(label: 'Available'))
+  @DeskCheckbox(description: 'Available', option: DeskCheckboxOption(label: 'Available'))
   final bool isAvailable;
 
   const MenuItemEntry({
@@ -49,7 +49,7 @@ class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemE
   static MenuItemEntry $fromMap(Map<String, dynamic> map) => MenuItemEntryMapper.fromMap(map);
 }
 
-class MenuItemTagsOption extends CmsMultiDropdownOption<String> {
+class MenuItemTagsOption extends DeskMultiDropdownOption<String> {
   const MenuItemTagsOption({super.hidden});
   @override
   List<String>? get defaultValues => const [];

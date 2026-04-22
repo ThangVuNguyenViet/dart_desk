@@ -5,16 +5,16 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'cta_action.cms.g.dart';
+part 'cta_action.desk.dart';
 part 'cta_action.mapper.dart';
 
 @MappableClass()
-@CmsConfig(title: 'Call-to-action', description: 'Button label + style')
+@DeskModel(title: 'Call-to-action', description: 'Button label + style')
 class CtaAction with CtaActionMappable implements Serializable<CtaAction> {
-  @CmsStringFieldConfig(description: 'Button label', option: CmsStringOption())
+  @DeskString(description: 'Button label', option: DeskStringOption())
   final String label;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Visual style',
     option: CtaStyleDropdownOption(),
   )
@@ -27,7 +27,7 @@ class CtaAction with CtaActionMappable implements Serializable<CtaAction> {
   static CtaAction $fromMap(Map<String, dynamic> map) => CtaActionMapper.fromMap(map);
 }
 
-class CtaStyleDropdownOption extends CmsDropdownOption<String> {
+class CtaStyleDropdownOption extends DeskDropdownOption<String> {
   const CtaStyleDropdownOption({super.hidden});
   @override
   bool get allowNull => false;

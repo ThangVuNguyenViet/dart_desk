@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class NumberFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsNumberFieldConfig';
+  String get fieldConfigName => 'DeskNumber';
 
   @override
   List<Type> get supportedTypes => [num, int, double];
@@ -27,17 +27,17 @@ class NumberFieldGenerator implements FieldCodeGenerator {
 
     String? resolvedOption = optionSource;
     if (optional && resolvedOption == null) {
-      resolvedOption = 'CmsNumberOption(optional: true)';
+      resolvedOption = 'DeskNumberOption(optional: true)';
     } else if (optional && resolvedOption != null) {
       if (!resolvedOption.contains('optional')) {
         resolvedOption = resolvedOption.replaceFirst(
-          'CmsNumberOption(',
-          'CmsNumberOption(optional: true, ',
+          'DeskNumberOption(',
+          'DeskNumberOption(optional: true, ',
         );
       }
     }
 
-    return '''CmsNumberField(
+    return '''DeskNumberField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${resolvedOption != null ? 'option: $resolvedOption,' : ''}

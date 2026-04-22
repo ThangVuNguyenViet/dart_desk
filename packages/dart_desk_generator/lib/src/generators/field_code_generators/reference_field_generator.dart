@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class ReferenceFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsReferenceFieldConfig';
+  String get fieldConfigName => 'DeskReferenceFieldConfig';
 
   @override
   List<Type> get supportedTypes => [String];
@@ -23,7 +23,7 @@ class ReferenceFieldGenerator implements FieldCodeGenerator {
     if (fieldName == null) {
       throw InvalidGenerationSourceError('Field has no name', element: field);
     }
-    return '''CmsReferenceField(
+    return '''DeskReferenceField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}

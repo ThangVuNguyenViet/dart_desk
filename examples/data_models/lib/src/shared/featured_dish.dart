@@ -5,22 +5,22 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'featured_dish.cms.g.dart';
+part 'featured_dish.desk.dart';
 part 'featured_dish.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Featured dish', description: 'Home screen carousel item')
+@DeskModel(title: 'Featured dish', description: 'Home screen carousel item')
 class FeaturedDish with FeaturedDishMappable implements Serializable<FeaturedDish> {
-  @CmsStringFieldConfig(description: 'Dish name', option: CmsStringOption())
+  @DeskString(description: 'Dish name', option: DeskStringOption())
   final String name;
 
-  @CmsNumberFieldConfig(description: 'Price', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Price', option: DeskNumberOption(min: 0))
   final num price;
 
-  @CmsDropdownFieldConfig<String>(description: 'Tag', option: FeaturedDishTagOption())
+  @DeskDropdown<String>(description: 'Tag', option: FeaturedDishTagOption())
   final String tag;
 
-  @CmsImageFieldConfig(description: 'Photo', option: CmsImageOption(hotspot: true))
+  @DeskImage(description: 'Photo', option: DeskImageOption(hotspot: true))
   final ImageReference? image;
 
   const FeaturedDish({required this.name, required this.price, required this.tag, this.image});
@@ -30,7 +30,7 @@ class FeaturedDish with FeaturedDishMappable implements Serializable<FeaturedDis
   static FeaturedDish $fromMap(Map<String, dynamic> map) => FeaturedDishMapper.fromMap(map);
 }
 
-class FeaturedDishTagOption extends CmsDropdownOption<String> {
+class FeaturedDishTagOption extends DeskDropdownOption<String> {
   const FeaturedDishTagOption({super.hidden});
   @override
   bool get allowNull => false;

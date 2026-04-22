@@ -1,35 +1,35 @@
 import '../base/field.dart';
 
-class CmsCheckboxOption extends CmsOption {
+class DeskCheckboxOption extends DeskOption {
   final String? label;
   final bool initialValue;
 
-  const CmsCheckboxOption({
+  const DeskCheckboxOption({
     super.hidden,
     this.label,
     this.initialValue = false,
   });
 }
 
-class CmsCheckboxField extends CmsField {
-  const CmsCheckboxField({
+class DeskCheckboxField extends DeskField {
+  const DeskCheckboxField({
     required super.name,
     required super.title,
     super.description,
-    CmsCheckboxOption super.option = const CmsCheckboxOption(),
+    DeskCheckboxOption super.option = const DeskCheckboxOption(),
   });
 
   @override
-  CmsCheckboxOption get option =>
-      (super.option as CmsCheckboxOption?) ?? const CmsCheckboxOption();
+  DeskCheckboxOption get option =>
+      (super.option as DeskCheckboxOption?) ?? const DeskCheckboxOption();
 }
 
-class CmsCheckboxFieldConfig extends CmsFieldConfig {
-  const CmsCheckboxFieldConfig({
+class DeskCheckbox extends DeskFieldConfig {
+  const DeskCheckbox({
     super.name,
     super.title,
     super.description,
-    CmsCheckboxOption super.option = const CmsCheckboxOption(),
+    DeskCheckboxOption super.option = const DeskCheckboxOption(),
   });
 
   @override

@@ -8,31 +8,31 @@ import '../seed/aura_assets.dart';
 import '../seed/aura_enums.dart';
 import '../shared/menu_item_entry.dart';
 import '../shared/store_hours_entry.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'menu_config.cms.g.dart';
+part 'menu_config.desk.dart';
 part 'menu_config.mapper.dart';
 
-@CmsConfig(title: 'Menu screen', description: 'Mobile menu browse with categories, filters, hours, location')
+@DeskModel(title: 'Menu screen', description: 'Mobile menu browse with categories, filters, hours, location')
 @MappableClass(
   ignoreNull: false,
   discriminatorValue: 'menuConfig',
   includeCustomMappers: [ImageReferenceMapper()],
 )
-class MenuConfig extends CmsContent with MenuConfigMappable, Serializable<MenuConfig> {
-  @CmsMultiDropdownFieldConfig<String>(description: 'Categories shown as tabs', option: MenuCategoriesOption())
+class MenuConfig extends DeskContent with MenuConfigMappable, Serializable<MenuConfig> {
+  @DeskMultiDropdown<String>(description: 'Categories shown as tabs', option: MenuCategoriesOption())
   final List<String> categories;
 
-  @CmsMultiDropdownFieldConfig<String>(description: 'Filter chip set', option: MenuFilterTagsOption())
+  @DeskMultiDropdown<String>(description: 'Filter chip set', option: MenuFilterTagsOption())
   final List<String> filterTags;
 
-  @CmsArrayFieldConfig<MenuItemEntry>(description: 'Menu items')
+  @DeskArray<MenuItemEntry>(description: 'Menu items')
   final List<MenuItemEntry> items;
 
-  @CmsGeopointFieldConfig()
+  @DeskGeopoint()
   final Map<String, double>? location;
 
-  @CmsArrayFieldConfig<StoreHoursEntry>(description: 'Weekly hours')
+  @DeskArray<StoreHoursEntry>(description: 'Weekly hours')
   final List<StoreHoursEntry> storeHours;
 
   const MenuConfig({
@@ -66,7 +66,7 @@ class MenuConfig extends CmsContent with MenuConfigMappable, Serializable<MenuCo
   );
 }
 
-class MenuCategoriesOption extends CmsMultiDropdownOption<String> {
+class MenuCategoriesOption extends DeskMultiDropdownOption<String> {
   const MenuCategoriesOption({super.hidden});
   @override
   List<String>? get defaultValues => const [];
@@ -82,7 +82,7 @@ class MenuCategoriesOption extends CmsMultiDropdownOption<String> {
   String? get placeholder => 'Categories';
 }
 
-class MenuFilterTagsOption extends CmsMultiDropdownOption<String> {
+class MenuFilterTagsOption extends DeskMultiDropdownOption<String> {
   const MenuFilterTagsOption({super.hidden});
   @override
   List<String>? get defaultValues => const [];

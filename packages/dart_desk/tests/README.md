@@ -21,7 +21,7 @@ tests/
 
 ## QA Tests
 
-Tests UI behavior using `MockCmsDataSource` — no backend required.
+Tests UI behavior using `MockDeskDataSource` — no backend required.
 
 **Prerequisites:**
 1. Launch the test app (`lib/main_test.dart`) with `allFieldsDocumentType` via `mcp__dart__launch_app`
@@ -45,7 +45,7 @@ Tests full-stack behavior against a real Serverpod backend with PostgreSQL.
    ./packages/dart_desk/tests/e2e/setup/docker_manager.sh up
    ./packages/dart_desk/tests/e2e/setup/server_manager.sh start
    ```
-3. Launch the E2E app (`examples/cms_app`, target `lib/main_e2e.dart`) via `mcp__dart__launch_app`
+3. Launch the E2E app (`examples/desk_app`, target `lib/main_e2e.dart`) via `mcp__dart__launch_app`
 4. Connect Marionette
 
 **Run:**

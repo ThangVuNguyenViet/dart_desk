@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:dart_desk/dart_desk.dart';
-import 'package:dart_desk/src/studio/core/view_models/cms_document_view_model.dart';
+import 'package:dart_desk/src/studio/core/view_models/desk_document_view_model.dart';
 import 'package:dart_desk/src/studio/providers/studio_provider.dart';
 import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
@@ -18,14 +18,14 @@ import '../helpers/input_test_helpers.dart';
 // ---------------------------------------------------------------------------
 
 /// Minimal preview panel that watches editedData and calls docType.builder,
-/// mirroring the real CmsStudio._buildPreview logic.
+/// mirroring the real DeskStudio._buildPreview logic.
 class _PreviewPanel extends StatelessWidget {
   final DocumentType docType;
   const _PreviewPanel({required this.docType});
 
   @override
   Widget build(BuildContext context) {
-    final edited = GetIt.I<CmsDocumentViewModel>().editedData.watch(context);
+    final edited = GetIt.I<DeskDocumentViewModel>().editedData.watch(context);
     return docType.builder(edited);
   }
 }
@@ -45,13 +45,13 @@ Widget buildEditorPreviewTestApp({
           documentTypes: [docType],
           child: Builder(
             builder: (context) {
-              // Activate the document type so CmsForm's CmsImageField branch works.
-              final vm = GetIt.I<CmsViewModel>();
+              // Activate the document type so DeskForm's DeskImageField branch works.
+              final vm = GetIt.I<DeskViewModel>();
               vm.currentDocumentTypeSlug.value = docType.name;
 
               // Seed editedData if provided.
               if (seedData.isNotEmpty) {
-                final docVM = GetIt.I<CmsDocumentViewModel>();
+                final docVM = GetIt.I<DeskDocumentViewModel>();
                 docVM.editedData.value = Map<String, dynamic>.from(seedData);
               }
 
@@ -59,7 +59,7 @@ Widget buildEditorPreviewTestApp({
                 children: [
                   Expanded(child: _PreviewPanel(docType: docType)),
                   Expanded(
-                    child: CmsDocumentEditor(
+                    child: DeskDocumentEditor(
                       fields: docType.fields,
                       title: docType.title,
                     ),
@@ -74,12 +74,12 @@ Widget buildEditorPreviewTestApp({
   );
 }
 
-/// Builds a standalone CmsForm (no provider required beyond cmsViewModelProvider
+/// Builds a standalone DeskForm (no provider required beyond deskViewModelProvider
 /// for image field) wrapped in the same shell as input tests.
-Widget buildCmsFormTestApp({
+Widget buildDeskFormTestApp({
   required MockDataSource dataSource,
   required DocumentType docType,
-  required List<CmsField> fields,
+  required List<DeskField> fields,
   Map<String, dynamic> data = const {},
   OnFieldChanged? onFieldChanged,
 }) {
@@ -91,9 +91,9 @@ Widget buildCmsFormTestApp({
           documentTypes: [docType],
           child: Builder(
             builder: (context) {
-              GetIt.I<CmsViewModel>().currentDocumentTypeSlug.value =
+              GetIt.I<DeskViewModel>().currentDocumentTypeSlug.value =
                   docType.name;
-              return CmsForm(
+              return DeskForm(
                 fields: fields,
                 data: data,
                 onFieldChanged: onFieldChanged,
@@ -123,13 +123,13 @@ void main() {
   });
 
   // ========================================================================
-  // Group 1: CmsForm field routing
+  // Group 1: DeskForm field routing
   // ========================================================================
 
-  group('CmsForm field routing', () {
+  group('DeskForm field routing', () {
     testWidgets('renders all field inputs', (tester) async {
       await tester.pumpWidget(
-        buildCmsFormTestApp(
+        buildDeskFormTestApp(
           dataSource: dataSource,
           docType: allFieldsDocumentType,
           fields: allFieldsDocumentType.fields,
@@ -138,11 +138,11 @@ void main() {
       await tester.pump();
 
       // Spot-check several input types are present.
-      expect(find.byType(CmsStringInput), findsOneWidget);
-      expect(find.byType(CmsNumberInput), findsOneWidget);
-      expect(find.byType(CmsBooleanInput), findsOneWidget);
-      expect(find.byType(CmsTextInput), findsOneWidget);
-      expect(find.byType(CmsUrlInput), findsOneWidget);
+      expect(find.byType(DeskStringInput), findsOneWidget);
+      expect(find.byType(DeskNumberInput), findsOneWidget);
+      expect(find.byType(DeskBooleanInput), findsOneWidget);
+      expect(find.byType(DeskTextInput), findsOneWidget);
+      expect(find.byType(DeskUrlInput), findsOneWidget);
     });
 
     testWidgets('routes string field change', (tester) async {
@@ -150,14 +150,14 @@ void main() {
       dynamic receivedValue;
 
       await tester.pumpWidget(
-        buildCmsFormTestApp(
+        buildDeskFormTestApp(
           dataSource: dataSource,
           docType: allFieldsDocumentType,
           fields: const [
-            CmsStringField(
+            DeskStringField(
               name: 'string_field',
               title: 'String Field',
-              option: CmsStringOption(),
+              option: DeskStringOption(),
             ),
           ],
           onFieldChanged: (name, value) {
@@ -180,14 +180,14 @@ void main() {
       dynamic receivedValue;
 
       await tester.pumpWidget(
-        buildCmsFormTestApp(
+        buildDeskFormTestApp(
           dataSource: dataSource,
           docType: allFieldsDocumentType,
           fields: const [
-            CmsNumberField(
+            DeskNumberField(
               name: 'number_field',
               title: 'Number Field',
-              option: CmsNumberOption(),
+              option: DeskNumberOption(),
             ),
           ],
           onFieldChanged: (name, value) {
@@ -210,14 +210,14 @@ void main() {
       dynamic receivedValue;
 
       await tester.pumpWidget(
-        buildCmsFormTestApp(
+        buildDeskFormTestApp(
           dataSource: dataSource,
           docType: allFieldsDocumentType,
           fields: const [
-            CmsBooleanField(
+            DeskBooleanField(
               name: 'boolean_field',
               title: 'Boolean Field',
-              option: CmsBooleanOption(),
+              option: DeskBooleanOption(),
             ),
           ],
           onFieldChanged: (name, value) {
@@ -265,7 +265,7 @@ void main() {
       await tester.pump();
 
       // Access editedData through the element tree.
-      final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
+      final editedData = GetIt.I<DeskDocumentViewModel>().editedData;
       expect(editedData['string_field'], 'hello world');
     });
 
@@ -288,7 +288,7 @@ void main() {
       await tester.enterText(inputField, '99');
       await tester.pump();
 
-      final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
+      final editedData = GetIt.I<DeskDocumentViewModel>().editedData;
       expect(editedData['number_field'], 99);
     });
 
@@ -311,7 +311,7 @@ void main() {
       await tester.tap(switchFinder);
       await tester.pumpAndSettle();
 
-      final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
+      final editedData = GetIt.I<DeskDocumentViewModel>().editedData;
       expect(editedData['boolean_field'], isNotNull);
     });
   });
@@ -477,7 +477,7 @@ void main() {
       );
 
       // Programmatically update editedData to simulate selection change
-      final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
+      final editedData = GetIt.I<DeskDocumentViewModel>().editedData;
       editedData.value = {
         ...editedData.value,
         'document_ref_dropdown': [gammaDoc.id!],
@@ -543,7 +543,7 @@ void main() {
       await tester.pump();
 
       // Verify editedData has the change.
-      final editedData = GetIt.I<CmsDocumentViewModel>().editedData;
+      final editedData = GetIt.I<DeskDocumentViewModel>().editedData;
       expect(editedData['string_field'], 'dirty');
 
       // Tap Discard.

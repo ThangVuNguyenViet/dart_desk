@@ -7,8 +7,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../cloud/cloud_data_source.dart';
 import '../cloud/dart_desk_auth.dart';
 import '../cloud/dart_desk_auth_view_model.dart';
-import '../data/cms_data_source.dart';
-import 'cms_studio_app.dart';
+import '../data/desk_data_source.dart';
+import 'desk_studio_app.dart';
 import 'dart_desk_config.dart';
 
 /// Entry point for Dart Desk CMS applications.
@@ -133,7 +133,7 @@ class _DartDeskAppState extends State<DartDeskApp> {
   }
 
   Widget _buildStudio(DataSource dataSource, VoidCallback signOut) {
-    return CmsStudioApp(
+    return DeskStudioApp(
       dataSource: dataSource,
       documentTypes: widget.config.documentTypes,
       documentTypeDecorations: widget.config.documentTypeDecorations,

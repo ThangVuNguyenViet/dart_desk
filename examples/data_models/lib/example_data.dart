@@ -1,6 +1,6 @@
 library;
 
-export 'src/configs/cms_content.dart';
+export 'src/configs/desk_content.dart';
 export 'src/configs/brand_theme.dart' hide BrandThemeColorMapper;
 export 'src/seed/aura_assets.dart';
 export 'src/seed/aura_enums.dart';

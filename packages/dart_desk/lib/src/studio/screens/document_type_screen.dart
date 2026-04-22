@@ -18,7 +18,7 @@ class DocumentTypeScreen extends StatelessWidget {
   final String documentTypeSlug;
 
   Future<void> _deleteDocument(BuildContext context, {String? docId}) async {
-    final viewModel = GetIt.I<CmsViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
     final toaster = ShadToaster.of(context);
     if (docId == null) return;
 
@@ -77,7 +77,7 @@ class DocumentTypeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = GetIt.I<CmsViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
     final docType = viewModel.currentDocumentType.watch(context);
     final breakpoint = ResponsiveBreakpoints.of(context);
     final isMobile = breakpoint.isMobile;
@@ -88,12 +88,12 @@ class DocumentTypeScreen extends StatelessWidget {
     if (isMobile) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(
-          CmsSpacing.md,
-          CmsSpacing.sm,
-          CmsSpacing.md,
+          DeskSpacing.md,
+          DeskSpacing.sm,
+          DeskSpacing.md,
           0,
         ),
-        child: CmsDocumentListView(
+        child: DeskDocumentListView(
           selectedDocumentType: docType,
           icon: FontAwesomeIcons.file,
           onOpenDocument: (documentId) {

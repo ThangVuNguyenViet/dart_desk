@@ -6,15 +6,15 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsCheckboxField(
+  const field = DeskCheckboxField(
     name: 'enable',
     title: 'Enable',
-    option: CmsCheckboxOption(label: 'Enable this feature'),
+    option: DeskCheckboxOption(label: 'Enable this feature'),
   );
 
-  group('CmsCheckboxInput', () {
+  group('DeskCheckboxInput', () {
     testWidgets('renders label text', (tester) async {
-      await tester.pumpWidget(buildInputApp(CmsCheckboxInput(field: field)));
+      await tester.pumpWidget(buildInputApp(DeskCheckboxInput(field: field)));
       await tester.pumpAndSettle();
 
       expect(find.text('Enable this feature'), findsOneWidget);
@@ -25,9 +25,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsCheckboxInput(
+          DeskCheckboxInput(
             field: field,
-            data: const CmsData(value: false, path: 'enable'),
+            data: const DeskData(value: false, path: 'enable'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -45,9 +45,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsCheckboxInput(
+          DeskCheckboxInput(
             field: field,
-            data: const CmsData(value: false, path: 'enable'),
+            data: const DeskData(value: false, path: 'enable'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -61,14 +61,14 @@ void main() {
     });
 
     testWidgets('hidden field renders nothing', (tester) async {
-      const hiddenField = CmsCheckboxField(
+      const hiddenField = DeskCheckboxField(
         name: 'hidden',
         title: 'Hidden',
-        option: CmsCheckboxOption(hidden: true),
+        option: DeskCheckboxOption(hidden: true),
       );
 
       await tester.pumpWidget(
-        buildInputApp(CmsCheckboxInput(field: hiddenField)),
+        buildInputApp(DeskCheckboxInput(field: hiddenField)),
       );
       await tester.pumpAndSettle();
 

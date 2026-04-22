@@ -1,22 +1,22 @@
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
-part 'chef_profile.cms.g.dart';
+part 'chef_profile.desk.dart';
 part 'chef_profile.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Chef profile', description: 'Head chef bio block')
+@DeskModel(title: 'Chef profile', description: 'Head chef bio block')
 class ChefProfile with ChefProfileMappable implements Serializable<ChefProfile> {
-  @CmsStringFieldConfig(description: 'Name', option: CmsStringOption())
+  @DeskString(description: 'Name', option: DeskStringOption())
   final String name;
 
-  @CmsStringFieldConfig(description: 'Role', option: CmsStringOption())
+  @DeskString(description: 'Role', option: DeskStringOption())
   final String role;
 
-  @CmsImageFieldConfig(description: 'Portrait', option: CmsImageOption(hotspot: true))
+  @DeskImage(description: 'Portrait', option: DeskImageOption(hotspot: true))
   final ImageReference? portrait;
 
-  @CmsTextFieldConfig(description: 'Bio', option: CmsTextOption())
+  @DeskText(description: 'Bio', option: DeskTextOption())
   final String bio;
 
   const ChefProfile({required this.name, required this.role, this.portrait, required this.bio});

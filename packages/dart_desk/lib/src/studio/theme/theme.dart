@@ -4,7 +4,7 @@
 /// light variant is provided. A single chromatic accent (chartreuse) is used
 /// across both modes. Extra accent tokens (hover, tint, tint-border, text)
 /// live on `DartDeskPalette` — a `ThemeExtension` wired up in
-/// `CmsStudioApp`.
+/// `DeskStudioApp`.
 library;
 
 import 'package:flutter/material.dart';
@@ -62,12 +62,12 @@ ShadColorScheme _lightScheme() => const ShadColorScheme(
       selection: Color(0x40C6F24E),
     );
 
-ShadThemeData get cmsStudioTheme => ShadThemeData(
+ShadThemeData get deskStudioTheme => ShadThemeData(
       brightness: Brightness.dark,
       colorScheme: _darkScheme(),
     );
 
-ShadThemeData get cmsStudioLightTheme => ShadThemeData(
+ShadThemeData get deskStudioLightTheme => ShadThemeData(
       brightness: Brightness.light,
       colorScheme: _lightScheme(),
     );

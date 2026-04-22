@@ -29,29 +29,29 @@ final blogPostType = DocumentType<BlogPost>(
   title: 'Blog Post',
   description: 'A blog post with title, body text, and publish status.',
   fields: [
-    CmsStringField(
+    DeskStringField(
       name: 'title',
       title: 'Title',
       description: 'The title of the blog post',
-      option: CmsStringOption(),
+      option: DeskStringOption(),
     ),
-    CmsTextField(
+    DeskTextField(
       name: 'body',
       title: 'Body',
       description: 'The main content of the blog post',
-      option: CmsTextOption(rows: 5),
+      option: DeskTextOption(rows: 5),
     ),
-    CmsBooleanField(
+    DeskBooleanField(
       name: 'published',
       title: 'Published',
       description: 'Whether this post is publicly visible',
-      option: CmsBooleanOption(),
+      option: DeskBooleanOption(),
     ),
-    CmsImageField(
+    DeskImageField(
       name: 'coverImage',
       title: 'Cover Image',
       description: 'Hero image displayed at the top of the post',
-      option: CmsImageOption(hotspot: true),
+      option: DeskImageOption(hotspot: true),
     ),
   ],
   builder: (data) => Text(data['title'] as String? ?? 'Untitled'),
@@ -71,8 +71,8 @@ void validatorExample() {
   print('Invalid result: $invalid'); // "Title is required"
 }
 
-// Using the @CmsConfig annotation to mark a class for code generation
-@CmsConfig(
+// Using the @DeskModel annotation to mark a class for code generation
+@DeskModel(
   title: 'Site Settings',
   description: 'Global configuration for the site',
   id: 'siteSettings',

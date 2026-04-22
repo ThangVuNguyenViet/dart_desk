@@ -14,53 +14,53 @@ dart pub add dart_desk_annotation
 
 ### Annotating a CMS configuration class
 
-Use `@CmsConfig` to mark a class as a CMS configuration. This annotation is picked up by `dart_desk_generator` to generate CMS UI and data models.
+Use `@DeskModel` to mark a class as a CMS configuration. This annotation is picked up by `dart_desk_generator` to generate CMS UI and data models.
 
 ```dart
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Blog Post',
   description: 'A blog post document type',
 )
 class BlogPostConfig {
-  // Fields are defined via CmsDocumentType
+  // Fields are defined via DeskDocumentType
 }
 ```
 
 ### Defining a document type with fields
 
-Use `CmsDocumentType` to define the schema for a content type, including its fields and a preview builder.
+Use `DeskDocumentType` to define the schema for a content type, including its fields and a preview builder.
 
 ```dart
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/widgets.dart';
 
-final blogPostType = CmsDocumentType<BlogPost>(
+final blogPostType = DeskDocumentType<BlogPost>(
   name: 'blogPost',
   title: 'Blog Post',
   description: 'A blog post with title, body, and cover image.',
   fields: [
-    CmsStringField(
+    DeskStringField(
       name: 'title',
       title: 'Title',
       description: 'The title of the blog post',
-      option: CmsStringOption(),
+      option: DeskStringOption(),
     ),
-    CmsTextField(
+    DeskTextField(
       name: 'body',
       title: 'Body',
-      option: CmsTextOption(),
+      option: DeskTextOption(),
     ),
-    CmsImageField(
+    DeskImageField(
       name: 'coverImage',
       title: 'Cover Image',
-      option: CmsImageOption(),
+      option: DeskImageOption(),
     ),
-    CmsBooleanField(
+    DeskBooleanField(
       name: 'published',
       title: 'Published',
-      option: CmsBooleanOption(),
+      option: DeskBooleanOption(),
     ),
   ],
   builder: (data) => Text(data['title'] as String? ?? ''),
@@ -69,7 +69,7 @@ final blogPostType = CmsDocumentType<BlogPost>(
 
 ### Using validators
 
-`CmsValidator` and `RequiredValidator` can be attached to fields to enforce input constraints.
+`DeskValidator` and `RequiredValidator` can be attached to fields to enforce input constraints.
 
 ```dart
 final validator = RequiredValidator<String>();
@@ -79,26 +79,26 @@ final validator = RequiredValidator<String>();
 ## Field types
 
 ### Primitive
-- `CmsStringField` / `CmsStringFieldConfig`
-- `CmsTextField` / `CmsTextFieldConfig`
-- `CmsNumberField` / `CmsNumberFieldConfig`
-- `CmsBooleanField` / `CmsBooleanFieldConfig`
-- `CmsCheckboxField` / `CmsCheckboxFieldConfig`
-- `CmsDateField` / `CmsDateFieldConfig`
-- `CmsDatetimeField` / `CmsDatetimeFieldConfig`
-- `CmsUrlField` / `CmsUrlFieldConfig`
+- `DeskStringField` / `DeskString`
+- `DeskTextField` / `DeskText`
+- `DeskNumberField` / `DeskNumber`
+- `DeskBooleanField` / `DeskBoolean`
+- `DeskCheckboxField` / `DeskCheckbox`
+- `DeskDateField` / `DeskDate`
+- `DeskDatetimeField` / `DeskDatetimeFieldConfig`
+- `DeskUrlField` / `DeskUrl`
 
 ### Complex
-- `CmsArrayField` / `CmsArrayFieldConfig`
-- `CmsBlockField` / `CmsBlockFieldConfig`
-- `CmsDropdownField` / `CmsDropdownFieldConfig`
-- `CmsGeopointField` / `CmsGeopointFieldConfig`
-- `CmsObjectField` / `CmsObjectFieldConfig`
+- `DeskArrayField` / `DeskArray`
+- `DeskBlockField` / `DeskBlock`
+- `DeskDropdownField` / `DeskDropdown`
+- `DeskGeopointField` / `DeskGeopoint`
+- `DeskObjectField` / `DeskObject`
 
 ### Media
-- `CmsImageField` / `CmsImageFieldConfig`
-- `CmsFileField` / `CmsFileFieldConfig`
-- `CmsColorField` / `CmsColorFieldConfig`
+- `DeskImageField` / `DeskImage`
+- `DeskFileField` / `DeskFile`
+- `DeskColorField` / `DeskColor`
 
 ## License
 

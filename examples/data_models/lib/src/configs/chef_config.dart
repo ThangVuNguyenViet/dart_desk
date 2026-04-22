@@ -5,37 +5,37 @@ import '../seed/aura_assets.dart';
 import '../seed/aura_copy.dart';
 import '../shared/chef_profile.dart';
 import '../shared/curated_dish.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'chef_config.cms.g.dart';
+part 'chef_config.desk.dart';
 part 'chef_config.mapper.dart';
 
-@CmsConfig(title: "Chef's Choice", description: 'Mobile upsell — curated list + pull-quote')
+@DeskModel(title: "Chef's Choice", description: 'Mobile upsell — curated list + pull-quote')
 @MappableClass(
   ignoreNull: false,
   discriminatorValue: 'chefConfig',
   includeCustomMappers: [ImageReferenceMapper()],
 )
-class ChefConfig extends CmsContent with ChefConfigMappable, Serializable<ChefConfig> {
-  @CmsTextFieldConfig(description: 'Headline', option: CmsTextOption())
+class ChefConfig extends DeskContent with ChefConfigMappable, Serializable<ChefConfig> {
+  @DeskText(description: 'Headline', option: DeskTextOption())
   final String headline;
 
-  @CmsBlockFieldConfig(option: CmsBlockOption())
+  @DeskBlock(option: DeskBlockOption())
   final Object? intro;
 
-  @CmsObjectFieldConfig(description: 'Chef profile')
+  @DeskObject(description: 'Chef profile')
   final ChefProfile chef;
 
-  @CmsTextFieldConfig(description: 'Pull quote', option: CmsTextOption())
+  @DeskText(description: 'Pull quote', option: DeskTextOption())
   final String pullQuote;
 
-  @CmsArrayFieldConfig<CuratedDish>(description: 'Curated dishes')
+  @DeskArray<CuratedDish>(description: 'Curated dishes')
   final List<CuratedDish> curatedDishes;
 
-  @CmsStringFieldConfig(description: 'Refresh cadence label', option: CmsStringOption())
+  @DeskString(description: 'Refresh cadence label', option: DeskStringOption())
   final String refreshCadence;
 
-  @CmsDateFieldConfig(description: 'Published from', option: CmsDateOption())
+  @DeskDate(description: 'Published from', option: DeskDateOption())
   final DateTime publishFrom;
 
   const ChefConfig({

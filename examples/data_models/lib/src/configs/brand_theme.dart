@@ -5,12 +5,12 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
 import '../seed/aura_enums.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'brand_theme.cms.g.dart';
+part 'brand_theme.desk.dart';
 part 'brand_theme.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Brand Theme',
   description: 'Colors and typography shared across every Aura screen.',
 )
@@ -19,56 +19,56 @@ part 'brand_theme.mapper.dart';
   discriminatorValue: 'brandTheme',
   includeCustomMappers: [BrandThemeColorMapper(), ImageReferenceMapper()],
 )
-class BrandTheme extends CmsContent
+class BrandTheme extends DeskContent
     with BrandThemeMappable, Serializable<BrandTheme> {
-  @CmsStringFieldConfig(description: 'Theme name', option: CmsStringOption())
+  @DeskString(description: 'Theme name', option: DeskStringOption())
   final String name;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Primary — buttons, accents, dark surfaces',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color primaryColor;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Surface — page backgrounds',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color surfaceColor;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Accent — prices, tags, warm highlights',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color accentColor;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Ink — body text and headlines',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color inkColor;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Headline font',
     option: HeadlineFontDropdownOption(),
   )
   final String headlineFont;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Body font',
     option: BodyFontDropdownOption(),
   )
   final String bodyFont;
 
-  @CmsNumberFieldConfig(
+  @DeskNumber(
     description: 'Corner radius in px',
-    option: CmsNumberOption(min: 0, max: 24),
+    option: DeskNumberOption(min: 0, max: 24),
   )
   final num cornerRadius;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Logo (square)',
-    option: CmsImageOption(hotspot: false),
+    option: DeskImageOption(hotspot: false),
   )
   final ImageReference? logo;
 
@@ -115,7 +115,7 @@ class BrandThemeColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class HeadlineFontDropdownOption extends CmsDropdownOption<String> {
+class HeadlineFontDropdownOption extends DeskDropdownOption<String> {
   const HeadlineFontDropdownOption({super.hidden});
   @override
   bool get allowNull => false;
@@ -129,7 +129,7 @@ class HeadlineFontDropdownOption extends CmsDropdownOption<String> {
   String? get placeholder => 'Headline font';
 }
 
-class BodyFontDropdownOption extends CmsDropdownOption<String> {
+class BodyFontDropdownOption extends DeskDropdownOption<String> {
   const BodyFontDropdownOption({super.hidden});
   @override
   bool get allowNull => false;

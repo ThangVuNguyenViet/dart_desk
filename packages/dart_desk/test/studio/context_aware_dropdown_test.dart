@@ -16,16 +16,16 @@ import '../helpers/input_test_helpers.dart';
 // Test helpers
 // ---------------------------------------------------------------------------
 
-/// A CmsMultiDropdownOption subclass that resolves options from BuildContext,
+/// A DeskMultiDropdownOption subclass that resolves options from BuildContext,
 /// proving the context-aware API works.
-class _ContextAwareDropdownOption extends CmsMultiDropdownOption<String> {
+class _ContextAwareDropdownOption extends DeskMultiDropdownOption<String> {
   final String documentType;
 
   const _ContextAwareDropdownOption({required this.documentType});
 
   @override
   List<DropdownOption<String>> options(BuildContext context) {
-    final viewModel = GetIt.I<CmsViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
     final state = viewModel.documentsContainer(documentType).watch(context);
     return state.map(
       data: (list) => list.documents
@@ -49,7 +49,7 @@ class _ContextAwareDropdownOption extends CmsMultiDropdownOption<String> {
   int? get maxSelected => null;
 }
 
-/// Wraps a widget in StudioProvider + ShadApp for tests that need CmsViewModel.
+/// Wraps a widget in StudioProvider + ShadApp for tests that need DeskViewModel.
 Widget buildStudioTestApp({
   required MockDataSource dataSource,
   required List<DocumentType> documentTypes,
@@ -92,14 +92,14 @@ void main() {
   // Group 1: Context-aware dropdown options (Change 1)
   // ==========================================================================
 
-  group('Context-aware CmsDropdownOption', () {
+  group('Context-aware DeskDropdownOption', () {
     testWidgets(
-      'CmsDropdownSimpleOption ignores context and returns static options',
+      'DeskDropdownSimpleOption ignores context and returns static options',
       (tester) async {
-        const field = CmsDropdownField<String>(
+        const field = DeskDropdownField<String>(
           name: 'simple',
           title: 'Simple',
-          option: CmsDropdownSimpleOption(
+          option: DeskDropdownSimpleOption(
             options: [
               DropdownOption(value: 'a', label: 'Alpha'),
               DropdownOption(value: 'b', label: 'Beta'),
@@ -109,7 +109,7 @@ void main() {
         );
 
         await tester.pumpWidget(
-          buildInputApp(CmsDropdownInput<String>(field: field)),
+          buildInputApp(DeskDropdownInput<String>(field: field)),
         );
         await tester.pumpAndSettle();
 
@@ -125,12 +125,12 @@ void main() {
       },
     );
 
-    testWidgets('context-aware option resolves documents from CmsViewModel', (
+    testWidgets('context-aware option resolves documents from DeskViewModel', (
       tester,
     ) async {
       // MockDataSource seeds 3 documents of type 'test_all_fields'.
       // We use that type so documentsContainer returns real data.
-      final field = CmsMultiDropdownField<String>(
+      final field = DeskMultiDropdownField<String>(
         name: 'ref_doc',
         title: 'Reference Document',
         option: _ContextAwareDropdownOption(documentType: 'test_all_fields'),
@@ -144,7 +144,7 @@ void main() {
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: CmsMultiDropdownInput<String>(field: field),
+                child: DeskMultiDropdownInput<String>(field: field),
               ),
             );
           },
@@ -167,7 +167,7 @@ void main() {
       tester,
     ) async {
       // Use a document type that has no seeded documents
-      final field = CmsMultiDropdownField<String>(
+      final field = DeskMultiDropdownField<String>(
         name: 'ref_doc',
         title: 'Reference Document',
         option: _ContextAwareDropdownOption(documentType: 'nonexistent_type'),
@@ -181,7 +181,7 @@ void main() {
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: CmsMultiDropdownInput<String>(field: field),
+                child: DeskMultiDropdownInput<String>(field: field),
               ),
             );
           },
@@ -197,24 +197,24 @@ void main() {
     testWidgets('context-aware option rebuilds when documents change', (
       tester,
     ) async {
-      final field = CmsMultiDropdownField<String>(
+      final field = DeskMultiDropdownField<String>(
         name: 'ref_doc',
         title: 'Reference Document',
         option: _ContextAwareDropdownOption(documentType: 'test_all_fields'),
       );
 
-      late CmsViewModel viewModel;
+      late DeskViewModel viewModel;
 
       await tester.pumpWidget(
         buildStudioTestApp(
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            viewModel = GetIt.I<CmsViewModel>();
+            viewModel = GetIt.I<DeskViewModel>();
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: CmsMultiDropdownInput<String>(field: field),
+                child: DeskMultiDropdownInput<String>(field: field),
               ),
             );
           },
@@ -259,7 +259,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            final vm = GetIt.I<CmsViewModel>();
+            final vm = GetIt.I<DeskViewModel>();
             final state = vm
                 .documentsContainer('test_all_fields')
                 .watch(context);
@@ -289,7 +289,7 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType, _testDocType],
           builder: (context) {
-            final vm = GetIt.I<CmsViewModel>();
+            final vm = GetIt.I<DeskViewModel>();
             final state1 = vm
                 .documentsContainer('test_all_fields')
                 .watch(context);
@@ -318,14 +318,14 @@ void main() {
     });
 
     testWidgets('reload updates the container data', (tester) async {
-      late CmsViewModel viewModel;
+      late DeskViewModel viewModel;
 
       await tester.pumpWidget(
         buildStudioTestApp(
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            viewModel = GetIt.I<CmsViewModel>();
+            viewModel = GetIt.I<DeskViewModel>();
             final state = viewModel
                 .documentsContainer('test_all_fields')
                 .watch(context);
@@ -349,17 +349,17 @@ void main() {
       expect(find.text('count: 4'), findsOneWidget);
     });
 
-    testWidgets('CmsViewModel.refreshDocuments reloads current type', (
+    testWidgets('DeskViewModel.refreshDocuments reloads current type', (
       tester,
     ) async {
-      late CmsViewModel viewModel;
+      late DeskViewModel viewModel;
 
       await tester.pumpWidget(
         buildStudioTestApp(
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            viewModel = GetIt.I<CmsViewModel>();
+            viewModel = GetIt.I<DeskViewModel>();
             viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
 
             final state = viewModel
@@ -388,14 +388,14 @@ void main() {
     testWidgets('createDocument reloads the documents container', (
       tester,
     ) async {
-      late CmsViewModel viewModel;
+      late DeskViewModel viewModel;
 
       await tester.pumpWidget(
         buildStudioTestApp(
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            viewModel = GetIt.I<CmsViewModel>();
+            viewModel = GetIt.I<DeskViewModel>();
             viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
 
             final state = viewModel
@@ -429,14 +429,14 @@ void main() {
     testWidgets('deleteDocument reloads the documents container', (
       tester,
     ) async {
-      late CmsViewModel viewModel;
+      late DeskViewModel viewModel;
 
       await tester.pumpWidget(
         buildStudioTestApp(
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            viewModel = GetIt.I<CmsViewModel>();
+            viewModel = GetIt.I<DeskViewModel>();
             viewModel.currentDocumentTypeSlug.value = 'test_all_fields';
 
             final state = viewModel
@@ -467,17 +467,17 @@ void main() {
   // Group 3: Document list with client-side search (Change 2 - UI)
   // ==========================================================================
 
-  group('CmsDocumentListView with simplified container', () {
+  group('DeskDocumentListView with simplified container', () {
     testWidgets('renders document list for a document type', (tester) async {
       await tester.pumpWidget(
         buildStudioTestApp(
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            final vm = GetIt.I<CmsViewModel>();
+            final vm = GetIt.I<DeskViewModel>();
             vm.currentDocumentTypeSlug.value = 'test_all_fields';
 
-            return CmsDocumentListView(
+            return DeskDocumentListView(
               selectedDocumentType: allFieldsDocumentType,
             );
           },
@@ -498,10 +498,10 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            final vm = GetIt.I<CmsViewModel>();
+            final vm = GetIt.I<DeskViewModel>();
             vm.currentDocumentTypeSlug.value = 'test_all_fields';
 
-            return CmsDocumentListView(
+            return DeskDocumentListView(
               selectedDocumentType: allFieldsDocumentType,
             );
           },
@@ -534,10 +534,10 @@ void main() {
           dataSource: dataSource,
           documentTypes: [allFieldsDocumentType],
           builder: (context) {
-            final vm = GetIt.I<CmsViewModel>();
+            final vm = GetIt.I<DeskViewModel>();
             vm.currentDocumentTypeSlug.value = 'test_all_fields';
 
-            return CmsDocumentListView(
+            return DeskDocumentListView(
               selectedDocumentType: allFieldsDocumentType,
             );
           },

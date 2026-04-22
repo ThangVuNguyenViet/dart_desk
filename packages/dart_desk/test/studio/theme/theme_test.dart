@@ -4,9 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 void main() {
-  group('cmsStudioTheme (dark)', () {
+  group('deskStudioTheme (dark)', () {
     test('uses editorial dark palette on ShadColorScheme', () {
-      final scheme = cmsStudioTheme.colorScheme;
+      final scheme = deskStudioTheme.colorScheme;
       expect(scheme.background, DartDeskColors.darkBackground);
       expect(scheme.foreground, DartDeskColors.darkForeground);
       expect(scheme.primary, DartDeskColors.darkPrimary);
@@ -18,13 +18,13 @@ void main() {
     });
 
     test('brightness is dark', () {
-      expect(cmsStudioTheme.brightness, Brightness.dark);
+      expect(deskStudioTheme.brightness, Brightness.dark);
     });
   });
 
-  group('cmsStudioLightTheme', () {
+  group('deskStudioLightTheme', () {
     test('uses editorial light palette', () {
-      final scheme = cmsStudioLightTheme.colorScheme;
+      final scheme = deskStudioLightTheme.colorScheme;
       expect(scheme.background, DartDeskColors.lightBackground);
       expect(scheme.primary, DartDeskColors.lightPrimary);
       expect(scheme.accent, DartDeskColors.lightAccent);
@@ -32,14 +32,14 @@ void main() {
     });
 
     test('brightness is light', () {
-      expect(cmsStudioLightTheme.brightness, Brightness.light);
+      expect(deskStudioLightTheme.brightness, Brightness.light);
     });
   });
 
   test('accent is the same chartreuse in both modes', () {
     expect(
-      cmsStudioTheme.colorScheme.accent,
-      cmsStudioLightTheme.colorScheme.accent,
+      deskStudioTheme.colorScheme.accent,
+      deskStudioLightTheme.colorScheme.accent,
     );
   });
 
@@ -49,7 +49,7 @@ void main() {
       DartDeskPalette? read;
       await tester.pumpWidget(
         ShadApp(
-          theme: cmsStudioTheme,
+          theme: deskStudioTheme,
           materialThemeBuilder: (context, mTheme) => mTheme.copyWith(
             extensions: const <ThemeExtension<dynamic>>[DartDeskPalette.dark],
           ),

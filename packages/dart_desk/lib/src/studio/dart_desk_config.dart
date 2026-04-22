@@ -1,7 +1,7 @@
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/widgets.dart';
 
-import 'components/common/cms_document_type_decoration.dart';
+import 'components/common/desk_document_type_decoration.dart';
 
 /// Configuration for the DartDeskApp widget.
 class DartDeskConfig {

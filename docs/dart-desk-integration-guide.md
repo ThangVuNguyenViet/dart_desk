@@ -29,7 +29,7 @@ dart_desk_app  →  your_app  →  data_models
 
 | Package | Purpose |
 |---------|---------|
-| **data_models** | Shared `@CmsConfig` annotated data classes. Both the app and the dart_desk app depend on this. |
+| **data_models** | Shared `@DeskModel` annotated data classes. Both the app and the dart_desk app depend on this. |
 | **your_app** | The real Flutter app. Imports data_models for its data classes. Exposes screen/widget classes that the dart_desk app uses for preview. |
 | **dart_desk_app** | Standalone Dart Desk studio. Imports data_models (for generated DocumentTypeSpecs) and your_app (for preview widgets). Calls `typeSpec.build(builder: ...)` to supply the preview widget. Provides mock dependencies the real app normally supplies. |
 
@@ -73,30 +73,30 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
-part 'my_config.cms.g.dart';
+part 'my_config.desk.dart';
 part 'my_config.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'My Screen',
   description: 'Configuration for the my screen',
 )
 @MappableClass(ignoreNull: false)
 class MyConfig with MyConfigMappable, Serializable<MyConfig> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Main heading text',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String title;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Hero banner image',
-    option: CmsImageOption(hotspot: false),
+    option: DeskImageOption(hotspot: false),
   )
   final String imageUrl;
 
-  @CmsBooleanFieldConfig(
+  @DeskBoolean(
     description: 'Show the feature section',
-    option: CmsBooleanOption(),
+    option: DeskBooleanOption(),
   )
   final bool showFeatures;
 
@@ -135,7 +135,7 @@ dart run build_runner build --delete-conflicting-outputs
 ```
 
 This generates:
-- `my_config.cms.g.dart` — `myConfigFields` list and `myConfigTypeSpec` (DocumentTypeSpec)
+- `my_config.desk.dart` — `myConfigFields` list and `myConfigTypeSpec` (DocumentTypeSpec)
 - `my_config.mapper.dart` — serialization from dart_mappable
 
 ---
@@ -303,26 +303,26 @@ Use these annotations on data_models fields:
 
 | Annotation | Dart type | CMS input |
 |---|---|---|
-| `@CmsStringFieldConfig` | `String` | Single-line text |
-| `@CmsTextFieldConfig` | `String` | Multi-line text |
-| `@CmsNumberFieldConfig` | `int` / `double` | Number with min/max |
-| `@CmsBooleanFieldConfig` | `bool` | Toggle switch |
-| `@CmsCheckboxFieldConfig` | `bool` | Checkbox with label |
-| `@CmsDateFieldConfig` | `DateTime?` | Date picker |
-| `@CmsDateTimeFieldConfig` | `DateTime` | Date + time picker |
-| `@CmsImageFieldConfig` | `String` | Image picker (URL) |
-| `@CmsFileFieldConfig` | `String?` | File upload |
-| `@CmsUrlFieldConfig` | `String?` | URL input |
-| `@CmsColorFieldConfig` | `Color` | Color picker |
-| `@CmsDropdownFieldConfig<T>` | `T` | Dropdown select |
-| `@CmsArrayFieldConfig<T>` | `List<T>` | Repeatable list |
-| `@CmsObjectFieldConfig` | Custom class | Nested object |
-| `@CmsBlockFieldConfig` | Custom | Block editor |
-| `@CmsGeopointFieldConfig` | Custom | Geo coordinates |
+| `@DeskString` | `String` | Single-line text |
+| `@DeskText` | `String` | Multi-line text |
+| `@DeskNumber` | `int` / `double` | Number with min/max |
+| `@DeskBoolean` | `bool` | Toggle switch |
+| `@DeskCheckbox` | `bool` | Checkbox with label |
+| `@DeskDate` | `DateTime?` | Date picker |
+| `@DeskDateTime` | `DateTime` | Date + time picker |
+| `@DeskImage` | `String` | Image picker (URL) |
+| `@DeskFile` | `String?` | File upload |
+| `@DeskUrl` | `String?` | URL input |
+| `@DeskColor` | `Color` | Color picker |
+| `@DeskDropdown<T>` | `T` | Dropdown select |
+| `@DeskArray<T>` | `List<T>` | Repeatable list |
+| `@DeskObject` | Custom class | Nested object |
+| `@DeskBlock` | Custom | Block editor |
+| `@DeskGeopoint` | Custom | Geo coordinates |
 
 Each annotation accepts:
 - `description` — Help text shown in the dart_desk editor
-- `option` — Type-specific configuration (e.g., `CmsNumberOption(min: 0, max: 100)`)
+- `option` — Type-specific configuration (e.g., `DeskNumberOption(min: 0, max: 100)`)
 
 ---
 
@@ -332,7 +332,7 @@ For dropdowns and arrays, you typically create custom option classes:
 
 ```dart
 // Custom dropdown
-class MyDropdownOption extends CmsDropdownOption<String> {
+class MyDropdownOption extends DeskDropdownOption<String> {
   const MyDropdownOption();
 
   @override
@@ -349,15 +349,15 @@ class MyDropdownOption extends CmsDropdownOption<String> {
 }
 
 // Custom array with item builder/editor
-class MyArrayOption extends CmsArrayOption {
+class MyArrayOption extends DeskArrayOption {
   const MyArrayOption();
 
   @override
-  CmsArrayFieldItemBuilder get itemBuilder =>
+  DeskArrayFieldItemBuilder get itemBuilder =>
     (context, value) => Text(value as String);
 
   @override
-  CmsArrayFieldItemEditor get itemEditor =>
+  DeskArrayFieldItemEditor get itemEditor =>
     (context, value, onChanged) => ShadInputFormField(
       onChanged: onChanged,
     );
@@ -442,7 +442,7 @@ workspace/
 │   ├── lib/
 │   │   └── src/configs/
 │   │       ├── my_config.dart
-│   │       ├── my_config.cms.g.dart   (generated)
+│   │       ├── my_config.desk.dart   (generated)
 │   │       └── my_config.mapper.dart  (generated)
 │   └── pubspec.yaml
 └── dart_desk_app/      # Dart Desk studio
@@ -457,7 +457,7 @@ workspace/
 ## Checklist
 
 - [ ] Create data_models package with `dart_desk_annotation` and `dart_desk_generator` dependencies
-- [ ] Define data classes with `@CmsConfig` and field annotations
+- [ ] Define data classes with `@DeskModel` and field annotations
 - [ ] Add `defaultValue` static field to each config class
 - [ ] Call `typeSpec.build(builder: ...)` in dart_desk_app, importing the screen widget there
 - [ ] Run `dart run build_runner build` in data_models

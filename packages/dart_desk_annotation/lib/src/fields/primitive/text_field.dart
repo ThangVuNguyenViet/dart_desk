@@ -1,14 +1,14 @@
 import '../base/field.dart';
 import '../../validators/validators.dart';
 
-class CmsTextOption extends CmsOption {
+class DeskTextOption extends DeskOption {
   final int rows;
-  final CmsValidator? validation;
+  final DeskValidator? validation;
   final String? initialValue;
   final bool readOnly;
   final String? deprecatedReason;
 
-  const CmsTextOption({
+  const DeskTextOption({
     this.rows = 1,
     super.hidden,
     this.validation,
@@ -19,29 +19,29 @@ class CmsTextOption extends CmsOption {
   });
 }
 
-class CmsTextField extends CmsField {
-  const CmsTextField({
+class DeskTextField extends DeskField {
+  const DeskTextField({
     required super.name,
     required super.title,
     super.description,
-    CmsTextOption? super.option,
+    DeskTextOption? super.option,
   });
 
   @override
-  CmsTextOption get option =>
-      (super.option as CmsTextOption?) ?? const CmsTextOption();
+  DeskTextOption get option =>
+      (super.option as DeskTextOption?) ?? const DeskTextOption();
 }
 
-class CmsTextFieldConfig extends CmsFieldConfig {
-  /// Convenience param that sets [CmsTextOption.optional] = true when no
+class DeskText extends DeskFieldConfig {
+  /// Convenience param that sets [DeskTextOption.optional] = true when no
   /// explicit [option] is provided.
   final bool optional;
 
-  const CmsTextFieldConfig({
+  const DeskText({
     super.name,
     super.title,
     super.description,
-    CmsTextOption? super.option,
+    DeskTextOption? super.option,
     this.optional = false,
   });
 

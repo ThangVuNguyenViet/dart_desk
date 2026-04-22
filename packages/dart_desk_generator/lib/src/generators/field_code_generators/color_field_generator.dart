@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class ColorFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsColorFieldConfig';
+  String get fieldConfigName => 'DeskColor';
 
   @override
   List<Type> get supportedTypes => [String];
@@ -27,17 +27,17 @@ class ColorFieldGenerator implements FieldCodeGenerator {
 
     String? resolvedOption = optionSource;
     if (optional && resolvedOption == null) {
-      resolvedOption = 'CmsColorOption(optional: true)';
+      resolvedOption = 'DeskColorOption(optional: true)';
     } else if (optional && resolvedOption != null) {
       if (!resolvedOption.contains('optional')) {
         resolvedOption = resolvedOption.replaceFirst(
-          'CmsColorOption(',
-          'CmsColorOption(optional: true, ',
+          'DeskColorOption(',
+          'DeskColorOption(optional: true, ',
         );
       }
     }
 
-    return '''CmsColorField(
+    return '''DeskColorField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${resolvedOption != null ? 'option: $resolvedOption,' : ''}

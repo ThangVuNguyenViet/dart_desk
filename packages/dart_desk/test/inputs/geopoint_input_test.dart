@@ -6,19 +6,19 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsGeopointField(
+  const field = DeskGeopointField(
     name: 'location',
     title: 'Location',
-    option: CmsGeopointOption(),
+    option: DeskGeopointOption(),
   );
 
-  group('CmsGeopointInput', () {
+  group('DeskGeopointInput', () {
     testWidgets('renders with initial lat/lng', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsGeopointInput(
+          DeskGeopointInput(
             field: field,
-            data: const CmsData(
+            data: const DeskData(
               value: {'lat': 37.7749, 'lng': -122.4194},
               path: 'location',
             ),
@@ -36,7 +36,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsGeopointInput(field: field, onChanged: (v) => received = v),
+          DeskGeopointInput(field: field, onChanged: (v) => received = v),
         ),
       );
       await tester.pumpAndSettle();
@@ -63,7 +63,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsGeopointInput(field: field, onChanged: (v) => received = v),
+          DeskGeopointInput(field: field, onChanged: (v) => received = v),
         ),
       );
       await tester.pumpAndSettle();
@@ -78,7 +78,7 @@ void main() {
     });
 
     testWidgets('renders title label', (tester) async {
-      await tester.pumpWidget(buildInputApp(CmsGeopointInput(field: field)));
+      await tester.pumpWidget(buildInputApp(DeskGeopointInput(field: field)));
       await tester.pumpAndSettle();
 
       expect(find.text('Location'), findsOneWidget);

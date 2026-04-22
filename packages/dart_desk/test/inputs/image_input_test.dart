@@ -39,23 +39,23 @@ void main() {
     HttpOverrides.global = null;
   });
 
-  const field = CmsImageField(
+  const field = DeskImageField(
     name: 'hero',
     title: 'Hero Image',
-    option: CmsImageOption(hotspot: false),
+    option: DeskImageOption(hotspot: false),
   );
 
-  const hotspotField = CmsImageField(
+  const hotspotField = DeskImageField(
     name: 'hero',
     title: 'Hero Image',
-    option: CmsImageOption(hotspot: true),
+    option: DeskImageOption(hotspot: true),
   );
 
-  group('CmsImageInput', () {
+  group('DeskImageInput', () {
     testWidgets('renders upload area when no data', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsImageInput(field: field, dataSource: MockDataSource()),
+          DeskImageInput(field: field, dataSource: MockDataSource()),
         ),
       );
       await tester.pumpAndSettle();
@@ -66,7 +66,7 @@ void main() {
     testWidgets('shows editable URL field in empty state', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsImageInput(field: field, dataSource: MockDataSource()),
+          DeskImageInput(field: field, dataSource: MockDataSource()),
         ),
       );
       await tester.pumpAndSettle();
@@ -82,9 +82,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsImageInput(
+          DeskImageInput(
             field: field,
-            data: const CmsData(
+            data: const DeskData(
               value: {'_type': 'imageReference', 'assetId': 'asset-hero'},
               path: 'hero',
             ),
@@ -119,9 +119,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsImageInput(
+          DeskImageInput(
             field: hotspotField,
-            data: const CmsData(
+            data: const DeskData(
               value: {'_type': 'imageReference', 'assetId': 'asset-hero'},
               path: 'hero',
             ),
@@ -148,9 +148,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsImageInput(
+          DeskImageInput(
             field: hotspotField,
-            data: const CmsData(
+            data: const DeskData(
               value: {
                 '_type': 'imageReference',
                 'assetId': 'asset-hero',
@@ -175,7 +175,7 @@ void main() {
       FakeImagePickerPlatform.install();
 
       await tester.pumpWidget(
-        buildInputApp(CmsImageInput(field: field, dataSource: dataSource)),
+        buildInputApp(DeskImageInput(field: field, dataSource: dataSource)),
       );
       await tester.pumpAndSettle();
 
@@ -199,7 +199,7 @@ void main() {
       ).thenAnswer((_) => completer.future);
 
       await tester.pumpWidget(
-        buildInputApp(CmsImageInput(field: field, dataSource: dataSource)),
+        buildInputApp(DeskImageInput(field: field, dataSource: dataSource)),
       );
       await tester.pumpAndSettle();
 
@@ -224,9 +224,9 @@ void main() {
     ) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsImageInput(
+          DeskImageInput(
             field: field,
-            data: const CmsData(
+            data: const DeskData(
               value: {
                 '_type': 'imageReference',
                 'externalUrl': 'https://example.com/photo.jpg',
@@ -258,9 +258,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsImageInput(
+          DeskImageInput(
             field: field,
-            data: const CmsData(
+            data: const DeskData(
               value: {'_type': 'imageReference', 'assetId': 'asset-hero'},
               path: 'hero',
             ),
@@ -283,9 +283,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsImageInput(
+          DeskImageInput(
             field: field,
-            data: const CmsData(
+            data: const DeskData(
               value: {
                 '_type': 'imageReference',
                 'externalUrl': 'https://example.com/photo.jpg',
@@ -317,7 +317,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsImageInput(
+          DeskImageInput(
             field: field,
             dataSource: MockDataSource(),
             onChanged: (v) => received = v,
@@ -340,7 +340,7 @@ void main() {
     testWidgets('no tabs present in unified layout', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsImageInput(field: field, dataSource: MockDataSource()),
+          DeskImageInput(field: field, dataSource: MockDataSource()),
         ),
       );
       await tester.pumpAndSettle();
@@ -351,10 +351,10 @@ void main() {
     });
   });
 
-  group('CmsImageInput keep-alive', () {
+  group('DeskImageInput keep-alive', () {
     testWidgets('stays alive when scrolled out of a ListView and back',
         (tester) async {
-      // Build a CmsImageInput inside a ListView.builder with many tall spacers.
+      // Build a DeskImageInput inside a ListView.builder with many tall spacers.
       // Scroll the image_input off-screen, then back. Assert the State object
       // identity is preserved (would fail without AutomaticKeepAliveClientMixin).
       await tester.pumpWidget(
@@ -367,7 +367,7 @@ void main() {
                   if (i == 0) {
                     return SizedBox(
                       height: 400,
-                      child: CmsImageInput(
+                      child: DeskImageInput(
                         field: field,
                         dataSource: MockDataSource(),
                       ),
@@ -382,7 +382,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final finder = find.byType(CmsImageInput);
+      final finder = find.byType(DeskImageInput);
       final stateBefore = tester.state(finder);
 
       await tester.drag(find.byType(ListView), const Offset(0, -5000));
@@ -393,7 +393,7 @@ void main() {
       final stateAfter = tester.state(finder);
       expect(identical(stateBefore, stateAfter), isTrue,
           reason:
-              'CmsImageInput State should be kept alive across scroll');
+              'DeskImageInput State should be kept alive across scroll');
     });
   });
 }

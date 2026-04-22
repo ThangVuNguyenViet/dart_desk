@@ -180,10 +180,9 @@ packages:
   dart_desk_annotation:
     dependency: "direct main"
     description:
-      name: dart_desk_annotation
-      sha256: "91267bf74a74bf498ad12dfb8cff51472f20ca4e68c1420b91dc6cd119cdd767"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../dart_desk_annotation"
+      relative: true
+    source: path
     version: "0.1.1"
   dart_mappable:
     dependency: transitive

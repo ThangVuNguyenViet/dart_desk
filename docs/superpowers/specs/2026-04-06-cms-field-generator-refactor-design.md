@@ -5,12 +5,12 @@
 
 ## 1. Overview
 
-Refactor the monolithic `cms_field_generator.dart` (1221 lines) into a modular architecture, and add auto-detection capability that infers the appropriate `CmsField` from the Dart field type and its `supportedFieldTypes`.
+Refactor the monolithic `desk_field_generator.dart` (1221 lines) into a modular architecture, and add auto-detection capability that infers the appropriate `DeskField` from the Dart field type and its `supportedFieldTypes`.
 
 ## 2. Motivation
 
 - **Single giant file**: The `_fieldConfigs` map contains 20+ field generators as closures, making it hard to maintain, test, and add new field types
-- **Redundant annotations**: Users must annotate every field even when the type uniquely determines the field (e.g., `String` → `CmsStringField`)
+- **Redundant annotations**: Users must annotate every field even when the type uniquely determines the field (e.g., `String` → `DeskStringField`)
 - **Unused `supportedFieldTypes`**: The annotation classes already define `supportedFieldTypes` but the generator doesn't leverage it for auto-detection
 
 ## 3. Goals
@@ -26,7 +26,7 @@ Refactor the monolithic `cms_field_generator.dart` (1221 lines) into a modular a
 
 ```
 packages/dart_desk_generator/lib/src/generators/
-├── cms_field_generator.dart       # Main orchestrator (~300 lines)
+├── desk_field_generator.dart       # Main orchestrator (~300 lines)
 ├── field_code_registry.dart       # Maps field types → generators
 ├── type_inference_engine.dart     # Auto-detect logic
 └── field_code_generators/
@@ -58,13 +58,13 @@ packages/dart_desk_generator/lib/src/generators/
 ```dart
 /// Base class for all field code generators
 abstract class FieldCodeGenerator {
-  /// The annotation name, e.g., 'CmsStringFieldConfig'
+  /// The annotation name, e.g., 'DeskString'
   String get fieldConfigName;
   
   /// Dart types this generator supports (from supportedFieldTypes)
   List<Type> get supportedTypes;
   
-  /// Generate the CmsField code
+  /// Generate the DeskField code
   String generate(
     FieldElement field,
     DartObject? config, {
@@ -107,26 +107,26 @@ class TypeInferenceEngine {
   }
   
   /// For List<T>, multiple generators may exist:
-  /// - CmsArrayField supports List<T>
-  /// - CmsMultiDropdownField supports List<T>
-  /// Default to CmsArrayField (first registered)
+  /// - DeskArrayField supports List<T>
+  /// - DeskMultiDropdownField supports List<T>
+  /// Default to DeskArrayField (first registered)
   FieldCodeGenerator? infer(DartType fieldType);
 }
 ```
 
 ### 4.3 Main Generator Orchestrator
 
-The refactored `CmsFieldGenerator` delegates to:
+The refactored `DeskFieldGenerator` delegates to:
 
 1. `FieldCodeRegistry` - for explicit annotation resolution
 2. `TypeInferenceEngine` - for unannotated field auto-detection
 
 ```dart
-class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
+class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
   final _registry = FieldCodeRegistry();
   final _inferenceEngine = TypeInferenceEngine();
   
-  CmsFieldGenerator() {
+  DeskFieldGenerator() {
     // Register all field generators
     _registry.register(StringFieldGenerator());
     _registry.register(NumberFieldGenerator());
@@ -146,28 +146,28 @@ class CmsFieldGenerator extends GeneratorForAnnotation<CmsConfig> {
 
 | Dart Type | Default Generator | Notes |
 |-----------|-------------------|-------|
-| `String` | `CmsStringField` | |
-| `num`/`int`/`double` | `CmsNumberField` | |
-| `bool` | `CmsBooleanField` | |
-| `DateTime` | `CmsDateTimeField` | |
-| `Uri` | `CmsUrlField` | |
-| `ImageReference` / `ImageRef` | `CmsImageField` | |
-| `List<T>` | `CmsArrayField` | Default when multiple candidates exist |
-| Class types (non-primitive) | `CmsObjectField` | Also adds to discovery queue |
+| `String` | `DeskStringField` | |
+| `num`/`int`/`double` | `DeskNumberField` | |
+| `bool` | `DeskBooleanField` | |
+| `DateTime` | `DeskDateTimeField` | |
+| `Uri` | `DeskUrlField` | |
+| `ImageReference` / `ImageRef` | `DeskImageField` | |
+| `List<T>` | `DeskArrayField` | Default when multiple candidates exist |
+| Class types (non-primitive) | `DeskObjectField` | Also adds to discovery queue |
 
 ## 6. Backward Compatibility
 
-- All existing `@CmsTextFieldConfig`, `@CmsStringFieldConfig` annotations continue to work
+- All existing `@DeskText`, `@DeskString` annotations continue to work
 - Auto-detection only applies to **unannotated fields**
 - Generated code remains identical for annotated fields
 
 ```dart
 // Explicit annotation (supported forever)
-@CmsStringFieldConfig(optional: true)
+@DeskString(optional: true)
 final String name;
 
 // Auto-detection (new)
-final String name; // → CmsStringField automatically
+final String name; // → DeskStringField automatically
 ```
 
 ## 7. Implementation Phases
@@ -177,7 +177,7 @@ final String name; // → CmsStringField automatically
 1. Create `field_code_generator.dart` abstract base
 2. Create individual generator files with classes implementing the base
 3. Create `field_code_registry.dart` to hold the map
-4. Refactor `cms_field_generator.dart` to use registry
+4. Refactor `desk_field_generator.dart` to use registry
 
 ### Phase 2: Type Inference Engine
 
@@ -212,7 +212,7 @@ packages/dart_desk_generator/test/
 │   ├── array_field_generator_test.dart
 │   ├── dropdown_field_generator_test.dart
 │   └── object_field_generator_test.dart
-└── cms_field_generator_test.dart           # Integration tests (existing)
+└── desk_field_generator_test.dart           # Integration tests (existing)
 ```
 
 ### 8.2 Test Coverage Requirements
@@ -232,7 +232,7 @@ packages/dart_desk_generator/test/
 - Handles nullable types (`String?` → same as `String`)
 
 **Integration Tests:**
-- Full `@CmsConfig` generation with mixed annotated + unannotated fields
+- Full `@DeskModel` generation with mixed annotated + unannotated fields
 - Nested class discovery with auto-detected fields
 - Generated output matches existing test expectations
 
@@ -252,16 +252,16 @@ group('TypeInferenceEngine', () {
     engine.buildDefaults();
   });
   
-  test('infers String type as CmsStringField', () {
+  test('infers String type as DeskStringField', () {
     final mockType = _createDartType('String');
     final generator = engine.infer(mockType);
-    expect(generator.fieldConfigName, 'CmsStringFieldConfig');
+    expect(generator.fieldConfigName, 'DeskString');
   });
   
   test('List<T> defaults to ArrayField when multiple candidates', () {
     final mockListType = _createListDartType('String');
     final generator = engine.infer(mockListType);
-    expect(generator.fieldConfigName, 'CmsArrayFieldConfig');
+    expect(generator.fieldConfigName, 'DeskArray');
   });
 });
 ```
@@ -270,4 +270,4 @@ group('TypeInferenceEngine', () {
 
 1. Should we deprecate explicit annotations in favor of auto-detection? → **No, kept for backward compatibility**
 2. Should auto-detection apply to nested discovered classes? → **Yes**
-3. How to handle the `List<T>` ambiguity? → **Default to CmsArrayField**
+3. How to handle the `List<T>` ambiguity? → **Default to DeskArrayField**

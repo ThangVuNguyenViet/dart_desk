@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class DateTimeFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsDateTimeFieldConfig';
+  String get fieldConfigName => 'DeskDateTime';
 
   @override
   List<Type> get supportedTypes => [DateTime];
@@ -27,17 +27,17 @@ class DateTimeFieldGenerator implements FieldCodeGenerator {
 
     String? resolvedOption = optionSource;
     if (optional && resolvedOption == null) {
-      resolvedOption = 'CmsDateTimeOption(optional: true)';
+      resolvedOption = 'DeskDateTimeOption(optional: true)';
     } else if (optional && resolvedOption != null) {
       if (!resolvedOption.contains('optional')) {
         resolvedOption = resolvedOption.replaceFirst(
-          'CmsDateTimeOption(',
-          'CmsDateTimeOption(optional: true, ',
+          'DeskDateTimeOption(',
+          'DeskDateTimeOption(optional: true, ',
         );
       }
     }
 
-    return '''CmsDateTimeField(
+    return '''DeskDateTimeField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${resolvedOption != null ? 'option: $resolvedOption,' : ''}

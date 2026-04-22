@@ -6,19 +6,19 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsUrlField(
+  const field = DeskUrlField(
     name: 'website',
     title: 'Website',
-    option: CmsUrlOption(),
+    option: DeskUrlOption(),
   );
 
-  group('CmsUrlInput', () {
+  group('DeskUrlInput', () {
     testWidgets('renders with initial URL', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsUrlInput(
+          DeskUrlInput(
             field: field,
-            data: const CmsData(value: 'https://example.com', path: 'website'),
+            data: const DeskData(value: 'https://example.com', path: 'website'),
           ),
         ),
       );
@@ -32,7 +32,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsUrlInput(field: field, onChanged: (v) => received = v),
+          DeskUrlInput(field: field, onChanged: (v) => received = v),
         ),
       );
       await tester.pumpAndSettle();
@@ -53,7 +53,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsUrlInput(field: field, onChanged: (v) => received = v),
+          DeskUrlInput(field: field, onChanged: (v) => received = v),
         ),
       );
       await tester.pumpAndSettle();
@@ -70,7 +70,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsUrlInput(field: field, onChanged: (v) => received = v),
+          DeskUrlInput(field: field, onChanged: (v) => received = v),
         ),
       );
       await tester.pumpAndSettle();

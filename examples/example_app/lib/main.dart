@@ -5,7 +5,7 @@
 /// keyed by document type (e.g. `"brandTheme"`).
 ///
 /// We inject the key as `"documentType"` into the JSON payload, then call
-/// `CmsContentMapper.fromMap(json)` — dart_mappable automatically resolves
+/// `DeskContentMapper.fromMap(json)` — dart_mappable automatically resolves
 /// to the correct subclass via `discriminatorValue`.
 library;
 
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
 
   static const apiKey = String.fromEnvironment(
     'API_KEY',
-    defaultValue: 'cms_w_5cRn9tCk-cdHTP0KM5Wiia02WhNMTL2rCzrz8guMVgk',
+    defaultValue: 'desk_w_5cRn9tCk-cdHTP0KM5Wiia02WhNMTL2rCzrz8guMVgk',
   );
 
   @override
@@ -43,19 +43,19 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF496455)),
       ),
-      home: CmsHomePage(serverUrl: serverUrl, apiKey: apiKey),
+      home: DeskHomePage(serverUrl: serverUrl, apiKey: apiKey),
     );
   }
 }
 
-class CmsHomePage extends StatefulWidget {
-  const CmsHomePage({super.key, required this.serverUrl, required this.apiKey});
+class DeskHomePage extends StatefulWidget {
+  const DeskHomePage({super.key, required this.serverUrl, required this.apiKey});
 
   final String serverUrl;
   final String apiKey;
 
   @override
-  State<CmsHomePage> createState() => _CmsHomePageState();
+  State<DeskHomePage> createState() => _DeskHomePageState();
 }
 
 const _screens = <({Type type, String label, IconData icon})>[
@@ -66,9 +66,9 @@ const _screens = <({Type type, String label, IconData icon})>[
   // (type: PromotionCampaign, label: 'Promo', icon: Icons.campaign),
 ];
 
-class _CmsHomePageState extends State<CmsHomePage> {
+class _DeskHomePageState extends State<DeskHomePage> {
   late final Client _client;
-  Map<Type, CmsContent>? _configs;
+  Map<Type, DeskContent>? _configs;
   String? _error;
   int _selectedIndex = 0;
 
@@ -84,14 +84,14 @@ class _CmsHomePageState extends State<CmsHomePage> {
   Future<void> _fetchContents() async {
     try {
       final defaults = await _client.publicContent.getDefaultContents();
-      final configs = <Type, CmsContent>{};
+      final configs = <Type, DeskContent>{};
 
       for (final entry in defaults.entries) {
         final documentType = entry.key;
         final data = jsonDecode(entry.value.data) as Map<String, dynamic>;
 
         data['documentType'] = documentType;
-        final config = CmsContentMapper.fromMap(data);
+        final config = DeskContentMapper.fromMap(data);
         configs[config.runtimeType] = config;
       }
 
@@ -130,7 +130,7 @@ class _CmsHomePageState extends State<CmsHomePage> {
     );
   }
 
-  Widget _buildScreen(CmsContent config) {
+  Widget _buildScreen(DeskContent config) {
     return switch (config) {
       BrandTheme c => BrandThemeScreen(config: c),
       _ => Center(child: Text('Unknown: ${config.runtimeType}')),

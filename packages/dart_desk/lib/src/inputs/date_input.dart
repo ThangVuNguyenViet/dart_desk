@@ -3,23 +3,23 @@ import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-@Preview(name: 'CmsDateInput')
+@Preview(name: 'DeskDateInput')
 Widget preview() => ShadApp(
-  home: CmsDateInput(
-    field: const CmsDateField(
+  home: DeskDateInput(
+    field: const DeskDateField(
       name: 'birthdate',
       title: 'Birth Date',
-      option: CmsDateOption(),
+      option: DeskDateOption(),
     ),
   ),
 );
 
-class CmsDateInput extends StatefulWidget {
-  final CmsDateField field;
-  final CmsData? data;
+class DeskDateInput extends StatefulWidget {
+  final DeskDateField field;
+  final DeskData? data;
   final ValueChanged<DateTime?>? onChanged;
 
-  const CmsDateInput({
+  const DeskDateInput({
     super.key,
     required this.field,
     this.data,
@@ -27,10 +27,10 @@ class CmsDateInput extends StatefulWidget {
   });
 
   @override
-  State<CmsDateInput> createState() => _CmsDateInputState();
+  State<DeskDateInput> createState() => _DeskDateInputState();
 }
 
-class _CmsDateInputState extends State<CmsDateInput> {
+class _DeskDateInputState extends State<DeskDateInput> {
   DateTime? _selectedDate;
   late bool _isEnabled;
 

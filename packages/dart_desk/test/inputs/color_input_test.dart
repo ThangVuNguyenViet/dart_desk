@@ -7,19 +7,19 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsColorField(
+  const field = DeskColorField(
     name: 'color',
     title: 'Color',
-    option: CmsColorOption(showAlpha: false),
+    option: DeskColorOption(showAlpha: false),
   );
 
-  group('CmsColorInput', () {
+  group('DeskColorInput', () {
     testWidgets('renders with initial hex color', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsColorInput(
+          DeskColorInput(
             field: field,
-            data: const CmsData(value: '#FF5733', path: 'color'),
+            data: const DeskData(value: '#FF5733', path: 'color'),
           ),
         ),
       );
@@ -34,9 +34,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsColorInput(
+          DeskColorInput(
             field: field,
-            data: const CmsData(value: '#FF5733', path: 'color'),
+            data: const DeskData(value: '#FF5733', path: 'color'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -53,9 +53,9 @@ void main() {
     testWidgets('dialog opens on swatch tap', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsColorInput(
+          DeskColorInput(
             field: field,
-            data: const CmsData(value: '#FF5733', path: 'color'),
+            data: const DeskData(value: '#FF5733', path: 'color'),
           ),
         ),
       );
@@ -73,9 +73,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsColorInput(
+          DeskColorInput(
             field: field,
-            data: const CmsData(value: '#FF5733', path: 'color'),
+            data: const DeskData(value: '#FF5733', path: 'color'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -98,9 +98,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsColorInput(
+          DeskColorInput(
             field: field,
-            data: const CmsData(value: '#FF5733', path: 'color'),
+            data: const DeskData(value: '#FF5733', path: 'color'),
             onChanged: (v) => received = v,
           ),
         ),

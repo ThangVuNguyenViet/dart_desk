@@ -10,24 +10,24 @@
 
 ### Features
 - **Studio screens** — DocumentScreen, DocumentTypeScreen, MediaScreen, VersionScreen, StudioShellScreen with auto_route navigation
-- **Image system** — rewritten CmsImageInput with upload, blurHash, drop zone, hotspot editor; MediaAsset and ImageReference types
+- **Image system** — rewritten DeskImageInput with upload, blurHash, drop zone, hotspot editor; MediaAsset and ImageReference types
 - **Auth & cloud** — Serverpod IDP auth module, API key injection, compound bearer token
-- **Input widgets** — optional support for all primitive inputs, CmsMultiDropdownField, color picker, field layout system (row/column/group)
-- **Array fields** — typed CmsArrayInput with global registry and type-dispatched default editors
+- **Input widgets** — optional support for all primitive inputs, DeskMultiDropdownField, color picker, field layout system (row/column/group)
+- **Array fields** — typed DeskArrayInput with global registry and type-dispatched default editors
 - **Document management** — default document support (set/auto-default on create/delete), publish button with MutationSignal pattern
 - **Media browser** — standalone media route with sidebar button
 - **App shell** — DartDeskApp widget, StudioConfig, responsive breakpoints
 
 ### Fixes
 - Defer signal sync in StudioRouteObserver to prevent framework assertion during navigation
-- Guard CmsViewModel access until StudioProvider builds
+- Guard DeskViewModel access until StudioProvider builds
 - Flatten route tree and fix infinite loop in responsive layout
-- Fix letOrNull, dropdown API, and dual round-trip in CmsViewModel
+- Fix letOrNull, dropdown API, and dual round-trip in DeskViewModel
 
 ### Refactors
 - Migrate DI from disco to get_it
-- Rename FlutterCmsAuth → DartDeskAuth
-- Decouple CmsViewModel from CmsDocumentViewModel
+- Rename FlutterDeskAuth → DartDeskAuth
+- Decouple DeskViewModel from DeskDocumentViewModel
 - Unify ImageReference across annotation and widget layers
 
 ## 0.1.1

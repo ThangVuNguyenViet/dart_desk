@@ -8,20 +8,20 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  final field = CmsArrayField<String>(
+  final field = DeskArrayField<String>(
     name: 'tags',
     title: 'Tags',
-    innerField: const CmsStringField(name: 'tag', title: 'Tag'),
+    innerField: const DeskStringField(name: 'tag', title: 'Tag'),
     option: const TestStringArrayOption(),
   );
 
-  group('CmsArrayInput', () {
+  group('DeskArrayInput', () {
     testWidgets('renders existing items', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsArrayInput(
+          DeskArrayInput(
             field: field,
-            data: const CmsData(
+            data: const DeskData(
               value: ['Item 1', 'Item 2', 'Item 3'],
               path: 'tags',
             ),
@@ -38,9 +38,9 @@ void main() {
     testWidgets('empty state message', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsArrayInput(
+          DeskArrayInput(
             field: field,
-            data: const CmsData(value: [], path: 'tags'),
+            data: const DeskData(value: [], path: 'tags'),
           ),
         ),
       );
@@ -54,9 +54,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsArrayInput(
+          DeskArrayInput(
             field: field,
-            data: CmsData(value: List<String>.from(['Existing']), path: 'tags'),
+            data: DeskData(value: List<String>.from(['Existing']), path: 'tags'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -85,9 +85,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsArrayInput(
+          DeskArrayInput(
             field: field,
-            data: CmsData(
+            data: DeskData(
               value: List<String>.from(['Keep', 'Remove']),
               path: 'tags',
             ),
@@ -108,35 +108,35 @@ void main() {
     });
 
     testWidgets('hidden field renders nothing', (tester) async {
-      final hiddenField = CmsArrayField<String>(
+      final hiddenField = DeskArrayField<String>(
         name: 'hidden',
         title: 'Hidden',
-        innerField: const CmsStringField(name: 'item', title: 'Item'),
+        innerField: const DeskStringField(name: 'item', title: 'Item'),
         option: const TestStringArrayOption(),
       );
 
-      // CmsArrayField doesn't have a hidden option on the field itself,
+      // DeskArrayField doesn't have a hidden option on the field itself,
       // but the option does — checking that the widget builds with no items
-      await tester.pumpWidget(buildInputApp(CmsArrayInput(field: hiddenField)));
+      await tester.pumpWidget(buildInputApp(DeskArrayInput(field: hiddenField)));
       await tester.pumpAndSettle();
 
-      // Array input always renders (no hidden option on CmsArrayOption)
+      // Array input always renders (no hidden option on DeskArrayOption)
       expect(find.text('Hidden'), findsOneWidget);
     });
 
     testWidgets('default number editor parses input as num', (tester) async {
       List? received;
-      final numField = CmsArrayField<int>(
+      final numField = DeskArrayField<int>(
         name: 'scores',
         title: 'Scores',
-        innerField: const CmsNumberField(name: 'score', title: 'Score'),
+        innerField: const DeskNumberField(name: 'score', title: 'Score'),
       );
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsArrayInput(
+          DeskArrayInput(
             field: numField,
-            data: CmsData(value: List<int>.from([10]), path: 'scores'),
+            data: DeskData(value: List<int>.from([10]), path: 'scores'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -162,17 +162,17 @@ void main() {
 
     testWidgets('default bool editor toggles value', (tester) async {
       List? received;
-      final boolField = CmsArrayField<bool>(
+      final boolField = DeskArrayField<bool>(
         name: 'flags',
         title: 'Flags',
-        innerField: const CmsBooleanField(name: 'flag', title: 'Flag'),
+        innerField: const DeskBooleanField(name: 'flag', title: 'Flag'),
       );
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsArrayInput(
+          DeskArrayInput(
             field: boolField,
-            data: CmsData(value: List<bool>.from([true]), path: 'flags'),
+            data: DeskData(value: List<bool>.from([true]), path: 'flags'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -183,7 +183,7 @@ void main() {
       await tester.tap(find.text('Add'));
       await tester.pumpAndSettle();
 
-      // The default bool editor (CmsBooleanInput) uses a ShadSwitch
+      // The default bool editor (DeskBooleanInput) uses a ShadSwitch
       await tester.tap(find.byType(ShadSwitch).last);
       await tester.pumpAndSettle();
 
@@ -197,17 +197,17 @@ void main() {
 
     testWidgets('default string editor works without option', (tester) async {
       List? received;
-      final stringField = CmsArrayField<String>(
+      final stringField = DeskArrayField<String>(
         name: 'labels',
         title: 'Labels',
-        innerField: const CmsStringField(name: 'label', title: 'Label'),
+        innerField: const DeskStringField(name: 'label', title: 'Label'),
       );
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsArrayInput(
+          DeskArrayInput(
             field: stringField,
-            data: CmsData(value: List<String>.from([]), path: 'labels'),
+            data: DeskData(value: List<String>.from([]), path: 'labels'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -238,9 +238,9 @@ void main() {
 
         await tester.pumpWidget(
           buildInputApp(
-            CmsArrayInput(
+            DeskArrayInput(
               field: field,
-              data: CmsData(value: List<String>.from(['A']), path: 'tags'),
+              data: DeskData(value: List<String>.from(['A']), path: 'tags'),
               onChanged: received.add,
             ),
           ),
@@ -276,9 +276,9 @@ void main() {
 
         await tester.pumpWidget(
           buildInputApp(
-            CmsArrayInput(
+            DeskArrayInput(
               field: field,
-              data: CmsData(value: List<String>.from(['X', 'Y']), path: 'tags'),
+              data: DeskData(value: List<String>.from(['X', 'Y']), path: 'tags'),
               onChanged: received.add,
             ),
           ),
@@ -306,9 +306,9 @@ void main() {
 
           await tester.pumpWidget(
             buildInputApp(
-              CmsArrayInput(
+              DeskArrayInput(
                 field: field,
-                data: CmsData(
+                data: DeskData(
                   value: List<String>.from(['First', 'Second']),
                   path: 'tags',
                 ),
@@ -339,9 +339,9 @@ void main() {
 
           await tester.pumpWidget(
             buildInputApp(
-              CmsArrayInput(
+              DeskArrayInput(
                 field: field,
-                data: CmsData(value: List<String>.from(['A']), path: 'tags'),
+                data: DeskData(value: List<String>.from(['A']), path: 'tags'),
                 onChanged: received.add,
               ),
             ),

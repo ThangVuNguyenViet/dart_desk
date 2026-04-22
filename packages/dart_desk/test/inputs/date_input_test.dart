@@ -7,19 +7,19 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsDateField(
+  const field = DeskDateField(
     name: 'date',
     title: 'Date',
-    option: CmsDateOption(),
+    option: DeskDateOption(),
   );
 
-  group('CmsDateInput', () {
+  group('DeskDateInput', () {
     testWidgets('renders with initial date', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsDateInput(
+          DeskDateInput(
             field: field,
-            data: const CmsData(value: '2026-03-01', path: 'date'),
+            data: const DeskData(value: '2026-03-01', path: 'date'),
           ),
         ),
       );
@@ -29,14 +29,14 @@ void main() {
     });
 
     testWidgets('renders empty when no data', (tester) async {
-      await tester.pumpWidget(buildInputApp(CmsDateInput(field: field)));
+      await tester.pumpWidget(buildInputApp(DeskDateInput(field: field)));
       await tester.pumpAndSettle();
 
       expect(find.byType(ShadDatePickerFormField), findsOneWidget);
     });
 
     testWidgets('calendar popup opens on tap', (tester) async {
-      await tester.pumpWidget(buildInputApp(CmsDateInput(field: field)));
+      await tester.pumpWidget(buildInputApp(DeskDateInput(field: field)));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(ShadDatePickerFormField));
@@ -58,7 +58,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsDateInput(field: field, onChanged: (v) => received = v),
+          DeskDateInput(field: field, onChanged: (v) => received = v),
         ),
       );
       await tester.pumpAndSettle();

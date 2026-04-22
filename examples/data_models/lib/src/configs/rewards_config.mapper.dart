@@ -15,7 +15,7 @@ class RewardsConfigMapper extends SubClassMapperBase<RewardsConfig> {
   static RewardsConfigMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = RewardsConfigMapper._());
-      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
+      DeskContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([
         ImageReferenceMapper(),
         BrandThemeColorMapper(),
@@ -76,7 +76,8 @@ class RewardsConfigMapper extends SubClassMapperBase<RewardsConfig> {
   @override
   final dynamic discriminatorValue = 'rewardsConfig';
   @override
-  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
+  late final ClassMapperBase superMapper =
+      DeskContentMapper.ensureInitialized();
 
   static RewardsConfig _instantiate(DecodingData data) {
     return RewardsConfig(
@@ -150,7 +151,7 @@ extension RewardsConfigValueCopy<$R, $Out>
 }
 
 abstract class RewardsConfigCopyWith<$R, $In extends RewardsConfig, $Out>
-    implements CmsContentCopyWith<$R, $In, $Out> {
+    implements DeskContentCopyWith<$R, $In, $Out> {
   ListCopyWith<
     $R,
     LoyaltyTier,

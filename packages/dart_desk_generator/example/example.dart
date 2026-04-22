@@ -5,7 +5,7 @@
 //    build_runner: ^2.13.1
 //
 // 2. Annotate your models with dart_desk_annotation:
-//    @CmsConfig(title: 'Blog Post', description: 'A blog post document type')
+//    @DeskModel(title: 'Blog Post', description: 'A blog post document type')
 //    class BlogPost { ... }
 //
 // 3. Run: dart run build_runner build

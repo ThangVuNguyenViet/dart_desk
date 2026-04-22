@@ -24,7 +24,7 @@ Use annotations from [`dart_desk_annotation`](https://pub.dev/packages/dart_desk
 ```dart
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Blog Post',
   description: 'A blog post document type',
 )
@@ -56,7 +56,7 @@ You can customize builder behavior in a `build.yaml` file at the root of your pa
 targets:
   $default:
     builders:
-      dart_desk_generator|cmsBuilder:
+      dart_desk_generator|deskBuilder:
         enabled: true
 ```
 

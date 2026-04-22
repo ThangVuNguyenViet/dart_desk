@@ -4,23 +4,23 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'optional_field_wrapper.dart';
 
-@Preview(name: 'CmsDateTimeInput')
+@Preview(name: 'DeskDateTimeInput')
 Widget preview() => ShadApp(
-  home: CmsDateTimeInput(
-    field: const CmsDateTimeField(
+  home: DeskDateTimeInput(
+    field: const DeskDateTimeField(
       name: 'createdAt',
       title: 'Created At',
-      option: CmsDateTimeOption(),
+      option: DeskDateTimeOption(),
     ),
   ),
 );
 
-class CmsDateTimeInput extends StatefulWidget {
-  final CmsDateTimeField field;
-  final CmsData? data;
+class DeskDateTimeInput extends StatefulWidget {
+  final DeskDateTimeField field;
+  final DeskData? data;
   final ValueChanged<DateTime?>? onChanged;
 
-  const CmsDateTimeInput({
+  const DeskDateTimeInput({
     super.key,
     required this.field,
     this.data,
@@ -28,10 +28,10 @@ class CmsDateTimeInput extends StatefulWidget {
   });
 
   @override
-  State<CmsDateTimeInput> createState() => _CmsDateTimeInputState();
+  State<DeskDateTimeInput> createState() => _DeskDateTimeInputState();
 }
 
-class _CmsDateTimeInputState extends State<CmsDateTimeInput> {
+class _DeskDateTimeInputState extends State<DeskDateTimeInput> {
   DateTime? _selectedDateTime;
   late bool _isEnabled;
 

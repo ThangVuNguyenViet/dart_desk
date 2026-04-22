@@ -4,8 +4,8 @@ import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../core/view_models/cms_document_view_model.dart';
-import '../core/view_models/cms_view_model.dart';
+import '../core/view_models/desk_document_view_model.dart';
+import '../core/view_models/desk_view_model.dart';
 import '../theme/spacing.dart';
 
 /// Live preview panel that renders the document type's builder with current
@@ -18,8 +18,8 @@ class DocumentPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final viewModel = GetIt.I<CmsViewModel>();
-    final documentViewModel = GetIt.I<CmsDocumentViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
+    final documentViewModel = GetIt.I<DeskDocumentViewModel>();
     final edited = documentViewModel.editedData.watch(context);
 
     Map<String, dynamic> data;
@@ -51,14 +51,14 @@ class DocumentPreview extends StatelessWidget {
             letterSpacing: 1,
           ),
         ),
-        const SizedBox(height: CmsSpacing.md),
+        const SizedBox(height: DeskSpacing.md),
         Expanded(
           child: KeyedSubtree(
             key: ValueKey(docType.name),
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(CmsBorderRadius.lg),
+                borderRadius: BorderRadius.circular(DeskBorderRadius.lg),
               ),
               clipBehavior: Clip.antiAlias,
               child: docType.builder(data),

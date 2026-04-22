@@ -7,34 +7,34 @@ import '../seed/aura_copy.dart';
 import '../shared/coupon.dart';
 import '../shared/loyalty_tier.dart';
 import 'brand_theme.dart' show BrandThemeColorMapper;
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'rewards_config.cms.g.dart';
+part 'rewards_config.desk.dart';
 part 'rewards_config.mapper.dart';
 
-@CmsConfig(title: 'Rewards screen', description: 'Mobile loyalty card + coupons')
+@DeskModel(title: 'Rewards screen', description: 'Mobile loyalty card + coupons')
 @MappableClass(
   ignoreNull: false,
   discriminatorValue: 'rewardsConfig',
   includeCustomMappers: [ImageReferenceMapper(), BrandThemeColorMapper()],
 )
-class RewardsConfig extends CmsContent with RewardsConfigMappable, Serializable<RewardsConfig> {
-  @CmsStringFieldConfig(description: 'Program name', option: CmsStringOption())
+class RewardsConfig extends DeskContent with RewardsConfigMappable, Serializable<RewardsConfig> {
+  @DeskString(description: 'Program name', option: DeskStringOption())
   final String programName;
 
-  @CmsArrayFieldConfig<LoyaltyTier>(description: 'Tiers')
+  @DeskArray<LoyaltyTier>(description: 'Tiers')
   final List<LoyaltyTier> tiers;
 
-  @CmsNumberFieldConfig(description: 'Current user points (demo)', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Current user points (demo)', option: DeskNumberOption(min: 0))
   final num currentUserPoints;
 
-  @CmsArrayFieldConfig<Coupon>(description: 'Available coupons')
+  @DeskArray<Coupon>(description: 'Available coupons')
   final List<Coupon> coupons;
 
-  @CmsUrlFieldConfig(description: 'Terms URL', option: CmsUrlOption())
+  @DeskUrl(description: 'Terms URL', option: DeskUrlOption())
   final String termsUrl;
 
-  @CmsBlockFieldConfig(option: CmsBlockOption())
+  @DeskBlock(option: DeskBlockOption())
   final Object? fineprint;
 
   const RewardsConfig({

@@ -6,19 +6,19 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsBooleanField(
+  const field = DeskBooleanField(
     name: 'is_active',
     title: 'Is Active',
-    option: CmsBooleanOption(),
+    option: DeskBooleanOption(),
   );
 
-  group('CmsBooleanInput', () {
+  group('DeskBooleanInput', () {
     testWidgets('renders with true value', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsBooleanInput(
+          DeskBooleanInput(
             field: field,
-            data: const CmsData(value: true, path: 'is_active'),
+            data: const DeskData(value: true, path: 'is_active'),
           ),
         ),
       );
@@ -36,9 +36,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsBooleanInput(
+          DeskBooleanInput(
             field: field,
-            data: const CmsData(value: true, path: 'is_active'),
+            data: const DeskData(value: true, path: 'is_active'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -56,9 +56,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsBooleanInput(
+          DeskBooleanInput(
             field: field,
-            data: const CmsData(value: false, path: 'is_active'),
+            data: const DeskData(value: false, path: 'is_active'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -72,14 +72,14 @@ void main() {
     });
 
     testWidgets('hidden field renders nothing', (tester) async {
-      const hiddenField = CmsBooleanField(
+      const hiddenField = DeskBooleanField(
         name: 'hidden',
         title: 'Hidden',
-        option: CmsBooleanOption(hidden: true),
+        option: DeskBooleanOption(hidden: true),
       );
 
       await tester.pumpWidget(
-        buildInputApp(CmsBooleanInput(field: hiddenField)),
+        buildInputApp(DeskBooleanInput(field: hiddenField)),
       );
       await tester.pumpAndSettle();
 

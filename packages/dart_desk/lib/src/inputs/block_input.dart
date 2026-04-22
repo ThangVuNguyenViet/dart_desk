@@ -6,23 +6,23 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:super_editor/super_editor.dart';
 
-@Preview(name: 'CmsBlockInput')
+@Preview(name: 'DeskBlockInput')
 Widget preview() => ShadApp(
-  home: CmsBlockInput(
-    field: const CmsBlockField(
+  home: DeskBlockInput(
+    field: const DeskBlockField(
       name: 'content',
       title: 'Content',
-      option: CmsBlockOption(),
+      option: DeskBlockOption(),
     ),
   ),
 );
 
-class CmsBlockInput extends StatefulWidget {
-  final CmsBlockField field;
-  final CmsData? data;
+class DeskBlockInput extends StatefulWidget {
+  final DeskBlockField field;
+  final DeskData? data;
   final ValueChanged<dynamic>? onChanged;
 
-  const CmsBlockInput({
+  const DeskBlockInput({
     super.key,
     required this.field,
     this.data,
@@ -30,10 +30,10 @@ class CmsBlockInput extends StatefulWidget {
   });
 
   @override
-  State<CmsBlockInput> createState() => _CmsBlockInputState();
+  State<DeskBlockInput> createState() => _DeskBlockInputState();
 }
 
-class _CmsBlockInputState extends State<CmsBlockInput> {
+class _DeskBlockInputState extends State<DeskBlockInput> {
   late final MutableDocument _document;
   late final MutableDocumentComposer _composer;
   late final Editor _editor;

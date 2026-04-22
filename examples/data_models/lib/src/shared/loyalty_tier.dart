@@ -4,22 +4,22 @@ import 'package:flutter/material.dart';
 
 import '../configs/brand_theme.dart' show BrandThemeColorMapper;
 
-part 'loyalty_tier.cms.g.dart';
+part 'loyalty_tier.desk.dart';
 part 'loyalty_tier.mapper.dart';
 
 @MappableClass(includeCustomMappers: [BrandThemeColorMapper()])
-@CmsConfig(title: 'Loyalty tier', description: 'A tier in the rewards program')
+@DeskModel(title: 'Loyalty tier', description: 'A tier in the rewards program')
 class LoyaltyTier with LoyaltyTierMappable implements Serializable<LoyaltyTier> {
-  @CmsStringFieldConfig(description: 'Tier name', option: CmsStringOption())
+  @DeskString(description: 'Tier name', option: DeskStringOption())
   final String name;
 
-  @CmsNumberFieldConfig(description: 'Points threshold', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Points threshold', option: DeskNumberOption(min: 0))
   final num threshold;
 
-  @CmsColorFieldConfig(description: 'Tier color', option: CmsColorOption())
+  @DeskColor(description: 'Tier color', option: DeskColorOption())
   final Color tierColor;
 
-  @CmsBlockFieldConfig(option: CmsBlockOption())
+  @DeskBlock(option: DeskBlockOption())
   final Object? perks;
 
   const LoyaltyTier({

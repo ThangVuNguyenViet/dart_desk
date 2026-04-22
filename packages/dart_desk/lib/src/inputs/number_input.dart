@@ -4,23 +4,23 @@ import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-@Preview(name: 'CmsNumberInput')
+@Preview(name: 'DeskNumberInput')
 Widget preview() => ShadApp(
-  home: CmsNumberInput(
-    field: const CmsNumberField(
+  home: DeskNumberInput(
+    field: const DeskNumberField(
       name: 'age',
       title: 'Age',
-      option: CmsNumberOption(min: 0, max: 120),
+      option: DeskNumberOption(min: 0, max: 120),
     ),
   ),
 );
 
-class CmsNumberInput extends StatefulWidget {
-  final CmsNumberField field;
-  final CmsData? data;
+class DeskNumberInput extends StatefulWidget {
+  final DeskNumberField field;
+  final DeskData? data;
   final ValueChanged<num?>? onChanged;
 
-  const CmsNumberInput({
+  const DeskNumberInput({
     super.key,
     required this.field,
     this.data,
@@ -28,10 +28,10 @@ class CmsNumberInput extends StatefulWidget {
   });
 
   @override
-  State<CmsNumberInput> createState() => _CmsNumberInputState();
+  State<DeskNumberInput> createState() => _DeskNumberInputState();
 }
 
-class _CmsNumberInputState extends State<CmsNumberInput> {
+class _DeskNumberInputState extends State<DeskNumberInput> {
   late bool _isEnabled;
 
   @override

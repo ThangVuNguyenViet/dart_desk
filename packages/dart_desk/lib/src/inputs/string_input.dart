@@ -3,23 +3,23 @@ import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-@Preview(name: 'CmsStringInput')
+@Preview(name: 'DeskStringInput')
 Widget preview() => ShadApp(
-  home: CmsStringInput(
-    field: const CmsStringField(
+  home: DeskStringInput(
+    field: const DeskStringField(
       name: 'username',
       title: 'Username',
-      option: CmsStringOption(),
+      option: DeskStringOption(),
     ),
   ),
 );
 
-class CmsStringInput extends StatefulWidget {
-  final CmsStringField field;
-  final CmsData? data;
+class DeskStringInput extends StatefulWidget {
+  final DeskStringField field;
+  final DeskData? data;
   final ValueChanged<String?>? onChanged;
 
-  const CmsStringInput({
+  const DeskStringInput({
     super.key,
     required this.field,
     this.data,
@@ -27,10 +27,10 @@ class CmsStringInput extends StatefulWidget {
   });
 
   @override
-  State<CmsStringInput> createState() => _CmsStringInputState();
+  State<DeskStringInput> createState() => _DeskStringInputState();
 }
 
-class _CmsStringInputState extends State<CmsStringInput> {
+class _DeskStringInputState extends State<DeskStringInput> {
   late final TextEditingController _controller;
   late final UndoHistoryController _undoController;
   late bool _isEnabled;
@@ -52,7 +52,7 @@ class _CmsStringInputState extends State<CmsStringInput> {
   }
 
   @override
-  void didUpdateWidget(covariant CmsStringInput oldWidget) {
+  void didUpdateWidget(covariant DeskStringInput oldWidget) {
     super.didUpdateWidget(oldWidget);
     final newText = widget.data?.value?.toString() ?? '';
     if (newText != _controller.text &&

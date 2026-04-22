@@ -6,23 +6,23 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'optional_field_wrapper.dart';
 
-@Preview(name: 'CmsFileInput')
+@Preview(name: 'DeskFileInput')
 Widget preview() => ShadApp(
-  home: CmsFileInput(
-    field: const CmsFileField(
+  home: DeskFileInput(
+    field: const DeskFileField(
       name: 'document',
       title: 'Document Upload',
-      option: CmsFileOption(),
+      option: DeskFileOption(),
     ),
   ),
 );
 
-class CmsFileInput extends StatefulWidget {
-  final CmsFileField field;
-  final CmsData? data;
+class DeskFileInput extends StatefulWidget {
+  final DeskFileField field;
+  final DeskData? data;
   final ValueChanged<String?>? onChanged;
 
-  const CmsFileInput({
+  const DeskFileInput({
     super.key,
     required this.field,
     this.data,
@@ -30,10 +30,10 @@ class CmsFileInput extends StatefulWidget {
   });
 
   @override
-  State<CmsFileInput> createState() => _CmsFileInputState();
+  State<DeskFileInput> createState() => _DeskFileInputState();
 }
 
-class _CmsFileInputState extends State<CmsFileInput> {
+class _DeskFileInputState extends State<DeskFileInput> {
   String? _fileUrl;
   String? _fileName;
   PlatformFile? _pickedFile;

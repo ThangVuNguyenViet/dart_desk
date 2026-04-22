@@ -4,7 +4,7 @@
 
 **Goal:** Replace all 5 existing CMS example data models and preview screens with new ones based on 4 HTML reference designs (kiosk, hero, upsell, reward) plus a brand theme model.
 
-**Architecture:** 5 data models with `@CmsConfig` annotations + code generation, 4 seed data files for dropdown options, 5 Flutter preview widgets faithfully recreating the HTML reference designs. A prerequisite task adds `CmsMultiDropdownFieldConfig` annotation support to the generator since it doesn't exist yet.
+**Architecture:** 5 data models with `@DeskModel` annotations + code generation, 4 seed data files for dropdown options, 5 Flutter preview widgets faithfully recreating the HTML reference designs. A prerequisite task adds `DeskMultiDropdown` annotation support to the generator since it doesn't exist yet.
 
 **Tech Stack:** Flutter, dart_desk annotations, dart_mappable, build_runner code generation, shadcn_ui
 
@@ -19,10 +19,10 @@
 ### Packages (dart_desk core — prerequisite)
 - Create: `packages/dart_desk_annotation/lib/src/fields/complex/multi_dropdown_field_config.dart`
 - Modify: `packages/dart_desk_annotation/lib/dart_desk_annotation.dart` (add export)
-- Modify: `packages/dart_desk_generator/lib/src/generators/cms_field_generator.dart` (add handler)
+- Modify: `packages/dart_desk_generator/lib/src/generators/desk_field_generator.dart` (add handler)
 
 ### Data Models
-- Delete: `examples/data_models/lib/src/configs/storefront_config.dart` (+ `.mapper.dart`, `.cms.g.dart`)
+- Delete: `examples/data_models/lib/src/configs/storefront_config.dart` (+ `.mapper.dart`, `.desk.dart`)
 - Delete: `examples/data_models/lib/src/configs/menu_highlight.dart` (+ generated)
 - Delete: `examples/data_models/lib/src/configs/promo_offer.dart` (+ generated)
 - Delete: `examples/data_models/lib/src/configs/app_theme.dart` (+ generated)
@@ -48,19 +48,19 @@
 - Create: `examples/example_app/lib/screens/reward_preview.dart`
 
 ### Integration
-- Modify: `examples/cms_app/lib/document_types.dart`
-- Modify: `examples/cms_app/lib/main.dart`
+- Modify: `examples/desk_app/lib/document_types.dart`
+- Modify: `examples/desk_app/lib/main.dart`
 
 ---
 
-### Task 1: Add CmsMultiDropdownFieldConfig annotation + generator support
+### Task 1: Add DeskMultiDropdown annotation + generator support
 
-The annotation package has `CmsMultiDropdownField` and `CmsMultiDropdownOption` but no `CmsMultiDropdownFieldConfig` annotation class for the code generator. The generator's `_fieldConfigs` map has no entry for it. We need both.
+The annotation package has `DeskMultiDropdownField` and `DeskMultiDropdownOption` but no `DeskMultiDropdown` annotation class for the code generator. The generator's `_fieldConfigs` map has no entry for it. We need both.
 
 **Files:**
 - Create: `packages/dart_desk_annotation/lib/src/fields/complex/multi_dropdown_field_config.dart`
 - Modify: `packages/dart_desk_annotation/lib/dart_desk_annotation.dart`
-- Modify: `packages/dart_desk_generator/lib/src/generators/cms_field_generator.dart`
+- Modify: `packages/dart_desk_generator/lib/src/generators/desk_field_generator.dart`
 
 - [ ] **Step 1: Create the annotation class**
 
@@ -72,13 +72,13 @@ import 'dropdown_field.dart';
 
 /// Annotation to mark a `List<T>` field as a multi-select dropdown in the CMS.
 ///
-/// Requires a [CmsMultiDropdownOption<T>] to supply the available options.
-class CmsMultiDropdownFieldConfig<T> extends CmsFieldConfig {
-  const CmsMultiDropdownFieldConfig({
+/// Requires a [DeskMultiDropdownOption<T>] to supply the available options.
+class DeskMultiDropdown<T> extends DeskFieldConfig {
+  const DeskMultiDropdown({
     super.name,
     super.title,
     super.description,
-    required CmsMultiDropdownOption<T> super.option,
+    required DeskMultiDropdownOption<T> super.option,
   });
 
   @override
@@ -96,24 +96,24 @@ export 'src/fields/complex/multi_dropdown_field_config.dart';
 
 - [ ] **Step 3: Add the generator handler**
 
-In `packages/dart_desk_generator/lib/src/generators/cms_field_generator.dart`, add a new entry to the `_fieldConfigs` map right after the `'CmsDropdownFieldConfig'` entry (after line 413). The pattern mirrors the existing dropdown handler:
+In `packages/dart_desk_generator/lib/src/generators/desk_field_generator.dart`, add a new entry to the `_fieldConfigs` map right after the `'DeskDropdown'` entry (after line 413). The pattern mirrors the existing dropdown handler:
 
 ```dart
-    'CmsMultiDropdownFieldConfig': (
+    'DeskMultiDropdown': (
       FieldElement field,
       DartObject? config, [
       String? optionSource,
     ]) {
       final fieldName = field.name!;
 
-      // Extract the generic type from CmsMultiDropdownFieldConfig<T>
+      // Extract the generic type from DeskMultiDropdown<T>
       final configType = config?.type?.toString() ?? '';
       final genericTypeMatch = RegExp(
-        r'CmsMultiDropdownFieldConfig<(.+?)>',
+        r'DeskMultiDropdown<(.+?)>',
       ).firstMatch(configType);
       final genericType = genericTypeMatch?.group(1) ?? 'dynamic';
 
-      return '''CmsMultiDropdownField<$genericType>(
+      return '''DeskMultiDropdownField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}
@@ -134,8 +134,8 @@ Expected: No errors.
 ```bash
 git add packages/dart_desk_annotation/lib/src/fields/complex/multi_dropdown_field_config.dart
 git add packages/dart_desk_annotation/lib/dart_desk_annotation.dart
-git add packages/dart_desk_generator/lib/src/generators/cms_field_generator.dart
-git commit -m "feat: add CmsMultiDropdownFieldConfig annotation and generator support"
+git add packages/dart_desk_generator/lib/src/generators/desk_field_generator.dart
+git commit -m "feat: add DeskMultiDropdown annotation and generator support"
 ```
 
 ---
@@ -150,11 +150,11 @@ git commit -m "feat: add CmsMultiDropdownFieldConfig annotation and generator su
 
 ```bash
 cd examples/data_models/lib/src/configs/
-rm storefront_config.dart storefront_config.mapper.dart storefront_config.cms.g.dart
-rm menu_highlight.dart menu_highlight.mapper.dart menu_highlight.cms.g.dart
-rm promo_offer.dart promo_offer.mapper.dart promo_offer.cms.g.dart
-rm app_theme.dart app_theme.mapper.dart app_theme.cms.g.dart
-rm delivery_settings.dart delivery_settings.mapper.dart delivery_settings.cms.g.dart
+rm storefront_config.dart storefront_config.mapper.dart storefront_config.desk.dart
+rm menu_highlight.dart menu_highlight.mapper.dart menu_highlight.desk.dart
+rm promo_offer.dart promo_offer.mapper.dart promo_offer.desk.dart
+rm app_theme.dart app_theme.mapper.dart app_theme.desk.dart
+rm delivery_settings.dart delivery_settings.mapper.dart delivery_settings.desk.dart
 ```
 
 - [ ] **Step 2: Delete old preview screens**
@@ -430,52 +430,52 @@ import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
-part 'brand_theme.cms.g.dart';
+part 'brand_theme.desk.dart';
 part 'brand_theme.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Brand Theme',
   description: 'Global brand colors, typography, and styling for the Aura Gastronomy app',
 )
 @MappableClass(ignoreNull: false, includeCustomMappers: [BrandThemeColorMapper()])
 class BrandTheme with BrandThemeMappable, Serializable<BrandTheme> {
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Primary brand color used for buttons, nav, and accents',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color primaryColor;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Surface/background color for the app',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color surfaceColor;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Primary text color',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color textColor;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Font family for headlines (e.g. Noto Serif)',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String headlineFont;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Font family for body text (e.g. Manrope)',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String bodyFont;
 
-  @CmsNumberFieldConfig(
+  @DeskNumber(
     description: 'Corner radius for cards and buttons in pixels',
-    option: CmsNumberOption(min: 0, max: 24),
+    option: DeskNumberOption(min: 0, max: 24),
   )
   final num cornerRadius;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'App theme mode',
     option: ThemeModeDropdownOption(),
   )
@@ -520,7 +520,7 @@ class BrandThemeColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class ThemeModeDropdownOption extends CmsDropdownOption<String> {
+class ThemeModeDropdownOption extends DeskDropdownOption<String> {
   const ThemeModeDropdownOption({super.hidden});
 
   @override
@@ -553,7 +553,7 @@ git commit -m "feat: add BrandTheme data model"
 
 ### Task 5: Create KioskConfig data model
 
-Uses `CmsMultiDropdownFieldConfig` for product selection.
+Uses `DeskMultiDropdown` for product selection.
 
 **Files:**
 - Create: `examples/data_models/lib/src/configs/kiosk_config.dart`
@@ -571,40 +571,40 @@ import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
 
-part 'kiosk_config.cms.g.dart';
+part 'kiosk_config.desk.dart';
 part 'kiosk_config.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Kiosk Screen',
   description: 'Desktop 3-panel kiosk layout with product grid and order sidebar',
 )
 @MappableClass(ignoreNull: false, includeCustomMappers: [KioskColorMapper(), ImageReferenceMapper()])
 class KioskConfig with KioskConfigMappable, Serializable<KioskConfig> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Restaurant name shown in the nav drawer',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String restaurantName;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Banner headline text',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String bannerTitle;
 
-  @CmsTextFieldConfig(
+  @DeskText(
     description: 'Banner description text below the headline',
-    option: CmsTextOption(rows: 2),
+    option: DeskTextOption(rows: 2),
   )
   final String bannerSubtitle;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Banner background image',
-    option: CmsImageOption(hotspot: false),
+    option: DeskImageOption(hotspot: false),
   )
   final ImageReference? bannerImage;
 
-  @CmsMultiDropdownFieldConfig<String>(
+  @DeskMultiDropdown<String>(
     description: 'Products to display in the kiosk grid',
     option: KioskProductsDropdownOption(),
   )
@@ -646,7 +646,7 @@ class KioskColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class KioskProductsDropdownOption extends CmsMultiDropdownOption<String> {
+class KioskProductsDropdownOption extends DeskMultiDropdownOption<String> {
   const KioskProductsDropdownOption({super.hidden});
 
   @override
@@ -698,40 +698,40 @@ import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
 
-part 'hero_config.cms.g.dart';
+part 'hero_config.desk.dart';
 part 'hero_config.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Hero Screen',
   description: 'Mobile home screen with hero image, categories, and featured products',
 )
 @MappableClass(ignoreNull: false, includeCustomMappers: [HeroColorMapper(), ImageReferenceMapper()])
 class HeroConfig with HeroConfigMappable, Serializable<HeroConfig> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Main headline in the hero section',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String heroTitle;
 
-  @CmsTextFieldConfig(
+  @DeskText(
     description: 'Description text below the hero title',
-    option: CmsTextOption(rows: 2),
+    option: DeskTextOption(rows: 2),
   )
   final String heroSubtitle;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Background image for the hero section',
-    option: CmsImageOption(hotspot: false),
+    option: DeskImageOption(hotspot: false),
   )
   final ImageReference? heroImage;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Call-to-action button label',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String ctaLabel;
 
-  @CmsMultiDropdownFieldConfig<String>(
+  @DeskMultiDropdown<String>(
     description: 'Featured products to display in the grid',
     option: HeroProductsDropdownOption(),
   )
@@ -772,7 +772,7 @@ class HeroColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class HeroProductsDropdownOption extends CmsMultiDropdownOption<String> {
+class HeroProductsDropdownOption extends DeskMultiDropdownOption<String> {
   const HeroProductsDropdownOption({super.hidden});
 
   @override
@@ -824,40 +824,40 @@ import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
 
-part 'upsell_config.cms.g.dart';
+part 'upsell_config.desk.dart';
 part 'upsell_config.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Upsell Screen',
   description: 'Mobile Chef\'s Choice curated item list with editorial pull-quote',
 )
 @MappableClass(ignoreNull: false, includeCustomMappers: [UpsellColorMapper()])
 class UpsellConfig with UpsellConfigMappable, Serializable<UpsellConfig> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Section title (e.g. Chef\'s Choice)',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String sectionTitle;
 
-  @CmsTextFieldConfig(
+  @DeskText(
     description: 'Subtitle text below the section title',
-    option: CmsTextOption(rows: 2),
+    option: DeskTextOption(rows: 2),
   )
   final String sectionSubtitle;
 
-  @CmsTextFieldConfig(
+  @DeskText(
     description: 'Pull-quote text displayed between product items',
-    option: CmsTextOption(rows: 3),
+    option: DeskTextOption(rows: 3),
   )
   final String quoteText;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Attribution name for the pull-quote',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String chefName;
 
-  @CmsMultiDropdownFieldConfig<String>(
+  @DeskMultiDropdown<String>(
     description: 'Chef\'s choice products to feature',
     option: UpsellProductsDropdownOption(),
   )
@@ -900,7 +900,7 @@ class UpsellColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class UpsellProductsDropdownOption extends CmsMultiDropdownOption<String> {
+class UpsellProductsDropdownOption extends DeskMultiDropdownOption<String> {
   const UpsellProductsDropdownOption({super.hidden});
 
   @override
@@ -952,40 +952,40 @@ import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
 
-part 'reward_config.cms.g.dart';
+part 'reward_config.desk.dart';
 part 'reward_config.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Reward Screen',
   description: 'Mobile loyalty rewards with points card and coupon list',
 )
 @MappableClass(ignoreNull: false, includeCustomMappers: [RewardColorMapper()])
 class RewardConfig with RewardConfigMappable, Serializable<RewardConfig> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Brand name shown in the header',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String brandName;
 
-  @CmsNumberFieldConfig(
+  @DeskNumber(
     description: 'Current loyalty points balance',
-    option: CmsNumberOption(min: 0, max: 100000),
+    option: DeskNumberOption(min: 0, max: 100000),
   )
   final num pointsBalance;
 
-  @CmsNumberFieldConfig(
+  @DeskNumber(
     description: 'Points needed for the next reward',
-    option: CmsNumberOption(min: 0, max: 100000),
+    option: DeskNumberOption(min: 0, max: 100000),
   )
   final num nextRewardThreshold;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Label for the next reward (e.g. Festive Tasting Menu)',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String rewardLabel;
 
-  @CmsMultiDropdownFieldConfig<String>(
+  @DeskMultiDropdown<String>(
     description: 'Coupons to display in the rewards screen',
     option: CouponsDropdownOption(),
   )
@@ -1026,7 +1026,7 @@ class RewardColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class CouponsDropdownOption extends CmsMultiDropdownOption<String> {
+class CouponsDropdownOption extends DeskMultiDropdownOption<String> {
   const CouponsDropdownOption({super.hidden});
 
   @override
@@ -1086,7 +1086,7 @@ export 'src/seed/seed_data.dart';
 cd examples/data_models && dart run build_runner build --delete-conflicting-outputs
 ```
 
-Expected: Generates `.mapper.dart` and `.cms.g.dart` for all 5 new models. No errors.
+Expected: Generates `.mapper.dart` and `.desk.dart` for all 5 new models. No errors.
 
 - [ ] **Step 3: Verify analysis passes**
 
@@ -1241,12 +1241,12 @@ git commit -m "feat: add RewardPreview widget"
 ### Task 15: Update integration files (document_types.dart + main.dart)
 
 **Files:**
-- Modify: `examples/cms_app/lib/document_types.dart`
-- Modify: `examples/cms_app/lib/main.dart`
+- Modify: `examples/desk_app/lib/document_types.dart`
+- Modify: `examples/desk_app/lib/main.dart`
 
 - [ ] **Step 1: Replace document_types.dart**
 
-Replace the contents of `examples/cms_app/lib/document_types.dart` with:
+Replace the contents of `examples/desk_app/lib/document_types.dart` with:
 
 ```dart
 import 'package:data_models/example_data.dart';
@@ -1294,7 +1294,7 @@ final rewardDocumentType = rewardConfigTypeSpec.build(
 
 - [ ] **Step 2: Update main.dart**
 
-Replace the `DartDeskConfig` block in `examples/cms_app/lib/main.dart`:
+Replace the `DartDeskConfig` block in `examples/desk_app/lib/main.dart`:
 
 ```dart
 import 'package:dart_desk/studio.dart';
@@ -1323,7 +1323,7 @@ class MyApp extends StatelessWidget {
 
   static const apiKey = String.fromEnvironment(
     'API_KEY',
-    defaultValue: 'cms_w_5dGK1_MeafXRpFF5sLLU-0x5ICYqEIVDdyT9wrlcFmg',
+    defaultValue: 'desk_w_5dGK1_MeafXRpFF5sLLU-0x5ICYqEIVDdyT9wrlcFmg',
   );
 
   @override
@@ -1373,7 +1373,7 @@ class MyApp extends StatelessWidget {
 - [ ] **Step 3: Verify analysis passes**
 
 ```bash
-cd examples/cms_app && flutter analyze
+cd examples/desk_app && flutter analyze
 ```
 
 Expected: No errors.
@@ -1381,8 +1381,8 @@ Expected: No errors.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add examples/cms_app/lib/document_types.dart examples/cms_app/lib/main.dart
-git commit -m "feat: wire up new document types in cms_app"
+git add examples/desk_app/lib/document_types.dart examples/desk_app/lib/main.dart
+git commit -m "feat: wire up new document types in desk_app"
 ```
 
 ---
@@ -1394,23 +1394,23 @@ git commit -m "feat: wire up new document types in cms_app"
 ```bash
 cd examples/data_models && dart analyze lib/
 cd examples/example_app && flutter analyze
-cd examples/cms_app && flutter analyze
+cd examples/desk_app && flutter analyze
 ```
 
 Expected: All pass with no errors.
 
-- [ ] **Step 2: Launch the cms_app and verify it runs**
+- [ ] **Step 2: Launch the desk_app and verify it runs**
 
 Use MCP tools to launch the app:
 
 ```
-mcp__dart__launch_app with the cms_app project
+mcp__dart__launch_app with the desk_app project
 ```
 
 Or if MCP unavailable:
 
 ```bash
-cd examples/cms_app && flutter run -d macos
+cd examples/desk_app && flutter run -d macos
 ```
 
 Expected: App launches, shows 5 document types in the sidebar (Brand Theme, Kiosk Screen, Hero Screen, Upsell Screen, Reward Screen). Clicking each shows the preview widget with default seed data.

@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class FileFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsFileFieldConfig';
+  String get fieldConfigName => 'DeskFile';
 
   @override
   List<Type> get supportedTypes => [String];
@@ -27,17 +27,17 @@ class FileFieldGenerator implements FieldCodeGenerator {
 
     String? resolvedOption = optionSource;
     if (optional && resolvedOption == null) {
-      resolvedOption = 'CmsFileOption(optional: true)';
+      resolvedOption = 'DeskFileOption(optional: true)';
     } else if (optional && resolvedOption != null) {
       if (!resolvedOption.contains('optional')) {
         resolvedOption = resolvedOption.replaceFirst(
-          'CmsFileOption(',
-          'CmsFileOption(optional: true, ',
+          'DeskFileOption(',
+          'DeskFileOption(optional: true, ',
         );
       }
     }
 
-    return '''CmsFileField(
+    return '''DeskFileField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${resolvedOption != null ? 'option: $resolvedOption,' : ''}

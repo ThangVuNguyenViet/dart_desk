@@ -15,7 +15,7 @@ class ChefConfigMapper extends SubClassMapperBase<ChefConfig> {
   static ChefConfigMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = ChefConfigMapper._());
-      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
+      DeskContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([ImageReferenceMapper()]);
       ChefProfileMapper.ensureInitialized();
       CuratedDishMapper.ensureInitialized();
@@ -76,7 +76,8 @@ class ChefConfigMapper extends SubClassMapperBase<ChefConfig> {
   @override
   final dynamic discriminatorValue = 'chefConfig';
   @override
-  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
+  late final ClassMapperBase superMapper =
+      DeskContentMapper.ensureInitialized();
 
   static ChefConfig _instantiate(DecodingData data) {
     return ChefConfig(
@@ -149,7 +150,7 @@ extension ChefConfigValueCopy<$R, $Out>
 }
 
 abstract class ChefConfigCopyWith<$R, $In extends ChefConfig, $Out>
-    implements CmsContentCopyWith<$R, $In, $Out> {
+    implements DeskContentCopyWith<$R, $In, $Out> {
   ChefProfileCopyWith<$R, ChefProfile, ChefProfile> get chef;
   ListCopyWith<
     $R,

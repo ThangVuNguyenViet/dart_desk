@@ -11,23 +11,23 @@ import '../helpers/input_test_helpers.dart';
 void main() {
   // --- Fixtures ---
 
-  const columnField = CmsObjectField(
+  const columnField = DeskObjectField(
     name: 'address',
     title: 'Address',
     description: 'Home address',
-    option: CmsObjectOption(
+    option: DeskObjectOption(
       children: [
         ColumnFields(
           children: [
-            CmsStringField(
+            DeskStringField(
               name: 'street',
               title: 'Street',
-              option: CmsStringOption(),
+              option: DeskStringOption(),
             ),
-            CmsStringField(
+            DeskStringField(
               name: 'city',
               title: 'City',
-              option: CmsStringOption(),
+              option: DeskStringOption(),
             ),
           ],
         ),
@@ -35,22 +35,22 @@ void main() {
     ),
   );
 
-  const rowField = CmsObjectField(
+  const rowField = DeskObjectField(
     name: 'location',
     title: 'Location',
-    option: CmsObjectOption(
+    option: DeskObjectOption(
       children: [
         RowFields(
           children: [
-            CmsStringField(
+            DeskStringField(
               name: 'lat',
               title: 'Latitude',
-              option: CmsStringOption(),
+              option: DeskStringOption(),
             ),
-            CmsStringField(
+            DeskStringField(
               name: 'lng',
               title: 'Longitude',
-              option: CmsStringOption(),
+              option: DeskStringOption(),
             ),
           ],
         ),
@@ -58,10 +58,10 @@ void main() {
     ),
   );
 
-  const groupField = CmsObjectField(
+  const groupField = DeskObjectField(
     name: 'settings',
     title: 'Settings',
-    option: CmsObjectOption(
+    option: DeskObjectOption(
       children: [
         GroupFields(
           title: 'Advanced',
@@ -71,10 +71,10 @@ void main() {
           children: [
             ColumnFields(
               children: [
-                CmsStringField(
+                DeskStringField(
                   name: 'apiKey',
                   title: 'API Key',
-                  option: CmsStringOption(),
+                  option: DeskStringOption(),
                 ),
               ],
             ),
@@ -84,31 +84,31 @@ void main() {
     ),
   );
 
-  const mixedField = CmsObjectField(
+  const mixedField = DeskObjectField(
     name: 'profile',
     title: 'Profile',
-    option: CmsObjectOption(
+    option: DeskObjectOption(
       children: [
         ColumnFields(
           children: [
-            CmsStringField(
+            DeskStringField(
               name: 'name',
               title: 'Name',
-              option: CmsStringOption(),
+              option: DeskStringOption(),
             ),
           ],
         ),
         RowFields(
           children: [
-            CmsNumberField(
+            DeskNumberField(
               name: 'age',
               title: 'Age',
-              option: CmsNumberOption(),
+              option: DeskNumberOption(),
             ),
-            CmsStringField(
+            DeskStringField(
               name: 'email',
               title: 'Email',
-              option: CmsStringOption(),
+              option: DeskStringOption(),
             ),
           ],
         ),
@@ -119,10 +119,10 @@ void main() {
           children: [
             ColumnFields(
               children: [
-                CmsStringField(
+                DeskStringField(
                   name: 'notes',
                   title: 'Notes',
-                  option: CmsStringOption(),
+                  option: DeskStringOption(),
                 ),
               ],
             ),
@@ -132,10 +132,10 @@ void main() {
     ),
   );
 
-  const nestedGroupField = CmsObjectField(
+  const nestedGroupField = DeskObjectField(
     name: 'config',
     title: 'Config',
-    option: CmsObjectOption(
+    option: DeskObjectOption(
       children: [
         GroupFields(
           title: 'Outer',
@@ -145,10 +145,10 @@ void main() {
               children: [
                 ColumnFields(
                   children: [
-                    CmsStringField(
+                    DeskStringField(
                       name: 'deep',
                       title: 'Deep Field',
-                      option: CmsStringOption(),
+                      option: DeskStringOption(),
                     ),
                   ],
                 ),
@@ -162,11 +162,11 @@ void main() {
 
   // --- Tests ---
 
-  group('CmsObjectInput', () {
+  group('DeskObjectInput', () {
     group('rendering', () {
       testWidgets('renders title and description', (tester) async {
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: columnField)),
+          buildInputApp(DeskObjectInput(field: columnField)),
         );
         await tester.pumpAndSettle();
 
@@ -175,14 +175,14 @@ void main() {
       });
 
       testWidgets('hidden field renders nothing', (tester) async {
-        const hiddenField = CmsObjectField(
+        const hiddenField = DeskObjectField(
           name: 'hidden',
           title: 'Hidden',
-          option: CmsObjectOption(children: [], hidden: true),
+          option: DeskObjectOption(children: [], hidden: true),
         );
 
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: hiddenField)),
+          buildInputApp(DeskObjectInput(field: hiddenField)),
         );
         await tester.pumpAndSettle();
 
@@ -190,17 +190,17 @@ void main() {
       });
 
       testWidgets('renders without description when null', (tester) async {
-        const noDescField = CmsObjectField(
+        const noDescField = DeskObjectField(
           name: 'simple',
           title: 'Simple',
-          option: CmsObjectOption(
+          option: DeskObjectOption(
             children: [
               ColumnFields(
                 children: [
-                  CmsStringField(
+                  DeskStringField(
                     name: 'a',
                     title: 'A',
-                    option: CmsStringOption(),
+                    option: DeskStringOption(),
                   ),
                 ],
               ),
@@ -209,7 +209,7 @@ void main() {
         );
 
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: noDescField)),
+          buildInputApp(DeskObjectInput(field: noDescField)),
         );
         await tester.pumpAndSettle();
 
@@ -221,11 +221,11 @@ void main() {
     group('ColumnFields', () {
       testWidgets('renders fields vertically', (tester) async {
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: columnField)),
+          buildInputApp(DeskObjectInput(field: columnField)),
         );
         await tester.pumpAndSettle();
 
-        expect(find.byType(CmsStringInput), findsNWidgets(2));
+        expect(find.byType(DeskStringInput), findsNWidgets(2));
         expect(find.text('Street'), findsOneWidget);
         expect(find.text('City'), findsOneWidget);
       });
@@ -233,10 +233,10 @@ void main() {
 
     group('RowFields', () {
       testWidgets('renders fields horizontally using Expanded', (tester) async {
-        await tester.pumpWidget(buildInputApp(CmsObjectInput(field: rowField)));
+        await tester.pumpWidget(buildInputApp(DeskObjectInput(field: rowField)));
         await tester.pumpAndSettle();
 
-        expect(find.byType(CmsStringInput), findsNWidgets(2));
+        expect(find.byType(DeskStringInput), findsNWidgets(2));
         // Both fields should be inside Expanded widgets within a Row
         expect(find.byType(Row), findsWidgets);
         expect(find.byType(Expanded), findsWidgets);
@@ -246,7 +246,7 @@ void main() {
     group('GroupFields', () {
       testWidgets('renders group title', (tester) async {
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: groupField)),
+          buildInputApp(DeskObjectInput(field: groupField)),
         );
         await tester.pumpAndSettle();
 
@@ -254,10 +254,10 @@ void main() {
       });
 
       testWidgets('renders group description when expanded', (tester) async {
-        const expandedGroupField = CmsObjectField(
+        const expandedGroupField = DeskObjectField(
           name: 'settings',
           title: 'Settings',
-          option: CmsObjectOption(
+          option: DeskObjectOption(
             children: [
               GroupFields(
                 title: 'Advanced',
@@ -267,10 +267,10 @@ void main() {
                 children: [
                   ColumnFields(
                     children: [
-                      CmsStringField(
+                      DeskStringField(
                         name: 'apiKey',
                         title: 'API Key',
-                        option: CmsStringOption(),
+                        option: DeskStringOption(),
                       ),
                     ],
                   ),
@@ -281,7 +281,7 @@ void main() {
         );
 
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: expandedGroupField)),
+          buildInputApp(DeskObjectInput(field: expandedGroupField)),
         );
         await tester.pumpAndSettle();
 
@@ -290,7 +290,7 @@ void main() {
 
       testWidgets('collapsed group hides children', (tester) async {
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: groupField)),
+          buildInputApp(DeskObjectInput(field: groupField)),
         );
         await tester.pumpAndSettle();
 
@@ -307,7 +307,7 @@ void main() {
 
       testWidgets('tapping collapsed group expands it', (tester) async {
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: groupField)),
+          buildInputApp(DeskObjectInput(field: groupField)),
         );
         await tester.pumpAndSettle();
 
@@ -331,7 +331,7 @@ void main() {
 
       testWidgets('tapping expanded group collapses it', (tester) async {
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: groupField)),
+          buildInputApp(DeskObjectInput(field: groupField)),
         );
         await tester.pumpAndSettle();
 
@@ -349,10 +349,10 @@ void main() {
       testWidgets('non-collapsible group always shows children', (
         tester,
       ) async {
-        const nonCollapsibleField = CmsObjectField(
+        const nonCollapsibleField = DeskObjectField(
           name: 'info',
           title: 'Info',
-          option: CmsObjectOption(
+          option: DeskObjectOption(
             children: [
               GroupFields(
                 title: 'Details',
@@ -360,10 +360,10 @@ void main() {
                 children: [
                   ColumnFields(
                     children: [
-                      CmsStringField(
+                      DeskStringField(
                         name: 'desc',
                         title: 'Description',
-                        option: CmsStringOption(),
+                        option: DeskStringOption(),
                       ),
                     ],
                   ),
@@ -374,7 +374,7 @@ void main() {
         );
 
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: nonCollapsibleField)),
+          buildInputApp(DeskObjectInput(field: nonCollapsibleField)),
         );
         await tester.pumpAndSettle();
 
@@ -397,7 +397,7 @@ void main() {
 
       testWidgets('nested groups render recursively', (tester) async {
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: nestedGroupField)),
+          buildInputApp(DeskObjectInput(field: nestedGroupField)),
         );
         await tester.pumpAndSettle();
 
@@ -410,7 +410,7 @@ void main() {
     group('mixed layouts', () {
       testWidgets('renders Column, Row, and Group together', (tester) async {
         await tester.pumpWidget(
-          buildInputApp(CmsObjectInput(field: mixedField)),
+          buildInputApp(DeskObjectInput(field: mixedField)),
         );
         await tester.pumpAndSettle();
 
@@ -423,9 +423,9 @@ void main() {
         expect(find.text('Metadata'), findsOneWidget);
         expect(find.text('Notes'), findsOneWidget);
 
-        // CmsStringInput (Name, Email, Notes) + CmsNumberInput (Age)
-        expect(find.byType(CmsStringInput), findsNWidgets(3));
-        expect(find.byType(CmsNumberInput), findsOneWidget);
+        // DeskStringInput (Name, Email, Notes) + DeskNumberInput (Age)
+        expect(find.byType(DeskStringInput), findsNWidgets(3));
+        expect(find.byType(DeskNumberInput), findsOneWidget);
       });
     });
 
@@ -433,9 +433,9 @@ void main() {
       testWidgets('passes initial data to child fields', (tester) async {
         await tester.pumpWidget(
           buildInputApp(
-            CmsObjectInput(
+            DeskObjectInput(
               field: columnField,
-              data: const CmsData(
+              data: const DeskData(
                 value: {'street': '123 Main St', 'city': 'Springfield'},
                 path: 'address',
               ),
@@ -455,13 +455,13 @@ void main() {
 
         await tester.pumpWidget(
           buildInputApp(
-            CmsObjectInput(field: columnField, onChanged: (v) => received = v),
+            DeskObjectInput(field: columnField, onChanged: (v) => received = v),
           ),
         );
         await tester.pumpAndSettle();
 
         // Type into the first string input (Street)
-        final inputs = find.byType(CmsStringInput);
+        final inputs = find.byType(DeskStringInput);
         await tester.enterText(inputs.first, '456 Elm St');
         await tester.pump();
 
@@ -476,9 +476,9 @@ void main() {
 
         await tester.pumpWidget(
           buildInputApp(
-            CmsObjectInput(
+            DeskObjectInput(
               field: columnField,
-              data: const CmsData(
+              data: const DeskData(
                 value: {'street': 'Original', 'city': 'OldCity'},
                 path: 'address',
               ),
@@ -489,7 +489,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Edit only the city field (second input)
-        final inputs = find.byType(CmsStringInput);
+        final inputs = find.byType(DeskStringInput);
         await tester.enterText(inputs.at(1), 'NewCity');
         await tester.pump();
 
@@ -505,9 +505,9 @@ void main() {
 
         await tester.pumpWidget(
           buildInputApp(
-            CmsObjectInput(
+            DeskObjectInput(
               field: columnField,
-              data: const CmsData(
+              data: const DeskData(
                 value: {'street': 'Original', 'city': 'A'},
                 path: 'address',
               ),
@@ -517,7 +517,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final inputs = find.byType(CmsStringInput);
+        final inputs = find.byType(DeskStringInput);
 
         // Edit street, then city — each enterText may emit multiple times
         // (focus clears existing value → onChanged, then new value → onChanged)
@@ -550,9 +550,9 @@ void main() {
 
         await tester.pumpWidget(
           buildInputApp(
-            CmsObjectInput(
+            DeskObjectInput(
               field: field,
-              data: const CmsData(
+              data: const DeskData(
                 value: {'street': 'First', 'city': 'A'},
                 path: 'address',
               ),
@@ -565,9 +565,9 @@ void main() {
         // Rebuild with new data
         await tester.pumpWidget(
           buildInputApp(
-            CmsObjectInput(
+            DeskObjectInput(
               field: field,
-              data: const CmsData(
+              data: const DeskData(
                 value: {'street': 'Second', 'city': 'B'},
                 path: 'address',
               ),
@@ -582,29 +582,29 @@ void main() {
     });
 
     group('flatFields', () {
-      test('CmsObjectOption.fields collects all leaf fields', () {
-        const option = CmsObjectOption(
+      test('DeskObjectOption.fields collects all leaf fields', () {
+        const option = DeskObjectOption(
           children: [
             ColumnFields(
               children: [
-                CmsStringField(
+                DeskStringField(
                   name: 'a',
                   title: 'A',
-                  option: CmsStringOption(),
+                  option: DeskStringOption(),
                 ),
               ],
             ),
             RowFields(
               children: [
-                CmsStringField(
+                DeskStringField(
                   name: 'b',
                   title: 'B',
-                  option: CmsStringOption(),
+                  option: DeskStringOption(),
                 ),
-                CmsStringField(
+                DeskStringField(
                   name: 'c',
                   title: 'C',
-                  option: CmsStringOption(),
+                  option: DeskStringOption(),
                 ),
               ],
             ),
@@ -613,10 +613,10 @@ void main() {
               children: [
                 ColumnFields(
                   children: [
-                    CmsStringField(
+                    DeskStringField(
                       name: 'd',
                       title: 'D',
-                      option: CmsStringOption(),
+                      option: DeskStringOption(),
                     ),
                   ],
                 ),
@@ -631,7 +631,7 @@ void main() {
       });
 
       test('nested GroupFields collects all leaf fields', () {
-        const option = CmsObjectOption(
+        const option = DeskObjectOption(
           children: [
             GroupFields(
               title: 'Outer',
@@ -641,15 +641,15 @@ void main() {
                   children: [
                     RowFields(
                       children: [
-                        CmsStringField(
+                        DeskStringField(
                           name: 'x',
                           title: 'X',
-                          option: CmsStringOption(),
+                          option: DeskStringOption(),
                         ),
-                        CmsStringField(
+                        DeskStringField(
                           name: 'y',
                           title: 'Y',
-                          option: CmsStringOption(),
+                          option: DeskStringOption(),
                         ),
                       ],
                     ),
@@ -666,7 +666,7 @@ void main() {
       });
 
       test('empty option returns empty fields', () {
-        const option = CmsObjectOption(children: []);
+        const option = DeskObjectOption(children: []);
         expect(option.fields, isEmpty);
       });
     });

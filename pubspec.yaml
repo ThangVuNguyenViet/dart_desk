@@ -11,7 +11,7 @@ workspace:
   - packages/dart_desk
   - examples/data_models
   - examples/example_app
-  - examples/cms_app
+  - examples/desk_app
 
 dev_dependencies:
   melos: ^7.5.0

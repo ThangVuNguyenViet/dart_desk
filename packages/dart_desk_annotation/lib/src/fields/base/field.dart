@@ -1,15 +1,15 @@
 /// Base condition class for conditional field visibility.
 /// Subclass and override [evaluate] to create custom conditions.
 /// All subclasses must be const-constructible.
-abstract class CmsCondition {
-  const CmsCondition();
+abstract class DeskCondition {
+  const DeskCondition();
 
   /// Returns true if the field should be visible given the current [data].
   bool evaluate(Map<String, dynamic> data);
 }
 
 /// Shows the field when [field] equals [value].
-class FieldEquals extends CmsCondition {
+class FieldEquals extends DeskCondition {
   final String field;
   final Object? value;
   const FieldEquals(this.field, this.value);
@@ -19,7 +19,7 @@ class FieldEquals extends CmsCondition {
 }
 
 /// Shows the field when [field] does not equal [value].
-class FieldNotEquals extends CmsCondition {
+class FieldNotEquals extends DeskCondition {
   final String field;
   final Object? value;
   const FieldNotEquals(this.field, this.value);
@@ -29,7 +29,7 @@ class FieldNotEquals extends CmsCondition {
 }
 
 /// Shows the field when [field] is not null.
-class FieldNotNull extends CmsCondition {
+class FieldNotNull extends DeskCondition {
   final String field;
   const FieldNotNull(this.field);
 
@@ -38,7 +38,7 @@ class FieldNotNull extends CmsCondition {
 }
 
 /// Shows the field when [field] is null.
-class FieldIsNull extends CmsCondition {
+class FieldIsNull extends DeskCondition {
   final String field;
   const FieldIsNull(this.field);
 
@@ -47,8 +47,8 @@ class FieldIsNull extends CmsCondition {
 }
 
 /// Shows the field when all [conditions] are true.
-class AllConditions extends CmsCondition {
-  final List<CmsCondition> conditions;
+class AllConditions extends DeskCondition {
+  final List<DeskCondition> conditions;
   const AllConditions(this.conditions);
 
   @override
@@ -57,8 +57,8 @@ class AllConditions extends CmsCondition {
 }
 
 /// Shows the field when any of [conditions] is true.
-class AnyCondition extends CmsCondition {
-  final List<CmsCondition> conditions;
+class AnyCondition extends DeskCondition {
+  final List<DeskCondition> conditions;
   const AnyCondition(this.conditions);
 
   @override
@@ -66,8 +66,8 @@ class AnyCondition extends CmsCondition {
       conditions.any((c) => c.evaluate(data));
 }
 
-abstract class CmsOption {
-  const CmsOption({this.hidden = false, this.optional = false, this.condition});
+abstract class DeskOption {
+  const DeskOption({this.hidden = false, this.optional = false, this.condition});
 
   final bool hidden;
 
@@ -76,16 +76,16 @@ abstract class CmsOption {
 
   /// Condition that determines field visibility based on document data.
   /// When null, the field is always visible (unless [hidden] is true).
-  final CmsCondition? condition;
+  final DeskCondition? condition;
 }
 
-abstract class CmsField {
+abstract class DeskField {
   final String name;
   final String title;
   final String? description;
-  final CmsOption? option;
+  final DeskOption? option;
 
-  const CmsField({
+  const DeskField({
     required this.name,
     required this.title,
     this.description,
@@ -95,21 +95,21 @@ abstract class CmsField {
 
 /// Base class for field configuration annotations used in code generation.
 ///
-/// CmsFieldConfig classes are used as annotations (e.g., @CmsTextFieldConfig())
-/// to mark fields in @CmsConfig classes. During build time, the code generator
+/// DeskFieldConfig classes are used as annotations (e.g., @DeskText())
+/// to mark fields in @DeskModel classes. During build time, the code generator
 /// processes these annotations to create:
 /// 1. Field configuration lists for the CMS studio UI
-/// 2. CmsField instances for runtime field representation
+/// 2. DeskField instances for runtime field representation
 ///
 /// The optional fields (name, title) allow the generator to fill in default
 /// values when not explicitly provided in the annotation.
-abstract class CmsFieldConfig {
-  const CmsFieldConfig({this.name, this.title, this.option, this.description});
+abstract class DeskFieldConfig {
+  const DeskFieldConfig({this.name, this.title, this.option, this.description});
 
   final String? name;
   final String? title;
   final String? description;
-  final CmsOption? option;
+  final DeskOption? option;
 
   /// The Dart types that this field configuration supports.
   /// Used to validate field type compatibility during code generation.

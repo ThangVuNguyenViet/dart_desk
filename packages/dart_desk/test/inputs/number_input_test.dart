@@ -6,19 +6,19 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsNumberField(
+  const field = DeskNumberField(
     name: 'count',
     title: 'Count',
-    option: CmsNumberOption(),
+    option: DeskNumberOption(),
   );
 
-  group('CmsNumberInput', () {
+  group('DeskNumberInput', () {
     testWidgets('renders with initial numeric value', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsNumberInput(
+          DeskNumberInput(
             field: field,
-            data: const CmsData(value: 42, path: 'count'),
+            data: const DeskData(value: 42, path: 'count'),
           ),
         ),
       );
@@ -32,7 +32,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsNumberInput(field: field, onChanged: (v) => received = v),
+          DeskNumberInput(field: field, onChanged: (v) => received = v),
         ),
       );
       await tester.pumpAndSettle();
@@ -48,9 +48,9 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsNumberInput(
+          DeskNumberInput(
             field: field,
-            data: const CmsData(value: 42, path: 'count'),
+            data: const DeskData(value: 42, path: 'count'),
             onChanged: (v) => received = v,
           ),
         ),
@@ -64,14 +64,14 @@ void main() {
     });
 
     testWidgets('hidden field renders nothing', (tester) async {
-      const hiddenField = CmsNumberField(
+      const hiddenField = DeskNumberField(
         name: 'hidden',
         title: 'Hidden',
-        option: CmsNumberOption(hidden: true),
+        option: DeskNumberOption(hidden: true),
       );
 
       await tester.pumpWidget(
-        buildInputApp(CmsNumberInput(field: hiddenField)),
+        buildInputApp(DeskNumberInput(field: hiddenField)),
       );
       await tester.pumpAndSettle();
 

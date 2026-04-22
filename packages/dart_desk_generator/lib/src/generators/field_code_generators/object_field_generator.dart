@@ -7,7 +7,7 @@ import 'field_code_generator.dart';
 
 class ObjectFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsObjectFieldConfig';
+  String get fieldConfigName => 'DeskObject';
 
   @override
   List<Type> get supportedTypes => [];
@@ -46,7 +46,7 @@ class ObjectFieldGenerator implements FieldCodeGenerator {
           final fieldsListName =
               '${typeName[0].toLowerCase()}${typeName.substring(1)}Fields';
           resolvedOption =
-              'CmsObjectOption(children: [ColumnFields(children: $fieldsListName)])';
+              'DeskObjectOption(children: [ColumnFields(children: $fieldsListName)])';
         }
       }
     }
@@ -64,7 +64,7 @@ class ObjectFieldGenerator implements FieldCodeGenerator {
         );
         if (!hasFromMap) {
           throw InvalidGenerationSourceError(
-            '$typeName is used as a CmsObjectField type but does '
+            '$typeName is used as a DeskObjectField type but does '
             'not have a static \$fromMap method. Add:\n\n'
             '  static $typeName \$fromMap(Map<String, dynamic> map) => '
             '${typeName}Mapper.fromMap(map);\n',
@@ -75,7 +75,7 @@ class ObjectFieldGenerator implements FieldCodeGenerator {
       }
     }
 
-    return '''CmsObjectField(
+    return '''DeskObjectField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${fromMapCode ?? ''}

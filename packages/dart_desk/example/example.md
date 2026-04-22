@@ -37,8 +37,8 @@ Your studio is live at your project URL. Editors can sign in immediately.
 
 The repository includes a complete working example split across three packages:
 
-- [data_models](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/data_models) — annotated content models and generated `CmsDocumentType` definitions
-- [cms_app](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/cms_app) — the DartDeskApp studio wired to the example document types
+- [data_models](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/data_models) — annotated content models and generated `DeskDocumentType` definitions
+- [desk_app](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/desk_app) — the DartDeskApp studio wired to the example document types
 - [example_app](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/example_app) — a consumer Flutter app that reads published content via `dart_desk_client`
 
 ### Document Types in the Example
@@ -51,17 +51,17 @@ The repository includes a complete working example split across three packages:
 | Announcement Banner | Time-bounded banner with priority, colors, CTA |
 | App Branding | 4 brand colors, 3 logo variants, theme mode |
 
-See [document_types.dart](https://github.com/ThangVuNguyenViet/dart_desk/blob/main/examples/cms_app/lib/document_types.dart) for how each type is wired into the studio, and [data_models/lib/src/configs](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/data_models/lib/src/configs) for the annotated schema classes.
+See [document_types.dart](https://github.com/ThangVuNguyenViet/dart_desk/blob/main/examples/desk_app/lib/document_types.dart) for how each type is wired into the studio, and [data_models/lib/src/configs](https://github.com/ThangVuNguyenViet/dart_desk/tree/main/examples/data_models/lib/src/configs) for the annotated schema classes.
 
 ### Running the Example Locally
 
 ```bash
-cd examples/cms_app
+cd examples/desk_app
 flutter run
 ```
 
 Or deploy it to Dart Desk Cloud:
 
 ```bash
-dartdesk deploy --project examples/cms_app
+dartdesk deploy --project examples/desk_app
 ```

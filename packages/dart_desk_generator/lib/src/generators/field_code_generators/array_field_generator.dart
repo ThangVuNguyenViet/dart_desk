@@ -8,18 +8,18 @@ import 'field_code_generator.dart';
 
 class ArrayFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsArrayFieldConfig';
+  String get fieldConfigName => 'DeskArray';
 
   @override
   List<Type> get supportedTypes => [List];
 
   static const _arrayPrimitiveFields = {
-    'String': 'CmsStringField',
-    'num': 'CmsNumberField',
-    'int': 'CmsNumberField',
-    'double': 'CmsNumberField',
-    'bool': 'CmsBooleanField',
-    'DateTime': 'CmsDateTimeField',
+    'String': 'DeskStringField',
+    'num': 'DeskNumberField',
+    'int': 'DeskNumberField',
+    'double': 'DeskNumberField',
+    'bool': 'DeskBooleanField',
+    'DateTime': 'DeskDateTimeField',
   };
 
   @override
@@ -54,8 +54,8 @@ class ArrayFieldGenerator implements FieldCodeGenerator {
 
     if (genericType == null) {
       throw InvalidGenerationSourceError(
-        'Could not extract type parameter from CmsArrayFieldConfig. '
-        'Use explicit type: @CmsArrayFieldConfig<String>() instead of @CmsArrayFieldConfig().',
+        'Could not extract type parameter from DeskArray. '
+        'Use explicit type: @DeskArray<String>() instead of @DeskArray().',
         element: field,
       );
     }
@@ -81,10 +81,10 @@ class ArrayFieldGenerator implements FieldCodeGenerator {
             '${typeName[0].toLowerCase()}${typeName.substring(1)}Fields';
 
         inferredFieldCode =
-            '''CmsObjectField(
+            '''DeskObjectField(
     name: 'item',
     title: '${_titleCase(typeName)}',
-    option: CmsObjectOption(children: [ColumnFields(children: $fieldsListName)]),
+    option: DeskObjectOption(children: [ColumnFields(children: $fieldsListName)]),
   )''';
       }
     }
@@ -98,7 +98,7 @@ class ArrayFieldGenerator implements FieldCodeGenerator {
       );
       if (!hasFromMap) {
         throw InvalidGenerationSourceError(
-          '$genericType is used as a CmsArrayField item type but does '
+          '$genericType is used as a DeskArrayField item type but does '
           'not have a static \$fromMap method. Add:\n\n'
           '  static $genericType \$fromMap(Map<String, dynamic> map) => '
           '${genericType}Mapper.fromMap(map);\n',
@@ -108,7 +108,7 @@ class ArrayFieldGenerator implements FieldCodeGenerator {
       fromMapCode = 'fromMap: $genericType.\$fromMap,';
     }
 
-    return '''CmsArrayField<$genericType>(
+    return '''DeskArrayField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     innerField: $inferredFieldCode,
@@ -126,7 +126,7 @@ class ArrayFieldGenerator implements FieldCodeGenerator {
         _innerConfigTypeFromSource(source);
     if (!configType.endsWith('FieldConfig')) {
       throw InvalidGenerationSourceError(
-        'CmsArrayFieldConfig.inner must be a CmsFieldConfig.',
+        'DeskArray.inner must be a DeskFieldConfig.',
       );
     }
 
@@ -274,14 +274,14 @@ class ArrayFieldGenerator implements FieldCodeGenerator {
   }
 
   static const _optionalOptionTypes = {
-    'CmsTextFieldConfig': 'CmsTextOption',
-    'CmsStringFieldConfig': 'CmsStringOption',
-    'CmsNumberFieldConfig': 'CmsNumberOption',
-    'CmsDateFieldConfig': 'CmsDateOption',
-    'CmsDateTimeFieldConfig': 'CmsDateTimeOption',
-    'CmsUrlFieldConfig': 'CmsUrlOption',
-    'CmsFileFieldConfig': 'CmsFileOption',
-    'CmsColorFieldConfig': 'CmsColorOption',
+    'DeskText': 'DeskTextOption',
+    'DeskString': 'DeskStringOption',
+    'DeskNumber': 'DeskNumberOption',
+    'DeskDate': 'DeskDateOption',
+    'DeskDateTime': 'DeskDateTimeOption',
+    'DeskUrl': 'DeskUrlOption',
+    'DeskFile': 'DeskFileOption',
+    'DeskColor': 'DeskColorOption',
   };
 
   static String _titleCase(String input) {

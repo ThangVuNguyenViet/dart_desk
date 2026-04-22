@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Surface `CmsDocument.isDefault` as a fully interactive UI feature — badge indicator on tiles, overflow menu action to set default, toast feedback, and auto-default enforcement on create/delete.
+**Goal:** Surface `DeskDocument.isDefault` as a fully interactive UI feature — badge indicator on tiles, overflow menu action to set default, toast feedback, and auto-default enforcement on create/delete.
 
-**Architecture:** MockDataSource handles auto-default logic in-process (no external calls). CmsViewModel adds `setDefaultDocument` and updates `deleteDocument` to return a record carrying the auto-assigned default. Two callers in shell/screen are updated to show the additional toast. The document tile's existing `PopupMenuButton` gains a "Set as default" item wired directly to the ViewModel.
+**Architecture:** MockDataSource handles auto-default logic in-process (no external calls). DeskViewModel adds `setDefaultDocument` and updates `deleteDocument` to return a record carrying the auto-assigned default. Two callers in shell/screen are updated to show the additional toast. The document tile's existing `PopupMenuButton` gains a "Set as default" item wired directly to the ViewModel.
 
 **Tech Stack:** Flutter, signals, shadcn_ui (`ShadBadge`, `ShadToast`), MockDataSource (unit tests), CloudDataSource (Serverpod client stub).
 
@@ -17,11 +17,11 @@
 ### Task 1: Add `setDefaultDocument` to the DataSource interface
 
 **Files:**
-- Modify: `lib/src/data/cms_data_source.dart`
+- Modify: `lib/src/data/desk_data_source.dart`
 
 - [ ] **Step 1: Open the file and locate the abstract class**
 
-  Read `lib/src/data/cms_data_source.dart`. Find the `abstract class DataSource` block.
+  Read `lib/src/data/desk_data_source.dart`. Find the `abstract class DataSource` block.
 
 - [ ] **Step 2: Add the new abstract method**
 
@@ -30,7 +30,7 @@
   ```dart
   /// Atomically unsets the current default for [documentTypeSlug] and sets
   /// [documentId] as the new default. Returns the updated document.
-  Future<CmsDocument> setDefaultDocument(
+  Future<DeskDocument> setDefaultDocument(
     String documentTypeSlug,
     int documentId,
   );
@@ -39,7 +39,7 @@
 - [ ] **Step 3: Commit**
 
   ```bash
-  git add lib/src/data/cms_data_source.dart
+  git add lib/src/data/desk_data_source.dart
   git commit -m "feat: add setDefaultDocument to DataSource interface"
   ```
 
@@ -49,7 +49,7 @@
 
 **Files:**
 - Modify: `test/testing/mock_data_source_test.dart`
-- Modify: `lib/src/testing/mock_cms_data_source.dart`
+- Modify: `lib/src/testing/mock_desk_data_source.dart`
 
 - [ ] **Step 1: Add the failing test group**
 
@@ -94,10 +94,10 @@
       expect(result.isDefault, isTrue);
     });
 
-    test('throws CmsNotFoundException for unknown documentId', () async {
+    test('throws DeskNotFoundException for unknown documentId', () async {
       expect(
         () => dataSource.setDefaultDocument('test_all_fields', 99999),
-        throwsA(isA<CmsNotFoundException>()),
+        throwsA(isA<DeskNotFoundException>()),
       );
     });
   });
@@ -113,11 +113,11 @@
 
 - [ ] **Step 3: Implement `setDefaultDocument` in MockDataSource**
 
-  Open `lib/src/testing/mock_cms_data_source.dart`. Add the following method to the `MockDataSource` class (after `deleteDocument`):
+  Open `lib/src/testing/mock_desk_data_source.dart`. Add the following method to the `MockDataSource` class (after `deleteDocument`):
 
   ```dart
   @override
-  Future<CmsDocument> setDefaultDocument(
+  Future<DeskDocument> setDefaultDocument(
     String documentTypeSlug,
     int documentId,
   ) async {
@@ -133,7 +133,7 @@
     // Set new default
     final doc = _documents[documentId];
     if (doc == null) {
-      throw CmsNotFoundException('Document $documentId not found');
+      throw DeskNotFoundException('Document $documentId not found');
     }
     final updated = doc.copyWith(isDefault: true);
     _documents[documentId] = updated;
@@ -158,7 +158,7 @@
 - [ ] **Step 5: Commit**
 
   ```bash
-  git add lib/src/testing/mock_cms_data_source.dart test/testing/mock_data_source_test.dart
+  git add lib/src/testing/mock_desk_data_source.dart test/testing/mock_data_source_test.dart
   git commit -m "feat: implement setDefaultDocument in MockDataSource"
   ```
 
@@ -168,7 +168,7 @@
 
 **Files:**
 - Modify: `test/testing/mock_data_source_test.dart`
-- Modify: `lib/src/testing/mock_cms_data_source.dart`
+- Modify: `lib/src/testing/mock_desk_data_source.dart`
 
 - [ ] **Step 1: Add failing tests**
 
@@ -244,7 +244,7 @@
 
 - [ ] **Step 3: Update `createDocument` in MockDataSource**
 
-  Find `createDocument` in `lib/src/testing/mock_cms_data_source.dart`. Locate where the new `CmsDocument` is constructed (the line that sets `isDefault: isDefault`). Change the surrounding logic to:
+  Find `createDocument` in `lib/src/testing/mock_desk_data_source.dart`. Locate where the new `DeskDocument` is constructed (the line that sets `isDefault: isDefault`). Change the surrounding logic to:
 
   ```dart
   // Determine effective isDefault: auto-assign if this is the first doc for this type
@@ -253,11 +253,11 @@
   final effectiveIsDefault = isDefault || isFirstForType;
   ```
 
-  Then replace `isDefault: isDefault` with `isDefault: effectiveIsDefault` in the `CmsDocument(...)` constructor call.
+  Then replace `isDefault: isDefault` with `isDefault: effectiveIsDefault` in the `DeskDocument(...)` constructor call.
 
 - [ ] **Step 4: Update `deleteDocument` in MockDataSource**
 
-  Find `deleteDocument` in `lib/src/testing/mock_cms_data_source.dart`. Before removing the document, capture whether it was the default:
+  Find `deleteDocument` in `lib/src/testing/mock_desk_data_source.dart`. Before removing the document, capture whether it was the default:
 
   ```dart
   @override
@@ -303,20 +303,20 @@
 - [ ] **Step 6: Commit**
 
   ```bash
-  git add lib/src/testing/mock_cms_data_source.dart test/testing/mock_data_source_test.dart
+  git add lib/src/testing/mock_desk_data_source.dart test/testing/mock_data_source_test.dart
   git commit -m "feat: auto-default on create and delete in MockDataSource"
   ```
 
 ---
 
-### Task 4: Add `setDefaultDocument` + update `deleteDocument` in CmsViewModel
+### Task 4: Add `setDefaultDocument` + update `deleteDocument` in DeskViewModel
 
 **Files:**
-- Modify: `lib/src/studio/core/view_models/cms_view_model.dart`
+- Modify: `lib/src/studio/core/view_models/desk_view_model.dart`
 
 - [ ] **Step 1: Add the `collection` import**
 
-  Open `lib/src/studio/core/view_models/cms_view_model.dart`. Add at the top if not already present:
+  Open `lib/src/studio/core/view_models/desk_view_model.dart`. Add at the top if not already present:
 
   ```dart
   import 'package:collection/collection.dart';
@@ -329,7 +329,7 @@
   ```dart
   /// Sets [documentId] as the default document for the current type.
   /// Returns the updated document on success, or null on failure.
-  Future<CmsDocument?> setDefaultDocument(int documentId) async {
+  Future<DeskDocument?> setDefaultDocument(int documentId) async {
     final docTypeName = currentDocumentType.value?.name ?? '';
     try {
       final updated =
@@ -351,7 +351,7 @@
   /// - [deleted]: whether the deletion succeeded.
   /// - [newDefault]: the document that was auto-assigned as default (if the
   ///   deleted document was the default and one other remained), or null.
-  Future<({bool deleted, CmsDocument? newDefault})> deleteDocument(
+  Future<({bool deleted, DeskDocument? newDefault})> deleteDocument(
     int documentId,
   ) async {
     final docTypeName = currentDocumentType.value?.name ?? '';
@@ -392,8 +392,8 @@
 - [ ] **Step 4: Commit**
 
   ```bash
-  git add lib/src/studio/core/view_models/cms_view_model.dart
-  git commit -m "feat: add setDefaultDocument and update deleteDocument return in CmsViewModel"
+  git add lib/src/studio/core/view_models/desk_view_model.dart
+  git commit -m "feat: add setDefaultDocument and update deleteDocument return in DeskViewModel"
   ```
 
 ---
@@ -813,16 +813,16 @@ Both files have an identical `_deleteDocument` private method. Apply the same ch
 
   ```dart
   @override
-  Future<CmsDocument> setDefaultDocument(
+  Future<DeskDocument> setDefaultDocument(
     String documentTypeSlug,
     int documentId,
   ) async {
     try {
       final doc = await _client.document
           .setDefaultDocument(documentTypeSlug, documentId);
-      return _toCmsDocument(doc);
+      return _toDeskDocument(doc);
     } on ServerpodClientException catch (e) {
-      if (e.statusCode == 401) throw CmsAuthenticationException();
+      if (e.statusCode == 401) throw DeskAuthenticationException();
       rethrow;
     }
   }

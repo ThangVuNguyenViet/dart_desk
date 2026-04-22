@@ -1,28 +1,28 @@
 import '../base/field.dart';
 
-class CmsBooleanOption extends CmsOption {
-  const CmsBooleanOption({super.hidden});
+class DeskBooleanOption extends DeskOption {
+  const DeskBooleanOption({super.hidden});
 }
 
-class CmsBooleanField extends CmsField {
-  const CmsBooleanField({
+class DeskBooleanField extends DeskField {
+  const DeskBooleanField({
     required super.name,
     required super.title,
     super.description,
-    CmsBooleanOption super.option = const CmsBooleanOption(),
+    DeskBooleanOption super.option = const DeskBooleanOption(),
   });
 
   @override
-  CmsBooleanOption get option =>
-      (super.option as CmsBooleanOption?) ?? const CmsBooleanOption();
+  DeskBooleanOption get option =>
+      (super.option as DeskBooleanOption?) ?? const DeskBooleanOption();
 }
 
-class CmsBooleanFieldConfig extends CmsFieldConfig {
-  const CmsBooleanFieldConfig({
+class DeskBoolean extends DeskFieldConfig {
+  const DeskBoolean({
     super.name,
     super.title,
     super.description,
-    CmsBooleanOption super.option = const CmsBooleanOption(),
+    DeskBooleanOption super.option = const DeskBooleanOption(),
   });
 
   @override

@@ -6,19 +6,19 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  const field = CmsStringField(
+  const field = DeskStringField(
     name: 'title',
     title: 'Title',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   );
 
-  group('CmsStringInput', () {
+  group('DeskStringInput', () {
     testWidgets('renders with initial value', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsStringInput(
+          DeskStringInput(
             field: field,
-            data: const CmsData(value: 'Hello World', path: 'title'),
+            data: const DeskData(value: 'Hello World', path: 'title'),
           ),
         ),
       );
@@ -28,7 +28,7 @@ void main() {
     });
 
     testWidgets('renders empty placeholder', (tester) async {
-      await tester.pumpWidget(buildInputApp(CmsStringInput(field: field)));
+      await tester.pumpWidget(buildInputApp(DeskStringInput(field: field)));
       await tester.pumpAndSettle();
 
       expect(find.text('Enter text...'), findsOneWidget);
@@ -39,7 +39,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsStringInput(field: field, onChanged: (v) => received = v),
+          DeskStringInput(field: field, onChanged: (v) => received = v),
         ),
       );
       await tester.pumpAndSettle();
@@ -51,14 +51,14 @@ void main() {
     });
 
     testWidgets('hidden field renders nothing', (tester) async {
-      const hiddenField = CmsStringField(
+      const hiddenField = DeskStringField(
         name: 'secret',
         title: 'Secret',
-        option: CmsStringOption(hidden: true),
+        option: DeskStringOption(hidden: true),
       );
 
       await tester.pumpWidget(
-        buildInputApp(CmsStringInput(field: hiddenField)),
+        buildInputApp(DeskStringInput(field: hiddenField)),
       );
       await tester.pumpAndSettle();
 

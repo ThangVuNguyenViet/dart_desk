@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class BooleanFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsBooleanFieldConfig';
+  String get fieldConfigName => 'DeskBoolean';
 
   @override
   List<Type> get supportedTypes => [bool];
@@ -24,7 +24,7 @@ class BooleanFieldGenerator implements FieldCodeGenerator {
       throw InvalidGenerationSourceError('Field has no name', element: field);
     }
 
-    return '''CmsBooleanField(
+    return '''DeskBooleanField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}

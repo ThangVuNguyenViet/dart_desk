@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import '../base/field.dart';
 
 /// Option class for color field configuration
-class CmsColorOption extends CmsOption {
+class DeskColorOption extends DeskOption {
   /// Whether to show alpha/opacity slider
   final bool showAlpha;
 
   /// List of preset colors to show in the picker
   final List<Color>? presetColors;
 
-  const CmsColorOption({
+  const DeskColorOption({
     this.showAlpha = false,
     this.presetColors,
     super.optional,
@@ -18,31 +18,31 @@ class CmsColorOption extends CmsOption {
 }
 
 /// Color picker field for selecting colors with hex values
-class CmsColorField extends CmsField {
-  const CmsColorField({
+class DeskColorField extends DeskField {
+  const DeskColorField({
     required super.name,
     required super.title,
     super.description,
-    CmsColorOption super.option = const CmsColorOption(),
+    DeskColorOption super.option = const DeskColorOption(),
   });
 
   @override
-  CmsColorOption get option =>
-      (super.option as CmsColorOption?) ?? const CmsColorOption();
+  DeskColorOption get option =>
+      (super.option as DeskColorOption?) ?? const DeskColorOption();
 }
 
 /// Configuration annotation for color fields
-class CmsColorFieldConfig extends CmsFieldConfig {
+class DeskColor extends DeskFieldConfig {
   /// Whether the color field is optional (can be null/unset).
-  /// Convenience param that sets [CmsColorOption.optional] = true when no
+  /// Convenience param that sets [DeskColorOption.optional] = true when no
   /// explicit [option] is provided.
   final bool optional;
 
-  const CmsColorFieldConfig({
+  const DeskColor({
     super.name,
     super.title,
     super.description,
-    CmsColorOption super.option = const CmsColorOption(),
+    DeskColorOption super.option = const DeskColorOption(),
     this.optional = false,
   });
 

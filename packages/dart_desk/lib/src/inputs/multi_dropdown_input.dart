@@ -3,23 +3,23 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-class CmsMultiDropdownInput<T> extends StatelessWidget {
-  const CmsMultiDropdownInput({
+class DeskMultiDropdownInput<T> extends StatelessWidget {
+  const DeskMultiDropdownInput({
     super.key,
     required this.field,
     this.data,
     this.onChanged,
   });
 
-  final CmsMultiDropdownField<T> field;
-  final CmsData? data;
+  final DeskMultiDropdownField<T> field;
+  final DeskData? data;
   final ValueChanged<List<T>>? onChanged;
 
   @override
   Widget build(BuildContext context) {
     final fieldOption = field.option;
     if (fieldOption == null) {
-      return _CmsMultiDropdownInput<T>(
+      return _DeskMultiDropdownInput<T>(
         title: field.title,
         description: field.description,
         data: data,
@@ -29,7 +29,7 @@ class CmsMultiDropdownInput<T> extends StatelessWidget {
 
     final options = fieldOption.options(context);
 
-    // Handle async options (same pattern as CmsDropdownInput)
+    // Handle async options (same pattern as DeskDropdownInput)
     if (options is Future<List<DropdownOption<T>>>) {
       return FutureBuilder(
         future: options,
@@ -38,7 +38,7 @@ class CmsMultiDropdownInput<T> extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           final loadedOptions = snapshot.data ?? [];
-          return _CmsMultiDropdownInput<T>(
+          return _DeskMultiDropdownInput<T>(
             title: field.title,
             description: field.description,
             placeholder: fieldOption.placeholder,
@@ -54,7 +54,7 @@ class CmsMultiDropdownInput<T> extends StatelessWidget {
       );
     }
 
-    return _CmsMultiDropdownInput<T>(
+    return _DeskMultiDropdownInput<T>(
       title: field.title,
       description: field.description,
       placeholder: fieldOption.placeholder,
@@ -69,10 +69,10 @@ class CmsMultiDropdownInput<T> extends StatelessWidget {
   }
 }
 
-class _CmsMultiDropdownInput<T> extends StatefulWidget {
+class _DeskMultiDropdownInput<T> extends StatefulWidget {
   final List<DropdownOption<T>> options;
   final List<T>? defaultValues;
-  final CmsData? data;
+  final DeskData? data;
   final String title;
   final String? description;
   final String? placeholder;
@@ -81,7 +81,7 @@ class _CmsMultiDropdownInput<T> extends StatefulWidget {
   final T Function(Map<String, dynamic>)? fromMap;
   final ValueChanged<List<T>>? onChanged;
 
-  const _CmsMultiDropdownInput({
+  const _DeskMultiDropdownInput({
     super.key,
     this.onChanged,
     this.defaultValues,
@@ -96,11 +96,11 @@ class _CmsMultiDropdownInput<T> extends StatefulWidget {
   });
 
   @override
-  State<_CmsMultiDropdownInput<T>> createState() =>
-      _CmsMultiDropdownInputState<T>();
+  State<_DeskMultiDropdownInput<T>> createState() =>
+      _DeskMultiDropdownInputState<T>();
 }
 
-class _CmsMultiDropdownInputState<T> extends State<_CmsMultiDropdownInput<T>> {
+class _DeskMultiDropdownInputState<T> extends State<_DeskMultiDropdownInput<T>> {
   late ShadSelectController<T> _controller;
 
   @override
@@ -110,7 +110,7 @@ class _CmsMultiDropdownInputState<T> extends State<_CmsMultiDropdownInput<T>> {
   }
 
   @override
-  void didUpdateWidget(_CmsMultiDropdownInput<T> oldWidget) {
+  void didUpdateWidget(_DeskMultiDropdownInput<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.data != oldWidget.data) {
       _controller.value = _resolveInitialSet();

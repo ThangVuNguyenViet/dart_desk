@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-@Preview(name: 'CmsDropdownInput')
+@Preview(name: 'DeskDropdownInput')
 Widget preview() => ShadApp(
-  home: CmsDropdownInput<String>(
-    field: const CmsDropdownField(
+  home: DeskDropdownInput<String>(
+    field: const DeskDropdownField(
       name: 'category',
       title: 'Category',
-      option: CmsDropdownSimpleOption(
+      option: DeskDropdownSimpleOption(
         options: [
           DropdownOption(value: 'tech', label: 'Technology'),
           DropdownOption(value: 'health', label: 'Health'),
@@ -22,23 +22,23 @@ Widget preview() => ShadApp(
   ),
 );
 
-class CmsDropdownInput<T> extends StatelessWidget {
-  const CmsDropdownInput({
+class DeskDropdownInput<T> extends StatelessWidget {
+  const DeskDropdownInput({
     super.key,
     required this.field,
     this.data,
     this.onChanged,
   });
 
-  final CmsDropdownField<T> field;
-  final CmsData? data;
+  final DeskDropdownField<T> field;
+  final DeskData? data;
   final ValueChanged<T?>? onChanged;
 
   @override
   Widget build(BuildContext context) {
     final fieldOption = field.option;
     if (fieldOption == null) {
-      return _CmsDropdownInput<T>(
+      return _DeskDropdownInput<T>(
         title: field.title,
         description: field.description,
         data: data,
@@ -67,7 +67,7 @@ class CmsDropdownInput<T> extends StatelessWidget {
               ? snapshot.data?.last as T?
               : defaultValue;
 
-          return _CmsDropdownInput<T>(
+          return _DeskDropdownInput<T>(
             title: field.title,
             description: field.description,
             placeholder: fieldOption.placeholder,
@@ -81,7 +81,7 @@ class CmsDropdownInput<T> extends StatelessWidget {
       );
     }
 
-    return _CmsDropdownInput<T>(
+    return _DeskDropdownInput<T>(
       title: field.title,
       description: field.description,
       placeholder: fieldOption.placeholder,
@@ -94,10 +94,10 @@ class CmsDropdownInput<T> extends StatelessWidget {
   }
 }
 
-class _CmsDropdownInput<T> extends StatefulWidget {
+class _DeskDropdownInput<T> extends StatefulWidget {
   final List<DropdownOption<T>> options;
   final T? defaultValue;
-  final CmsData? data;
+  final DeskData? data;
   final String title;
   final String? description;
   final String? placeholder;
@@ -105,7 +105,7 @@ class _CmsDropdownInput<T> extends StatefulWidget {
 
   final ValueChanged<T?>? onChanged;
 
-  const _CmsDropdownInput({
+  const _DeskDropdownInput({
     super.key,
     this.onChanged,
     this.defaultValue,
@@ -118,10 +118,10 @@ class _CmsDropdownInput<T> extends StatefulWidget {
   });
 
   @override
-  State<_CmsDropdownInput<T>> createState() => _CmsDropdownInputState<T>();
+  State<_DeskDropdownInput<T>> createState() => _DeskDropdownInputState<T>();
 }
 
-class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
+class _DeskDropdownInputState<T> extends State<_DeskDropdownInput<T>> {
   late ShadSelectController<T> _controller;
   List<DropdownOption<T>> _filteredOptions = [];
   String _searchQuery = '';
@@ -134,7 +134,7 @@ class _CmsDropdownInputState<T> extends State<_CmsDropdownInput<T>> {
   }
 
   @override
-  void didUpdateWidget(_CmsDropdownInput<T> oldWidget) {
+  void didUpdateWidget(_DeskDropdownInput<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.data != oldWidget.data) {
       final resolved = _resolveInitialSet();

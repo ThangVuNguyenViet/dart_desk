@@ -1,7 +1,7 @@
 /// Standardized spacing values for the CMS studio.
 ///
 /// Replaces ad-hoc pixel values throughout the studio UI.
-abstract class CmsSpacing {
+abstract class DeskSpacing {
   static const double xs = 4;
   static const double sm = 8;
   static const double md = 12;
@@ -11,7 +11,7 @@ abstract class CmsSpacing {
 }
 
 /// Standardized border radius values for the CMS studio.
-abstract class CmsBorderRadius {
+abstract class DeskBorderRadius {
   /// Buttons, badges
   static const double sm = 5;
 

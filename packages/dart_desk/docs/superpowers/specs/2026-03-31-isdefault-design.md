@@ -7,7 +7,7 @@
 
 ## Overview
 
-`CmsDocument.isDefault` marks the canonical/fallback document for a given document type. The backend model, ViewModel signal, and `updateMetadata` plumbing already exist. This spec covers surfacing `isDefault` as a fully interactive UI feature in the document list.
+`DeskDocument.isDefault` marks the canonical/fallback document for a given document type. The backend model, ViewModel signal, and `updateMetadata` plumbing already exist. This spec covers surfacing `isDefault` as a fully interactive UI feature in the document list.
 
 ---
 
@@ -51,7 +51,7 @@ This covers: manual "Set as default" tap, auto-default on first document created
 
 ### 4. ViewModel
 
-`CmsDocumentViewModel` already has an `isDefault` signal. The new `setDefaultDocument` endpoint replaces the existing `updateMetadata` call for this field. No new ViewModel signals needed.
+`DeskDocumentViewModel` already has an `isDefault` signal. The new `setDefaultDocument` endpoint replaces the existing `updateMetadata` call for this field. No new ViewModel signals needed.
 
 ---
 
@@ -60,7 +60,7 @@ This covers: manual "Set as default" tap, auto-default on first document created
 ### 1. New Endpoint: `setDefaultDocument`
 
 ```
-Future<CmsDocument> setDefaultDocument(
+Future<DeskDocument> setDefaultDocument(
   String documentTypeSlug,
   int documentId,
 )
@@ -69,7 +69,7 @@ Future<CmsDocument> setDefaultDocument(
 - Runs in a single transaction:
   1. Unsets `isDefault` on the current default document for the type (if any).
   2. Sets `isDefault = true` on `documentId`.
-- Returns the updated `CmsDocument`.
+- Returns the updated `DeskDocument`.
 
 ### 2. Auto-Default on Create
 
@@ -84,8 +84,8 @@ In `deleteDocument`: if the deleted document had `isDefault: true` and exactly o
 Add via Serverpod migration:
 
 ```sql
-CREATE UNIQUE INDEX cms_document_one_default_per_type
-  ON cms_document (document_type_id)
+CREATE UNIQUE INDEX desk_document_one_default_per_type
+  ON desk_document (document_type_id)
   WHERE is_default = true;
 ```
 

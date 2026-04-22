@@ -28,53 +28,53 @@ All share the "Aura Gastronomy" brand: green primary (#496455), Noto Serif headl
 
 | Field | Type | Annotation | Notes |
 |---|---|---|---|
-| `restaurantName` | `String` | `@CmsStringFieldConfig` | Nav drawer title |
-| `bannerTitle` | `String` | `@CmsStringFieldConfig` | Hero banner headline |
-| `bannerSubtitle` | `String` | `@CmsTextFieldConfig` | Banner description text |
-| `bannerImage` | `ImageReference?` | `@CmsImageFieldConfig` | Banner background image |
-| `products` | `List<String>` | `CmsMultiDropdownField` | Multi-select dropdown backed by kiosk seed products; `maxSelected: 4` |
+| `restaurantName` | `String` | `@DeskString` | Nav drawer title |
+| `bannerTitle` | `String` | `@DeskString` | Hero banner headline |
+| `bannerSubtitle` | `String` | `@DeskText` | Banner description text |
+| `bannerImage` | `ImageReference?` | `@DeskImage` | Banner background image |
+| `products` | `List<String>` | `DeskMultiDropdownField` | Multi-select dropdown backed by kiosk seed products; `maxSelected: 4` |
 
 ### 2. HeroConfig
 
 | Field | Type | Annotation | Notes |
 |---|---|---|---|
-| `heroTitle` | `String` | `@CmsStringFieldConfig` | Main hero text |
-| `heroSubtitle` | `String` | `@CmsTextFieldConfig` | Hero description |
-| `heroImage` | `ImageReference?` | `@CmsImageFieldConfig` | Hero background |
-| `ctaLabel` | `String` | `@CmsStringFieldConfig` | Button text |
-| `products` | `List<String>` | `CmsMultiDropdownField` | Multi-select dropdown backed by hero seed products; `maxSelected: 4` |
+| `heroTitle` | `String` | `@DeskString` | Main hero text |
+| `heroSubtitle` | `String` | `@DeskText` | Hero description |
+| `heroImage` | `ImageReference?` | `@DeskImage` | Hero background |
+| `ctaLabel` | `String` | `@DeskString` | Button text |
+| `products` | `List<String>` | `DeskMultiDropdownField` | Multi-select dropdown backed by hero seed products; `maxSelected: 4` |
 
 ### 3. UpsellConfig
 
 | Field | Type | Annotation | Notes |
 |---|---|---|---|
-| `sectionTitle` | `String` | `@CmsStringFieldConfig` | e.g. "Chef's Choice" |
-| `sectionSubtitle` | `String` | `@CmsTextFieldConfig` | Description below title |
-| `quoteText` | `String` | `@CmsTextFieldConfig` | Pull-quote content |
-| `chefName` | `String` | `@CmsStringFieldConfig` | Quote attribution |
-| `products` | `List<String>` | `CmsMultiDropdownField` | Multi-select dropdown backed by upsell seed products; `maxSelected: 4` |
+| `sectionTitle` | `String` | `@DeskString` | e.g. "Chef's Choice" |
+| `sectionSubtitle` | `String` | `@DeskText` | Description below title |
+| `quoteText` | `String` | `@DeskText` | Pull-quote content |
+| `chefName` | `String` | `@DeskString` | Quote attribution |
+| `products` | `List<String>` | `DeskMultiDropdownField` | Multi-select dropdown backed by upsell seed products; `maxSelected: 4` |
 
 ### 4. RewardConfig
 
 | Field | Type | Annotation | Notes |
 |---|---|---|---|
-| `brandName` | `String` | `@CmsStringFieldConfig` | e.g. "Aura Gastronomy" |
-| `pointsBalance` | `num` | `@CmsNumberFieldConfig` | Current points |
-| `nextRewardThreshold` | `num` | `@CmsNumberFieldConfig` | Points needed |
-| `rewardLabel` | `String` | `@CmsStringFieldConfig` | e.g. "Festive Tasting Menu" |
-| `coupons` | `List<String>` | `CmsMultiDropdownField` | Multi-select dropdown backed by seed coupons; `maxSelected: 3` |
+| `brandName` | `String` | `@DeskString` | e.g. "Aura Gastronomy" |
+| `pointsBalance` | `num` | `@DeskNumber` | Current points |
+| `nextRewardThreshold` | `num` | `@DeskNumber` | Points needed |
+| `rewardLabel` | `String` | `@DeskString` | e.g. "Festive Tasting Menu" |
+| `coupons` | `List<String>` | `DeskMultiDropdownField` | Multi-select dropdown backed by seed coupons; `maxSelected: 3` |
 
 ### 5. BrandTheme
 
 | Field | Type | Annotation | Notes |
 |---|---|---|---|
-| `primaryColor` | `Color` | `@CmsColorFieldConfig` | Default `#496455` |
-| `surfaceColor` | `Color` | `@CmsColorFieldConfig` | Default `#FAF9F7` |
-| `textColor` | `Color` | `@CmsColorFieldConfig` | Default `#2F3331` |
-| `headlineFont` | `String` | `@CmsStringFieldConfig` | Default "Noto Serif" |
-| `bodyFont` | `String` | `@CmsStringFieldConfig` | Default "Manrope" |
-| `cornerRadius` | `num` | `@CmsNumberFieldConfig` | Default 8 |
-| `themeMode` | `String` | `@CmsDropdownFieldConfig` | light / dark / system |
+| `primaryColor` | `Color` | `@DeskColor` | Default `#496455` |
+| `surfaceColor` | `Color` | `@DeskColor` | Default `#FAF9F7` |
+| `textColor` | `Color` | `@DeskColor` | Default `#2F3331` |
+| `headlineFont` | `String` | `@DeskString` | Default "Noto Serif" |
+| `bodyFont` | `String` | `@DeskString` | Default "Manrope" |
+| `cornerRadius` | `num` | `@DeskNumber` | Default 8 |
+| `themeMode` | `String` | `@DeskDropdown` | light / dark / system |
 
 ---
 
@@ -177,7 +177,7 @@ Updated theme preview:
 ## File Structure
 
 ### Delete
-- `dart_desk/examples/data_models/lib/src/configs/storefront_config.dart` (+ `.mapper.dart`, `.cms.g.dart`)
+- `dart_desk/examples/data_models/lib/src/configs/storefront_config.dart` (+ `.mapper.dart`, `.desk.dart`)
 - `dart_desk/examples/data_models/lib/src/configs/menu_highlight.dart` (+ generated)
 - `dart_desk/examples/data_models/lib/src/configs/promo_offer.dart` (+ generated)
 - `dart_desk/examples/data_models/lib/src/configs/app_theme.dart` (+ generated)
@@ -213,8 +213,8 @@ In `dart_desk/examples/example_app/lib/screens/`:
 
 ### Update
 - `dart_desk/examples/data_models/lib/example_data.dart` — update exports
-- `dart_desk/examples/cms_app/lib/document_types.dart` — swap 5 old types for 5 new
-- `dart_desk/examples/cms_app/lib/main.dart` — update `documentTypes` and `documentTypeDecorations`
+- `dart_desk/examples/desk_app/lib/document_types.dart` — swap 5 old types for 5 new
+- `dart_desk/examples/desk_app/lib/main.dart` — update `documentTypes` and `documentTypeDecorations`
 
 ### Code Generation
-Run `dart run build_runner build` in `dart_desk/examples/data_models/` after writing data models to generate `.mapper.dart` and `.cms.g.dart` files.
+Run `dart run build_runner build` in `dart_desk/examples/data_models/` after writing data models to generate `.mapper.dart` and `.desk.dart` files.

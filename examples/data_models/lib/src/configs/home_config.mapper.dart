@@ -15,7 +15,7 @@ class HomeConfigMapper extends SubClassMapperBase<HomeConfig> {
   static HomeConfigMapper ensureInitialized() {
     if (_instance == null) {
       MapperContainer.globals.use(_instance = HomeConfigMapper._());
-      CmsContentMapper.ensureInitialized().addSubMapper(_instance!);
+      DeskContentMapper.ensureInitialized().addSubMapper(_instance!);
       MapperContainer.globals.useAll([ImageReferenceMapper()]);
       CtaActionMapper.ensureInitialized();
       FeaturedDishMapper.ensureInitialized();
@@ -98,7 +98,8 @@ class HomeConfigMapper extends SubClassMapperBase<HomeConfig> {
   @override
   final dynamic discriminatorValue = 'homeConfig';
   @override
-  late final ClassMapperBase superMapper = CmsContentMapper.ensureInitialized();
+  late final ClassMapperBase superMapper =
+      DeskContentMapper.ensureInitialized();
 
   static HomeConfig _instantiate(DecodingData data) {
     return HomeConfig(
@@ -174,7 +175,7 @@ extension HomeConfigValueCopy<$R, $Out>
 }
 
 abstract class HomeConfigCopyWith<$R, $In extends HomeConfig, $Out>
-    implements CmsContentCopyWith<$R, $In, $Out> {
+    implements DeskContentCopyWith<$R, $In, $Out> {
   CtaActionCopyWith<$R, CtaAction, CtaAction> get primaryCta;
   CtaActionCopyWith<$R, CtaAction, CtaAction> get secondaryCta;
   ListCopyWith<

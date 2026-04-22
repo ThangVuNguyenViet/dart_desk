@@ -10,7 +10,7 @@ import 'package:signals/signals_flutter.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
 import '../../studio.dart';
-import '../data/cms_data_source.dart';
+import '../data/desk_data_source.dart';
 import '../data/models/image_reference.dart';
 import '../data/models/image_types.dart';
 import '../data/models/media_asset.dart';
@@ -19,14 +19,14 @@ import 'hotspot/framing_status.dart';
 
 enum _UploadState { idle, uploading, done, error }
 
-class CmsImageInput extends StatefulWidget {
-  final CmsImageField field;
-  final CmsData? data;
+class DeskImageInput extends StatefulWidget {
+  final DeskImageField field;
+  final DeskData? data;
   final ValueChanged<Map<String, dynamic>?>? onChanged;
   final DataSource dataSource;
   final TransformUrlBuilder? transformUrl;
 
-  const CmsImageInput({
+  const DeskImageInput({
     super.key,
     required this.field,
     this.data,
@@ -36,11 +36,11 @@ class CmsImageInput extends StatefulWidget {
   });
 
   @override
-  State<CmsImageInput> createState() => _CmsImageInputState();
+  State<DeskImageInput> createState() => _DeskImageInputState();
 }
 
-class _CmsImageInputState extends State<CmsImageInput>
-    with SignalsMixin, AutomaticKeepAliveClientMixin<CmsImageInput> {
+class _DeskImageInputState extends State<DeskImageInput>
+    with SignalsMixin, AutomaticKeepAliveClientMixin<DeskImageInput> {
   @override
   bool get wantKeepAlive => true;
   late final _imageRef = createSignal<ImageReference?>(null);
@@ -61,7 +61,7 @@ class _CmsImageInputState extends State<CmsImageInput>
   }
 
   @override
-  void didUpdateWidget(CmsImageInput oldWidget) {
+  void didUpdateWidget(DeskImageInput oldWidget) {
     super.didUpdateWidget(oldWidget);
     // When the data prop changes, re-initialize from the new data.
     // This handles the case where the widget is first rendered with empty data
@@ -151,7 +151,7 @@ class _CmsImageInputState extends State<CmsImageInput>
     final exts = <String>[];
     for (final t in types) {
       switch (t) {
-        case CmsMediaType.image:
+        case DeskMediaType.image:
           exts.addAll([
             'jpg',
             'jpeg',
@@ -162,11 +162,11 @@ class _CmsImageInputState extends State<CmsImageInput>
             'heic',
             'avif',
           ]);
-        case CmsMediaType.svg:
+        case DeskMediaType.svg:
           exts.add('svg');
-        case CmsMediaType.lottie:
+        case DeskMediaType.lottie:
           exts.add('json');
-        case CmsMediaType.video:
+        case DeskMediaType.video:
           exts.addAll(['mp4', 'mov', 'webm', 'avi']);
       }
     }
@@ -177,10 +177,10 @@ class _CmsImageInputState extends State<CmsImageInput>
     final types = widget.field.option?.acceptedTypes;
     if (types == null) return 'Drop file or click to upload';
     final hasImage = types.any(
-      (t) => t == CmsMediaType.image || t == CmsMediaType.svg,
+      (t) => t == DeskMediaType.image || t == DeskMediaType.svg,
     );
-    final hasVideo = types.any((t) => t == CmsMediaType.video);
-    final hasLottie = types.any((t) => t == CmsMediaType.lottie);
+    final hasVideo = types.any((t) => t == DeskMediaType.video);
+    final hasLottie = types.any((t) => t == DeskMediaType.lottie);
     if (hasVideo && !hasImage && !hasLottie) {
       return 'Drop video or click to upload';
     }
@@ -196,10 +196,10 @@ class _CmsImageInputState extends State<CmsImageInput>
   MediaTypeFilter _mediaTypeFilter() {
     final types = widget.field.option?.acceptedTypes;
     if (types == null) return MediaTypeFilter.all;
-    if (types.every((t) => t == CmsMediaType.video)) {
+    if (types.every((t) => t == DeskMediaType.video)) {
       return MediaTypeFilter.video;
     }
-    if (types.every((t) => t == CmsMediaType.image || t == CmsMediaType.svg)) {
+    if (types.every((t) => t == DeskMediaType.image || t == DeskMediaType.svg)) {
       return MediaTypeFilter.image;
     }
     return MediaTypeFilter.all;
@@ -624,7 +624,7 @@ class _CmsImageInputState extends State<CmsImageInput>
             widget.field.title,
             style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
           ),
-          SizedBox(height: CmsSpacing.md),
+          SizedBox(height: DeskSpacing.md),
 
           // Image preview area
           GestureDetector(

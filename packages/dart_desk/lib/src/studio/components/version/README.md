@@ -23,9 +23,9 @@ import 'package:dart_desk/dart_desk.dart';
 class DocumentVersionPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final viewModel = CmsProvider.of(context);
+    final viewModel = DeskProvider.of(context);
 
-    return CmsVersionHistory(
+    return DeskVersionHistory(
       viewModel: viewModel,
     );
   }
@@ -35,7 +35,7 @@ class DocumentVersionPanel extends StatelessWidget {
 ### With Custom Height
 
 ```dart
-CmsVersionHistory(
+DeskVersionHistory(
   viewModel: viewModel,
   height: 600, // Fixed height in pixels
 )
@@ -44,7 +44,7 @@ CmsVersionHistory(
 ### Without Header
 
 ```dart
-CmsVersionHistory(
+DeskVersionHistory(
   viewModel: viewModel,
   showHeader: false, // Hide the header section
 )
@@ -94,20 +94,20 @@ When a user clicks on a version:
 class DocumentEditorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final viewModel = CmsProvider.of(context);
+    final viewModel = DeskProvider.of(context);
 
     return Row(
       children: [
         // Main editor area
         Expanded(
           flex: 2,
-          child: CmsDocumentEditor(),
+          child: DeskDocumentEditor(),
         ),
 
         // Version history sidebar
         SizedBox(
           width: 320,
-          child: CmsVersionHistory(
+          child: DeskVersionHistory(
             viewModel: viewModel,
           ),
         ),
@@ -129,10 +129,10 @@ ShadResponsiveBuilder(
       // Desktop: Side-by-side layout
       return Row(
         children: [
-          Expanded(child: CmsDocumentEditor()),
+          Expanded(child: DeskDocumentEditor()),
           SizedBox(
             width: 320,
-            child: CmsVersionHistory(viewModel: viewModel),
+            child: DeskVersionHistory(viewModel: viewModel),
           ),
         ],
       );
@@ -143,12 +143,12 @@ ShadResponsiveBuilder(
           ShadTab(
             value: 'editor',
             child: Text('Editor'),
-            content: CmsDocumentEditor(),
+            content: DeskDocumentEditor(),
           ),
           ShadTab(
             value: 'history',
             child: Text('History'),
-            content: CmsVersionHistory(viewModel: viewModel),
+            content: DeskVersionHistory(viewModel: viewModel),
           ),
         ],
       );

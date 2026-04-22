@@ -1,32 +1,32 @@
 import '../base/field.dart';
 
-class CmsFileOption extends CmsOption {
-  const CmsFileOption({super.optional, super.hidden});
+class DeskFileOption extends DeskOption {
+  const DeskFileOption({super.optional, super.hidden});
 }
 
-class CmsFileField extends CmsField {
-  const CmsFileField({
+class DeskFileField extends DeskField {
+  const DeskFileField({
     required super.name,
     required super.title,
     super.description,
-    CmsFileOption super.option = const CmsFileOption(),
+    DeskFileOption super.option = const DeskFileOption(),
   });
 
   @override
-  CmsFileOption get option =>
-      (super.option as CmsFileOption?) ?? const CmsFileOption();
+  DeskFileOption get option =>
+      (super.option as DeskFileOption?) ?? const DeskFileOption();
 }
 
-class CmsFileFieldConfig extends CmsFieldConfig {
-  /// Convenience param that sets [CmsFileOption.optional] = true when no
+class DeskFile extends DeskFieldConfig {
+  /// Convenience param that sets [DeskFileOption.optional] = true when no
   /// explicit [option] is provided.
   final bool optional;
 
-  const CmsFileFieldConfig({
+  const DeskFile({
     super.name,
     super.title,
     super.description,
-    CmsFileOption super.option = const CmsFileOption(),
+    DeskFileOption super.option = const DeskFileOption(),
     this.optional = false,
   });
 

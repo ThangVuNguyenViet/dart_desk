@@ -1,44 +1,44 @@
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 
-typedef CmsArrayFieldItemBuilder<T> =
+typedef DeskArrayFieldItemBuilder<T> =
     Widget Function(BuildContext context, T value);
 
-/// Factory function used to build a [CmsArrayInput]-like widget for a given
-/// [CmsArrayField]. Defined as a generic function so the type parameter T is
-/// propagated correctly through virtual dispatch in [CmsArrayField.buildInput].
-typedef CmsArrayInputFactory =
+/// Factory function used to build a [DeskArrayInput]-like widget for a given
+/// [DeskArrayField]. Defined as a generic function so the type parameter T is
+/// propagated correctly through virtual dispatch in [DeskArrayField.buildInput].
+typedef DeskArrayInputFactory =
     Widget Function<T>(
-      CmsArrayField<T> field,
-      CmsData? data,
+      DeskArrayField<T> field,
+      DeskData? data,
       ValueChanged<List?>? onChanged,
       Key? key,
     );
 
-class CmsArrayOption<T> extends CmsOption {
-  const CmsArrayOption({super.hidden, this.itemBuilder});
+class DeskArrayOption<T> extends DeskOption {
+  const DeskArrayOption({super.hidden, this.itemBuilder});
 
-  final CmsArrayFieldItemBuilder<T>? itemBuilder;
+  final DeskArrayFieldItemBuilder<T>? itemBuilder;
 
   /// Calls [itemBuilder] with [value], bypassing the static
-  /// type system so that a typed option (e.g. CmsArrayOption<String>) can be
-  /// used through an untyped CmsArrayField reference.
+  /// type system so that a typed option (e.g. DeskArrayOption<String>) can be
+  /// used through an untyped DeskArrayField reference.
   Widget buildItem(BuildContext context, T value) {
     return itemBuilder?.call(context, value) ?? Text(value.toString());
   }
 }
 
-class CmsArrayField<T> extends CmsField {
-  const CmsArrayField({
+class DeskArrayField<T> extends DeskField {
+  const DeskArrayField({
     required super.name,
     required super.title,
     super.description,
     required this.innerField,
     this.fromMap,
-    CmsArrayOption<T>? super.option,
+    DeskArrayOption<T>? super.option,
   });
 
-  final CmsField innerField;
+  final DeskField innerField;
 
   /// Converts a raw [Map<String, dynamic>] (e.g. from Firestore) to [T].
   ///
@@ -47,42 +47,42 @@ class CmsArrayField<T> extends CmsField {
   /// passes it here. Primitive types (String, int, etc.) don't need this.
   final T Function(Map<String, dynamic>)? fromMap;
 
-  static CmsArrayInputFactory? _inputFactory;
+  static DeskArrayInputFactory? _inputFactory;
 
   /// Register the factory used by [buildInput] to construct the typed input
   /// widget. Call this once from the `dart_desk` package (e.g. inside
-  /// [CmsFieldInputRegistry]) before any form is rendered.
-  static void registerInputFactory(CmsArrayInputFactory factory) {
+  /// [DeskFieldInputRegistry]) before any form is rendered.
+  static void registerInputFactory(DeskArrayInputFactory factory) {
     _inputFactory ??= factory;
   }
 
   /// Builds the typed input widget for this field. Because this method is
-  /// defined inside [CmsArrayField<T>], Dart's virtual dispatch ensures T is
+  /// defined inside [DeskArrayField<T>], Dart's virtual dispatch ensures T is
   /// the concrete item type (e.g. TipOption) even when the caller holds an
-  /// erased [CmsArrayField<Object?>] reference.
-  Widget buildInput({Key? key, CmsData? data, ValueChanged<List?>? onChanged}) {
+  /// erased [DeskArrayField<Object?>] reference.
+  Widget buildInput({Key? key, DeskData? data, ValueChanged<List?>? onChanged}) {
     assert(
       _inputFactory != null,
-      'CmsArrayField.registerInputFactory() must be called before buildInput(). '
-      'Call it from dart_desk (e.g. in CmsFieldInputRegistry) at startup.',
+      'DeskArrayField.registerInputFactory() must be called before buildInput(). '
+      'Call it from dart_desk (e.g. in DeskFieldInputRegistry) at startup.',
     );
     return _inputFactory!<T>(this, data, onChanged, key);
   }
 
   @override
-  CmsArrayOption<T>? get option => super.option as CmsArrayOption<T>?;
+  DeskArrayOption<T>? get option => super.option as DeskArrayOption<T>?;
 }
 
-class CmsArrayFieldConfig<T> extends CmsFieldConfig {
-  const CmsArrayFieldConfig({
+class DeskArray<T> extends DeskFieldConfig {
+  const DeskArray({
     super.name,
     super.title,
     super.description,
     this.inner,
-    CmsArrayOption<T>? super.option,
+    DeskArrayOption<T>? super.option,
   });
 
-  final CmsFieldConfig? inner;
+  final DeskFieldConfig? inner;
 
   @override
   List<Type> get supportedFieldTypes => [List<T>];

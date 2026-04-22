@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../core/view_models/cms_view_model.dart';
+import '../core/view_models/desk_view_model.dart';
 import 'studio_router.dart';
 
 /// Observes all navigation events in the Studio router and syncs the
-/// [CmsViewModel] signals (selectedDocumentId, currentDocumentTypeSlug, etc.)
+/// [DeskViewModel] signals (selectedDocumentId, currentDocumentTypeSlug, etc.)
 /// from [StudioRouter.topRoute.params].
 ///
 /// Uses [NavigationHistory.addListener] as the primary mechanism because
@@ -30,9 +30,9 @@ class StudioRouteObserver extends AutoRouterObserver {
   }
 
   void _syncSignals() {
-    if (!GetIt.I.isRegistered<CmsViewModel>()) return;
+    if (!GetIt.I.isRegistered<DeskViewModel>()) return;
     final params = router.topRoute.params;
-    final vm = GetIt.I<CmsViewModel>();
+    final vm = GetIt.I<DeskViewModel>();
     final docId = params.optString('documentId');
     final versionId = params.optString('versionId');
     final docTypeSlug = params.optString('documentTypeSlug');

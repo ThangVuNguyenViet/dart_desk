@@ -1,9 +1,9 @@
-/// Example: Extending CmsForm with Custom Field Types
+/// Example: Extending DeskForm with Custom Field Types
 ///
 /// This file demonstrates how to register custom field input builders
-/// using the CmsFieldInputRegistry, inspired by dart_mappable's extensibility pattern.
+/// using the DeskFieldInputRegistry, inspired by dart_mappable's extensibility pattern.
 ///
-/// NOTE: CmsColorField is now included as a default field type in the CMS!
+/// NOTE: DeskColorField is now included as a default field type in the CMS!
 /// This example shows how the pattern works by implementing a Rating field.
 library;
 
@@ -12,24 +12,24 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../components/forms/cms_form.dart';
+import '../components/forms/desk_form.dart';
 
 /// ColorField is now a built-in field type!
 ///
 /// You can use it directly without any registration:
 ///
 /// ```dart
-/// @CmsConfig(
+/// @DeskModel(
 ///   title: 'Theme Settings',
 ///   description: 'Customize your theme colors',
 /// )
 /// class ThemeConfig {
-///   @CmsColorFieldConfig(
-///     option: CmsColorOption(showAlpha: true),
+///   @DeskColor(
+///     option: DeskColorOption(showAlpha: true),
 ///   )
 ///   final String primaryColor;
 ///
-///   @CmsColorFieldConfig()
+///   @DeskColor()
 ///   final String accentColor;
 ///
 ///   const ThemeConfig({
@@ -39,15 +39,15 @@ import '../components/forms/cms_form.dart';
 /// }
 /// ```
 ///
-/// Or use it directly in CmsForm:
+/// Or use it directly in DeskForm:
 ///
 /// ```dart
-/// CmsForm(
+/// DeskForm(
 ///   fields: [
-///     CmsColorField(
+///     DeskColorField(
 ///       name: 'brandColor',
 ///       title: 'Brand Color',
-///       option: CmsColorOption(
+///       option: DeskColorOption(
 ///         showAlpha: true,
 ///         presetColors: [
 ///           Colors.red,
@@ -62,22 +62,22 @@ import '../components/forms/cms_form.dart';
 /// ```
 
 /// Example: Creating a completely custom field type (e.g., Rating field)
-class CmsRatingField extends CmsField {
-  const CmsRatingField({
+class DeskRatingField extends DeskField {
+  const DeskRatingField({
     required super.name,
     required super.title,
-    CmsRatingOption super.option = const CmsRatingOption(),
+    DeskRatingOption super.option = const DeskRatingOption(),
   });
 
   @override
-  CmsRatingOption get option => super.option as CmsRatingOption;
+  DeskRatingOption get option => super.option as DeskRatingOption;
 }
 
-class CmsRatingOption extends CmsOption {
+class DeskRatingOption extends DeskOption {
   final int maxRating;
   final IconData icon;
 
-  const CmsRatingOption({
+  const DeskRatingOption({
     this.maxRating = 5,
     this.icon = FontAwesomeIcons.solidStar,
     super.hidden,
@@ -85,12 +85,12 @@ class CmsRatingOption extends CmsOption {
 }
 
 /// Custom rating input widget
-class CmsRatingInput extends StatefulWidget {
-  final CmsRatingField field;
-  final CmsData? data;
+class DeskRatingInput extends StatefulWidget {
+  final DeskRatingField field;
+  final DeskData? data;
   final ValueChanged<int?>? onChanged;
 
-  const CmsRatingInput({
+  const DeskRatingInput({
     super.key,
     required this.field,
     this.data,
@@ -98,10 +98,10 @@ class CmsRatingInput extends StatefulWidget {
   });
 
   @override
-  State<CmsRatingInput> createState() => _CmsRatingInputState();
+  State<DeskRatingInput> createState() => _DeskRatingInputState();
 }
 
-class _CmsRatingInputState extends State<CmsRatingInput> {
+class _DeskRatingInputState extends State<DeskRatingInput> {
   late int _rating;
 
   @override
@@ -148,9 +148,9 @@ class _CmsRatingInputState extends State<CmsRatingInput> {
 
 /// Register the custom rating field
 void registerRatingField() {
-  CmsFieldInputRegistry.register<CmsRatingField>(
-    (field, data, onChanged) => CmsRatingInput(
-      field: field as CmsRatingField,
+  DeskFieldInputRegistry.register<DeskRatingField>(
+    (field, data, onChanged) => DeskRatingInput(
+      field: field as DeskRatingField,
       data: data,
       onChanged: (value) => onChanged(field.name, value),
     ),
@@ -168,12 +168,12 @@ void registerRatingField() {
 /// }
 ///
 /// // Then use it in your forms:
-/// CmsForm(
+/// DeskForm(
 ///   fields: [
-///     CmsRatingField(
+///     DeskRatingField(
 ///       name: 'userRating',
 ///       title: 'Rate this product',
-///       option: CmsRatingOption(
+///       option: DeskRatingOption(
 ///         maxRating: 5,
 ///         icon: FontAwesomeIcons.solidStar,
 ///       ),

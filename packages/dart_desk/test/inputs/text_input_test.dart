@@ -7,19 +7,19 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import '../helpers/input_test_helpers.dart';
 
 void main() {
-  final field = CmsTextField(
+  final field = DeskTextField(
     name: 'body',
     title: 'Body',
-    option: CmsTextOption(rows: 3),
+    option: DeskTextOption(rows: 3),
   );
 
-  group('CmsTextInput', () {
+  group('DeskTextInput', () {
     testWidgets('renders with initial multi-line value', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
-          CmsTextInput(
+          DeskTextInput(
             field: field,
-            data: const CmsData(value: 'Line one\nLine two', path: 'body'),
+            data: const DeskData(value: 'Line one\nLine two', path: 'body'),
           ),
         ),
       );
@@ -33,7 +33,7 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          CmsTextInput(field: field, onChanged: (v) => received = v),
+          DeskTextInput(field: field, onChanged: (v) => received = v),
         ),
       );
       await tester.pumpAndSettle();
@@ -45,17 +45,17 @@ void main() {
     });
 
     testWidgets('shows deprecated banner', (tester) async {
-      final deprecatedField = CmsTextField(
+      final deprecatedField = DeskTextField(
         name: 'old',
         title: 'Old Field',
-        option: CmsTextOption(
+        option: DeskTextOption(
           rows: 1,
           deprecatedReason: 'Use new field instead',
         ),
       );
 
       await tester.pumpWidget(
-        buildInputApp(CmsTextInput(field: deprecatedField)),
+        buildInputApp(DeskTextInput(field: deprecatedField)),
       );
       await tester.pumpAndSettle();
 
@@ -63,13 +63,13 @@ void main() {
     });
 
     testWidgets('hidden field renders nothing', (tester) async {
-      final hiddenField = CmsTextField(
+      final hiddenField = DeskTextField(
         name: 'hidden',
         title: 'Hidden',
-        option: CmsTextOption(rows: 1, hidden: true),
+        option: DeskTextOption(rows: 1, hidden: true),
       );
 
-      await tester.pumpWidget(buildInputApp(CmsTextInput(field: hiddenField)));
+      await tester.pumpWidget(buildInputApp(DeskTextInput(field: hiddenField)));
       await tester.pumpAndSettle();
 
       expect(find.byType(SizedBox), findsWidgets);

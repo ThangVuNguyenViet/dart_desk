@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class SlugFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsSlugFieldConfig';
+  String get fieldConfigName => 'DeskSlugFieldConfig';
 
   @override
   List<Type> get supportedTypes => [String];
@@ -24,7 +24,7 @@ class SlugFieldGenerator implements FieldCodeGenerator {
       throw InvalidGenerationSourceError('Field has no name', element: field);
     }
 
-    return '''CmsSlugField(
+    return '''DeskSlugField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}

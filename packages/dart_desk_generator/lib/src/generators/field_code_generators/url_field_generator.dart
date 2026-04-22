@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class UrlFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsUrlFieldConfig';
+  String get fieldConfigName => 'DeskUrl';
 
   @override
   List<Type> get supportedTypes => [Uri];
@@ -27,17 +27,17 @@ class UrlFieldGenerator implements FieldCodeGenerator {
 
     String? resolvedOption = optionSource;
     if (optional && resolvedOption == null) {
-      resolvedOption = 'CmsUrlOption(optional: true)';
+      resolvedOption = 'DeskUrlOption(optional: true)';
     } else if (optional && resolvedOption != null) {
       if (!resolvedOption.contains('optional')) {
         resolvedOption = resolvedOption.replaceFirst(
-          'CmsUrlOption(',
-          'CmsUrlOption(optional: true, ',
+          'DeskUrlOption(',
+          'DeskUrlOption(optional: true, ',
         );
       }
     }
 
-    return '''CmsUrlField(
+    return '''DeskUrlField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${resolvedOption != null ? 'option: $resolvedOption,' : ''}

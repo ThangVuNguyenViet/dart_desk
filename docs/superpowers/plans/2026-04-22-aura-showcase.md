@@ -4,7 +4,7 @@
 
 **Goal:** Rebuild the dart_desk example app as a 5-screen "Aura Gastronomy" consumer app showcase, backed by six CMS configs that together exercise every Dart Desk field type.
 
-**Architecture:** Six `@CmsConfig` documents (one per screen + a `BrandTheme` singleton) live in `examples/data_models/`. Flutter preview widgets live in `examples/example_app/lib/screens/` and consume their config as pure functions. A shared `widgets/aura/` folder ports the common JSX atoms (MobileFrame, TabBar, Photo, AuraButton, wordmark, icon button). Default values seed from the Claude Design JSX — real Unsplash URLs, real copy — so the previews look polished with zero CMS editing.
+**Architecture:** Six `@DeskModel` documents (one per screen + a `BrandTheme` singleton) live in `examples/data_models/`. Flutter preview widgets live in `examples/example_app/lib/screens/` and consume their config as pure functions. A shared `widgets/aura/` folder ports the common JSX atoms (MobileFrame, TabBar, Photo, AuraButton, wordmark, icon button). Default values seed from the Claude Design JSX — real Unsplash URLs, real copy — so the previews look polished with zero CMS editing.
 
 **Tech Stack:** Flutter, `dart_desk` annotations, `dart_mappable`, `build_runner` code generation, `shadcn_ui`. Workspace managed by `melos`.
 
@@ -18,7 +18,7 @@
 ### Data models — `examples/data_models/lib/`
 
 **Delete:**
-- `src/configs/menu_item.dart` + `.cms.g.dart` + `.mapper.dart`
+- `src/configs/menu_item.dart` + `.desk.dart` + `.mapper.dart`
 - `src/configs/promotion_campaign.dart` + generated
 - `src/configs/restaurant_profile.dart` + generated
 - `src/seed/seed_data.dart`
@@ -74,7 +74,7 @@
 - `screens/menu_screen.dart`
 - `screens/rewards_screen.dart`
 
-### CMS app — `examples/cms_app/lib/`
+### CMS app — `examples/desk_app/lib/`
 
 **Modify:**
 - `document_types.dart` — register 6 doc types
@@ -86,7 +86,7 @@
 
 Run from `dart_desk/` repo root unless stated otherwise.
 
-- Codegen (after any `@CmsConfig` or `@MappableClass` change):
+- Codegen (after any `@DeskModel` or `@MappableClass` change):
   ```bash
   cd examples/data_models && dart run build_runner build --delete-conflicting-outputs
   ```
@@ -100,7 +100,7 @@ Run from `dart_desk/` repo root unless stated otherwise.
 ### Task 0.1: Delete legacy data models and screens
 
 **Files:**
-- Delete: `examples/data_models/lib/src/configs/menu_item.dart`, `menu_item.cms.g.dart`, `menu_item.mapper.dart`
+- Delete: `examples/data_models/lib/src/configs/menu_item.dart`, `menu_item.desk.dart`, `menu_item.mapper.dart`
 - Delete: `examples/data_models/lib/src/configs/promotion_campaign.dart` + generated
 - Delete: `examples/data_models/lib/src/configs/restaurant_profile.dart` + generated
 - Delete: `examples/data_models/lib/src/seed/seed_data.dart`
@@ -111,7 +111,7 @@ Run from `dart_desk/` repo root unless stated otherwise.
 - [ ] **Step 1: Delete files**
 
 ```bash
-cd examples/data_models/lib/src/configs && rm menu_item.dart menu_item.cms.g.dart menu_item.mapper.dart promotion_campaign.dart promotion_campaign.cms.g.dart promotion_campaign.mapper.dart restaurant_profile.dart restaurant_profile.cms.g.dart restaurant_profile.mapper.dart
+cd examples/data_models/lib/src/configs && rm menu_item.dart menu_item.desk.dart menu_item.mapper.dart promotion_campaign.dart promotion_campaign.desk.dart promotion_campaign.mapper.dart restaurant_profile.dart restaurant_profile.desk.dart restaurant_profile.mapper.dart
 cd ../../../../.. && rm examples/data_models/lib/src/seed/seed_data.dart
 rm examples/example_app/lib/screens/menu_item_screen.dart examples/example_app/lib/screens/promotion_campaign_screen.dart examples/example_app/lib/screens/restaurant_profile_screen.dart
 ```
@@ -123,16 +123,16 @@ Overwrite `examples/data_models/lib/example_data.dart` with:
 ```dart
 library;
 
-export 'src/configs/cms_content.dart';
+export 'src/configs/desk_content.dart';
 // Re-added incrementally as configs land:
 // export 'src/configs/brand_theme.dart' hide BrandThemeColorMapper;
 ```
 
 - [ ] **Step 3: Stub `document_types.dart` and `main.dart`**
 
-Temporarily reduce `examples/cms_app/lib/document_types.dart` to only the `brandThemeDocumentType` block (keep `BrandTheme` wiring since we'll rewrite it). Remove imports for deleted screens. Comment out the other three document types.
+Temporarily reduce `examples/desk_app/lib/document_types.dart` to only the `brandThemeDocumentType` block (keep `BrandTheme` wiring since we'll rewrite it). Remove imports for deleted screens. Comment out the other three document types.
 
-Do the same for `examples/cms_app/lib/main.dart` — remove nav entries for deleted doc types.
+Do the same for `examples/desk_app/lib/main.dart` — remove nav entries for deleted doc types.
 
 - [ ] **Step 4: Verify compile**
 
@@ -317,12 +317,12 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
 import '../seed/aura_enums.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'brand_theme.cms.g.dart';
+part 'brand_theme.desk.dart';
 part 'brand_theme.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Brand Theme',
   description: 'Colors and typography shared across every Aura screen.',
 )
@@ -331,56 +331,56 @@ part 'brand_theme.mapper.dart';
   discriminatorValue: 'brandTheme',
   includeCustomMappers: [BrandThemeColorMapper(), ImageReferenceMapper()],
 )
-class BrandTheme extends CmsContent
+class BrandTheme extends DeskContent
     with BrandThemeMappable, Serializable<BrandTheme> {
-  @CmsStringFieldConfig(description: 'Theme name', option: CmsStringOption())
+  @DeskString(description: 'Theme name', option: DeskStringOption())
   final String name;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Primary — buttons, accents, dark surfaces',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color primaryColor;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Surface — page backgrounds',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color surfaceColor;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Accent — prices, tags, warm highlights',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color accentColor;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Ink — body text and headlines',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color inkColor;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Headline font',
     option: HeadlineFontDropdownOption(),
   )
   final String headlineFont;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Body font',
     option: BodyFontDropdownOption(),
   )
   final String bodyFont;
 
-  @CmsNumberFieldConfig(
+  @DeskNumber(
     description: 'Corner radius in px',
-    option: CmsNumberOption(min: 0, max: 24),
+    option: DeskNumberOption(min: 0, max: 24),
   )
   final num cornerRadius;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Logo (square)',
-    option: CmsImageOption(hotspot: false),
+    option: DeskImageOption(hotspot: false),
   )
   final ImageReference? logo;
 
@@ -427,7 +427,7 @@ class BrandThemeColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class HeadlineFontDropdownOption extends CmsDropdownOption<String> {
+class HeadlineFontDropdownOption extends DeskDropdownOption<String> {
   const HeadlineFontDropdownOption({super.hidden});
   @override
   bool get allowNull => false;
@@ -441,7 +441,7 @@ class HeadlineFontDropdownOption extends CmsDropdownOption<String> {
   String? get placeholder => 'Headline font';
 }
 
-class BodyFontDropdownOption extends CmsDropdownOption<String> {
+class BodyFontDropdownOption extends DeskDropdownOption<String> {
   const BodyFontDropdownOption({super.hidden});
   @override
   bool get allowNull => false;
@@ -459,7 +459,7 @@ class BodyFontDropdownOption extends CmsDropdownOption<String> {
 - [ ] **Step 2: Delete old generated files**
 
 ```bash
-rm examples/data_models/lib/src/configs/brand_theme.cms.g.dart examples/data_models/lib/src/configs/brand_theme.mapper.dart
+rm examples/data_models/lib/src/configs/brand_theme.desk.dart examples/data_models/lib/src/configs/brand_theme.mapper.dart
 ```
 
 - [ ] **Step 3: Update `example_data.dart`**
@@ -467,7 +467,7 @@ rm examples/data_models/lib/src/configs/brand_theme.cms.g.dart examples/data_mod
 ```dart
 library;
 
-export 'src/configs/cms_content.dart';
+export 'src/configs/desk_content.dart';
 export 'src/configs/brand_theme.dart' hide BrandThemeColorMapper;
 export 'src/seed/aura_assets.dart';
 export 'src/seed/aura_enums.dart';
@@ -480,7 +480,7 @@ export 'src/seed/aura_copy.dart';
 cd examples/data_models && dart run build_runner build --delete-conflicting-outputs
 ```
 
-Expected: generates `brand_theme.cms.g.dart` and `brand_theme.mapper.dart`. No errors.
+Expected: generates `brand_theme.desk.dart` and `brand_theme.mapper.dart`. No errors.
 
 - [ ] **Step 5: Analyze**
 
@@ -536,16 +536,16 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'cta_action.cms.g.dart';
+part 'cta_action.desk.dart';
 part 'cta_action.mapper.dart';
 
 @MappableClass()
-@CmsConfig(title: 'Call-to-action', description: 'Button label + style')
+@DeskModel(title: 'Call-to-action', description: 'Button label + style')
 class CtaAction with CtaActionMappable implements Serializable<CtaAction> {
-  @CmsStringFieldConfig(description: 'Button label', option: CmsStringOption())
+  @DeskString(description: 'Button label', option: DeskStringOption())
   final String label;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Visual style',
     option: CtaStyleDropdownOption(),
   )
@@ -558,7 +558,7 @@ class CtaAction with CtaActionMappable implements Serializable<CtaAction> {
   static CtaAction $fromMap(Map<String, dynamic> map) => CtaActionMapper.fromMap(map);
 }
 
-class CtaStyleDropdownOption extends CmsDropdownOption<String> {
+class CtaStyleDropdownOption extends DeskDropdownOption<String> {
   const CtaStyleDropdownOption({super.hidden});
   @override
   bool get allowNull => false;
@@ -590,22 +590,22 @@ cd examples/data_models && dart run build_runner build --delete-conflicting-outp
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
-part 'store_callout.cms.g.dart';
+part 'store_callout.desk.dart';
 part 'store_callout.mapper.dart';
 
 @MappableClass()
-@CmsConfig(title: 'Store callout', description: 'Venue card on the home screen')
+@DeskModel(title: 'Store callout', description: 'Venue card on the home screen')
 class StoreCallout with StoreCalloutMappable implements Serializable<StoreCallout> {
-  @CmsStringFieldConfig(description: 'Venue name', option: CmsStringOption())
+  @DeskString(description: 'Venue name', option: DeskStringOption())
   final String venueName;
 
-  @CmsStringFieldConfig(description: 'Hours label', option: CmsStringOption())
+  @DeskString(description: 'Hours label', option: DeskStringOption())
   final String hoursLabel;
 
-  @CmsStringFieldConfig(description: 'Distance label', option: CmsStringOption())
+  @DeskString(description: 'Distance label', option: DeskStringOption())
   final String distanceLabel;
 
-  @CmsStringFieldConfig(description: 'Directions button label', option: CmsStringOption())
+  @DeskString(description: 'Directions button label', option: DeskStringOption())
   final String directionsLabel;
 
   const StoreCallout({
@@ -647,22 +647,22 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'featured_dish.cms.g.dart';
+part 'featured_dish.desk.dart';
 part 'featured_dish.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Featured dish', description: 'Home screen carousel item')
+@DeskModel(title: 'Featured dish', description: 'Home screen carousel item')
 class FeaturedDish with FeaturedDishMappable implements Serializable<FeaturedDish> {
-  @CmsStringFieldConfig(description: 'Dish name', option: CmsStringOption())
+  @DeskString(description: 'Dish name', option: DeskStringOption())
   final String name;
 
-  @CmsNumberFieldConfig(description: 'Price', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Price', option: DeskNumberOption(min: 0))
   final num price;
 
-  @CmsDropdownFieldConfig<String>(description: 'Tag', option: FeaturedDishTagOption())
+  @DeskDropdown<String>(description: 'Tag', option: FeaturedDishTagOption())
   final String tag;
 
-  @CmsImageFieldConfig(description: 'Photo', option: CmsImageOption(hotspot: true))
+  @DeskImage(description: 'Photo', option: DeskImageOption(hotspot: true))
   final ImageReference? image;
 
   const FeaturedDish({required this.name, required this.price, required this.tag, this.image});
@@ -672,7 +672,7 @@ class FeaturedDish with FeaturedDishMappable implements Serializable<FeaturedDis
   static FeaturedDish $fromMap(Map<String, dynamic> map) => FeaturedDishMapper.fromMap(map);
 }
 
-class FeaturedDishTagOption extends CmsDropdownOption<String> {
+class FeaturedDishTagOption extends DeskDropdownOption<String> {
   const FeaturedDishTagOption({super.hidden});
   @override
   bool get allowNull => false;
@@ -709,22 +709,22 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'kiosk_product.cms.g.dart';
+part 'kiosk_product.desk.dart';
 part 'kiosk_product.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Kiosk product', description: 'Tile in the kiosk grid')
+@DeskModel(title: 'Kiosk product', description: 'Tile in the kiosk grid')
 class KioskProduct with KioskProductMappable implements Serializable<KioskProduct> {
-  @CmsStringFieldConfig(description: 'Name', option: CmsStringOption())
+  @DeskString(description: 'Name', option: DeskStringOption())
   final String name;
 
-  @CmsNumberFieldConfig(description: 'Price', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Price', option: DeskNumberOption(min: 0))
   final num price;
 
-  @CmsImageFieldConfig(description: 'Photo', option: CmsImageOption(hotspot: true))
+  @DeskImage(description: 'Photo', option: DeskImageOption(hotspot: true))
   final ImageReference? image;
 
-  @CmsDropdownFieldConfig<String>(description: 'Category', option: KioskCategoryOption())
+  @DeskDropdown<String>(description: 'Category', option: KioskCategoryOption())
   final String category;
 
   const KioskProduct({required this.name, required this.price, this.image, required this.category});
@@ -734,7 +734,7 @@ class KioskProduct with KioskProductMappable implements Serializable<KioskProduc
   static KioskProduct $fromMap(Map<String, dynamic> map) => KioskProductMapper.fromMap(map);
 }
 
-class KioskCategoryOption extends CmsDropdownOption<String> {
+class KioskCategoryOption extends DeskDropdownOption<String> {
   const KioskCategoryOption({super.hidden});
   @override
   bool get allowNull => false;
@@ -755,19 +755,19 @@ class KioskCategoryOption extends CmsDropdownOption<String> {
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
-part 'order_line.cms.g.dart';
+part 'order_line.desk.dart';
 part 'order_line.mapper.dart';
 
 @MappableClass()
-@CmsConfig(title: 'Order line', description: 'Single line in the kiosk order sidebar')
+@DeskModel(title: 'Order line', description: 'Single line in the kiosk order sidebar')
 class OrderLine with OrderLineMappable implements Serializable<OrderLine> {
-  @CmsStringFieldConfig(description: 'Item name', option: CmsStringOption())
+  @DeskString(description: 'Item name', option: DeskStringOption())
   final String itemName;
 
-  @CmsNumberFieldConfig(description: 'Qty', option: CmsNumberOption(min: 1))
+  @DeskNumber(description: 'Qty', option: DeskNumberOption(min: 1))
   final num qty;
 
-  @CmsNumberFieldConfig(description: 'Unit price', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Unit price', option: DeskNumberOption(min: 0))
   final num price;
 
   const OrderLine({required this.itemName, required this.qty, required this.price});
@@ -796,22 +796,22 @@ cd examples/data_models && dart run build_runner build --delete-conflicting-outp
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
-part 'chef_profile.cms.g.dart';
+part 'chef_profile.desk.dart';
 part 'chef_profile.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Chef profile', description: 'Head chef bio block')
+@DeskModel(title: 'Chef profile', description: 'Head chef bio block')
 class ChefProfile with ChefProfileMappable implements Serializable<ChefProfile> {
-  @CmsStringFieldConfig(description: 'Name', option: CmsStringOption())
+  @DeskString(description: 'Name', option: DeskStringOption())
   final String name;
 
-  @CmsStringFieldConfig(description: 'Role', option: CmsStringOption())
+  @DeskString(description: 'Role', option: DeskStringOption())
   final String role;
 
-  @CmsImageFieldConfig(description: 'Portrait', option: CmsImageOption(hotspot: true))
+  @DeskImage(description: 'Portrait', option: DeskImageOption(hotspot: true))
   final ImageReference? portrait;
 
-  @CmsTextFieldConfig(description: 'Bio', option: CmsTextOption())
+  @DeskText(description: 'Bio', option: DeskTextOption())
   final String bio;
 
   const ChefProfile({required this.name, required this.role, this.portrait, required this.bio});
@@ -832,25 +832,25 @@ class ChefProfile with ChefProfileMappable implements Serializable<ChefProfile> 
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
-part 'curated_dish.cms.g.dart';
+part 'curated_dish.desk.dart';
 part 'curated_dish.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Curated dish', description: 'Entry in the Chef\'s Choice list')
+@DeskModel(title: 'Curated dish', description: 'Entry in the Chef\'s Choice list')
 class CuratedDish with CuratedDishMappable implements Serializable<CuratedDish> {
-  @CmsStringFieldConfig(description: 'Order number (e.g. "01")', option: CmsStringOption())
+  @DeskString(description: 'Order number (e.g. "01")', option: DeskStringOption())
   final String numberLabel;
 
-  @CmsStringFieldConfig(description: 'Dish name', option: CmsStringOption())
+  @DeskString(description: 'Dish name', option: DeskStringOption())
   final String name;
 
-  @CmsNumberFieldConfig(description: 'Price', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Price', option: DeskNumberOption(min: 0))
   final num price;
 
-  @CmsImageFieldConfig(description: 'Photo', option: CmsImageOption(hotspot: true))
+  @DeskImage(description: 'Photo', option: DeskImageOption(hotspot: true))
   final ImageReference? image;
 
-  @CmsBlockFieldConfig(option: CmsBlockOption())
+  @DeskBlock(option: DeskBlockOption())
   final Object? description;
 
   const CuratedDish({
@@ -889,28 +889,28 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'menu_item_entry.cms.g.dart';
+part 'menu_item_entry.desk.dart';
 part 'menu_item_entry.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Menu item', description: 'Row in the menu browse list')
+@DeskModel(title: 'Menu item', description: 'Row in the menu browse list')
 class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemEntry> {
-  @CmsStringFieldConfig(description: 'Name', option: CmsStringOption())
+  @DeskString(description: 'Name', option: DeskStringOption())
   final String name;
 
-  @CmsNumberFieldConfig(description: 'Price', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Price', option: DeskNumberOption(min: 0))
   final num price;
 
-  @CmsTextFieldConfig(description: 'Short description', option: CmsTextOption())
+  @DeskText(description: 'Short description', option: DeskTextOption())
   final String shortDescription;
 
-  @CmsImageFieldConfig(description: 'Photo', option: CmsImageOption(hotspot: true))
+  @DeskImage(description: 'Photo', option: DeskImageOption(hotspot: true))
   final ImageReference? image;
 
-  @CmsMultiDropdownFieldConfig<String>(description: 'Tags', option: MenuItemTagsOption())
+  @DeskMultiDropdown<String>(description: 'Tags', option: MenuItemTagsOption())
   final List<String> tags;
 
-  @CmsCheckboxFieldConfig(description: 'Available', option: CmsCheckboxOption(label: 'Available'))
+  @DeskCheckbox(description: 'Available', option: DeskCheckboxOption(label: 'Available'))
   final bool isAvailable;
 
   const MenuItemEntry({
@@ -933,7 +933,7 @@ class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemE
   static MenuItemEntry $fromMap(Map<String, dynamic> map) => MenuItemEntryMapper.fromMap(map);
 }
 
-class MenuItemTagsOption extends CmsMultiDropdownOption<String> {
+class MenuItemTagsOption extends DeskMultiDropdownOption<String> {
   const MenuItemTagsOption({super.hidden});
   @override
   List<String>? get defaultValues => const [];
@@ -960,19 +960,19 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'store_hours_entry.cms.g.dart';
+part 'store_hours_entry.desk.dart';
 part 'store_hours_entry.mapper.dart';
 
 @MappableClass()
-@CmsConfig(title: 'Store hours entry', description: 'Open/close times for a single day')
+@DeskModel(title: 'Store hours entry', description: 'Open/close times for a single day')
 class StoreHoursEntry with StoreHoursEntryMappable implements Serializable<StoreHoursEntry> {
-  @CmsDropdownFieldConfig<String>(description: 'Day', option: DayOfWeekOption())
+  @DeskDropdown<String>(description: 'Day', option: DayOfWeekOption())
   final String day;
 
-  @CmsStringFieldConfig(description: 'Open (HH:mm)', option: CmsStringOption())
+  @DeskString(description: 'Open (HH:mm)', option: DeskStringOption())
   final String openTime;
 
-  @CmsStringFieldConfig(description: 'Close (HH:mm)', option: CmsStringOption())
+  @DeskString(description: 'Close (HH:mm)', option: DeskStringOption())
   final String closeTime;
 
   const StoreHoursEntry({required this.day, required this.openTime, required this.closeTime});
@@ -982,7 +982,7 @@ class StoreHoursEntry with StoreHoursEntryMappable implements Serializable<Store
   static StoreHoursEntry $fromMap(Map<String, dynamic> map) => StoreHoursEntryMapper.fromMap(map);
 }
 
-class DayOfWeekOption extends CmsDropdownOption<String> {
+class DayOfWeekOption extends DeskDropdownOption<String> {
   const DayOfWeekOption({super.hidden});
   @override
   bool get allowNull => false;
@@ -1018,22 +1018,22 @@ import 'package:flutter/material.dart';
 
 import '../configs/brand_theme.dart' show BrandThemeColorMapper;
 
-part 'loyalty_tier.cms.g.dart';
+part 'loyalty_tier.desk.dart';
 part 'loyalty_tier.mapper.dart';
 
 @MappableClass(includeCustomMappers: [BrandThemeColorMapper()])
-@CmsConfig(title: 'Loyalty tier', description: 'A tier in the rewards program')
+@DeskModel(title: 'Loyalty tier', description: 'A tier in the rewards program')
 class LoyaltyTier with LoyaltyTierMappable implements Serializable<LoyaltyTier> {
-  @CmsStringFieldConfig(description: 'Tier name', option: CmsStringOption())
+  @DeskString(description: 'Tier name', option: DeskStringOption())
   final String name;
 
-  @CmsNumberFieldConfig(description: 'Points threshold', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Points threshold', option: DeskNumberOption(min: 0))
   final num threshold;
 
-  @CmsColorFieldConfig(description: 'Tier color', option: CmsColorOption())
+  @DeskColor(description: 'Tier color', option: DeskColorOption())
   final Color tierColor;
 
-  @CmsBlockFieldConfig(option: CmsBlockOption())
+  @DeskBlock(option: DeskBlockOption())
   final Object? perks;
 
   const LoyaltyTier({
@@ -1063,28 +1063,28 @@ import 'package:flutter/widgets.dart';
 
 import '../seed/aura_enums.dart';
 
-part 'coupon.cms.g.dart';
+part 'coupon.desk.dart';
 part 'coupon.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Coupon', description: 'Reward redeemable by the guest')
+@DeskModel(title: 'Coupon', description: 'Reward redeemable by the guest')
 class Coupon with CouponMappable implements Serializable<Coupon> {
-  @CmsStringFieldConfig(description: 'Title', option: CmsStringOption())
+  @DeskString(description: 'Title', option: DeskStringOption())
   final String title;
 
-  @CmsStringFieldConfig(description: 'Code', option: CmsStringOption())
+  @DeskString(description: 'Code', option: DeskStringOption())
   final String code;
 
-  @CmsNumberFieldConfig(description: 'Discount %', option: CmsNumberOption(min: 0, max: 100))
+  @DeskNumber(description: 'Discount %', option: DeskNumberOption(min: 0, max: 100))
   final num discountPercent;
 
-  @CmsDateTimeFieldConfig(description: 'Expires at', option: CmsDateTimeOption())
+  @DeskDateTime(description: 'Expires at', option: DeskDateTimeOption())
   final DateTime expiresAt;
 
-  @CmsImageFieldConfig(description: 'Artwork', option: CmsImageOption(hotspot: false))
+  @DeskImage(description: 'Artwork', option: DeskImageOption(hotspot: false))
   final ImageReference? image;
 
-  @CmsMultiDropdownFieldConfig<String>(description: 'Tags', option: CouponTagsOption())
+  @DeskMultiDropdown<String>(description: 'Tags', option: CouponTagsOption())
   final List<String> tags;
 
   const Coupon({
@@ -1107,7 +1107,7 @@ class Coupon with CouponMappable implements Serializable<Coupon> {
   static Coupon $fromMap(Map<String, dynamic> map) => CouponMapper.fromMap(map);
 }
 
-class CouponTagsOption extends CmsMultiDropdownOption<String> {
+class CouponTagsOption extends DeskMultiDropdownOption<String> {
   const CouponTagsOption({super.hidden});
   @override
   List<String>? get defaultValues => const [];
@@ -1134,7 +1134,7 @@ cd examples/data_models && dart run build_runner build --delete-conflicting-outp
 
 ## Phase 4 — Screen configs
 
-Each config registers its discriminator so the CMS app can round-trip JSON through `CmsContentMapper`. Each config has a rich `defaultValue` seeded from the JSX so the preview looks good with no CMS edits.
+Each config registers its discriminator so the CMS app can round-trip JSON through `DeskContentMapper`. Each config has a rich `defaultValue` seeded from the JSX so the preview looks good with no CMS edits.
 
 ### Task 4.1: `HomeConfig`
 
@@ -1153,46 +1153,46 @@ import '../seed/aura_copy.dart';
 import '../shared/cta_action.dart';
 import '../shared/featured_dish.dart';
 import '../shared/store_callout.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'home_config.cms.g.dart';
+part 'home_config.desk.dart';
 part 'home_config.mapper.dart';
 
-@CmsConfig(title: 'Home screen', description: 'Mobile home — hero, welcome, featured carousel, store card')
+@DeskModel(title: 'Home screen', description: 'Mobile home — hero, welcome, featured carousel, store card')
 @MappableClass(
   ignoreNull: false,
   discriminatorValue: 'homeConfig',
   includeCustomMappers: [ImageReferenceMapper()],
 )
-class HomeConfig extends CmsContent with HomeConfigMappable, Serializable<HomeConfig> {
-  @CmsImageFieldConfig(description: 'Hero image', option: CmsImageOption(hotspot: true))
+class HomeConfig extends DeskContent with HomeConfigMappable, Serializable<HomeConfig> {
+  @DeskImage(description: 'Hero image', option: DeskImageOption(hotspot: true))
   final ImageReference? heroImage;
 
-  @CmsStringFieldConfig(description: 'Hero eyebrow', option: CmsStringOption())
+  @DeskString(description: 'Hero eyebrow', option: DeskStringOption())
   final String heroEyebrow;
 
-  @CmsTextFieldConfig(description: 'Hero headline', option: CmsTextOption())
+  @DeskText(description: 'Hero headline', option: DeskTextOption())
   final String heroHeadline;
 
-  @CmsObjectFieldConfig(description: 'Primary CTA')
+  @DeskObject(description: 'Primary CTA')
   final CtaAction primaryCta;
 
-  @CmsObjectFieldConfig(description: 'Secondary CTA')
+  @DeskObject(description: 'Secondary CTA')
   final CtaAction secondaryCta;
 
-  @CmsStringFieldConfig(description: 'Location pill', option: CmsStringOption())
+  @DeskString(description: 'Location pill', option: DeskStringOption())
   final String locationLabel;
 
-  @CmsStringFieldConfig(description: 'Welcome greeting', option: CmsStringOption())
+  @DeskString(description: 'Welcome greeting', option: DeskStringOption())
   final String welcomeGreeting;
 
-  @CmsStringFieldConfig(description: 'Featured section title', option: CmsStringOption())
+  @DeskString(description: 'Featured section title', option: DeskStringOption())
   final String featuredSectionTitle;
 
-  @CmsArrayFieldConfig<FeaturedDish>(description: 'Featured dishes')
+  @DeskArray<FeaturedDish>(description: 'Featured dishes')
   final List<FeaturedDish> featuredDishes;
 
-  @CmsObjectFieldConfig(description: 'Store callout')
+  @DeskObject(description: 'Store callout')
   final StoreCallout storeCallout;
 
   const HomeConfig({
@@ -1265,40 +1265,40 @@ import '../seed/aura_assets.dart';
 import '../seed/aura_copy.dart';
 import '../shared/kiosk_product.dart';
 import '../shared/order_line.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'kiosk_config.cms.g.dart';
+part 'kiosk_config.desk.dart';
 part 'kiosk_config.mapper.dart';
 
-@CmsConfig(title: 'Kiosk screen', description: 'Tablet landscape in-store terminal')
+@DeskModel(title: 'Kiosk screen', description: 'Tablet landscape in-store terminal')
 @MappableClass(
   ignoreNull: false,
   discriminatorValue: 'kioskConfig',
   includeCustomMappers: [ImageReferenceMapper()],
 )
-class KioskConfig extends CmsContent with KioskConfigMappable, Serializable<KioskConfig> {
-  @CmsImageFieldConfig(description: 'Banner image', option: CmsImageOption(hotspot: true))
+class KioskConfig extends DeskContent with KioskConfigMappable, Serializable<KioskConfig> {
+  @DeskImage(description: 'Banner image', option: DeskImageOption(hotspot: true))
   final ImageReference? bannerImage;
 
-  @CmsStringFieldConfig(description: 'Banner headline', option: CmsStringOption())
+  @DeskString(description: 'Banner headline', option: DeskStringOption())
   final String bannerHeadline;
 
-  @CmsTextFieldConfig(description: 'Banner subtitle', option: CmsTextOption())
+  @DeskText(description: 'Banner subtitle', option: DeskTextOption())
   final String bannerSubtitle;
 
-  @CmsStringFieldConfig(description: 'Promo badge', option: CmsStringOption())
+  @DeskString(description: 'Promo badge', option: DeskStringOption())
   final String promoBadge;
 
-  @CmsArrayFieldConfig<KioskProduct>(description: 'Grid products')
+  @DeskArray<KioskProduct>(description: 'Grid products')
   final List<KioskProduct> gridProducts;
 
-  @CmsStringFieldConfig(description: 'Table label', option: CmsStringOption())
+  @DeskString(description: 'Table label', option: DeskStringOption())
   final String sidebarTableLabel;
 
-  @CmsArrayFieldConfig<OrderLine>(description: 'Sample order lines')
+  @DeskArray<OrderLine>(description: 'Sample order lines')
   final List<OrderLine> sidebarSampleOrder;
 
-  @CmsTextFieldConfig(description: 'Footer note', option: CmsTextOption())
+  @DeskText(description: 'Footer note', option: DeskTextOption())
   final String footerNote;
 
   const KioskConfig({
@@ -1365,37 +1365,37 @@ import '../seed/aura_assets.dart';
 import '../seed/aura_copy.dart';
 import '../shared/chef_profile.dart';
 import '../shared/curated_dish.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'chef_config.cms.g.dart';
+part 'chef_config.desk.dart';
 part 'chef_config.mapper.dart';
 
-@CmsConfig(title: "Chef's Choice", description: 'Mobile upsell — curated list + pull-quote')
+@DeskModel(title: "Chef's Choice", description: 'Mobile upsell — curated list + pull-quote')
 @MappableClass(
   ignoreNull: false,
   discriminatorValue: 'chefConfig',
   includeCustomMappers: [ImageReferenceMapper()],
 )
-class ChefConfig extends CmsContent with ChefConfigMappable, Serializable<ChefConfig> {
-  @CmsTextFieldConfig(description: 'Headline', option: CmsTextOption())
+class ChefConfig extends DeskContent with ChefConfigMappable, Serializable<ChefConfig> {
+  @DeskText(description: 'Headline', option: DeskTextOption())
   final String headline;
 
-  @CmsBlockFieldConfig(option: CmsBlockOption())
+  @DeskBlock(option: DeskBlockOption())
   final Object? intro;
 
-  @CmsObjectFieldConfig(description: 'Chef profile')
+  @DeskObject(description: 'Chef profile')
   final ChefProfile chef;
 
-  @CmsTextFieldConfig(description: 'Pull quote', option: CmsTextOption())
+  @DeskText(description: 'Pull quote', option: DeskTextOption())
   final String pullQuote;
 
-  @CmsArrayFieldConfig<CuratedDish>(description: 'Curated dishes')
+  @DeskArray<CuratedDish>(description: 'Curated dishes')
   final List<CuratedDish> curatedDishes;
 
-  @CmsStringFieldConfig(description: 'Refresh cadence label', option: CmsStringOption())
+  @DeskString(description: 'Refresh cadence label', option: DeskStringOption())
   final String refreshCadence;
 
-  @CmsDateFieldConfig(description: 'Published from', option: CmsDateOption())
+  @DeskDate(description: 'Published from', option: DeskDateOption())
   final DateTime publishFrom;
 
   const ChefConfig({
@@ -1460,31 +1460,31 @@ import '../seed/aura_assets.dart';
 import '../seed/aura_enums.dart';
 import '../shared/menu_item_entry.dart';
 import '../shared/store_hours_entry.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'menu_config.cms.g.dart';
+part 'menu_config.desk.dart';
 part 'menu_config.mapper.dart';
 
-@CmsConfig(title: 'Menu screen', description: 'Mobile menu browse with categories, filters, hours, location')
+@DeskModel(title: 'Menu screen', description: 'Mobile menu browse with categories, filters, hours, location')
 @MappableClass(
   ignoreNull: false,
   discriminatorValue: 'menuConfig',
   includeCustomMappers: [ImageReferenceMapper()],
 )
-class MenuConfig extends CmsContent with MenuConfigMappable, Serializable<MenuConfig> {
-  @CmsMultiDropdownFieldConfig<String>(description: 'Categories shown as tabs', option: MenuCategoriesOption())
+class MenuConfig extends DeskContent with MenuConfigMappable, Serializable<MenuConfig> {
+  @DeskMultiDropdown<String>(description: 'Categories shown as tabs', option: MenuCategoriesOption())
   final List<String> categories;
 
-  @CmsMultiDropdownFieldConfig<String>(description: 'Filter chip set', option: MenuFilterTagsOption())
+  @DeskMultiDropdown<String>(description: 'Filter chip set', option: MenuFilterTagsOption())
   final List<String> filterTags;
 
-  @CmsArrayFieldConfig<MenuItemEntry>(description: 'Menu items')
+  @DeskArray<MenuItemEntry>(description: 'Menu items')
   final List<MenuItemEntry> items;
 
-  @CmsGeoPointFieldConfig(description: 'Store location')
+  @DeskGeoPointFieldConfig(description: 'Store location')
   final GeoPoint? location;
 
-  @CmsArrayFieldConfig<StoreHoursEntry>(description: 'Weekly hours')
+  @DeskArray<StoreHoursEntry>(description: 'Weekly hours')
   final List<StoreHoursEntry> storeHours;
 
   const MenuConfig({
@@ -1518,7 +1518,7 @@ class MenuConfig extends CmsContent with MenuConfigMappable, Serializable<MenuCo
   );
 }
 
-class MenuCategoriesOption extends CmsMultiDropdownOption<String> {
+class MenuCategoriesOption extends DeskMultiDropdownOption<String> {
   const MenuCategoriesOption({super.hidden});
   @override
   List<String>? get defaultValues => const [];
@@ -1534,7 +1534,7 @@ class MenuCategoriesOption extends CmsMultiDropdownOption<String> {
   String? get placeholder => 'Categories';
 }
 
-class MenuFilterTagsOption extends CmsMultiDropdownOption<String> {
+class MenuFilterTagsOption extends DeskMultiDropdownOption<String> {
   const MenuFilterTagsOption({super.hidden});
   @override
   List<String>? get defaultValues => const [];
@@ -1582,34 +1582,34 @@ import '../seed/aura_copy.dart';
 import '../shared/coupon.dart';
 import '../shared/loyalty_tier.dart';
 import 'brand_theme.dart' show BrandThemeColorMapper;
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'rewards_config.cms.g.dart';
+part 'rewards_config.desk.dart';
 part 'rewards_config.mapper.dart';
 
-@CmsConfig(title: 'Rewards screen', description: 'Mobile loyalty card + coupons')
+@DeskModel(title: 'Rewards screen', description: 'Mobile loyalty card + coupons')
 @MappableClass(
   ignoreNull: false,
   discriminatorValue: 'rewardsConfig',
   includeCustomMappers: [ImageReferenceMapper(), BrandThemeColorMapper()],
 )
-class RewardsConfig extends CmsContent with RewardsConfigMappable, Serializable<RewardsConfig> {
-  @CmsStringFieldConfig(description: 'Program name', option: CmsStringOption())
+class RewardsConfig extends DeskContent with RewardsConfigMappable, Serializable<RewardsConfig> {
+  @DeskString(description: 'Program name', option: DeskStringOption())
   final String programName;
 
-  @CmsArrayFieldConfig<LoyaltyTier>(description: 'Tiers')
+  @DeskArray<LoyaltyTier>(description: 'Tiers')
   final List<LoyaltyTier> tiers;
 
-  @CmsNumberFieldConfig(description: 'Current user points (demo)', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Current user points (demo)', option: DeskNumberOption(min: 0))
   final num currentUserPoints;
 
-  @CmsArrayFieldConfig<Coupon>(description: 'Available coupons')
+  @DeskArray<Coupon>(description: 'Available coupons')
   final List<Coupon> coupons;
 
-  @CmsUrlFieldConfig(description: 'Terms URL', option: CmsUrlOption())
+  @DeskUrl(description: 'Terms URL', option: DeskUrlOption())
   final String termsUrl;
 
-  @CmsBlockFieldConfig(option: CmsBlockOption())
+  @DeskBlock(option: DeskBlockOption())
   final Object? fineprint;
 
   const RewardsConfig({
@@ -2472,7 +2472,7 @@ git add -A && git commit -m "Add RewardsScreen"
 ### Task 7.1: Register document types
 
 **Files:**
-- Modify: `examples/cms_app/lib/document_types.dart`
+- Modify: `examples/desk_app/lib/document_types.dart`
 
 - [ ] **Step 1: Rewrite `document_types.dart`**
 
@@ -2642,7 +2642,7 @@ Expected: all smoke tests PASS.
 
 - [ ] **Step 3: Launch the CMS app**
 
-Use the dart MCP (`mcp__dart__launch_app`) to launch `examples/cms_app/`. Navigate through each of the six document types and verify:
+Use the dart MCP (`mcp__dart__launch_app`) to launch `examples/desk_app/`. Navigate through each of the six document types and verify:
 - BrandTheme preview renders with the palette swatches and typography sample.
 - Home, Kiosk, Chef, Menu, Rewards each render their default config visually.
 - No runtime errors, no red screens, no missing images.
@@ -2657,7 +2657,7 @@ git add -A && git commit -m "Verify Aura showcase end-to-end" --allow-empty
 
 ## Notes for the implementer
 
-- **Codegen is the single most common failure mode.** After every `@CmsConfig` / `@MappableClass` change, run `dart run build_runner build --delete-conflicting-outputs` from `examples/data_models/`. Don't skip this step — the `.cms.g.dart` and `.mapper.dart` files produce the `*TypeSpec`, `*Mapper.fromMap`, and `*Mappable` mixins everything else depends on.
+- **Codegen is the single most common failure mode.** After every `@DeskModel` / `@MappableClass` change, run `dart run build_runner build --delete-conflicting-outputs` from `examples/data_models/`. Don't skip this step — the `.desk.dart` and `.mapper.dart` files produce the `*TypeSpec`, `*Mapper.fromMap`, and `*Mappable` mixins everything else depends on.
 - **Order matters.** Shared types (Phase 3) must compile before configs (Phase 4) that reference them. Widget layer (Phase 5) must exist before screens (Phase 6). Don't jump ahead.
 - **Visual fidelity is "close to the JSX," not pixel-perfect.** Flutter's text rendering and Material widgets will differ slightly from CSS. Target: a dev looking at both side-by-side would say "same app."
 - **Block field rendering is naive.** For `intro`, `description`, `perks`, `fineprint`: extract plain text with a flat helper. Rich-text rendering (bold/italic/links) is out of scope.

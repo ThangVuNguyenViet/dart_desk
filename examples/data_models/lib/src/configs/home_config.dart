@@ -6,46 +6,46 @@ import '../seed/aura_copy.dart';
 import '../shared/cta_action.dart';
 import '../shared/featured_dish.dart';
 import '../shared/store_callout.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'home_config.cms.g.dart';
+part 'home_config.desk.dart';
 part 'home_config.mapper.dart';
 
-@CmsConfig(title: 'Home screen', description: 'Mobile home — hero, welcome, featured carousel, store card')
+@DeskModel(title: 'Home screen', description: 'Mobile home — hero, welcome, featured carousel, store card')
 @MappableClass(
   ignoreNull: false,
   discriminatorValue: 'homeConfig',
   includeCustomMappers: [ImageReferenceMapper()],
 )
-class HomeConfig extends CmsContent with HomeConfigMappable, Serializable<HomeConfig> {
-  @CmsImageFieldConfig(description: 'Hero image', option: CmsImageOption(hotspot: true))
+class HomeConfig extends DeskContent with HomeConfigMappable, Serializable<HomeConfig> {
+  @DeskImage(description: 'Hero image', option: DeskImageOption(hotspot: true))
   final ImageReference? heroImage;
 
-  @CmsStringFieldConfig(description: 'Hero eyebrow', option: CmsStringOption())
+  @DeskString(description: 'Hero eyebrow', option: DeskStringOption())
   final String heroEyebrow;
 
-  @CmsTextFieldConfig(description: 'Hero headline', option: CmsTextOption())
+  @DeskText(description: 'Hero headline', option: DeskTextOption())
   final String heroHeadline;
 
-  @CmsObjectFieldConfig(description: 'Primary CTA')
+  @DeskObject(description: 'Primary CTA')
   final CtaAction primaryCta;
 
-  @CmsObjectFieldConfig(description: 'Secondary CTA')
+  @DeskObject(description: 'Secondary CTA')
   final CtaAction secondaryCta;
 
-  @CmsStringFieldConfig(description: 'Location pill', option: CmsStringOption())
+  @DeskString(description: 'Location pill', option: DeskStringOption())
   final String locationLabel;
 
-  @CmsStringFieldConfig(description: 'Welcome greeting', option: CmsStringOption())
+  @DeskString(description: 'Welcome greeting', option: DeskStringOption())
   final String welcomeGreeting;
 
-  @CmsStringFieldConfig(description: 'Featured section title', option: CmsStringOption())
+  @DeskString(description: 'Featured section title', option: DeskStringOption())
   final String featuredSectionTitle;
 
-  @CmsArrayFieldConfig<FeaturedDish>(description: 'Featured dishes')
+  @DeskArray<FeaturedDish>(description: 'Featured dishes')
   final List<FeaturedDish> featuredDishes;
 
-  @CmsObjectFieldConfig(description: 'Store callout')
+  @DeskObject(description: 'Store callout')
   final StoreCallout storeCallout;
 
   const HomeConfig({

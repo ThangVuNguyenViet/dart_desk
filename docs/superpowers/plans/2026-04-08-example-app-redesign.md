@@ -2,11 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Replace all existing example documents with 4 new ones (Restaurant Profile, Menu Item, Promotion Campaign, Brand Theme) that collectively demonstrate every CmsFieldConfig type.
+**Goal:** Replace all existing example documents with 4 new ones (Restaurant Profile, Menu Item, Promotion Campaign, Brand Theme) that collectively demonstrate every DeskFieldConfig type.
 
-**Architecture:** Clean replace — delete all old configs, seed data, and preview screens, then create 4 new annotated classes with dart_mappable, new seed data, preview screens, and rewire the CMS app shell. Code generation produces `.cms.g.dart` and `.mapper.dart` files.
+**Architecture:** Clean replace — delete all old configs, seed data, and preview screens, then create 4 new annotated classes with dart_mappable, new seed data, preview screens, and rewire the CMS app shell. Code generation produces `.desk.dart` and `.mapper.dart` files.
 
-**Tech Stack:** Flutter, dart_desk_annotation (@CmsConfig + CmsFieldConfig annotations), dart_mappable (@MappableClass), build_runner for codegen.
+**Tech Stack:** Flutter, dart_desk_annotation (@DeskModel + DeskFieldConfig annotations), dart_mappable (@MappableClass), build_runner for codegen.
 
 **Important:** Do NOT commit anything. The user will commit manually.
 
@@ -15,12 +15,12 @@
 ### Task 1: Delete Old Files
 
 **Files:**
-- Delete: `examples/data_models/lib/src/configs/brand_theme.dart`, `brand_theme.cms.g.dart`, `brand_theme.mapper.dart`
-- Delete: `examples/data_models/lib/src/configs/hero_config.dart`, `hero_config.cms.g.dart`, `hero_config.mapper.dart`
-- Delete: `examples/data_models/lib/src/configs/kiosk_config.dart`, `kiosk_config.cms.g.dart`, `kiosk_config.mapper.dart`
-- Delete: `examples/data_models/lib/src/configs/upsell_config.dart`, `upsell_config.cms.g.dart`, `upsell_config.mapper.dart`
-- Delete: `examples/data_models/lib/src/configs/reward_config.dart`, `reward_config.cms.g.dart`, `reward_config.mapper.dart`
-- Delete: `examples/data_models/lib/src/configs/array_test_config.dart`, `array_test_config.cms.g.dart`, `array_test_config.mapper.dart`
+- Delete: `examples/data_models/lib/src/configs/brand_theme.dart`, `brand_theme.desk.dart`, `brand_theme.mapper.dart`
+- Delete: `examples/data_models/lib/src/configs/hero_config.dart`, `hero_config.desk.dart`, `hero_config.mapper.dart`
+- Delete: `examples/data_models/lib/src/configs/kiosk_config.dart`, `kiosk_config.desk.dart`, `kiosk_config.mapper.dart`
+- Delete: `examples/data_models/lib/src/configs/upsell_config.dart`, `upsell_config.desk.dart`, `upsell_config.mapper.dart`
+- Delete: `examples/data_models/lib/src/configs/reward_config.dart`, `reward_config.desk.dart`, `reward_config.mapper.dart`
+- Delete: `examples/data_models/lib/src/configs/array_test_config.dart`, `array_test_config.desk.dart`, `array_test_config.mapper.dart`
 - Delete: `examples/example_app/lib/screens/brand_theme_screen.dart`
 - Delete: `examples/example_app/lib/screens/hero_screen.dart`
 - Delete: `examples/example_app/lib/screens/kiosk_screen.dart`
@@ -31,12 +31,12 @@
 
 ```bash
 cd examples/data_models/lib/src/configs
-rm -f brand_theme.dart brand_theme.cms.g.dart brand_theme.mapper.dart
-rm -f hero_config.dart hero_config.cms.g.dart hero_config.mapper.dart
-rm -f kiosk_config.dart kiosk_config.cms.g.dart kiosk_config.mapper.dart
-rm -f upsell_config.dart upsell_config.cms.g.dart upsell_config.mapper.dart
-rm -f reward_config.dart reward_config.cms.g.dart reward_config.mapper.dart
-rm -f array_test_config.dart array_test_config.cms.g.dart array_test_config.mapper.dart
+rm -f brand_theme.dart brand_theme.desk.dart brand_theme.mapper.dart
+rm -f hero_config.dart hero_config.desk.dart hero_config.mapper.dart
+rm -f kiosk_config.dart kiosk_config.desk.dart kiosk_config.mapper.dart
+rm -f upsell_config.dart upsell_config.desk.dart upsell_config.mapper.dart
+rm -f reward_config.dart reward_config.desk.dart reward_config.mapper.dart
+rm -f array_test_config.dart array_test_config.desk.dart array_test_config.mapper.dart
 ```
 
 - [ ] **Step 2: Delete all old preview screens**
@@ -152,7 +152,7 @@ const bodyFonts = [
 
 - [ ] **Step 1: Write brand_theme.dart**
 
-This is the simplest config — Color, String, Number, Dropdown, Image. Follow the existing pattern: extend `CmsContent`, mix in generated `BrandThemeMappable` and `Serializable<BrandTheme>`, add `@CmsConfig` and `@MappableClass` annotations, add `part` directives for codegen, provide `defaultValue`.
+This is the simplest config — Color, String, Number, Dropdown, Image. Follow the existing pattern: extend `DeskContent`, mix in generated `BrandThemeMappable` and `Serializable<BrandTheme>`, add `@DeskModel` and `@MappableClass` annotations, add `part` directives for codegen, provide `defaultValue`.
 
 ```dart
 import 'dart:async';
@@ -162,12 +162,12 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'brand_theme.cms.g.dart';
+part 'brand_theme.desk.dart';
 part 'brand_theme.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Brand Theme',
   description: 'Visual identity — colors, fonts, and logo for the app',
 )
@@ -176,59 +176,59 @@ part 'brand_theme.mapper.dart';
   discriminatorValue: 'brandTheme',
   includeCustomMappers: [BrandThemeColorMapper(), ImageReferenceMapper()],
 )
-class BrandTheme extends CmsContent
+class BrandTheme extends DeskContent
     with BrandThemeMappable, Serializable<BrandTheme> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Theme name',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String name;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Primary brand color used for buttons and accents',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color primaryColor;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Secondary brand color for backgrounds and cards',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color secondaryColor;
 
-  @CmsColorFieldConfig(
+  @DeskColor(
     description: 'Accent color for highlights and badges',
-    option: CmsColorOption(),
+    option: DeskColorOption(),
   )
   final Color accentColor;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Font family for headlines',
     option: HeadlineFontDropdownOption(),
   )
   final String headlineFont;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Font family for body text',
     option: BodyFontDropdownOption(),
   )
   final String bodyFont;
 
-  @CmsNumberFieldConfig(
+  @DeskNumber(
     description: 'Corner radius for cards and buttons in pixels',
-    option: CmsNumberOption(min: 0, max: 24),
+    option: DeskNumberOption(min: 0, max: 24),
   )
   final num cornerRadius;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'App theme mode',
     option: ThemeModeDropdownOption(),
   )
   final String themeMode;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Brand logo',
-    option: CmsImageOption(hotspot: false),
+    option: DeskImageOption(hotspot: false),
   )
   final ImageReference? logo;
 
@@ -275,7 +275,7 @@ class BrandThemeColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class HeadlineFontDropdownOption extends CmsDropdownOption<String> {
+class HeadlineFontDropdownOption extends DeskDropdownOption<String> {
   const HeadlineFontDropdownOption({super.hidden});
 
   @override
@@ -294,7 +294,7 @@ class HeadlineFontDropdownOption extends CmsDropdownOption<String> {
   String? get placeholder => 'Select headline font';
 }
 
-class BodyFontDropdownOption extends CmsDropdownOption<String> {
+class BodyFontDropdownOption extends DeskDropdownOption<String> {
   const BodyFontDropdownOption({super.hidden});
 
   @override
@@ -313,7 +313,7 @@ class BodyFontDropdownOption extends CmsDropdownOption<String> {
   String? get placeholder => 'Select body font';
 }
 
-class ThemeModeDropdownOption extends CmsDropdownOption<String> {
+class ThemeModeDropdownOption extends DeskDropdownOption<String> {
   const ThemeModeDropdownOption({super.hidden});
 
   @override
@@ -346,7 +346,7 @@ class ThemeModeDropdownOption extends CmsDropdownOption<String> {
 
 This is the most structurally complex config. It demonstrates: String, Text, Boolean, Checkbox, Dropdown, MultiDropdown, URL, Date, Image, File, Object (nested address + contactInfo), and Array (operatingHours).
 
-For nested objects (`address`, `contactInfo`) and array items (`OperatingHour`), define them as separate `@MappableClass` classes in the same file. The `@CmsObjectFieldConfig` uses `CmsObjectOption(children: [...])` to define the nested field layout. The `@CmsArrayFieldConfig<OperatingHour>()` auto-discovers the item type.
+For nested objects (`address`, `contactInfo`) and array items (`OperatingHour`), define them as separate `@MappableClass` classes in the same file. The `@DeskObject` uses `DeskObjectOption(children: [...])` to define the nested field layout. The `@DeskArray<OperatingHour>()` auto-discovers the item type.
 
 ```dart
 import 'dart:async';
@@ -356,9 +356,9 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'restaurant_profile.cms.g.dart';
+part 'restaurant_profile.desk.dart';
 part 'restaurant_profile.mapper.dart';
 
 // ── Nested types ──────────────────────────────────────────────────────────
@@ -399,31 +399,31 @@ class ContactInfo with ContactInfoMappable {
 }
 
 @MappableClass()
-@CmsConfig(
+@DeskModel(
   title: 'Operating Hour',
   description: 'A single day operating schedule',
 )
 class OperatingHour with OperatingHourMappable
     implements Serializable<OperatingHour> {
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Day of the week',
     option: DayOfWeekDropdownOption(),
   )
   final String day;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Opening time (e.g. 09:00)',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String openTime;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Closing time (e.g. 22:00)',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String closeTime;
 
-  @CmsBooleanFieldConfig(
+  @DeskBoolean(
     description: 'Is the restaurant closed on this day?',
   )
   final bool isClosed;
@@ -445,7 +445,7 @@ class OperatingHour with OperatingHourMappable
 
 // ── Main config ───────────────────────────────────────────────────────────
 
-@CmsConfig(
+@DeskModel(
   title: 'Restaurant Profile',
   description: 'Store identity, location, hours, and contact information',
 )
@@ -454,96 +454,96 @@ class OperatingHour with OperatingHourMappable
   discriminatorValue: 'restaurantProfile',
   includeCustomMappers: [RestaurantProfileColorMapper(), ImageReferenceMapper()],
 )
-class RestaurantProfile extends CmsContent
+class RestaurantProfile extends DeskContent
     with RestaurantProfileMappable, Serializable<RestaurantProfile> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Restaurant display name',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String name;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'URL-safe identifier',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String slug;
 
-  @CmsTextFieldConfig(
+  @DeskText(
     description: 'About us description',
-    option: CmsTextOption(rows: 4),
+    option: DeskTextOption(rows: 4),
   )
   final String description;
 
-  @CmsBooleanFieldConfig(
+  @DeskBoolean(
     description: 'Is this store currently active?',
   )
   final bool isActive;
 
-  @CmsCheckboxFieldConfig(
+  @DeskCheckbox(
     description: 'Does this location accept online orders?',
-    option: CmsCheckboxOption(label: 'Accepts online orders'),
+    option: DeskCheckboxOption(label: 'Accepts online orders'),
   )
   final bool acceptsOnlineOrders;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Primary cuisine type',
     option: CuisineTypeDropdownOption(),
   )
   final String cuisineType;
 
-  @CmsMultiDropdownFieldConfig<String>(
+  @DeskMultiDropdown<String>(
     description: 'Accepted payment methods',
     option: PaymentMethodsDropdownOption(),
   )
   final List<String> paymentMethods;
 
-  @CmsUrlFieldConfig(
+  @DeskUrl(
     description: 'Restaurant website',
-    option: CmsUrlOption(optional: true),
+    option: DeskUrlOption(optional: true),
   )
   final Uri? website;
 
-  @CmsUrlFieldConfig(
+  @DeskUrl(
     description: 'Online ordering link',
-    option: CmsUrlOption(optional: true),
+    option: DeskUrlOption(optional: true),
   )
   final Uri? orderingUrl;
 
-  @CmsDateFieldConfig(
+  @DeskDate(
     description: 'Established date',
-    option: CmsDateOption(optional: true),
+    option: DeskDateOption(optional: true),
   )
   final DateTime? openingSince;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Square logo',
-    option: CmsImageOption(hotspot: false),
+    option: DeskImageOption(hotspot: false),
   )
   final ImageReference? logo;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Cover photo / hero banner',
-    option: CmsImageOption(hotspot: true),
+    option: DeskImageOption(hotspot: true),
   )
   final ImageReference? coverPhoto;
 
-  @CmsFileFieldConfig(
+  @DeskFile(
     description: 'Downloadable PDF menu',
-    option: CmsFileOption(optional: true),
+    option: DeskFileOption(optional: true),
   )
   final String? pdfMenu;
 
-  @CmsObjectFieldConfig(
+  @DeskObject(
     description: 'Street address',
   )
   final Address address;
 
-  @CmsObjectFieldConfig(
+  @DeskObject(
     description: 'Contact information',
   )
   final ContactInfo contactInfo;
 
-  @CmsArrayFieldConfig<OperatingHour>(
+  @DeskArray<OperatingHour>(
     description: 'Weekly operating hours',
   )
   final List<OperatingHour> operatingHours;
@@ -615,7 +615,7 @@ class RestaurantProfileColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class CuisineTypeDropdownOption extends CmsDropdownOption<String> {
+class CuisineTypeDropdownOption extends DeskDropdownOption<String> {
   const CuisineTypeDropdownOption({super.hidden});
 
   @override
@@ -634,7 +634,7 @@ class CuisineTypeDropdownOption extends CmsDropdownOption<String> {
   String? get placeholder => 'Select cuisine type';
 }
 
-class PaymentMethodsDropdownOption extends CmsMultiDropdownOption<String> {
+class PaymentMethodsDropdownOption extends DeskMultiDropdownOption<String> {
   const PaymentMethodsDropdownOption({super.hidden});
 
   @override
@@ -656,7 +656,7 @@ class PaymentMethodsDropdownOption extends CmsMultiDropdownOption<String> {
   String? get placeholder => 'Select payment methods';
 }
 
-class DayOfWeekDropdownOption extends CmsDropdownOption<String> {
+class DayOfWeekDropdownOption extends DeskDropdownOption<String> {
   const DayOfWeekDropdownOption({super.hidden});
 
   @override
@@ -695,9 +695,9 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'menu_item.cms.g.dart';
+part 'menu_item.desk.dart';
 part 'menu_item.mapper.dart';
 
 // ── Nested types ──────────────────────────────────────────────────────────
@@ -722,21 +722,21 @@ class NutritionInfo with NutritionInfoMappable {
 }
 
 @MappableClass()
-@CmsConfig(
+@DeskModel(
   title: 'Variant',
   description: 'A size/price variant of a menu item',
 )
 class MenuItemVariant with MenuItemVariantMappable
     implements Serializable<MenuItemVariant> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Variant label (e.g. Small, Large)',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String label;
 
-  @CmsNumberFieldConfig(
+  @DeskNumber(
     description: 'Price for this variant',
-    option: CmsNumberOption(min: 0),
+    option: DeskNumberOption(min: 0),
   )
   final num price;
 
@@ -750,7 +750,7 @@ class MenuItemVariant with MenuItemVariantMappable
 
 // ── Main config ───────────────────────────────────────────────────────────
 
-@CmsConfig(
+@DeskModel(
   title: 'Menu Item',
   description: 'A product on the restaurant menu with pricing, dietary info, and variants',
 )
@@ -759,85 +759,85 @@ class MenuItemVariant with MenuItemVariantMappable
   discriminatorValue: 'menuItem',
   includeCustomMappers: [MenuItemColorMapper(), ImageReferenceMapper()],
 )
-class MenuItem extends CmsContent
+class MenuItem extends DeskContent
     with MenuItemMappable, Serializable<MenuItem> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Item name',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String name;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Internal product code',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String sku;
 
-  @CmsBlockFieldConfig(
+  @DeskBlock(
     description: 'Rich description — ingredients, story, preparation',
-    option: CmsBlockOption(),
+    option: DeskBlockOption(),
   )
   final Object? description;
 
-  @CmsNumberFieldConfig(
+  @DeskNumber(
     description: 'Base price',
-    option: CmsNumberOption(min: 0),
+    option: DeskNumberOption(min: 0),
   )
   final num price;
 
-  @CmsNumberFieldConfig(
+  @DeskNumber(
     description: 'Calorie count (optional)',
-    option: CmsNumberOption(min: 0),
+    option: DeskNumberOption(min: 0),
   )
   final num calories;
 
-  @CmsBooleanFieldConfig(
+  @DeskBoolean(
     description: 'Is this item currently available?',
   )
   final bool isAvailable;
 
-  @CmsCheckboxFieldConfig(
+  @DeskCheckbox(
     description: 'Vegetarian',
-    option: CmsCheckboxOption(label: 'Vegetarian'),
+    option: DeskCheckboxOption(label: 'Vegetarian'),
   )
   final bool isVegetarian;
 
-  @CmsCheckboxFieldConfig(
+  @DeskCheckbox(
     description: 'Gluten-free',
-    option: CmsCheckboxOption(label: 'Gluten-free'),
+    option: DeskCheckboxOption(label: 'Gluten-free'),
   )
   final bool isGlutenFree;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Menu category',
     option: MenuCategoryDropdownOption(),
   )
   final String category;
 
-  @CmsMultiDropdownFieldConfig<String>(
+  @DeskMultiDropdown<String>(
     description: 'Allergens present in this item',
     option: AllergensDropdownOption(),
   )
   final List<String> allergens;
 
-  @CmsMultiDropdownFieldConfig<String>(
+  @DeskMultiDropdown<String>(
     description: 'Tags for filtering and display',
     option: MenuTagsDropdownOption(),
   )
   final List<String> tags;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Product photo',
-    option: CmsImageOption(hotspot: true),
+    option: DeskImageOption(hotspot: true),
   )
   final ImageReference? photo;
 
-  @CmsObjectFieldConfig(
+  @DeskObject(
     description: 'Nutritional information per serving',
   )
   final NutritionInfo nutritionInfo;
 
-  @CmsArrayFieldConfig<MenuItemVariant>(
+  @DeskArray<MenuItemVariant>(
     description: 'Size/price variants',
   )
   final List<MenuItemVariant> variants;
@@ -898,7 +898,7 @@ class MenuItemColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class MenuCategoryDropdownOption extends CmsDropdownOption<String> {
+class MenuCategoryDropdownOption extends DeskDropdownOption<String> {
   const MenuCategoryDropdownOption({super.hidden});
 
   @override
@@ -917,7 +917,7 @@ class MenuCategoryDropdownOption extends CmsDropdownOption<String> {
   String? get placeholder => 'Select category';
 }
 
-class AllergensDropdownOption extends CmsMultiDropdownOption<String> {
+class AllergensDropdownOption extends DeskMultiDropdownOption<String> {
   const AllergensDropdownOption({super.hidden});
 
   @override
@@ -939,7 +939,7 @@ class AllergensDropdownOption extends CmsMultiDropdownOption<String> {
   String? get placeholder => 'Select allergens';
 }
 
-class MenuTagsDropdownOption extends CmsMultiDropdownOption<String> {
+class MenuTagsDropdownOption extends DeskMultiDropdownOption<String> {
   const MenuTagsDropdownOption({super.hidden});
 
   @override
@@ -981,12 +981,12 @@ import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
 import '../seed/seed_data.dart';
-import 'cms_content.dart';
+import 'desk_content.dart';
 
-part 'promotion_campaign.cms.g.dart';
+part 'promotion_campaign.desk.dart';
 part 'promotion_campaign.mapper.dart';
 
-@CmsConfig(
+@DeskModel(
   title: 'Promotion Campaign',
   description: 'Time-bound marketing campaigns with discounts, banners, and promo codes',
 )
@@ -995,88 +995,88 @@ part 'promotion_campaign.mapper.dart';
   discriminatorValue: 'promotionCampaign',
   includeCustomMappers: [PromotionColorMapper(), ImageReferenceMapper()],
 )
-class PromotionCampaign extends CmsContent
+class PromotionCampaign extends DeskContent
     with PromotionCampaignMappable, Serializable<PromotionCampaign> {
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Campaign title',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String title;
 
-  @CmsStringFieldConfig(
+  @DeskString(
     description: 'Promo code (e.g. SUMMER20)',
-    option: CmsStringOption(),
+    option: DeskStringOption(),
   )
   final String promoCode;
 
-  @CmsTextFieldConfig(
+  @DeskText(
     description: 'Terms and conditions',
-    option: CmsTextOption(rows: 3),
+    option: DeskTextOption(rows: 3),
   )
   final String termsAndConditions;
 
-  @CmsNumberFieldConfig(
+  @DeskNumber(
     description: 'Discount percentage',
-    option: CmsNumberOption(min: 0, max: 100),
+    option: DeskNumberOption(min: 0, max: 100),
   )
   final num discountPercent;
 
-  @CmsDropdownFieldConfig<String>(
+  @DeskDropdown<String>(
     description: 'Type of discount',
     option: DiscountTypeDropdownOption(),
   )
   final String discountType;
 
-  @CmsMultiDropdownFieldConfig<String>(
+  @DeskMultiDropdown<String>(
     description: 'Menu categories this promotion applies to',
     option: ApplicableCategoriesDropdownOption(),
   )
   final List<String> applicableCategories;
 
-  @CmsBooleanFieldConfig(
+  @DeskBoolean(
     description: 'Is this campaign currently active?',
   )
   final bool isActive;
 
-  @CmsDateFieldConfig(
+  @DeskDate(
     description: 'Date from which the promo code is valid',
-    option: CmsDateOption(optional: true),
+    option: DeskDateOption(optional: true),
   )
   final DateTime? validFrom;
 
-  @CmsDateTimeFieldConfig(
+  @DeskDateTime(
     description: 'Exact start time of the campaign',
-    option: CmsDateTimeOption(optional: true),
+    option: DeskDateTimeOption(optional: true),
   )
   final DateTime? startsAt;
 
-  @CmsDateTimeFieldConfig(
+  @DeskDateTime(
     description: 'Exact end time of the campaign',
-    option: CmsDateTimeOption(optional: true),
+    option: DeskDateTimeOption(optional: true),
   )
   final DateTime? endsAt;
 
-  @CmsUrlFieldConfig(
+  @DeskUrl(
     description: 'External landing page for the campaign',
-    option: CmsUrlOption(optional: true),
+    option: DeskUrlOption(optional: true),
   )
   final Uri? landingPageUrl;
 
-  @CmsImageFieldConfig(
+  @DeskImage(
     description: 'Promotional banner image',
-    option: CmsImageOption(hotspot: true),
+    option: DeskImageOption(hotspot: true),
   )
   final ImageReference? bannerImage;
 
-  @CmsFileFieldConfig(
+  @DeskFile(
     description: 'Terms and conditions PDF',
-    option: CmsFileOption(optional: true),
+    option: DeskFileOption(optional: true),
   )
   final String? termsDocument;
 
-  @CmsBlockFieldConfig(
+  @DeskBlock(
     description: 'Rich promotional content',
-    option: CmsBlockOption(),
+    option: DeskBlockOption(),
   )
   final Object? promoContent;
 
@@ -1135,7 +1135,7 @@ class PromotionColorMapper extends SimpleMapper<Color> {
       '#${self.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 }
 
-class DiscountTypeDropdownOption extends CmsDropdownOption<String> {
+class DiscountTypeDropdownOption extends DeskDropdownOption<String> {
   const DiscountTypeDropdownOption({super.hidden});
 
   @override
@@ -1155,7 +1155,7 @@ class DiscountTypeDropdownOption extends CmsDropdownOption<String> {
 }
 
 class ApplicableCategoriesDropdownOption
-    extends CmsMultiDropdownOption<String> {
+    extends DeskMultiDropdownOption<String> {
   const ApplicableCategoriesDropdownOption({super.hidden});
 
   @override
@@ -1191,7 +1191,7 @@ class ApplicableCategoriesDropdownOption
 ```dart
 library;
 
-export 'src/configs/cms_content.dart';
+export 'src/configs/desk_content.dart';
 export 'src/configs/brand_theme.dart' hide BrandThemeColorMapper;
 export 'src/configs/restaurant_profile.dart' hide RestaurantProfileColorMapper;
 export 'src/configs/menu_item.dart' hide MenuItemColorMapper;
@@ -1209,7 +1209,7 @@ export 'src/seed/seed_data.dart';
 cd examples/data_models && dart run build_runner build --delete-conflicting-outputs
 ```
 
-Expected: Generates `.cms.g.dart` and `.mapper.dart` for all 4 new configs plus nested types.
+Expected: Generates `.desk.dart` and `.mapper.dart` for all 4 new configs plus nested types.
 
 - [ ] **Step 2: Verify generated files exist**
 
@@ -1217,7 +1217,7 @@ Expected: Generates `.cms.g.dart` and `.mapper.dart` for all 4 new configs plus 
 ls examples/data_models/lib/src/configs/*.g.dart examples/data_models/lib/src/configs/*.mapper.dart
 ```
 
-Expected: `brand_theme.cms.g.dart`, `brand_theme.mapper.dart`, `restaurant_profile.cms.g.dart`, `restaurant_profile.mapper.dart`, `menu_item.cms.g.dart`, `menu_item.mapper.dart`, `promotion_campaign.cms.g.dart`, `promotion_campaign.mapper.dart`
+Expected: `brand_theme.desk.dart`, `brand_theme.mapper.dart`, `restaurant_profile.desk.dart`, `restaurant_profile.mapper.dart`, `menu_item.desk.dart`, `menu_item.mapper.dart`, `promotion_campaign.desk.dart`, `promotion_campaign.mapper.dart`
 
 ---
 
@@ -1873,8 +1873,8 @@ class _DetailRow extends StatelessWidget {
 ### Task 10: Rewire CMS App
 
 **Files:**
-- Modify: `examples/cms_app/lib/document_types.dart`
-- Modify: `examples/cms_app/lib/main.dart`
+- Modify: `examples/desk_app/lib/document_types.dart`
+- Modify: `examples/desk_app/lib/main.dart`
 
 - [ ] **Step 1: Replace document_types.dart**
 
@@ -1945,7 +1945,7 @@ class MyApp extends StatelessWidget {
 
   static const apiKey = String.fromEnvironment(
     'API_KEY',
-    defaultValue: 'cms_w_5dGK1_MeafXRpFF5sLLU-0x5ICYqEIVDdyT9wrlcFmg',
+    defaultValue: 'desk_w_5dGK1_MeafXRpFF5sLLU-0x5ICYqEIVDdyT9wrlcFmg',
   );
 
   @override
@@ -1999,10 +1999,10 @@ cd examples/data_models && flutter analyze
 
 Expected: No errors.
 
-- [ ] **Step 2: Verify cms_app compiles**
+- [ ] **Step 2: Verify desk_app compiles**
 
 ```bash
-cd examples/cms_app && flutter analyze
+cd examples/desk_app && flutter analyze
 ```
 
 Expected: No errors.

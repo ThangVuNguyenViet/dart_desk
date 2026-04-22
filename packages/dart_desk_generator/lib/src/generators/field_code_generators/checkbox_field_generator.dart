@@ -6,7 +6,7 @@ import 'field_code_generator.dart';
 
 class CheckboxFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsCheckboxFieldConfig';
+  String get fieldConfigName => 'DeskCheckbox';
 
   @override
   List<Type> get supportedTypes => [bool];
@@ -24,7 +24,7 @@ class CheckboxFieldGenerator implements FieldCodeGenerator {
       throw InvalidGenerationSourceError('Field has no name', element: field);
     }
 
-    return '''CmsCheckboxField(
+    return '''DeskCheckboxField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${optionSource != null ? 'option: $optionSource,' : ''}

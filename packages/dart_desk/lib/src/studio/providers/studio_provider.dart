@@ -3,7 +3,7 @@ import 'package:get_it/get_it.dart';
 
 import '../../../dart_desk.dart';
 import '../../../studio.dart';
-import '../core/view_models/cms_document_view_model.dart';
+import '../core/view_models/desk_document_view_model.dart';
 
 class StudioProvider extends StatefulWidget {
   const StudioProvider({
@@ -25,23 +25,23 @@ class _StudioProviderState extends State<StudioProvider> {
   @override
   void initState() {
     super.initState();
-    final docVM = CmsDocumentViewModel(widget.dataSource);
-    final cmsVM = CmsViewModel(
+    final docVM = DeskDocumentViewModel(widget.dataSource);
+    final deskVM = DeskViewModel(
       dataSource: widget.dataSource,
       documentTypes: widget.documentTypes,
     );
-    GetIt.I.registerSingleton<CmsDocumentViewModel>(docVM);
-    GetIt.I.registerSingleton<CmsViewModel>(cmsVM);
-    docVM.listenTo(cmsVM);
+    GetIt.I.registerSingleton<DeskDocumentViewModel>(docVM);
+    GetIt.I.registerSingleton<DeskViewModel>(deskVM);
+    docVM.listenTo(deskVM);
   }
 
   @override
   void dispose() {
-    GetIt.I<CmsViewModel>().dispose();
-    GetIt.I<CmsDocumentViewModel>().dispose();
+    GetIt.I<DeskViewModel>().dispose();
+    GetIt.I<DeskDocumentViewModel>().dispose();
 
-    GetIt.I.unregister<CmsViewModel>();
-    GetIt.I.unregister<CmsDocumentViewModel>();
+    GetIt.I.unregister<DeskViewModel>();
+    GetIt.I.unregister<DeskDocumentViewModel>();
     super.dispose();
   }
 

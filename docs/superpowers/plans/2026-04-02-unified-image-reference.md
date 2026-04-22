@@ -255,7 +255,7 @@ class ImageReference {
 typedef ImageRef = ImageReference;
 ```
 
-- [ ] **Step 2: Update `CmsImageFieldConfig.supportedFieldTypes`**
+- [ ] **Step 2: Update `DeskImage.supportedFieldTypes`**
 
 In `packages/dart_desk_annotation/lib/src/fields/media/image_field.dart`, change the import and supported types:
 
@@ -909,7 +909,7 @@ Ensure the barrel doesn't need to hide `ImageReferenceMapper` (it shouldn't conf
 cd examples/data_models && dart run build_runner build --delete-conflicting-outputs
 ```
 
-This regenerates all `.cms.g.dart` and `.mapper.dart` files with the updated types.
+This regenerates all `.desk.dart` and `.mapper.dart` files with the updated types.
 
 - [ ] **Step 8: Verify**
 
@@ -975,7 +975,7 @@ git commit -m "refactor: update preview widgets for unified ImageReference"
 ### Task 12: Update CMS app wiring
 
 **Files:**
-- Modify: `examples/cms_app/lib/document_types.dart`
+- Modify: `examples/desk_app/lib/document_types.dart`
 
 - [ ] **Step 1: Check document_types.dart**
 
@@ -983,13 +983,13 @@ The `builder:` callbacks use `StorefrontConfigMapper.fromMap(merged)` etc. Since
 
 - [ ] **Step 2: Verify CMS app compiles**
 
-Run: `cd examples/cms_app && flutter analyze`
+Run: `cd examples/desk_app && flutter analyze`
 Expected: No errors.
 
 - [ ] **Step 3: Commit if changes needed**
 
 ```bash
-git add examples/cms_app/
+git add examples/desk_app/
 git commit -m "refactor: update CMS app for unified ImageReference"
 ```
 
@@ -1044,7 +1044,7 @@ git commit -m "test: update tests for unified ImageReference"
 ### Task 14: Update mock data source
 
 **Files:**
-- Modify: `packages/dart_desk/lib/src/testing/mock_cms_data_source.dart`
+- Modify: `packages/dart_desk/lib/src/testing/mock_desk_data_source.dart`
 
 - [ ] **Step 1: Check for `ImageReference(asset:)` usage**
 
@@ -1057,7 +1057,7 @@ Run: `cd packages/dart_desk && dart analyze`
 - [ ] **Step 3: Commit**
 
 ```bash
-git add packages/dart_desk/lib/src/testing/mock_cms_data_source.dart
+git add packages/dart_desk/lib/src/testing/mock_desk_data_source.dart
 git commit -m "refactor: update mock data source for unified ImageReference"
 ```
 
@@ -1071,7 +1071,7 @@ git commit -m "refactor: update mock data source for unified ImageReference"
 cd packages/dart_desk_annotation && dart analyze
 cd packages/dart_desk && dart analyze
 cd examples/data_models && dart analyze
-cd examples/cms_app && flutter analyze
+cd examples/desk_app && flutter analyze
 cd examples/example_app && flutter analyze
 ```
 

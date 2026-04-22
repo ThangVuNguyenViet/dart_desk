@@ -33,23 +33,23 @@ dart_desk is a native Flutter widget library — deploy your CMS to desktop, mob
 Define your content structure as annotated Dart classes. Schemas live in your codebase — version controlled, type-safe, and deployed with your CI.
 
 ```dart
-@CmsConfig(title: 'Blog Post', description: 'A blog article')
+@DeskModel(title: 'Blog Post', description: 'A blog article')
 class BlogPost {
-  @CmsStringField(label: 'Title', validators: [RequiredValidator()])
+  @DeskStringField(label: 'Title', validators: [RequiredValidator()])
   final String title;
 
-  @CmsTextField(label: 'Body', options: CmsTextOption(rows: 10))
+  @DeskTextField(label: 'Body', options: DeskTextOption(rows: 10))
   final String body;
 
-  @CmsImageField(label: 'Cover', options: CmsImageOption(hotspot: true))
+  @DeskImageField(label: 'Cover', options: DeskImageOption(hotspot: true))
   final String? coverImage;
 
-  @CmsDropdownField(label: 'Status', options: CmsDropdownOption(choices: ['draft', 'review', 'published']))
+  @DeskDropdownField(label: 'Status', options: DeskDropdownOption(choices: ['draft', 'review', 'published']))
   final String status;
 }
 ```
 
-Run `dart run build_runner build` to generate `CmsDocumentType` definitions from your schema.
+Run `dart run build_runner build` to generate `DeskDocumentType` definitions from your schema.
 
 ### 16 Built-In Field Types
 
@@ -90,13 +90,13 @@ Upload, preview, and manage images and files directly from the studio. Image fie
 
 ### Backend-Agnostic
 
-dart_desk doesn't prescribe your backend. Implement the `CmsDataSource` interface to connect any data layer:
+dart_desk doesn't prescribe your backend. Implement the `DeskDataSource` interface to connect any data layer:
 
 ```dart
-abstract class CmsDataSource {
+abstract class DeskDataSource {
   Future<DocumentList> getDocuments(String documentType, { ... });
-  Future<CmsDocument> createDocument(String documentType, String title, Map<String, dynamic> data, { ... });
-  Future<CmsDocument> updateDocumentData(int documentId, Map<String, dynamic> updates, { ... });
+  Future<DeskDocument> createDocument(String documentType, String title, Map<String, dynamic> data, { ... });
+  Future<DeskDocument> updateDocumentData(int documentId, Map<String, dynamic> updates, { ... });
   Future<MediaUploadResult> uploadImage(String fileName, Uint8List fileData);
   // ... documents, versions, and media operations
 }
@@ -125,11 +125,11 @@ Most dart_desk projects follow this structure:
 
 ```
 data_models/    — annotated Dart classes, shared by CMS + consumer app
-cms_app/        — DartDeskApp studio for editors
+desk_app/        — DartDeskApp studio for editors
 consumer_app/   — your production app, reads content via dart_desk_client
 ```
 
-`data_models` is a plain Dart package with no Flutter dependency. Both `cms_app` and `consumer_app` depend on it, keeping your content schema the single source of truth.
+`data_models` is a plain Dart package with no Flutter dependency. Both `desk_app` and `consumer_app` depend on it, keeping your content schema the single source of truth.
 
 ## Installation
 
@@ -151,7 +151,7 @@ To run your own backend, pass `serverUrl` and `apiKey` to `DartDeskApp` and poin
 ```dart
 void main() => runApp(
   DartDeskApp(
-    serverUrl: 'https://cms.example.com',
+    serverUrl: 'https://desk.example.com',
     apiKey: 'your-api-key',
     documentTypes: [blogPost, product, page],
     title: 'My CMS',
@@ -178,10 +178,10 @@ For arrays whose items need a bespoke editing UI, subclass the array option and 
 
 ### Async Dropdown Options
 
-When dropdown choices must be loaded from an API or database, subclass `CmsDropdownOption` and override the async variant:
+When dropdown choices must be loaded from an API or database, subclass `DeskDropdownOption` and override the async variant:
 
 ```dart
-class StatusDropdownOption extends CmsDropdownOption {
+class StatusDropdownOption extends DeskDropdownOption {
   @override
   Future<List<String>> loadChoices() => myApi.fetchStatuses();
 }
@@ -204,7 +204,7 @@ final posts = await client.getDocuments<BlogPost>(
 | Package | Description |
 |---------|-------------|
 | [dart_desk_annotation](https://pub.dev/packages/dart_desk_annotation) | Schema annotations for defining document types and fields |
-| [dart_desk_generator](https://pub.dev/packages/dart_desk_generator) | Code generator that produces `CmsDocumentType` definitions from annotated classes |
+| [dart_desk_generator](https://pub.dev/packages/dart_desk_generator) | Code generator that produces `DeskDocumentType` definitions from annotated classes |
 | [dart_desk_cli](https://pub.dev/packages/dart_desk_cli) | CLI for deploying CMS studios to Dart Desk Cloud |
 | [dart_desk_client](https://pub.dev/packages/dart_desk_client) | Runtime client for fetching published content |
 

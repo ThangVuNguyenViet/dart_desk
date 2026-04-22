@@ -6,7 +6,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 ///
 /// Registers Shadcn UI components as interactive widgets so that
 /// Marionette can discover and interact with them.
-abstract final class CmsMarionetteConfig {
+abstract final class DeskMarionetteConfig {
   static const configuration = MarionetteConfiguration(
     isInteractiveWidget: _isInteractiveWidget,
     extractText: _extractText,

@@ -2,7 +2,7 @@
 ///
 /// This annotation triggers code generation for CMS data models,
 /// field configurations, and UI components.
-class CmsConfig {
+class DeskModel {
   /// The human-readable title for this CMS configuration.
   final String title;
 
@@ -12,5 +12,5 @@ class CmsConfig {
   /// Optional unique identifier for this configuration.
   final String? id;
 
-  const CmsConfig({required this.title, required this.description, this.id});
+  const DeskModel({required this.title, required this.description, this.id});
 }

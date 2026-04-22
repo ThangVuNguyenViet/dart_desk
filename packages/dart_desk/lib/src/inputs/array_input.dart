@@ -3,16 +3,16 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../studio/components/forms/cms_form.dart';
+import '../studio/components/forms/desk_form.dart';
 import 'edit_styles/edit_styles.dart';
 
-class CmsArrayInput<T> extends StatefulWidget {
-  final CmsArrayField<T> field;
-  final CmsData? data;
+class DeskArrayInput<T> extends StatefulWidget {
+  final DeskArrayField<T> field;
+  final DeskData? data;
   final ValueChanged<List?>? onChanged;
   final EditStyles editStyle;
 
-  const CmsArrayInput({
+  const DeskArrayInput({
     super.key,
     required this.field,
     this.data,
@@ -21,10 +21,10 @@ class CmsArrayInput<T> extends StatefulWidget {
   });
 
   @override
-  State<CmsArrayInput<T>> createState() => _CmsArrayInputState<T>();
+  State<DeskArrayInput<T>> createState() => _DeskArrayInputState<T>();
 }
 
-class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
+class _DeskArrayInputState<T> extends State<DeskArrayInput<T>> {
   late List<T> _items;
   int? _editingIndex; // -1 for adding new, null for none, >= 0 for editing
   dynamic _editingValue;
@@ -241,14 +241,14 @@ class _CmsArrayInputState<T> extends State<CmsArrayInput<T>> {
     }
 
     // Use the registry for the innerField!
-    final builder = CmsFieldInputRegistry.getBuilder(widget.field.innerField);
+    final builder = DeskFieldInputRegistry.getBuilder(widget.field.innerField);
     if (builder != null) {
       final path = widget.data?.path ?? widget.field.name;
       final itemIndex = _editingIndex == -1 ? _items.length : _editingIndex;
 
       return builder(
         widget.field.innerField,
-        CmsData(value: _editingValue, path: '$path.[$itemIndex]'),
+        DeskData(value: _editingValue, path: '$path.[$itemIndex]'),
         (_, newValue) {
           setState(() {
             _editingValue = newValue;

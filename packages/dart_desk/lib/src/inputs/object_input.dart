@@ -4,36 +4,36 @@ import 'package:flutter/widget_previews.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import '../studio/components/forms/cms_form.dart';
+import '../studio/components/forms/desk_form.dart';
 
-@Preview(name: 'CmsObjectInput')
+@Preview(name: 'DeskObjectInput')
 Widget preview() => ShadApp(
-  home: CmsObjectInput(
-    field: const CmsObjectField(
+  home: DeskObjectInput(
+    field: const DeskObjectField(
       name: 'address',
       title: 'Address',
-      option: CmsObjectOption(
+      option: DeskObjectOption(
         children: [
           ColumnFields(
             children: [
-              CmsStringField(
+              DeskStringField(
                 name: 'street',
                 title: 'Street',
-                option: CmsStringOption(),
+                option: DeskStringOption(),
               ),
             ],
           ),
           RowFields(
             children: [
-              CmsStringField(
+              DeskStringField(
                 name: 'city',
                 title: 'City',
-                option: CmsStringOption(),
+                option: DeskStringOption(),
               ),
-              CmsStringField(
+              DeskStringField(
                 name: 'zipCode',
                 title: 'Zip Code',
-                option: CmsStringOption(),
+                option: DeskStringOption(),
               ),
             ],
           ),
@@ -44,15 +44,15 @@ Widget preview() => ShadApp(
             children: [
               RowFields(
                 children: [
-                  CmsNumberField(
+                  DeskNumberField(
                     name: 'lat',
                     title: 'Latitude',
-                    option: CmsNumberOption(),
+                    option: DeskNumberOption(),
                   ),
-                  CmsNumberField(
+                  DeskNumberField(
                     name: 'lng',
                     title: 'Longitude',
-                    option: CmsNumberOption(),
+                    option: DeskNumberOption(),
                   ),
                 ],
               ),
@@ -64,12 +64,12 @@ Widget preview() => ShadApp(
   ),
 );
 
-class CmsObjectInput extends StatefulWidget {
-  final CmsObjectField field;
-  final CmsData? data;
+class DeskObjectInput extends StatefulWidget {
+  final DeskObjectField field;
+  final DeskData? data;
   final ValueChanged<Map<String, dynamic>?>? onChanged;
 
-  const CmsObjectInput({
+  const DeskObjectInput({
     super.key,
     required this.field,
     this.data,
@@ -77,10 +77,10 @@ class CmsObjectInput extends StatefulWidget {
   });
 
   @override
-  State<CmsObjectInput> createState() => _CmsObjectInputState();
+  State<DeskObjectInput> createState() => _DeskObjectInputState();
 }
 
-class _CmsObjectInputState extends State<CmsObjectInput> {
+class _DeskObjectInputState extends State<DeskObjectInput> {
   late Map<String, dynamic> _value;
 
   static Map<String, dynamic> _toMap(Object? value) {
@@ -96,7 +96,7 @@ class _CmsObjectInputState extends State<CmsObjectInput> {
   }
 
   @override
-  void didUpdateWidget(covariant CmsObjectInput oldWidget) {
+  void didUpdateWidget(covariant DeskObjectInput oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.data?.value != widget.data?.value) {
       _value = _toMap(widget.data?.value);
@@ -110,20 +110,20 @@ class _CmsObjectInputState extends State<CmsObjectInput> {
     widget.onChanged?.call(Map<String, dynamic>.from(_value));
   }
 
-  Widget _buildField(CmsField field) {
+  Widget _buildField(DeskField field) {
     final path = widget.data?.path ?? widget.field.name;
     final data = _value[field.name] != null
-        ? CmsData(value: _value[field.name], path: '$path.${field.name}')
+        ? DeskData(value: _value[field.name], path: '$path.${field.name}')
         : null;
 
-    final builder = CmsFieldInputRegistry.getBuilder(field);
+    final builder = DeskFieldInputRegistry.getBuilder(field);
     if (builder != null) {
       return builder(field, data, _onChildChanged);
     }
     return const SizedBox.shrink();
   }
 
-  Widget _buildLayout(CmsFieldLayout layout) {
+  Widget _buildLayout(DeskFieldLayout layout) {
     return switch (layout) {
       RowFields() => _buildRow(layout),
       ColumnFields() => _buildColumn(layout),
@@ -275,8 +275,8 @@ class _CollapsibleWrapperState extends State<_CollapsibleWrapper> {
 /// Renders a [GroupFields] with a titled, optionally collapsible section.
 class _GroupSection extends StatefulWidget {
   final GroupFields group;
-  final Widget Function(CmsFieldLayout) buildLayout;
-  final Widget Function(CmsField) buildField;
+  final Widget Function(DeskFieldLayout) buildLayout;
+  final Widget Function(DeskField) buildField;
 
   const _GroupSection({
     required this.group,

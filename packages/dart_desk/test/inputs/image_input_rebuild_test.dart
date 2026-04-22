@@ -9,7 +9,7 @@ import '../helpers/input_test_helpers.dart';
 
 class MockDataSource extends Mock implements DataSource {}
 
-/// Wrapper that counts how many times [CmsImageInput] rebuilds.
+/// Wrapper that counts how many times [DeskImageInput] rebuilds.
 class RebuildCounter extends StatefulWidget {
   final Widget child;
   final ValueNotifier<int> counter;
@@ -54,13 +54,13 @@ void main() {
     HttpOverrides.global = null;
   });
 
-  const field = CmsImageField(
+  const field = DeskImageField(
     name: 'hero',
     title: 'Hero Image',
-    option: CmsImageOption(hotspot: false),
+    option: DeskImageOption(hotspot: false),
   );
 
-  group('CmsImageInput rebuild efficiency', () {
+  group('DeskImageInput rebuild efficiency', () {
     testWidgets('empty state does not rebuild siblings', (tester) async {
       final siblingBuilds = ValueNotifier<int>(0);
 
@@ -68,7 +68,7 @@ void main() {
         buildInputApp(
           Column(
             children: [
-              CmsImageInput(field: field, dataSource: MockDataSource()),
+              DeskImageInput(field: field, dataSource: MockDataSource()),
               BuildTracker(
                 counter: siblingBuilds,
                 child: const Text('sibling'),
@@ -89,11 +89,11 @@ void main() {
       expect(
         siblingBuilds.value,
         initialBuilds,
-        reason: 'Sibling widget should not rebuild when CmsImageInput is idle',
+        reason: 'Sibling widget should not rebuild when DeskImageInput is idle',
       );
     });
 
-    testWidgets('entering URL only rebuilds CmsImageInput, not siblings', (
+    testWidgets('entering URL only rebuilds DeskImageInput, not siblings', (
       tester,
     ) async {
       final siblingBuilds = ValueNotifier<int>(0);
@@ -102,7 +102,7 @@ void main() {
         buildInputApp(
           Column(
             children: [
-              CmsImageInput(field: field, dataSource: MockDataSource()),
+              DeskImageInput(field: field, dataSource: MockDataSource()),
               BuildTracker(
                 counter: siblingBuilds,
                 child: const Text('sibling'),
@@ -131,7 +131,7 @@ void main() {
         siblingBuilds.value,
         initialBuilds,
         reason:
-            'Sibling widget should not rebuild when URL is entered in CmsImageInput',
+            'Sibling widget should not rebuild when URL is entered in DeskImageInput',
       );
     });
 
@@ -161,16 +161,16 @@ void main() {
 
       await tester.pumpWidget(
         buildInputApp(
-          // We can't directly count CmsImageInput's build() calls,
+          // We can't directly count DeskImageInput's build() calls,
           // but we can verify that it stabilises quickly by checking
           // that after the asset loads, no further rebuilds occur on
           // a sibling.
           Builder(
             builder: (context) {
               imageInputBuilds++;
-              return CmsImageInput(
+              return DeskImageInput(
                 field: field,
-                data: const CmsData(
+                data: const DeskData(
                   value: {'_type': 'imageReference', 'assetId': 'asset-hero'},
                   path: 'hero',
                 ),
@@ -197,7 +197,7 @@ void main() {
         imageInputBuilds,
         buildsAfterLoad,
         reason:
-            'CmsImageInput parent Builder should not rebuild after asset has loaded and state stabilised',
+            'DeskImageInput parent Builder should not rebuild after asset has loaded and state stabilised',
       );
     });
 
@@ -209,9 +209,9 @@ void main() {
         buildInputApp(
           Column(
             children: [
-              CmsImageInput(
+              DeskImageInput(
                 field: field,
-                data: const CmsData(
+                data: const DeskData(
                   value: {
                     '_type': 'imageReference',
                     'externalUrl': 'https://example.com/photo.jpg',

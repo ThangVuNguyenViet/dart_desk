@@ -7,24 +7,24 @@ import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../../data/models/cms_document.dart';
+import '../../data/models/desk_document.dart';
 import '../../data/models/document_list.dart';
 import '../../data/models/document_version.dart';
-import '../components/common/cms_collapse_bar.dart';
-import '../components/common/cms_status_pill.dart';
-import '../core/view_models/cms_document_view_model.dart';
-import '../core/view_models/cms_view_model.dart';
+import '../components/common/desk_collapse_bar.dart';
+import '../components/common/desk_status_pill.dart';
+import '../core/view_models/desk_document_view_model.dart';
+import '../core/view_models/desk_view_model.dart';
 import '../theme/spacing.dart';
 
 /// Document list view for browsing multiple documents of a type
-class CmsDocumentListView extends StatefulWidget {
+class DeskDocumentListView extends StatefulWidget {
   final DocumentType selectedDocumentType;
   final IconData? icon;
   final String? filter;
   final void Function(String documentId)? onOpenDocument;
   final void Function(String documentId)? onDeleteDocument;
 
-  const CmsDocumentListView({
+  const DeskDocumentListView({
     super.key,
     required this.selectedDocumentType,
     this.icon,
@@ -34,10 +34,10 @@ class CmsDocumentListView extends StatefulWidget {
   });
 
   @override
-  State<CmsDocumentListView> createState() => _CmsDocumentListViewState();
+  State<DeskDocumentListView> createState() => _DeskDocumentListViewState();
 }
 
-class _CmsDocumentListViewState extends State<CmsDocumentListView> {
+class _DeskDocumentListViewState extends State<DeskDocumentListView> {
   String _searchQuery = '';
   bool _isCreatingNew = false;
   bool _isLoadingSlug = false;
@@ -61,7 +61,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final viewModel = GetIt.I<CmsViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
 
     final resourceState = viewModel
         .documentsContainer(widget.selectedDocumentType.name)
@@ -124,7 +124,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
     ShadThemeData theme,
     DocumentList result,
   ) {
-    final viewModel = GetIt.I<CmsViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
     final documents = result.documents;
     final filteredDocuments = documents.where((doc) {
       if (_searchQuery.isEmpty) return true;
@@ -232,9 +232,9 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                   },
                 ),
         ),
-        CmsCollapseBar(
+        DeskCollapseBar(
           onToggle: () {
-            final viewModel = GetIt.I<CmsViewModel>();
+            final viewModel = GetIt.I<DeskViewModel>();
             viewModel.documentListVisible.value = false;
           },
         ),
@@ -243,8 +243,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
   }
 
   Widget _buildInlineCreateForm(BuildContext context, ShadThemeData theme) {
-    final viewModel = GetIt.I<CmsViewModel>();
-    final documentViewModel = GetIt.I<CmsDocumentViewModel>();
+    final viewModel = GetIt.I<DeskViewModel>();
+    final documentViewModel = GetIt.I<DeskDocumentViewModel>();
 
     return Container(
       decoration: BoxDecoration(
@@ -396,10 +396,10 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
   Widget _buildDocumentTile(
     BuildContext context,
     ShadThemeData theme,
-    CmsDocument doc,
-    CmsViewModel viewModel,
+    DeskDocument doc,
+    DeskViewModel viewModel,
   ) {
-    final documentViewModel = GetIt.I<CmsDocumentViewModel>();
+    final documentViewModel = GetIt.I<DeskDocumentViewModel>();
     final isSelected = documentViewModel.documentId.watch(context) == doc.id;
 
     return GestureDetector(
@@ -412,8 +412,8 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
         cursor: SystemMouseCursors.click,
         child: Container(
           padding: const EdgeInsets.symmetric(
-            horizontal: CmsSpacing.md,
-            vertical: CmsSpacing.sm + 2,
+            horizontal: DeskSpacing.md,
+            vertical: DeskSpacing.sm + 2,
           ),
           decoration: BoxDecoration(
             color: isSelected
@@ -424,7 +424,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                   ? theme.colorScheme.primary.withValues(alpha: 0.2)
                   : theme.colorScheme.border,
             ),
-            borderRadius: BorderRadius.circular(CmsBorderRadius.md),
+            borderRadius: BorderRadius.circular(DeskBorderRadius.md),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -517,7 +517,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                 ],
               ),
               if (doc.slug != null) ...[
-                const SizedBox(height: CmsSpacing.xs),
+                const SizedBox(height: DeskSpacing.xs),
                 Text(
                   '/${doc.slug}',
                   style: TextStyle(
@@ -527,7 +527,7 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
                   ),
                 ),
               ],
-              const SizedBox(height: CmsSpacing.xs),
+              const SizedBox(height: DeskSpacing.xs),
               Row(
                 children: [
                   if (doc.isDefault) ...[
@@ -568,10 +568,10 @@ class _CmsDocumentListViewState extends State<CmsDocumentListView> {
 }
 
 /// Watches the versions container for a document and displays its latest
-/// version's status as a [CmsStatusPill].
+/// version's status as a [DeskStatusPill].
 class _DocumentStatusPill extends StatelessWidget {
   final String documentId;
-  final CmsViewModel viewModel;
+  final DeskViewModel viewModel;
 
   const _DocumentStatusPill({
     required this.documentId,
@@ -593,6 +593,6 @@ class _DocumentStatusPill extends StatelessWidget {
       },
     );
 
-    return CmsStatusPill(status: status);
+    return DeskStatusPill(status: status);
   }
 }

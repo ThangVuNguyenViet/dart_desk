@@ -1,25 +1,25 @@
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
-part 'curated_dish.cms.g.dart';
+part 'curated_dish.desk.dart';
 part 'curated_dish.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
-@CmsConfig(title: 'Curated dish', description: 'Entry in the Chef\'s Choice list')
+@DeskModel(title: 'Curated dish', description: 'Entry in the Chef\'s Choice list')
 class CuratedDish with CuratedDishMappable implements Serializable<CuratedDish> {
-  @CmsStringFieldConfig(description: 'Order number (e.g. "01")', option: CmsStringOption())
+  @DeskString(description: 'Order number (e.g. "01")', option: DeskStringOption())
   final String numberLabel;
 
-  @CmsStringFieldConfig(description: 'Dish name', option: CmsStringOption())
+  @DeskString(description: 'Dish name', option: DeskStringOption())
   final String name;
 
-  @CmsNumberFieldConfig(description: 'Price', option: CmsNumberOption(min: 0))
+  @DeskNumber(description: 'Price', option: DeskNumberOption(min: 0))
   final num price;
 
-  @CmsImageFieldConfig(description: 'Photo', option: CmsImageOption(hotspot: true))
+  @DeskImage(description: 'Photo', option: DeskImageOption(hotspot: true))
   final ImageReference? image;
 
-  @CmsBlockFieldConfig(option: CmsBlockOption())
+  @DeskBlock(option: DeskBlockOption())
   final Object? description;
 
   const CuratedDish({

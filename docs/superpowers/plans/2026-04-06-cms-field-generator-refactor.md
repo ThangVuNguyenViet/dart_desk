@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Refactor the monolithic cms_field_generator.dart (1221 lines) into modular architecture with one class per file, and add auto-detection capability that infers CmsField from Dart field types using supportedFieldTypes.
+**Goal:** Refactor the monolithic desk_field_generator.dart (1221 lines) into modular architecture with one class per file, and add auto-detection capability that infers DeskField from Dart field types using supportedFieldTypes.
 
-**Architecture:** Split the giant generator into: (1) Abstract base FieldCodeGenerator class, (2) Individual generator classes (one per field type), (3) FieldCodeRegistry to map config names to generators, (4) TypeInferenceEngine for auto-detection. The main CmsFieldGenerator delegates to these components.
+**Architecture:** Split the giant generator into: (1) Abstract base FieldCodeGenerator class, (2) Individual generator classes (one per field type), (3) FieldCodeRegistry to map config names to generators, (4) TypeInferenceEngine for auto-detection. The main DeskFieldGenerator delegates to these components.
 
 **Tech Stack:** Dart, source_gen, analyzer package
 
@@ -94,7 +94,7 @@ void main() {
   group('StringFieldGenerator', () {
     test('has correct fieldConfigName', () {
       final generator = StringFieldGenerator();
-      expect(generator.fieldConfigName, 'CmsStringFieldConfig');
+      expect(generator.fieldConfigName, 'DeskString');
     });
     
     test('has supportedTypes containing String', () {
@@ -119,7 +119,7 @@ import 'field_code_generator.dart';
 
 class StringFieldGenerator implements FieldCodeGenerator {
   @override
-  String get fieldConfigName => 'CmsStringFieldConfig';
+  String get fieldConfigName => 'DeskString';
   
   @override
   List<Type> get supportedTypes => [String];
@@ -140,17 +140,17 @@ class StringFieldGenerator implements FieldCodeGenerator {
     
     String? resolvedOption = optionSource;
     if (optional && resolvedOption == null) {
-      resolvedOption = 'CmsStringOption(optional: true)';
+      resolvedOption = 'DeskStringOption(optional: true)';
     } else if (optional && resolvedOption != null) {
       if (!resolvedOption.contains('optional')) {
         resolvedOption = resolvedOption.replaceFirst(
-          'CmsStringOption(',
-          'CmsStringOption(optional: true, ',
+          'DeskStringOption(',
+          'DeskStringOption(optional: true, ',
         );
       }
     }
     
-    return '''CmsStringField(
+    return '''DeskStringField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
@@ -204,7 +204,7 @@ void main() {
   group('NumberFieldGenerator', () {
     test('has correct fieldConfigName', () {
       final generator = NumberFieldGenerator();
-      expect(generator.fieldConfigName, 'CmsNumberFieldConfig');
+      expect(generator.fieldConfigName, 'DeskNumber');
     });
     
     test('has supportedTypes containing num, int, double', () {
@@ -223,9 +223,9 @@ Expected: FAIL - "NumberFieldGenerator not defined"
 - [ ] **Step 3: Write minimal implementation**
 
 ```dart
-// Based on _fieldConfigs['CmsNumberFieldConfig'] closure from cms_field_generator.dart
+// Based on _fieldConfigs['DeskNumber'] closure from desk_field_generator.dart
 // Similar pattern to StringFieldGenerator
-// Extract: num, int, double → CmsNumberField
+// Extract: num, int, double → DeskNumberField
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -275,7 +275,7 @@ void main() {
       final generator = StringFieldGenerator();
       registry.register(generator);
       
-      expect(registry.getByConfigName('CmsStringFieldConfig'), generator);
+      expect(registry.getByConfigName('DeskString'), generator);
     });
     
     test('getByType returns generators for type', () {
@@ -371,7 +371,7 @@ class TypeInferenceEngine {
   }
   
   /// Infers the appropriate generator for a DartType.
-  /// For List<T>, defaults to first registered (CmsArrayField).
+  /// For List<T>, defaults to first registered (DeskArrayField).
   FieldCodeGenerator? infer(DartType fieldType) {
     final typeName = fieldType.getDisplayString();
     
@@ -413,13 +413,13 @@ class TypeInferenceEngine {
 
 ---
 
-## Phase 5: Integrate into CmsFieldGenerator
+## Phase 5: Integrate into DeskFieldGenerator
 
-### Task 9: Refactor CmsFieldGenerator to use registry
+### Task 9: Refactor DeskFieldGenerator to use registry
 
 **Files:**
-- Modify: `packages/dart_desk_generator/lib/src/generators/cms_field_generator.dart`
-- Test: `packages/dart_desk_generator/test/cms_field_generator_test.dart` (existing, ensure passes)
+- Modify: `packages/dart_desk_generator/lib/src/generators/desk_field_generator.dart`
+- Test: `packages/dart_desk_generator/test/desk_field_generator_test.dart` (existing, ensure passes)
 
 - [ ] **Step 1: Add imports for new components**
 
@@ -440,7 +440,7 @@ import 'field_code_generators/string_field_generator.dart';
 
 - [ ] **Step 5: Run existing tests to verify no regression**
 
-Run: `dart test packages/dart_desk_generator/test/cms_field_generator_test.dart`
+Run: `dart test packages/dart_desk_generator/test/desk_field_generator_test.dart`
 Expected: PASS (all existing tests)
 
 - [ ] **Step 6: Commit**
@@ -452,15 +452,15 @@ Expected: PASS (all existing tests)
 ### Task 10: Add integration tests for auto-detection
 
 **Files:**
-- Add tests to: `packages/dart_desk_generator/test/cms_field_generator_test.dart`
+- Add tests to: `packages/dart_desk_generator/test/desk_field_generator_test.dart`
 
 - [ ] **Step 1: Write test for auto-detected String field**
 
 ```dart
 test('auto-detects String field without annotation', () async {
-  await _testCmsBuilder(
+  await _testDeskBuilder(
     _fixture('''
-@CmsConfig(title: 'Auto', description: 'Auto detect test')
+@DeskModel(title: 'Auto', description: 'Auto detect test')
 class AutoDetectConfig {
   final String name;
   
@@ -469,7 +469,7 @@ class AutoDetectConfig {
   static AutoDetectConfig? defaultValue;
 }
 '''),
-    contains('CmsStringField('),
+    contains('DeskStringField('),
   );
 });
 ```
@@ -498,7 +498,7 @@ Expected: All PASS
 | 5 | Task 9 | Main generator integration |
 | 6 | Task 10 | End-to-end tests |
 
-**Plan complete and saved to `docs/superpowers/plans/2026-04-06-cms-field-generator-refactor.md`. Two execution options:**
+**Plan complete and saved to `docs/superpowers/plans/2026-04-06-desk-field-generator-refactor.md`. Two execution options:**
 
 **1. Subagent-Driven (recommended)** - I dispatch a fresh subagent per task, review between tasks, fast iteration
 
