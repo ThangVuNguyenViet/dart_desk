@@ -149,13 +149,13 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
             const SizedBox(height: 4),
             Row(
               children: [
-                _paletteCircle(theme,_asset.palette!.dominant),
+                _paletteCircle(_asset.palette!.dominant),
                 if (_asset.palette!.vibrant != null)
-                  _paletteCircle(theme,_asset.palette!.vibrant!),
+                  _paletteCircle(_asset.palette!.vibrant!),
                 if (_asset.palette!.muted != null)
-                  _paletteCircle(theme,_asset.palette!.muted!),
+                  _paletteCircle(_asset.palette!.muted!),
                 if (_asset.palette!.darkMuted != null)
-                  _paletteCircle(theme,_asset.palette!.darkMuted!),
+                  _paletteCircle(_asset.palette!.darkMuted!),
               ],
             ),
           ],
@@ -274,7 +274,7 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
     };
   }
 
-  Widget _paletteCircle(ShadThemeData theme, PaletteColor color) {
+  Widget _paletteCircle(PaletteColor color) {
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: Tooltip(
@@ -285,10 +285,10 @@ class _AssetDetailPanelState extends State<AssetDetailPanel> {
           decoration: BoxDecoration(
             color: Color.fromARGB(255, color.r, color.g, color.b),
             shape: BoxShape.circle,
-            border: Border.all(color: theme.colorScheme.foreground, width: 1.5),
+            border: Border.all(color: Colors.white, width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: theme.colorScheme.foreground.withValues(alpha: 0.15),
+                color: Colors.black.withValues(alpha: 0.15),
                 blurRadius: 2,
               ),
             ],

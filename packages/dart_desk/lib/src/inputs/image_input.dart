@@ -412,14 +412,9 @@ class _DeskImageInputState extends State<DeskImageInput>
                 Text(
                   'Uploading...',
                   style: theme.textTheme.small.copyWith(
-                    color: theme.colorScheme.foreground,
+                    color: Colors.white,
                     shadows: [
-                      Shadow(
-                        blurRadius: 4,
-                        color: theme.colorScheme.background.withValues(
-                          alpha: 0.5,
-                        ),
-                      ),
+                      const Shadow(blurRadius: 4, color: Colors.black54),
                     ],
                   ),
                 ),

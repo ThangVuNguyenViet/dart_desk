@@ -3,7 +3,6 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../../../data/models/document_version.dart';
 import '../../theme/spacing.dart';
-import 'status_palette.dart';
 
 /// A small colored pill showing document/version status.
 ///
@@ -28,44 +27,43 @@ class DeskStatusPill extends StatelessWidget {
     final theme = ShadTheme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    StatusColors colors;
-    String label;
+    final (Color bg, Color fg, String label) = hasUnsavedChanges
+        ? (
+            isDark
+                ? const Color(0xFF3b82f6).withValues(alpha: 0.1)
+                : const Color(0xFF3b82f6).withValues(alpha: 0.08),
+            isDark ? const Color(0xFF3b82f6) : const Color(0xFF2563eb),
+            'changed',
+          )
+        : switch (status) {
+            DocumentVersionStatus.published => (
+              isDark
+                  ? const Color(0xFF22c55e).withValues(alpha: 0.1)
+                  : const Color(0xFF22c55e).withValues(alpha: 0.08),
+              isDark ? const Color(0xFF22c55e) : const Color(0xFF16a34a),
+              'published',
+            ),
+            DocumentVersionStatus.draft => (
+              isDark
+                  ? const Color(0xFFeab308).withValues(alpha: 0.1)
+                  : const Color(0xFFeab308).withValues(alpha: 0.08),
+              isDark ? const Color(0xFFeab308) : const Color(0xFFb45309),
+              'draft',
+            ),
+            DocumentVersionStatus.archived => (
+              theme.colorScheme.muted.withValues(alpha: 0.3),
+              theme.colorScheme.mutedForeground,
+              'archived',
+            ),
+            DocumentVersionStatus.scheduled => (
+              isDark
+                  ? const Color(0xFF8b5cf6).withValues(alpha: 0.1)
+                  : const Color(0xFF8b5cf6).withValues(alpha: 0.08),
+              isDark ? const Color(0xFF8b5cf6) : const Color(0xFF7c3aed),
+              'scheduled',
+            ),
+          };
 
-    if (hasUnsavedChanges) {
-      colors = StatusPalette.info;
-      label = 'changed';
-    } else {
-      switch (status) {
-        case DocumentVersionStatus.published:
-          colors = StatusPalette.success;
-          label = 'published';
-        case DocumentVersionStatus.draft:
-          colors = StatusPalette.warning;
-          label = 'draft';
-        case DocumentVersionStatus.archived:
-          return _buildPill(
-            bg: theme.colorScheme.muted.withValues(alpha: 0.3),
-            fg: theme.colorScheme.mutedForeground,
-            label: 'archived',
-          );
-        case DocumentVersionStatus.scheduled:
-          colors = StatusPalette.special;
-          label = 'scheduled';
-      }
-    }
-
-    return _buildPill(
-      bg: isDark ? colors.darkBg : colors.lightBg,
-      fg: isDark ? colors.darkFg : colors.lightFg,
-      label: label,
-    );
-  }
-
-  Widget _buildPill({
-    required Color bg,
-    required Color fg,
-    required String label,
-  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
