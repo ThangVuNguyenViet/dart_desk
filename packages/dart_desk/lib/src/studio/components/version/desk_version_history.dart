@@ -10,7 +10,6 @@ import 'package:get_it/get_it.dart';
 import '../../core/view_models/desk_document_view_model.dart';
 import '../../core/view_models/desk_view_model.dart';
 import '../../router/studio_router.dart';
-import '../common/status_palette.dart';
 
 /// A version history dropdown component that displays and manages document versions.
 ///
@@ -224,7 +223,7 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
         border: Border.all(color: theme.colorScheme.border, width: 1),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.foreground.withValues(alpha: 0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -642,20 +641,20 @@ class _StatusBadge extends StatelessWidget {
     final String label;
 
     if (version.isDraft) {
-      backgroundColor = StatusPalette.warning.badgeLightBg;
-      foregroundColor = StatusPalette.warning.badgeLightFg;
+      backgroundColor = const Color(0xFFFEF3C7); // Yellow-100
+      foregroundColor = const Color(0xFF92400E); // Yellow-900
       label = compact ? 'D' : 'DRAFT';
     } else if (version.isPublished) {
-      backgroundColor = StatusPalette.success.badgeLightBg;
-      foregroundColor = StatusPalette.success.badgeLightFg;
+      backgroundColor = const Color(0xFFD1FAE5); // Green-100
+      foregroundColor = const Color(0xFF065F46); // Green-900
       label = compact ? 'P' : 'PUBLISHED';
     } else if (version.isArchived) {
       backgroundColor = theme.colorScheme.muted.withValues(alpha: 0.5);
       foregroundColor = theme.colorScheme.mutedForeground;
       label = compact ? 'A' : 'ARCHIVED';
     } else if (version.isScheduled) {
-      backgroundColor = StatusPalette.info.badgeLightBg;
-      foregroundColor = StatusPalette.info.badgeLightFg;
+      backgroundColor = const Color(0xFFDBEAFE); // Blue-100
+      foregroundColor = const Color(0xFF1E40AF); // Blue-900
       label = compact ? 'S' : 'SCHEDULED';
     } else {
       backgroundColor = theme.colorScheme.muted.withValues(alpha: 0.5);

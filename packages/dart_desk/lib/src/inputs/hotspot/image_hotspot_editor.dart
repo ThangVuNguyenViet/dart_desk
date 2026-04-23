@@ -157,10 +157,6 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                                       painter: CropOverlayPainter(
                                         crop: draft.crop,
                                         imageSize: constraints.biggest,
-                                        colors: CropOverlayColors(
-                                          line: theme.colorScheme.foreground,
-                                          scrim: theme.colorScheme.background,
-                                        ),
                                       ),
                                     ),
                                   ),
@@ -169,11 +165,6 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                                     child: CustomPaint(
                                       painter: HotspotPainter(
                                         hotspot: draft.hotspot,
-                                        colors: HotspotColors(
-                                          fill: theme.colorScheme.foreground,
-                                          shadow:
-                                              theme.colorScheme.background,
-                                        ),
                                       ),
                                     ),
                                   ),
