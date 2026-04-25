@@ -17,9 +17,23 @@ import 'package:signals/signals.dart';
 ///     out so the auth gate can't let the user through.
 class DartDeskAuthViewModel {
   final Client client;
+
+  /// A separate client used exclusively for social sign-in widgets (e.g.
+  /// [GoogleSignInWidget]). Serverpod's sign-in widgets access `client.auth`
+  /// which requires `authKeyProvider is FlutterAuthSessionManager`. The main
+  /// [client] sets a [DartDeskAuthKeyProvider] as `authKeyProvider` (to inject
+  /// the API key), which breaks that check. This client satisfies the type
+  /// check while sharing the same [sessionManager] so that both clients always
+  /// see the same auth state.
+  final Client googleSignInClient;
+
   final FlutterAuthSessionManager sessionManager;
 
-  DartDeskAuthViewModel({required this.client, required this.sessionManager});
+  DartDeskAuthViewModel({
+    required this.client,
+    required this.googleSignInClient,
+    required this.sessionManager,
+  });
 
   /// Convenience factory — builds a [Client] + [FlutterAuthSessionManager]
   /// wired to the given [serverUrl]/[apiKey], then a VM around them. The
@@ -30,31 +44,47 @@ class DartDeskAuthViewModel {
     required String apiKey,
   }) {
     final sessionManager = FlutterAuthSessionManager();
-    final client =
-        Client(
-            serverUrl,
-            onFailedCall: (context, error, stackTrace) {
-              developer.log(
-                'API call failed: ${context.endpointName}.${context.methodName}',
-                name: 'ServerpodClient',
-                error: error,
-                stackTrace: stackTrace,
-              );
-            },
-            onSucceededCall: (context) {
-              developer.log(
-                'API call succeeded: ${context.endpointName}.${context.methodName}',
-                name: 'ServerpodClient',
-              );
-            },
-          )
-          ..connectivityMonitor = FlutterConnectivityMonitor()
-          ..authSessionManager = sessionManager
-          ..authKeyProvider = DartDeskAuthKeyProvider(
-            apiKey: apiKey,
-            inner: sessionManager,
-          );
-    return DartDeskAuthViewModel(client: client, sessionManager: sessionManager);
+
+    // Main API client — injects the API key on every request via
+    // DartDeskAuthKeyProvider, which wraps the session manager so user JWT is
+    // included after sign-in.
+    final client = Client(
+          serverUrl,
+          onFailedCall: (context, error, stackTrace) {
+            developer.log(
+              'API call failed: ${context.endpointName}.${context.methodName}',
+              name: 'ServerpodClient',
+              error: error,
+              stackTrace: stackTrace,
+            );
+          },
+          onSucceededCall: (context) {
+            developer.log(
+              'API call succeeded: ${context.endpointName}.${context.methodName}',
+              name: 'ServerpodClient',
+            );
+          },
+        )
+        ..connectivityMonitor = FlutterConnectivityMonitor()
+        ..authSessionManager = sessionManager
+        ..authKeyProvider = DartDeskAuthKeyProvider(
+          apiKey: apiKey,
+          inner: sessionManager,
+        );
+
+    // Auth-only client — used by GoogleSignInWidget. Must have
+    // authKeyProvider = sessionManager (a FlutterAuthSessionManager) to
+    // satisfy the type check in client.auth getter. Shares the same
+    // sessionManager so sign-in state is visible to the main client too.
+    final googleSignInClient = Client(serverUrl)
+      ..connectivityMonitor = FlutterConnectivityMonitor()
+      ..authSessionManager = sessionManager;
+
+    return DartDeskAuthViewModel(
+      client: client,
+      googleSignInClient: googleSignInClient,
+      sessionManager: sessionManager,
+    );
   }
 
   final AsyncSignal<User?> getCurrentUser = asyncSignal<User?>(

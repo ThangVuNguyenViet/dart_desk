@@ -299,13 +299,16 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
     const SizedBox(height: 16),
     ShadButton(
       onPressed: _isForgotLoading ? null : _handleStartReset,
-      child: _isForgotLoading
-          ? const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2),
+      leading: _isForgotLoading
+          ? SizedBox.square(
+              dimension: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: theme.colorScheme.primaryForeground,
+              ),
             )
-          : const Text('Send reset code'),
+          : null,
+      child: const Text('Send reset code'),
     ),
     const SizedBox(height: 12),
     Center(
@@ -331,13 +334,16 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
     const SizedBox(height: 16),
     ShadButton(
       onPressed: _isForgotLoading ? null : _handleVerifyResetCode,
-      child: _isForgotLoading
-          ? const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2),
+      leading: _isForgotLoading
+          ? SizedBox.square(
+              dimension: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: theme.colorScheme.primaryForeground,
+              ),
             )
-          : const Text('Verify code'),
+          : null,
+      child: const Text('Verify code'),
     ),
     const SizedBox(height: 8),
     Align(
@@ -407,13 +413,16 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
     const SizedBox(height: 16),
     ShadButton(
       onPressed: _isForgotLoading ? null : _handleFinishReset,
-      child: _isForgotLoading
-          ? const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2),
+      leading: _isForgotLoading
+          ? SizedBox.square(
+              dimension: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: theme.colorScheme.primaryForeground,
+              ),
             )
-          : const Text('Reset password'),
+          : null,
+      child: const Text('Reset password'),
     ),
     const SizedBox(height: 12),
     Align(
@@ -546,7 +555,7 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
                           ],
                           // Google Sign-In
                           GoogleSignInWidget(
-                            client: _authVM.client,
+                            client: _authVM.googleSignInClient,
                             scopes: const [],
                             onAuthenticated: () {
                               // _onAuthChanged will pick up the new session.
@@ -618,15 +627,16 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
                             onPressed: _isEmailSigningIn
                                 ? null
                                 : _handleEmailSubmit,
-                            child: _isEmailSigningIn
-                                ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
+                            leading: _isEmailSigningIn
+                                ? SizedBox.square(
+                                    dimension: 16,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
+                                      color: theme.colorScheme.primaryForeground,
                                     ),
                                   )
-                                : const Text('Sign in with email'),
+                                : null,
+                            child: const Text('Sign in with email'),
                           ),
                         ],
                       ),

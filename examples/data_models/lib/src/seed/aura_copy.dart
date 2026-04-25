@@ -4,7 +4,7 @@ library;
 class AuraCopy {
   // Home
   static const homeEyebrow = 'Spring Menu · N° 4';
-  static const homeHeadline = 'A table\nfor the\nlong evening.';
+  static const homeHeadline = 'A table for the long evening.';
   static const homeLocation = 'Tribeca';
   static const homeGreeting = 'Evening, Jules';
   static const homeFeaturedTitle = 'Featured by the kitchen';

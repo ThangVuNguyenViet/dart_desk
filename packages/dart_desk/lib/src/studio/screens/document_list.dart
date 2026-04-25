@@ -589,7 +589,7 @@ class _DocumentStatusPill extends StatelessWidget {
       error: (_, _) => DocumentVersionStatus.draft,
       data: (versionList) {
         if (versionList.versions.isEmpty) return DocumentVersionStatus.draft;
-        return versionList.versions.first.status;
+        return versionList.versions.last.status;
       },
     );
 

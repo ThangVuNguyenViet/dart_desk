@@ -36,13 +36,18 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
       final dataToSave = editedData.value;
 
       if (docId != null) {
-        // Update existing document data
-        await viewModel.updateDocumentData.run((
-          documentId: docId,
-          data: dataToSave,
-          publish: publish,
-        ));
-        editedData.value = {};
+        if (publish) {
+          await viewModel.publishDocumentData.run((
+            documentId: docId,
+            data: dataToSave,
+          ));
+        } else {
+          await viewModel.saveDocumentData.run((
+            documentId: docId,
+            data: dataToSave,
+          ));
+        }
+        documentViewModel.isDirty.value = false;
       } else {
         final title = documentViewModel.title.value;
         final slug = documentViewModel.slug.value;
@@ -58,7 +63,6 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
           return;
         }
 
-        // Create new document with initial version
         await viewModel.createDocument.run((
           title: title,
           data: dataToSave,
@@ -98,6 +102,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
       final viewModel = GetIt.I<DeskViewModel>();
       final versionId = viewModel.selectedVersionId.value;
 
+      final documentViewModel = GetIt.I<DeskDocumentViewModel>();
       if (versionId != null) {
         // Reset to original version data
         final versionState = viewModel.documentDataContainer(versionId).value;
@@ -112,6 +117,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
         final docType = viewModel.currentDocumentType.value;
         editedData.value = docType?.defaultValue?.toMap() ?? {};
       }
+      documentViewModel.isDirty.value = false;
 
       if (mounted) {
         ShadToaster.of(
@@ -131,9 +137,13 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
   Widget build(BuildContext context) {
     final viewModel = GetIt.I<DeskViewModel>();
 
+    final saveStatus = viewModel.saveDocumentData.watch(context);
+    final publishStatus = viewModel.publishDocumentData.watch(context);
     final createStatus = viewModel.createDocument.watch(context);
-    final updateStatus = viewModel.updateDocumentData.watch(context);
-    final isSaving = createStatus.isLoading || updateStatus.isLoading;
+
+    final isSaving = saveStatus.isLoading || createStatus.isLoading;
+    final isPublishing = publishStatus.isLoading || createStatus.isLoading;
+    final isAnyBusy = isSaving || isPublishing;
 
     final versionId = viewModel.selectedVersionId.watch(context);
     final versionState = versionId != null
@@ -144,7 +154,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     // skip the loading state and render the editor immediately.
     final edited = editedData.value;
     if (versionState == null) {
-      return _buildEditor(edited, isSaving);
+      return _buildEditor(edited, isSaving: isSaving, isPublishing: isPublishing, isAnyBusy: isAnyBusy);
     }
 
     return versionState.map<Widget>(
@@ -156,14 +166,20 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
         final displayData = editedData.value.isEmpty
             ? versionDataMap
             : editedData.value;
-        return _buildEditor(displayData, isSaving);
+        return _buildEditor(displayData, isSaving: isSaving, isPublishing: isPublishing, isAnyBusy: isAnyBusy);
       },
     );
   }
 
-  Widget _buildEditor(Map<String, dynamic> documentData, bool isSaving) {
-    final edited = editedData.watch(context);
-    final hasUnsavedChanges = edited.isNotEmpty;
+  Widget _buildEditor(
+    Map<String, dynamic> documentData, {
+    required bool isSaving,
+    required bool isPublishing,
+    required bool isAnyBusy,
+  }) {
+    editedData.watch(context);
+    final hasUnsavedChanges =
+        GetIt.I<DeskDocumentViewModel>().isDirty.watch(context);
 
     final theme = ShadTheme.of(context);
 
@@ -174,7 +190,10 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
             fields: widget.fields,
             data: Map<String, dynamic>.from(documentData),
             title: widget.title,
-            onFieldChanged: (fieldName, value) => editedData[fieldName] = value,
+            onFieldChanged: (fieldName, value) {
+              editedData[fieldName] = value;
+              GetIt.I<DeskDocumentViewModel>().isDirty.value = true;
+            },
           ),
         ),
         if (hasUnsavedChanges)
@@ -190,21 +209,21 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
                   key: const ValueKey('discard_document_button'),
                   text: 'Discard',
                   variant: ShadButtonVariant.outline,
-                  onPressed: isSaving ? null : _discardDocument,
+                  onPressed: isAnyBusy ? null : _discardDocument,
                 ),
                 const SizedBox(width: 8),
                 DeskButton(
                   key: const ValueKey('save_document_button'),
                   text: 'Save',
                   loading: isSaving,
-                  onPressed: isSaving ? null : _saveDocument,
+                  onPressed: isAnyBusy ? null : _saveDocument,
                 ),
                 const SizedBox(width: 8),
                 DeskButton(
                   key: const ValueKey('publish_document_button'),
                   text: 'Publish',
-                  loading: isSaving,
-                  onPressed: isSaving ? null : _publishDocument,
+                  loading: isPublishing,
+                  onPressed: isAnyBusy ? null : _publishDocument,
                 ),
               ],
             ),

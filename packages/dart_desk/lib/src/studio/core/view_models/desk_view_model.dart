@@ -216,39 +216,52 @@ class DeskViewModel {
         return (deleted: true, newDefault: null);
       }, debugLabel: 'deleteDocument');
 
-  late final updateDocumentData =
+  late final saveDocumentData =
       mutationSignal<
         DeskDocument?,
-        ({String documentId, Map<String, dynamic> data, bool publish})
+        ({String documentId, Map<String, dynamic> data})
       >((args) async {
         final result = await dataSource.updateDocumentData(
           args.documentId,
           args.data,
         );
 
-        if (args.publish) {
-          final newVersion = await dataSource.createDocumentVersion(
-            args.documentId,
-            changeLog: 'Saved and published',
-          );
-          await dataSource.publishDocumentVersion(newVersion.id!);
-          selectedVersionId.value = newVersion.id;
-        }
+        documentsContainer(
+          currentDocumentType.value?.name ?? '',
+        ).awaitableReload();
+
+        return result;
+      }, debugLabel: 'saveDocumentData');
+
+  late final publishDocumentData =
+      mutationSignal<
+        DeskDocument?,
+        ({String documentId, Map<String, dynamic> data})
+      >((args) async {
+        final result = await dataSource.updateDocumentData(
+          args.documentId,
+          args.data,
+        );
+
+        final newVersion = await dataSource.createDocumentVersion(
+          args.documentId,
+          changeLog: 'Saved and published',
+        );
+        await dataSource.publishDocumentVersion(newVersion.id!);
+        selectedVersionId.value = newVersion.id;
 
         documentsContainer(
           currentDocumentType.value?.name ?? '',
         ).awaitableReload();
 
-        if (args.publish) {
-          versionsContainer(args.documentId).awaitableReload();
-          final versionId = selectedVersionId.value;
-          if (versionId != null) {
-            documentDataContainer(versionId).awaitableReload();
-          }
+        versionsContainer(args.documentId).awaitableReload();
+        final versionId = selectedVersionId.value;
+        if (versionId != null) {
+          documentDataContainer(versionId).awaitableReload();
         }
 
         return result;
-      }, debugLabel: 'updateDocumentData');
+      }, debugLabel: 'publishDocumentData');
 
   // ============================================================
   // Version Status Operations

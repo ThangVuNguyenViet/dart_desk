@@ -77,6 +77,7 @@ class DocumentTypeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ShadTheme.of(context);
     final viewModel = GetIt.I<DeskViewModel>();
     final docType = viewModel.currentDocumentType.watch(context);
     final breakpoint = ResponsiveBreakpoints.of(context);
@@ -109,7 +110,14 @@ class DocumentTypeScreen extends StatelessWidget {
       );
     }
 
-    // Desktop: preview + editor side by side
-    return DocumentScreen(documentTypeSlug: documentTypeSlug);
+    // Desktop: no document selected — empty state
+    return Container(
+      color: theme.colorScheme.background,
+      alignment: Alignment.center,
+      child: Text(
+        'Select or create a document to get started',
+        style: theme.textTheme.muted,
+      ),
+    );
   }
 }
