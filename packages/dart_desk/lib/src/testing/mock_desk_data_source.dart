@@ -331,7 +331,7 @@ class MockDataSource implements DataSource {
     int offset = 0,
   }) async {
     final versions = (_versions[documentId]?.values ?? []).toList()
-      ..sort((a, b) => b.versionNumber.compareTo(a.versionNumber));
+      ..sort((a, b) => a.versionNumber.compareTo(b.versionNumber));
 
     return DocumentVersionList(
       versions: versions.skip(offset).take(limit).toList(),

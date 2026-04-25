@@ -33,7 +33,7 @@ class DeskButton extends StatelessWidget {
               ),
             )
           : null,
-      child: Text(loading ? 'Please wait' : text),
+      child: Text(text),
     );
   }
 }

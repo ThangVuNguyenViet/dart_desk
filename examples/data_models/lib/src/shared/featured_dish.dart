@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/widgets.dart';
@@ -10,7 +11,9 @@ part 'featured_dish.mapper.dart';
 
 @MappableClass(includeCustomMappers: [ImageReferenceMapper()])
 @DeskModel(title: 'Featured dish', description: 'Home screen carousel item')
-class FeaturedDish with FeaturedDishMappable implements Serializable<FeaturedDish> {
+class FeaturedDish
+    with FeaturedDishMappable
+    implements Serializable<FeaturedDish> {
   @DeskString(description: 'Dish name', option: DeskStringOption())
   final String name;
 
@@ -23,11 +26,26 @@ class FeaturedDish with FeaturedDishMappable implements Serializable<FeaturedDis
   @DeskImage(description: 'Photo', option: DeskImageOption(hotspot: true))
   final ImageReference? image;
 
-  const FeaturedDish({required this.name, required this.price, required this.tag, this.image});
+  const FeaturedDish({
+    required this.name,
+    required this.price,
+    required this.tag,
+    this.image,
+  });
 
-  static FeaturedDish defaultValue = const FeaturedDish(name: 'Charred Brassicas', price: 16, tag: 'New');
+  static FeaturedDish defaultValue = const FeaturedDish(
+    name: 'Charred Brassicas',
+    price: 16,
+    tag: 'New',
+  );
 
-  static FeaturedDish $fromMap(Map<String, dynamic> map) => FeaturedDishMapper.fromMap(map);
+  static FeaturedDish $fromMap(Map<String, dynamic> map) =>
+      FeaturedDishMapper.fromMap(map);
+
+  @override
+  String toString() {
+    return '$name - \$$price ($tag) ${image != null ? '[Image: ${image!.url}]' : ''}';
+  }
 }
 
 class FeaturedDishTagOption extends DeskDropdownOption<String> {
@@ -38,8 +56,8 @@ class FeaturedDishTagOption extends DeskDropdownOption<String> {
   FutureOr<String?>? get defaultValue => 'New';
   @override
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
-        for (final t in featuredDishTags) DropdownOption(value: t, label: t),
-      ];
+    for (final t in featuredDishTags) DropdownOption(value: t, label: t),
+  ];
   @override
   String? get placeholder => 'Tag';
 }

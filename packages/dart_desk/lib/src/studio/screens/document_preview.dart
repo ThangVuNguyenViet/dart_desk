@@ -43,15 +43,17 @@ class DocumentPreview extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'PREVIEW',
-          style: TextStyle(
-            fontSize: 10,
-            color: theme.colorScheme.mutedForeground,
-            letterSpacing: 1,
+        Padding(
+          padding: const EdgeInsets.all(DeskSpacing.sm),
+          child: Text(
+            'PREVIEW',
+            style: TextStyle(
+              fontSize: 10,
+              color: theme.colorScheme.mutedForeground,
+              letterSpacing: 1,
+            ),
           ),
         ),
-        const SizedBox(height: DeskSpacing.md),
         Expanded(
           child: KeyedSubtree(
             key: ValueKey(docType.name),

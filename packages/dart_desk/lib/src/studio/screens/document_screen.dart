@@ -16,12 +16,12 @@ class DocumentScreen extends StatelessWidget {
   const DocumentScreen({
     super.key,
     @PathParam('documentTypeSlug') required this.documentTypeSlug,
-    @PathParam('documentId') this.documentId,
+    @PathParam('documentId') required this.documentId,
     @PathParam('versionId') this.versionId,
   });
 
   final String documentTypeSlug;
-  final String? documentId;
+  final String documentId;
   final String? versionId;
 
   @override

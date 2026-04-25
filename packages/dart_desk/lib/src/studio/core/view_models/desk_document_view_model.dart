@@ -37,6 +37,9 @@ class DeskDocumentViewModel {
   /// Shared edited data signal — written by the editor, read by the preview.
   final editedData = MapSignal<String, dynamic>({}, debugLabel: 'editedData');
 
+  /// True when the user has made changes that have not yet been saved.
+  final isDirty = Signal<bool>(false, debugLabel: 'isDirty');
+
   final List<EffectCleanup> _cleanups = [];
 
   DeskDocumentViewModel(this.dataSource);
@@ -59,6 +62,7 @@ class DeskDocumentViewModel {
           batch(() {
             documentId.value = newDocId;
             editedData.value = {};
+            isDirty.value = false;
           });
 
           if (newDocId != null) {
@@ -95,7 +99,7 @@ class DeskDocumentViewModel {
       final versions = await dataSource.getDocumentVersions(docId);
       if (editedData.disposed) return;
       if (versions.versions.isNotEmpty) {
-        final versionId = versions.versions.first.id!;
+        final versionId = versions.versions.last.id!;
 
         // Use the document's activeVersionData which reflects the latest
         // CRDT-merged state, rather than getDocumentVersionData which only
@@ -105,6 +109,7 @@ class DeskDocumentViewModel {
         final docData = doc?.activeVersionData;
         if (docData != null && docData.isNotEmpty) {
           editedData.value = Map<String, dynamic>.from(docData);
+          isDirty.value = false;
         }
 
         // Set version ID after editedData so the editor's early-return
@@ -188,5 +193,6 @@ class DeskDocumentViewModel {
     slug.dispose();
     isDefault.dispose();
     editedData.dispose();
+    isDirty.dispose();
   }
 }

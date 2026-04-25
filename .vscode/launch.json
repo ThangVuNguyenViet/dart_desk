@@ -5,15 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "cms_app cloud",
-            "cwd": "examples/cms_app",
+            "name": "desk_app cloud",
+            "cwd": "examples/desk_app",
             "request": "launch",
             "type": "dart",
             "args": [
                 "--dart-define",
                 "SERVER_URL=https://api.dartdesk.dev/",
                 "--dart-define",
-                "API_KEY=cms_w_wb5eRQIKc8uBNSXoR4KmQi599S7LSilrgNv8ypQgCn0",
+                "API_KEY=cms_w_gxNQysyBV6VdBkjM_JN6Yn5Fk1BhVTGb3K7YEp5kvDU",
                 "-d",
                 "chrome",
                 "--web-port",
@@ -21,8 +21,8 @@
             ]
         },
         {
-            "name": "cms_app local",
-            "cwd": "examples/cms_app",
+            "name": "desk_app local",
+            "cwd": "examples/desk_app",
             "request": "launch",
             "type": "dart",
             "args": [
@@ -37,16 +37,16 @@
             ]
         },
         {
-            "name": "CMS App",
+            "name": "Desk App",
             "type": "dart",
             "request": "launch",
             "program": "lib/main.dart",
         },
         {
-            "name": "CMS QA Test",
+            "name": "Desk QA Test",
             "type": "dart",
             "request": "launch",
-            "cwd": "examples/cms_app",
+            "cwd": "examples/desk_app",
             "program": "lib/main_test.dart",
         }
     ]
