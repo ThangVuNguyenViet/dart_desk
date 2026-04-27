@@ -1,6 +1,6 @@
 name: dart_desk
 description: "CMS studio interface with inputs, validators, and runtime components for Dart Desk applications"
-version: 0.1.4
+version: 0.2.0
 homepage: https://github.com/ThangVuNguyenViet/dart_desk
 repository: https://github.com/ThangVuNguyenViet/dart_desk
 issue_tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues
@@ -14,8 +14,8 @@ environment:
   sdk: ^3.8.0
 
 dependencies:
-  dart_desk_client: ^0.1.1
-  dart_desk_annotation: ^0.1.1
+  dart_desk_client: ^0.2.0
+  dart_desk_annotation: ^0.2.0
   flutter:
     sdk: flutter
   shadcn_ui: ^0.52.1
@@ -44,6 +44,7 @@ dependencies:
   mocktail: ^1.0.4
   flutter_colorpicker: ^1.1.0
   marionette_flutter: ^0.5.0
+  uuid: ^4.5.3
 
 dev_dependencies:
   flutter_test:

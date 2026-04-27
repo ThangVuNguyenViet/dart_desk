@@ -1,3 +1,11 @@
+## 0.2.0
+
+> **Breaking**: `Cms*` prefix renamed to `Desk*` across generated outputs and recognized annotations. Regenerate consumers (`dart run build_runner build`) after upgrading.
+
+- Bump `dart_desk_annotation` to `^0.2.0`
+- Generator support for conditional field visibility and dropdown search
+- Generator support for UUID models and the unified image input
+
 ## 0.1.2
 
 - Pin dependency version: `dart_desk_annotation: ^0.1.1`

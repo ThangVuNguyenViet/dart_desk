@@ -1,3 +1,27 @@
+## 0.2.0
+
+> **Breaking**: `Cms*` prefix renamed to `Desk*` across the public API (e.g. `CmsImageInput` → `DeskImageInput`, `CmsDocumentViewModel` → `DeskDocumentViewModel`). Run a workspace-wide find/replace from `Cms` to `Desk` on identifiers from this package.
+
+### Features
+- Unified image input with server-side metadata extraction and BlurHash perf fix
+- UUID-backed document models
+- Conditional field visibility and dropdown search
+- Forgot password flow in `DartDeskAuth`
+- Media gallery delete UX with hover trash and confirm dialog
+- Aura Gastronomy CMS example
+
+### Fixes
+- Reject sign-in when user isn't a member of the API key's project
+- Keep `DeskImageInput` state alive across `ListView` scroll
+- Guard `DeskDocumentViewModel` async writes against disposal
+- Studio save/publish bugs, Google sign-in, and button loading UX
+- Update `cloud_data_source` for new `PaginatedDocuments` response shape and 410 handling
+- Make integration tests self-cleaning and prod-compatible
+
+### Chore
+- Bump `dart_desk_annotation` to `^0.2.0`
+- Bump `dart_desk_client` to `^0.2.0` (UUID primary keys)
+
 ## 0.1.4
 
  - **FEAT**: redesign image hotspot/crop editor UI with golden tests.

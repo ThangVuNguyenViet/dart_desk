@@ -1,3 +1,11 @@
+## 0.2.0
+
+> **Breaking**: `Cms*` prefix renamed to `Desk*` across all annotations and types. Run a workspace-wide find/replace from `Cms` to `Desk` on imports and identifiers from this package.
+
+- Add conditional field visibility (`visibleWhen`) and dropdown search support
+- Add `DeskUuid` field type and UUID model support
+- Refine image/media field annotations for the unified image input pipeline
+
 ## 0.1.1
 
 - Add `DeskMultiDropdown` annotation and `DeskMultiDropdownOption`
