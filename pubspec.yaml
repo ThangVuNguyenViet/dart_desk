@@ -21,6 +21,8 @@ dependencies:
   shadcn_ui: ^0.52.1
 
 dependency_overrides:
+  super_editor: 0.3.0-dev.50
+  super_keyboard: 0.4.0
   dart_desk_annotation:
     path: packages/dart_desk_annotation
   dart_desk_generator:
