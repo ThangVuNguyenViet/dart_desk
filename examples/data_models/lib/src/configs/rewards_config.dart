@@ -2,8 +2,8 @@ import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
-import '../seed/aura_assets.dart';
-import '../seed/aura_copy.dart';
+import '../primitives/aura_assets.dart';
+import '../primitives/aura_copy.dart';
 import '../shared/coupon.dart';
 import '../shared/loyalty_tier.dart';
 import 'brand_theme.dart' show BrandThemeColorMapper;

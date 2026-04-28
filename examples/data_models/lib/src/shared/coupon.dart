@@ -3,7 +3,7 @@ import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/widgets.dart';
 
-import '../seed/aura_enums.dart';
+import '../primitives/aura_enums.dart';
 
 part 'coupon.desk.dart';
 part 'coupon.mapper.dart';

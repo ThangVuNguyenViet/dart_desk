@@ -1,8 +1,8 @@
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 
-import '../seed/aura_assets.dart';
-import '../seed/aura_copy.dart';
+import '../primitives/aura_assets.dart';
+import '../primitives/aura_copy.dart';
 import '../shared/cta_action.dart';
 import '../shared/featured_dish.dart';
 import '../shared/store_callout.dart';

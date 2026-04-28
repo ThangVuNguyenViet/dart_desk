@@ -4,7 +4,7 @@ import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/material.dart';
 
-import '../seed/aura_enums.dart';
+import '../primitives/aura_enums.dart';
 import 'desk_content.dart';
 
 part 'brand_theme.desk.dart';

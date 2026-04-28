@@ -24,7 +24,7 @@ void main() {
 
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(
-        body: Center(child: BrandThemeScreen(config: BrandTheme.defaultValue)),
+        body: Center(child: BrandThemeScreen(config: BrandThemeFixtures.showcase())),
       ),
     ));
     expect(find.textContaining('Aura'), findsWidgets);
