@@ -28,7 +28,7 @@ void main() {
       final editor = DocumentEditorRobot(tester);
       final image = ImageFieldRobot(tester);
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await ss.take(tester, 'document_type_selected');
 
       await docList.createDocument('Media Test Doc');
@@ -38,15 +38,15 @@ void main() {
       await ss.take(tester, 'doc_opened');
 
       // Verify empty state with unified layout
-      image.expectFieldEmpty('image_field');
+      image.expectFieldEmpty('portrait');
       await ss.take(tester, 'empty_state');
 
-      await image.tapUpload('image_field');
-      await image.expectImagePreview('image_field');
+      await image.tapUpload('portrait');
+      await image.expectImagePreview('portrait');
       await ss.take(tester, 'image_uploaded');
 
       // Verify read-only URL after upload
-      image.expectReadOnlyUrl('image_field');
+      image.expectReadOnlyUrl('portrait');
       await ss.take(tester, 'url_readonly');
 
       await editor.tapSave();
@@ -64,13 +64,13 @@ void main() {
         final docList = DocumentListRobot(tester);
         final editor = DocumentEditorRobot(tester);
 
-        await sidebar.tapDocumentType('Integration Test');
+        await sidebar.tapDocumentType('Chef profile');
         await ss.take(tester, 'document_type_selected');
 
         await docList.tapDocument('Media Test Doc');
         await ss.take(tester, 'doc_opened');
 
-        await tester.tap(find.byKey(const ValueKey('file_field')));
+        await tester.tap(find.byKey(const ValueKey('cv')));
         await tester.settle(const Duration(seconds: 3));
         await ss.take(tester, 'file_uploaded');
 
@@ -90,21 +90,21 @@ void main() {
       final docList = DocumentListRobot(tester);
       final image = ImageFieldRobot(tester);
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await ss.take(tester, 'document_type_selected');
 
       await docList.tapDocument('Media Test Doc');
       await ss.take(tester, 'doc_opened');
 
-      await image.expectImagePreview('image_field');
+      await image.expectImagePreview('portrait');
       await ss.take(tester, 'image_present');
 
-      await image.tapRemove('image_field');
-      image.expectFieldEmpty('image_field');
+      await image.tapRemove('portrait');
+      image.expectFieldEmpty('portrait');
       await ss.take(tester, 'image_removed');
 
       // Verify editable URL field is back
-      image.expectEditableUrl('image_field');
+      image.expectEditableUrl('portrait');
       await ss.take(tester, 'url_editable_after_remove');
     });
 
@@ -119,7 +119,7 @@ void main() {
       final editor = DocumentEditorRobot(tester);
       final image = ImageFieldRobot(tester);
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await ss.take(tester, 'document_type_selected');
 
       await docList.createDocument('Persist Media Doc');
@@ -128,8 +128,8 @@ void main() {
       await docList.tapDocument('Persist Media Doc');
       await ss.take(tester, 'doc_opened');
 
-      await image.tapUpload('image_field');
-      await image.expectImagePreview('image_field');
+      await image.tapUpload('portrait');
+      await image.expectImagePreview('portrait');
       await ss.take(tester, 'image_uploaded');
 
       await editor.tapSave();
@@ -140,10 +140,10 @@ void main() {
       await ss.take(tester, 'navigated_back');
 
       await docList.tapDocument('Persist Media Doc');
-      await image.expectImagePreview('image_field');
+      await image.expectImagePreview('portrait');
       await ss.take(tester, 'image_persisted');
 
-      image.expectReadOnlyUrl('image_field');
+      image.expectReadOnlyUrl('portrait');
       await ss.take(tester, 'url_readonly_after_reload');
     });
   });

@@ -1,15 +1,14 @@
-// packages/dart_desk/integration_test/test_utils/test_app.dart
+// examples/desk_app/integration_test/test_utils/test_app.dart
 import 'package:dart_desk/src/cloud/cloud_data_source.dart';
-import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
 import 'package:dart_desk_client/dart_desk_client.dart';
+import 'package:example/bootstrap.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 
 import 'settle.dart';
-import 'test_document_type.dart';
 
 /// No-op connectivity monitor that doesn't hold a live stream subscription.
 /// [FlutterConnectivityMonitor] listens to `connectivity_plus` which keeps
@@ -82,16 +81,12 @@ Future<void> pumpTestApp(WidgetTester tester) async {
 
   final dataSource = CloudDataSource(client);
 
-  await tester.pumpWidget(
-    DartDeskApp.withDataSource(
-      dataSource: dataSource,
-      onSignOut: () async => sessionManager.signOutDevice(),
-      config: DartDeskConfig(
-        documentTypes: [integrationTestDocumentType],
-        documentTypeDecorations: [integrationTestDocumentTypeDecoration],
-        title: 'E2E Tests',
-      ),
-    ),
+  // Boot through the same bootstrap the showcase app uses — integration
+  // tests exercise the real entry point against a real backend.
+  final app = await buildDeskApp(
+    dataSource: dataSource,
+    onSignOut: () async => sessionManager.signOutDevice(),
   );
+  await tester.pumpWidget(app);
   await tester.settle();
 }

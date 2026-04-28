@@ -24,7 +24,7 @@ void main() {
       final sidebar = SidebarRobot(tester);
       final docList = DocumentListRobot(tester);
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await ss.take(tester, 'doc_type_selected');
       await docList.createDocument('Persistence Test Doc');
       await ss.take(tester, 'document_created');
@@ -40,10 +40,10 @@ void main() {
       final docList = DocumentListRobot(tester);
       final editor = DocumentEditorRobot(tester);
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await docList.tapDocument('Persistence Test Doc');
       await ss.take(tester, 'document_opened');
-      await editor.enterField('title', 'Updated Value');
+      await editor.enterField('name', 'Updated Value');
       await editor.tapSave();
       editor.expectSaveConfirmation();
       await ss.take(tester, 'after_save');
@@ -51,9 +51,9 @@ void main() {
 
       // Re-open the same document to verify the content field persisted.
       // The list title stays 'Persistence Test Doc' — that's the document
-      // metadata title, not the 'title' content field.
+      // metadata title, not the 'name' content field.
       await docList.tapDocument('Persistence Test Doc');
-      editor.expectFieldValue('title', 'Updated Value');
+      editor.expectFieldValue('name', 'Updated Value');
       await ss.take(tester, 'value_persisted');
     });
 
@@ -65,9 +65,9 @@ void main() {
       final docList = DocumentListRobot(tester);
       final editor = DocumentEditorRobot(tester);
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await docList.tapDocument('Persistence Test Doc');
-      await editor.enterField('body', 'Some body text for version history');
+      await editor.enterField('bio', 'Some body text for version history');
       await editor.tapSave();
       editor.expectSaveConfirmation();
 
@@ -83,7 +83,7 @@ void main() {
       final sidebar = SidebarRobot(tester);
       final docList = DocumentListRobot(tester);
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await docList.createDocument('Doc To Delete');
       docList.expectDocumentVisible('Doc To Delete');
       await ss.take(tester, 'doc_created');
@@ -102,7 +102,7 @@ void main() {
       final docList = DocumentListRobot(tester);
       final editor = DocumentEditorRobot(tester);
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await docList.tapDocument('Persistence Test Doc');
       await editor.tapSave();
       editor.expectSaveConfirmation();
@@ -121,9 +121,9 @@ void main() {
       final docList = DocumentListRobot(tester);
       final editor = DocumentEditorRobot(tester);
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await docList.tapDocument('Persistence Test Doc');
-      await editor.enterField('title', 'Published Title');
+      await editor.enterField('name', 'Published Title');
       await editor.tapSaveAndPublish();
       editor.expectPublishConfirmation();
       await ss.take(tester, 'published_via_button');

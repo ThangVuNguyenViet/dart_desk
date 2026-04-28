@@ -28,14 +28,14 @@ void main() {
       final image = ImageFieldRobot(tester);
       final editor = DocumentEditorRobot(tester);
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await docList.createDocument('Orphan Upload');
       await docList.tapDocument('Orphan Upload');
-      await image.tapUpload('image_field');
-      await image.expectImagePreview('image_field');
+      await image.tapUpload('portrait');
+      await image.expectImagePreview('portrait');
       // Remove the reference from the field before saving so the asset is
       // orphaned (uploaded but not linked to any document).
-      await image.tapRemove('image_field');
+      await image.tapRemove('portrait');
       await editor.tapSave();
 
       final library = MediaLibraryRobot(tester);
@@ -68,11 +68,11 @@ void main() {
         final image = ImageFieldRobot(tester);
         final editor = DocumentEditorRobot(tester);
 
-        await sidebar.tapDocumentType('Integration Test');
+        await sidebar.tapDocumentType('Chef profile');
         await docList.createDocument('Referenced Image Doc');
         await docList.tapDocument('Referenced Image Doc');
-        await image.tapUpload('image_field');
-        await image.expectImagePreview('image_field');
+        await image.tapUpload('portrait');
+        await image.expectImagePreview('portrait');
         // Save with the image attached so the asset is actively referenced.
         await editor.tapSave();
 

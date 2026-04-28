@@ -38,9 +38,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_lints: ^6.0.0
   build_runner: ^2.13.1
   dart_mappable_builder: ^4.6.1
+  # Used directly by integration_test/test_utils/test_app.dart for the
+  # pre-authenticated client setup.
+  serverpod_auth_idp_flutter: ^3.4.5
 
 flutter:
   uses-material-design: true

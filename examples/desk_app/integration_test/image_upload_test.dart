@@ -33,7 +33,7 @@ void main() {
 
       final docName = _uniqueName('Upload Test');
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await ss.take(tester, 'document_type_selected');
 
       await docList.createDocument(docName);
@@ -43,15 +43,15 @@ void main() {
       await ss.take(tester, 'document_opened');
 
       // Verify empty state: editable URL field present
-      image.expectFieldEmpty('image_field');
+      image.expectFieldEmpty('portrait');
       await ss.take(tester, 'empty_state_with_url_field');
 
-      await image.tapUpload('image_field');
-      await image.expectImagePreview('image_field');
+      await image.tapUpload('portrait');
+      await image.expectImagePreview('portrait');
       await ss.take(tester, 'image_preview_shown');
 
       // After upload, URL field should be read-only showing public URL
-      image.expectReadOnlyUrl('image_field');
+      image.expectReadOnlyUrl('portrait');
       await ss.take(tester, 'url_field_readonly');
 
       // Clean up: navigate back and delete
@@ -73,15 +73,15 @@ void main() {
 
       final docName = _uniqueName('Persist Test');
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await ss.take(tester, 'document_type_selected');
 
       await docList.createDocument(docName);
       await docList.tapDocument(docName);
       await ss.take(tester, 'document_opened');
 
-      await image.tapUpload('image_field');
-      await image.expectImagePreview('image_field');
+      await image.tapUpload('portrait');
+      await image.expectImagePreview('portrait');
       await ss.take(tester, 'image_uploaded');
 
       await editor.tapSave();
@@ -93,11 +93,11 @@ void main() {
 
       // Re-open and verify image persists
       await docList.tapDocument(docName);
-      await image.expectImagePreview('image_field');
+      await image.expectImagePreview('portrait');
       await ss.take(tester, 'image_persisted');
 
       // URL field should be read-only with public URL
-      image.expectReadOnlyUrl('image_field');
+      image.expectReadOnlyUrl('portrait');
       await ss.take(tester, 'url_readonly_after_reload');
 
       // Clean up
@@ -118,23 +118,23 @@ void main() {
 
         final docName = _uniqueName('Remove Test');
 
-        await sidebar.tapDocumentType('Integration Test');
+        await sidebar.tapDocumentType('Chef profile');
         await ss.take(tester, 'document_type_selected');
 
         // Create doc, upload image, save
         await docList.createDocument(docName);
         await docList.tapDocument(docName);
-        await image.tapUpload('image_field');
+        await image.tapUpload('portrait');
         await editor.tapSave();
         await editor.navigateBack();
 
         // Re-open and remove the image
         await docList.tapDocument(docName);
-        await image.expectImagePreview('image_field');
+        await image.expectImagePreview('portrait');
         await ss.take(tester, 'image_present');
 
-        await image.tapRemove('image_field');
-        image.expectFieldEmpty('image_field');
+        await image.tapRemove('portrait');
+        image.expectFieldEmpty('portrait');
         await ss.take(tester, 'image_removed');
 
         await editor.tapSave();
@@ -146,7 +146,7 @@ void main() {
 
         // Re-open and verify field is still empty
         await docList.tapDocument(docName);
-        image.expectFieldEmpty('image_field');
+        image.expectFieldEmpty('portrait');
         await ss.take(tester, 'field_still_empty');
 
         // Clean up
@@ -169,15 +169,15 @@ void main() {
         final docNameA = _uniqueName('Dedup A');
         final docNameB = _uniqueName('Dedup B');
 
-        await sidebar.tapDocumentType('Integration Test');
+        await sidebar.tapDocumentType('Chef profile');
         await ss.take(tester, 'document_type_selected');
 
         // Upload image to doc A (createDocument auto-opens the new doc)
         await docList.createDocument(docNameA);
         await ss.take(tester, 'doc_a_opened');
 
-        await image.tapUpload('image_field');
-        await image.expectImagePreview('image_field');
+        await image.tapUpload('portrait');
+        await image.expectImagePreview('portrait');
         await ss.take(tester, 'doc_a_image_uploaded');
 
         await editor.tapSave();
@@ -191,8 +191,8 @@ void main() {
         await docList.createDocument(docNameB);
         await ss.take(tester, 'doc_b_opened');
 
-        await image.tapUpload('image_field');
-        await image.expectImagePreview('image_field');
+        await image.tapUpload('portrait');
+        await image.expectImagePreview('portrait');
         await ss.take(tester, 'doc_b_image_uploaded');
 
         await editor.tapSave();
@@ -204,7 +204,7 @@ void main() {
 
         // Navigate back to doc A and confirm image preview is still present
         await docList.tapDocument(docNameA);
-        await image.expectImagePreview('image_field');
+        await image.expectImagePreview('portrait');
         await ss.take(tester, 'doc_a_image_still_present');
 
         // Clean up both docs
@@ -227,7 +227,7 @@ void main() {
 
       final docName = _uniqueName('URL Test');
 
-      await sidebar.tapDocumentType('Integration Test');
+      await sidebar.tapDocumentType('Chef profile');
       await ss.take(tester, 'document_type_selected');
 
       await docList.createDocument(docName);
@@ -237,16 +237,16 @@ void main() {
       await ss.take(tester, 'document_opened');
 
       // Verify empty state
-      image.expectFieldEmpty('image_field');
-      image.expectEditableUrl('image_field');
+      image.expectFieldEmpty('portrait');
+      image.expectEditableUrl('portrait');
       await ss.take(tester, 'empty_state');
 
       // Enter external URL
-      await image.enterUrl('image_field', 'https://example.com/photo.jpg');
+      await image.enterUrl('portrait', 'https://example.com/photo.jpg');
       await ss.take(tester, 'url_entered');
 
       // URL field should stay editable (external URL mode)
-      image.expectEditableUrl('image_field');
+      image.expectEditableUrl('portrait');
       await ss.take(tester, 'url_field_still_editable');
 
       // Save and verify persistence
@@ -261,7 +261,7 @@ void main() {
       await ss.take(tester, 'reopened');
 
       // URL field should be editable with the external URL
-      image.expectEditableUrl('image_field');
+      image.expectEditableUrl('portrait');
       await ss.take(tester, 'url_persisted');
 
       // Clean up
@@ -282,7 +282,7 @@ void main() {
 
         final docName = _uniqueName('Replace Test');
 
-        await sidebar.tapDocumentType('Integration Test');
+        await sidebar.tapDocumentType('Chef profile');
         await ss.take(tester, 'document_type_selected');
 
         await docList.createDocument(docName);
@@ -292,23 +292,23 @@ void main() {
         await ss.take(tester, 'document_opened');
 
         // Enter external URL first
-        await image.enterUrl('image_field', 'https://example.com/old.jpg');
-        image.expectEditableUrl('image_field');
+        await image.enterUrl('portrait', 'https://example.com/old.jpg');
+        image.expectEditableUrl('portrait');
         await ss.take(tester, 'external_url_entered');
 
         // Upload replaces external URL
-        await image.tapUpload('image_field');
-        await image.expectImagePreview('image_field');
+        await image.tapUpload('portrait');
+        await image.expectImagePreview('portrait');
         await ss.take(tester, 'upload_replaced_url');
 
         // URL field should now be read-only with public URL
-        image.expectReadOnlyUrl('image_field');
+        image.expectReadOnlyUrl('portrait');
         await ss.take(tester, 'url_readonly_after_upload');
 
         // Remove clears everything
-        await image.tapRemove('image_field');
-        image.expectFieldEmpty('image_field');
-        image.expectEditableUrl('image_field');
+        await image.tapRemove('portrait');
+        image.expectFieldEmpty('portrait');
+        image.expectEditableUrl('portrait');
         await ss.take(tester, 'everything_cleared');
 
         // Clean up
