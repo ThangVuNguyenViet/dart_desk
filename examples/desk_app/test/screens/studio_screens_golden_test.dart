@@ -7,7 +7,6 @@ import 'dart:io';
 
 import 'package:dart_desk/testing.dart';
 import 'package:data_models/example_data.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
