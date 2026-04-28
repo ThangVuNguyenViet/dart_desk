@@ -16,9 +16,11 @@ FLUTTER_VERSION="${FLUTTER_VERSION:-3.41.6}"
 IMAGE="ghcr.io/cirruslabs/flutter:${FLUTTER_VERSION}"
 
 # Resolve to the package root (parent of this script's directory).
+# Mount one level above the dart_desk repo so sibling repos referenced via
+# `../dart_desk_be/...` dependency_overrides remain visible inside Docker.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-WORKSPACE_ROOT="$(cd "${PACKAGE_DIR}/../.." && pwd)"
+WORKSPACE_ROOT="$(cd "${PACKAGE_DIR}/../../.." && pwd)"
 PACKAGE_REL="${PACKAGE_DIR#${WORKSPACE_ROOT}/}"
 
 TARGET="${1:-test/}"
