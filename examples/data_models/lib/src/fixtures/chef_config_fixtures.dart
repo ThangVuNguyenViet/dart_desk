@@ -3,7 +3,6 @@ import 'package:dart_desk/dart_desk.dart';
 import '../configs/chef_config.dart';
 import '../primitives/aura_assets.dart';
 import '../shared/chef_profile.dart';
-import '../shared/curated_dish.dart';
 
 class ChefConfigFixtures {
   /// The demo-quality fixture used by showcase apps and happy-path tests.
