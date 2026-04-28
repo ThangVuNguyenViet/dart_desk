@@ -23,11 +23,14 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
 }
 
 String _familyFromFilename(String filename) {
-  // 'Inter-Regular.ttf' -> 'Inter'; 'NotoSerif-Italic.ttf' -> 'Noto Serif'
+  // 'Inter-Variable.ttf' -> 'Inter'
+  // 'NotoSerif-Italic.ttf' -> 'Noto Serif'
+  // 'DMSans-Variable.ttf' -> 'DM Sans' (acronym case)
   final base = filename.split('.').first.split('-').first;
-  // Insert spaces before capitals (camel-case to "Camel Case")
-  return base.replaceAllMapped(
-    RegExp(r'(?<=[a-z])(?=[A-Z])'),
-    (_) => ' ',
-  );
+  // Two passes: split before an uppercase preceded by lowercase (camel→space),
+  // and split before an uppercase that begins a new word inside an acronym
+  // (run of caps followed by lowercase).
+  return base
+      .replaceAllMapped(RegExp(r'(?<=[a-z])(?=[A-Z])'), (_) => ' ')
+      .replaceAllMapped(RegExp(r'(?<=[A-Z])(?=[A-Z][a-z])'), (_) => ' ');
 }
