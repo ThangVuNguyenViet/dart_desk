@@ -34,7 +34,7 @@ void main() {
           pumper: (tester, scaffold, _) async {
             final app = await buildScreenApp(MockDataSource());
             await tester.pumpWidget(scaffold(tester, app));
-            await tester.pump(const Duration(milliseconds: 500));
+            await tester.pump(const Duration(seconds: 2));
           },
         )
         .itemFromPumper(
@@ -46,7 +46,7 @@ void main() {
             await seedShowcaseChef(source);
             final app = await buildScreenApp(source);
             await tester.pumpWidget(scaffold(tester, app));
-            await tester.pump(const Duration(milliseconds: 500));
+            await tester.pump(const Duration(seconds: 2));
           },
         )
         .run(tester);

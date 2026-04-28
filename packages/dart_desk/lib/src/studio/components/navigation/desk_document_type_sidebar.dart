@@ -37,7 +37,7 @@ class DeskDocumentTypeSidebar extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOut,
-      width: isCollapsed ? 48 : 180,
+      width: isCollapsed ? 48 : 240,
       decoration: BoxDecoration(
         color: theme.colorScheme.background,
         border: Border(

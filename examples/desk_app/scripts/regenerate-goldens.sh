@@ -14,10 +14,12 @@ set -euo pipefail
 FLUTTER_VERSION="${FLUTTER_VERSION:-3.41.6}"
 IMAGE="ghcr.io/cirruslabs/flutter:${FLUTTER_VERSION}"
 
-# Resolve to the package root (parent of this script's directory).
+# Mount the multi-project workspace root (one level above the dart_desk repo)
+# so sibling-repo path-deps like dart_desk_be/dart_desk_client are visible to
+# the container.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PACKAGE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-WORKSPACE_ROOT="$(cd "${PACKAGE_DIR}/../.." && pwd)"
+WORKSPACE_ROOT="$(cd "${PACKAGE_DIR}/../../.." && pwd)"
 PACKAGE_REL="${PACKAGE_DIR#${WORKSPACE_ROOT}/}"
 
 TARGET="${1:-test/screens/}"
