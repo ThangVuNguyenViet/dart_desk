@@ -36,6 +36,7 @@ export 'package:dart_desk_annotation/dart_desk_annotation.dart';
 // DATA LAYER
 // ============================================================================
 export 'src/data/data.dart';
+export 'src/data/models/public_desk_document.dart';
 // ============================================================================
 // MEDIA
 // ============================================================================
