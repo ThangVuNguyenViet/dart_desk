@@ -9,7 +9,7 @@ void main() {
     late MediaBrowserState state;
 
     setUp(() {
-      dataSource = MockDataSource();
+      dataSource = MockDataSource()..seedDefaults();
       state = MediaBrowserState(dataSource: dataSource);
     });
 

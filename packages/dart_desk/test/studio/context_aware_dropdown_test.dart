@@ -85,7 +85,7 @@ void main() {
   late MockDataSource dataSource;
 
   setUp(() {
-    dataSource = MockDataSource();
+    dataSource = MockDataSource()..seedDefaults();
   });
 
   // ==========================================================================
@@ -128,7 +128,7 @@ void main() {
     testWidgets('context-aware option resolves documents from DeskViewModel', (
       tester,
     ) async {
-      // MockDataSource seeds 3 documents of type 'test_all_fields'.
+      // seedDefaults() provides 3 documents of type 'test_all_fields'.
       // We use that type so documentsContainer returns real data.
       final field = DeskMultiDropdownField<String>(
         name: 'ref_doc',

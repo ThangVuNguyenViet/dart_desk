@@ -68,7 +68,7 @@ void main() {
   });
 
   setUp(() {
-    dataSource = MockDataSource();
+    dataSource = MockDataSource()..seedDefaults();
   });
 
   group('DocumentTypeScreen (no document selected)', () {

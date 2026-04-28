@@ -8,7 +8,7 @@ void main() {
   late MockDataSource dataSource;
 
   setUp(() {
-    dataSource = MockDataSource();
+    dataSource = MockDataSource()..seedDefaults();
   });
 
   /// Helper: returns sorted seed document IDs for 'test_all_fields'.

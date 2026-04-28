@@ -99,7 +99,7 @@ void main() {
   });
 
   setUp(() {
-    dataSource = MockDataSource();
+    dataSource = MockDataSource()..seedDefaults();
   });
 
   // =========================================================================

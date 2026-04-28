@@ -9,7 +9,7 @@ import 'package:dart_desk/testing.dart';
 void main() {
   testWidgets('shows trash button on hover and hides off-hover',
       (tester) async {
-    final state = MediaBrowserState(dataSource: MockDataSource());
+    final state = MediaBrowserState(dataSource: MockDataSource()..seedDefaults());
     addTearDown(state.dispose);
 
     await tester.pumpWidget(
