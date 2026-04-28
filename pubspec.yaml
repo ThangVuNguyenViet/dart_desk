@@ -27,8 +27,10 @@ dependency_overrides:
     path: packages/dart_desk_annotation
   dart_desk_generator:
     path: packages/dart_desk_generator
-  dart_desk_client:
-    path: ../dart_desk_be/dart_desk_client
+  # Local dev: uncomment to point at sibling dart_desk_be checkout.
+  # Keep commented for CI and pub.dev resolution.
+  # dart_desk_client:
+  #   path: ../dart_desk_be/dart_desk_client
   signals:
     git:
       url: https://github.com/rodydavis/signals.dart.git
