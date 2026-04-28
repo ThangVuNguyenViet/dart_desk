@@ -72,6 +72,12 @@ class BrandTheme extends DeskContent
   )
   final ImageReference? logo;
 
+  @DeskFile(
+    description: 'Brand guidelines PDF (optional)',
+    option: DeskFileOption(optional: true),
+  )
+  final String? brandGuidelinesPdf;
+
   const BrandTheme({
     required this.name,
     required this.primaryColor,
@@ -82,6 +88,7 @@ class BrandTheme extends DeskContent
     required this.bodyFont,
     required this.cornerRadius,
     this.logo,
+    this.brandGuidelinesPdf,
   });
 
   static BrandTheme defaultValue = const BrandTheme(
@@ -94,6 +101,7 @@ class BrandTheme extends DeskContent
     bodyFont: 'Manrope',
     cornerRadius: 16,
     logo: null,
+    brandGuidelinesPdf: null,
   );
 }
 

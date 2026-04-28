@@ -31,6 +31,9 @@ class RewardsConfig extends DeskContent with RewardsConfigMappable, Serializable
   @DeskArray<Coupon>(description: 'Available coupons')
   final List<Coupon> coupons;
 
+  @DeskBoolean(description: 'Whether the loyalty program is currently active')
+  final bool enabled;
+
   @DeskUrl(description: 'Terms URL', option: DeskUrlOption())
   final String termsUrl;
 
@@ -42,6 +45,7 @@ class RewardsConfig extends DeskContent with RewardsConfigMappable, Serializable
     required this.tiers,
     required this.currentUserPoints,
     required this.coupons,
+    this.enabled = true,
     required this.termsUrl,
     this.fineprint,
   });
@@ -80,6 +84,7 @@ class RewardsConfig extends DeskContent with RewardsConfigMappable, Serializable
         tags: const ['Birthday', 'Food'],
       ),
     ],
+    enabled: true,
     termsUrl: AuraCopy.rewardsTerms,
   );
 }

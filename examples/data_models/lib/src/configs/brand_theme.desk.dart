@@ -52,6 +52,11 @@ final brandThemeFields = [
     title: 'Logo',
     option: DeskImageOption(hotspot: false),
   ),
+  DeskFileField(
+    name: 'brandGuidelinesPdf',
+    title: 'Brand Guidelines Pdf',
+    option: DeskFileOption(optional: true),
+  ),
 ];
 
 /// Generated document type spec for BrandTheme.
@@ -79,6 +84,7 @@ class BrandThemeDeskModel {
     required this.bodyFont,
     required this.cornerRadius,
     required this.logo,
+    required this.brandGuidelinesPdf,
   });
 
   final DeskData<String> name;
@@ -98,4 +104,6 @@ class BrandThemeDeskModel {
   final DeskData<num> cornerRadius;
 
   final DeskData<ImageReference?> logo;
+
+  final DeskData<String?> brandGuidelinesPdf;
 }

@@ -49,6 +49,13 @@ class RewardsConfigMapper extends SubClassMapperBase<RewardsConfig> {
     'coupons',
     _$coupons,
   );
+  static bool _$enabled(RewardsConfig v) => v.enabled;
+  static const Field<RewardsConfig, bool> _f$enabled = Field(
+    'enabled',
+    _$enabled,
+    opt: true,
+    def: true,
+  );
   static String _$termsUrl(RewardsConfig v) => v.termsUrl;
   static const Field<RewardsConfig, String> _f$termsUrl = Field(
     'termsUrl',
@@ -67,6 +74,7 @@ class RewardsConfigMapper extends SubClassMapperBase<RewardsConfig> {
     #tiers: _f$tiers,
     #currentUserPoints: _f$currentUserPoints,
     #coupons: _f$coupons,
+    #enabled: _f$enabled,
     #termsUrl: _f$termsUrl,
     #fineprint: _f$fineprint,
   };
@@ -85,6 +93,7 @@ class RewardsConfigMapper extends SubClassMapperBase<RewardsConfig> {
       tiers: data.dec(_f$tiers),
       currentUserPoints: data.dec(_f$currentUserPoints),
       coupons: data.dec(_f$coupons),
+      enabled: data.dec(_f$enabled),
       termsUrl: data.dec(_f$termsUrl),
       fineprint: data.dec(_f$fineprint),
     );
@@ -165,6 +174,7 @@ abstract class RewardsConfigCopyWith<$R, $In extends RewardsConfig, $Out>
     List<LoyaltyTier>? tiers,
     num? currentUserPoints,
     List<Coupon>? coupons,
+    bool? enabled,
     String? termsUrl,
     Object? fineprint,
   });
@@ -203,6 +213,7 @@ class _RewardsConfigCopyWithImpl<$R, $Out>
     List<LoyaltyTier>? tiers,
     num? currentUserPoints,
     List<Coupon>? coupons,
+    bool? enabled,
     String? termsUrl,
     Object? fineprint = $none,
   }) => $apply(
@@ -211,6 +222,7 @@ class _RewardsConfigCopyWithImpl<$R, $Out>
       if (tiers != null) #tiers: tiers,
       if (currentUserPoints != null) #currentUserPoints: currentUserPoints,
       if (coupons != null) #coupons: coupons,
+      if (enabled != null) #enabled: enabled,
       if (termsUrl != null) #termsUrl: termsUrl,
       if (fineprint != $none) #fineprint: fineprint,
     }),
@@ -224,6 +236,7 @@ class _RewardsConfigCopyWithImpl<$R, $Out>
       or: $value.currentUserPoints,
     ),
     coupons: data.get(#coupons, or: $value.coupons),
+    enabled: data.get(#enabled, or: $value.enabled),
     termsUrl: data.get(#termsUrl, or: $value.termsUrl),
     fineprint: data.get(#fineprint, or: $value.fineprint),
   );
