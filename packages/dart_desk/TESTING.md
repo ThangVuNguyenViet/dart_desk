@@ -54,7 +54,7 @@ about a single widget. Usually it is.
 | 7 | `media_gallery_populated` | 6+ seeded media assets | Grid layout, thumbnail rendering |
 | 8 | `media_gallery_empty` | empty media library | Empty-state CTA |
 | 9 | `version_history_panel` | chef doc with 3 versions | Version list, badges, restore affordances |
-| 10 | `mobile_layout` | chef list at 390×844 viewport | Mobile breakpoint, drawer chrome |
+| 10 | `mobile_layout` | chef list at 390×844 viewport | Mobile breakpoint, drawer chrome (**deferred**: `DeskTopBar` overflows at narrow widths; needs responsive treatment first) |
 
 Light theme is intentionally **not** a separate scene — theme variants are
 covered by widget goldens, which can swap `ShadThemeData` cheaply. Adding the

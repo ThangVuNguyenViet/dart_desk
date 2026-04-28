@@ -69,14 +69,72 @@ void resetGetItForScreenGolden() {
 }
 
 /// Seeds [source] with one chef profile config document so the studio's
-/// document-list view has something to render.
-Future<void> seedShowcaseChef(MockDataSource source) async {
-  await source.createDocument(
+/// document-list view has something to render. Returns the doc id.
+Future<String> seedShowcaseChef(MockDataSource source) async {
+  final doc = await source.createDocument(
     'chefConfig',
     "Marco's Choice",
     ChefConfigFixtures.showcase().toMap(),
     slug: 'marcos-choice',
   );
+  return doc.id!;
+}
+
+/// Seeds [source] with [count] chef docs — one default + drafts.
+Future<void> seedManyChefDocs(MockDataSource source, {int count = 5}) async {
+  const titles = [
+    "Marco's Choice",
+    "Aria's Spring",
+    'Tribeca Tasting',
+    "Chef's Late Summer",
+    'Harvest Notes',
+    'Coastal Catch',
+  ];
+  for (var i = 0; i < count; i++) {
+    await source.createDocument(
+      'chefConfig',
+      titles[i % titles.length],
+      ChefConfigFixtures.showcase().toMap(),
+    );
+  }
+}
+
+/// Seeds a chef doc with [variant] data and returns its id.
+Future<String> seedChefWith(
+  MockDataSource source,
+  ChefConfig variant, {
+  String title = "Marco's Choice",
+}) async {
+  final doc = await source.createDocument(
+    'chefConfig',
+    title,
+    variant.toMap(),
+  );
+  return doc.id!;
+}
+
+/// Seeds a chef doc with three versions (v1 published, v2/v3 draft) for the
+/// version-history scene.
+Future<String> seedChefWithVersions(MockDataSource source) async {
+  final doc = await source.createDocument(
+    'chefConfig',
+    "Marco's Choice",
+    ChefConfigFixtures.showcase().toMap(),
+  );
+  await source.publishDocumentVersion(
+    (await source.getDocumentVersions(doc.id!)).versions.first.id!,
+  );
+  await source.createDocumentVersion(
+    doc.id!,
+    status: 'draft',
+    changeLog: 'Tweaked pull quote',
+  );
+  await source.createDocumentVersion(
+    doc.id!,
+    status: 'draft',
+    changeLog: 'Added autumn dishes',
+  );
+  return doc.id!;
 }
 
 /// Convenience: builds the desk app pointed at [source].
