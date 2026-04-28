@@ -1,76 +1,31 @@
+import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_desk/studio.dart';
+import 'package:dart_desk_client/dart_desk_client.dart';
+import 'package:example/bootstrap.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:marionette_flutter/marionette_flutter.dart';
+import 'package:serverpod_flutter/serverpod_flutter.dart';
 
-import 'document_types.dart';
+const _defaultServerUrl = 'http://localhost:8080/';
 
-const String _defaultServerUrl = 'http://localhost:8080/';
-
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized(DeskMarionetteConfig.configuration);
   }
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  static const serverUrl = String.fromEnvironment(
+  const serverUrl = String.fromEnvironment(
     'SERVER_URL',
     defaultValue: _defaultServerUrl,
   );
-
-  static const apiKey = String.fromEnvironment(
+  const apiKey = String.fromEnvironment(
     'API_KEY',
     defaultValue: 'desk_w_rjjQNv3VTxL9KYijSnpc0LYVv0I5b0bLt5RR60P1mE0',
   );
-
-  @override
-  Widget build(BuildContext context) {
-    return DartDeskApp(
-      serverUrl: serverUrl,
-      apiKey: apiKey,
-      config: DartDeskConfig(
-        documentTypes: [
-          homeDocumentType,
-          kioskDocumentType,
-          chefDocumentType,
-          menuDocumentType,
-          rewardsDocumentType,
-          brandThemeDocumentType,
-        ],
-        documentTypeDecorations: [
-          DocumentTypeDecoration(
-            documentType: homeDocumentType,
-            icon: Icons.home,
-          ),
-          DocumentTypeDecoration(
-            documentType: kioskDocumentType,
-            icon: Icons.tv_rounded,
-          ),
-          DocumentTypeDecoration(
-            documentType: chefDocumentType,
-            icon: Icons.restaurant,
-          ),
-          DocumentTypeDecoration(
-            documentType: menuDocumentType,
-            icon: Icons.menu_book,
-          ),
-          DocumentTypeDecoration(
-            documentType: rewardsDocumentType,
-            icon: Icons.star,
-          ),
-          DocumentTypeDecoration(
-            documentType: brandThemeDocumentType,
-            icon: Icons.palette,
-          ),
-        ],
-        title: 'Food Ordering CMS',
-        subtitle: 'White-Label App Studio',
-        icon: Icons.restaurant,
-      ),
-    );
-  }
+  final client = Client(serverUrl)
+    ..authKeyProvider = DartDeskAuthKeyProvider(apiKey: apiKey)
+    ..connectivityMonitor = FlutterConnectivityMonitor();
+  final dataSource = CloudDataSource(client);
+  final app = await buildDeskApp(dataSource: dataSource);
+  runApp(app);
 }
