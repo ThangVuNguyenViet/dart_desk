@@ -1,7 +1,10 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:dart_desk_client/dart_desk_client.dart' as serverpod;
 
+import '../data/data.dart';
 import '../data/models/public_desk_document.dart';
 import '../data/public_content_source.dart';
 
@@ -10,7 +13,8 @@ import '../data/public_content_source.dart';
 ///
 /// Converts [serverpod.PublicDocument] values to platform-agnostic
 /// [PublicDeskDocument] values so consumers never depend on generated client
-/// types.
+/// types. Errors from the underlying endpoint (network, parsing) are wrapped
+/// in [DeskDataSourceException] to match [CloudDataSource]'s contract.
 class CloudPublicContentSource implements PublicContentSource {
   /// Creates a [CloudPublicContentSource] using the production [client].
   CloudPublicContentSource(serverpod.Client client)
@@ -21,30 +25,54 @@ class CloudPublicContentSource implements PublicContentSource {
 
   final serverpod.EndpointPublicContent _endpoint;
 
+  /// Logs the error with stack trace and throws a [DeskDataSourceException].
+  Never _throw(String message, Object error, [StackTrace? stack]) {
+    final st = stack ?? StackTrace.current;
+    debugPrint('[CloudPublicContentSource] $message: $error');
+    debugPrintStack(stackTrace: st, label: 'CloudPublicContentSource');
+    throw DeskDataSourceException(message, error);
+  }
+
   @override
   Future<Map<String, List<PublicDeskDocument>>> getAllContents() async {
-    final raw = await _endpoint.getAllContents();
-    return raw.map((k, v) => MapEntry(k, v.map(_toPublic).toList()));
+    try {
+      final raw = await _endpoint.getAllContents();
+      return raw.map((k, v) => MapEntry(k, v.map(_toPublic).toList()));
+    } catch (e, st) {
+      _throw('Failed to get all contents', e, st);
+    }
   }
 
   @override
   Future<Map<String, PublicDeskDocument>> getDefaultContents() async {
-    final raw = await _endpoint.getDefaultContents();
-    return raw.map((k, v) => MapEntry(k, _toPublic(v)));
+    try {
+      final raw = await _endpoint.getDefaultContents();
+      return raw.map((k, v) => MapEntry(k, _toPublic(v)));
+    } catch (e, st) {
+      _throw('Failed to get default contents', e, st);
+    }
   }
 
   @override
   Future<List<PublicDeskDocument>> getContentsByType(
     String documentType,
   ) async {
-    final raw = await _endpoint.getContentsByType(documentType);
-    return raw.map(_toPublic).toList();
+    try {
+      final raw = await _endpoint.getContentsByType(documentType);
+      return raw.map(_toPublic).toList();
+    } catch (e, st) {
+      _throw('Failed to get contents by type', e, st);
+    }
   }
 
   @override
   Future<PublicDeskDocument> getDefaultContent(String documentType) async {
-    final raw = await _endpoint.getDefaultContent(documentType);
-    return _toPublic(raw);
+    try {
+      final raw = await _endpoint.getDefaultContent(documentType);
+      return _toPublic(raw);
+    } catch (e, st) {
+      _throw('Failed to get default content', e, st);
+    }
   }
 
   @override
@@ -52,8 +80,12 @@ class CloudPublicContentSource implements PublicContentSource {
     String documentType,
     String slug,
   ) async {
-    final raw = await _endpoint.getContentBySlug(documentType, slug);
-    return _toPublic(raw);
+    try {
+      final raw = await _endpoint.getContentBySlug(documentType, slug);
+      return _toPublic(raw);
+    } catch (e, st) {
+      _throw('Failed to get content by slug', e, st);
+    }
   }
 
   @override
@@ -61,9 +93,15 @@ class CloudPublicContentSource implements PublicContentSource {
     String documentType,
     String dataContainsJson,
   ) async {
-    final raw =
-        await _endpoint.getContentsByDataContains(documentType, dataContainsJson);
-    return raw.map(_toPublic).toList();
+    try {
+      final raw = await _endpoint.getContentsByDataContains(
+        documentType,
+        dataContainsJson,
+      );
+      return raw.map(_toPublic).toList();
+    } catch (e, st) {
+      _throw('Failed to get contents by data contains', e, st);
+    }
   }
 
   PublicDeskDocument _toPublic(serverpod.PublicDocument d) => PublicDeskDocument(
