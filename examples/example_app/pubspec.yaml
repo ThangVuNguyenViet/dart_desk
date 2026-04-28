@@ -29,7 +29,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_lints: ^6.0.0
+  serverpod_auth_idp_flutter: ^3.3.1
 
 flutter:
   uses-material-design: true
