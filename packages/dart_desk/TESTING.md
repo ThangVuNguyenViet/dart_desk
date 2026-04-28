@@ -10,7 +10,7 @@ asserting; mixing layers is a smell.
 | Component widget | `packages/dart_desk/test/` | Behavior, callbacks, state, async | No | Direct `tester.pumpWidget`, fixtures as data |
 | Widget golden | `packages/dart_desk/test/` | Visual rendering of every widget × fixture variant — the visual catalog | No | Direct `tester.pumpWidget` |
 | Screen golden | `examples/desk_app/test/screens/` | Visual rendering of curated canonical screens — capped at ~10 | Yes (`buildDeskApp`) | `MockDataSource()..seedFixtures(...)` |
-| Real-stack integration | `packages/dart_desk/integration_test/` and `examples/example_app/integration_test/` | Wire format, persistence, file uploads, public endpoints | Yes (`buildDeskApp` / `buildExampleApp`) | Real `CloudDataSource` / `CloudPublicContentSource` against a local Serverpod |
+| Real-stack integration | `examples/desk_app/integration_test/` and `examples/example_app/integration_test/` | Wire format, persistence, file uploads, public endpoints | Yes (`buildDeskApp` / `buildExampleApp`) | Real `CloudDataSource` / `CloudPublicContentSource` against a local Serverpod |
 
 ## Discipline rules
 
@@ -107,16 +107,23 @@ When a golden test fails, flutter_test_goldens writes a diff PNG into a
 
 ## Regenerating goldens locally
 
-Use the Docker script so your local pixels match CI's pixels:
+Use the Docker scripts so your local pixels match CI's pixels:
 
 ```sh
+# Widget goldens (input gallery, etc.)
 cd packages/dart_desk
-./scripts/regenerate-goldens.sh
+make goldens          # all
+make goldens-inputs   # test/inputs/
+
+# Screen goldens
+cd examples/desk_app
+make goldens          # test/screens/
 ```
 
-The script runs `flutter test --update-goldens` inside a Linux container with
-the same Flutter version CI uses. Without it, you'd have to push to CI, fetch
-the diff images from a failed run, and commit those — possible but slow.
+Both wrap a `regenerate-goldens.sh` script that runs `flutter test
+--update-goldens` inside a Linux container with the same Flutter version CI
+uses. Without it, you'd have to push to CI, fetch the diff images from a
+failed run, and commit those — possible but slow.
 
 ## Running the suites
 
@@ -128,7 +135,7 @@ cd packages/dart_desk && flutter test
 cd examples/desk_app && flutter test test/screens/
 
 # Real-stack integration (requires a local Serverpod backend on :8080)
-cd packages/dart_desk && flutter test integration_test/
+cd examples/desk_app && flutter test integration_test/
 cd examples/example_app && flutter test integration_test/
 ```
 
