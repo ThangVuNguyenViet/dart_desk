@@ -1,4 +1,7 @@
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
+
+const _eq = DeepCollectionEquality();
 
 /// Platform-agnostic representation of a published document returned by
 /// [PublicContentSource]. Mirrors the Serverpod `PublicDocument` shape but
@@ -34,7 +37,7 @@ class PublicDeskDocument {
           other.title == title &&
           other.slug == slug &&
           other.isDefault == isDefault &&
-          _mapEquals(other.data, data) &&
+          _eq.equals(other.data, data) &&
           other.publishedAt == publishedAt &&
           other.updatedAt == updatedAt;
 
@@ -45,15 +48,8 @@ class PublicDeskDocument {
         title,
         slug,
         isDefault,
+        _eq.hash(data),
         publishedAt,
         updatedAt,
       );
-}
-
-bool _mapEquals(Map<String, dynamic> a, Map<String, dynamic> b) {
-  if (a.length != b.length) return false;
-  for (final k in a.keys) {
-    if (!b.containsKey(k) || b[k] != a[k]) return false;
-  }
-  return true;
 }
