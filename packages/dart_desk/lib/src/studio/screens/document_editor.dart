@@ -5,6 +5,7 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../data/models/document_version.dart';
+import '../../inputs/serializable_encode.dart';
 import '../components/common/desk_button.dart';
 import '../components/forms/desk_form.dart';
 import '../core/view_models/desk_document_view_model.dart';
@@ -191,7 +192,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
             data: Map<String, dynamic>.from(documentData),
             title: widget.title,
             onFieldChanged: (fieldName, value) {
-              editedData[fieldName] = value;
+              editedData[fieldName] = encodeForSave(value);
               GetIt.I<DeskDocumentViewModel>().isDirty.value = true;
             },
           ),

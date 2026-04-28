@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:dart_desk_client/dart_desk_client.dart' as serverpod;
 
 import '../data/data.dart';
@@ -32,6 +33,15 @@ class CloudDataSource implements DataSource {
   ///
   /// [client] - The Serverpod client instance configured with the server URL
   CloudDataSource(this._client);
+
+  /// JSON-encodes [data] for the wire. Converts [Serializable] values to
+  /// their [Map] form so a misplaced typed instance doesn't fall through
+  /// to `obj.toJson()` (which, for dart_mappable, returns a String and
+  /// would land in storage as an escaped JSON string literal).
+  String _encodeData(Object? data) => jsonEncode(data, toEncodable: (v) {
+    if (v is Serializable) return v.toMap();
+    return (v as dynamic).toJson();
+  });
 
   /// Logs the error with stack trace and throws a [DeskDataSourceException].
   Never _throw(String message, Object error, [StackTrace? stack]) {
@@ -99,7 +109,7 @@ class CloudDataSource implements DataSource {
       final response = await _client.document.createDocument(
         documentType,
         title,
-        jsonEncode(data),
+        _encodeData(data),
         slug: slug,
         isDefault: isDefault,
       );
@@ -667,7 +677,7 @@ class CloudDataSource implements DataSource {
     try {
       final response = await _client.document.updateDocumentData(
         UuidValue.fromString(documentId),
-        jsonEncode(updates),
+        _encodeData(updates),
         sessionId: sessionId,
       );
       return _toDeskDocument(response);
@@ -709,7 +719,7 @@ class CloudDataSource implements DataSource {
       final response = await _client.documentCollaboration.submitEdit(
         UuidValue.fromString(documentId),
         sessionId,
-        jsonEncode(fieldUpdates),
+        _encodeData(fieldUpdates),
       );
       return _toDeskDocument(response);
     } on serverpod.ServerpodClientException catch (e, st) {
