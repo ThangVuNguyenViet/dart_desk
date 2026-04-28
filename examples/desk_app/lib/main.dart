@@ -26,6 +26,10 @@ Future<void> main() async {
     ..authKeyProvider = DartDeskAuthKeyProvider(apiKey: apiKey)
     ..connectivityMonitor = FlutterConnectivityMonitor();
   final dataSource = CloudDataSource(client);
-  final app = await buildDeskApp(dataSource: dataSource);
+  final app = await buildDeskApp(
+    dataSource: dataSource,
+    // TODO: wire real sign-out handler
+    onSignOut: () {},
+  );
   runApp(app);
 }

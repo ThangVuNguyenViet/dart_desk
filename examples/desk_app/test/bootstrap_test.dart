@@ -19,7 +19,10 @@ void main() {
     };
 
     final source = MockDataSource();
-    final app = await buildDeskApp(dataSource: source);
+    final app = await buildDeskApp(
+      dataSource: source,
+      onSignOut: () {},
+    );
     await tester.pumpWidget(app);
     await tester.pump(const Duration(milliseconds: 500));
 

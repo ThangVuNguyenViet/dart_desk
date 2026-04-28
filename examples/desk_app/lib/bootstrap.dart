@@ -6,11 +6,11 @@ import 'document_types.dart';
 
 Future<Widget> buildDeskApp({
   required DataSource dataSource,
-  VoidCallback? onSignOut,
+  required VoidCallback onSignOut,
 }) async {
   return DartDeskApp.withDataSource(
     dataSource: dataSource,
-    onSignOut: onSignOut ?? () {},
+    onSignOut: onSignOut,
     config: _config,
   );
 }
