@@ -65,5 +65,43 @@ void main() {
       );
       expect(hits.map((d) => d.id), ['1']);
     });
+
+    test('getContentsByDataContains matches a nested fragment', () async {
+      final source = FakePublicContentSource()
+        ..seed([
+          _doc(
+            id: '1',
+            data: const {
+              'address': {'city': 'NYC', 'zip': '10001'},
+            },
+          ),
+        ]);
+      final hits = await source.getContentsByDataContains(
+        'brandTheme',
+        '{"address":{"city":"NYC"}}',
+      );
+      expect(hits.map((d) => d.id), ['1']);
+    });
+
+    test('getContentsByDataContains rejects non-object JSON fragments',
+        () async {
+      final source = FakePublicContentSource();
+      await expectLater(
+        () => source.getContentsByDataContains('brandTheme', '[1,2,3]'),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('getAllContents groups documents by type', () async {
+      final source = FakePublicContentSource()
+        ..seed([
+          _doc(id: '1', type: 'brandTheme'),
+          _doc(id: '2', type: 'menu'),
+          _doc(id: '3', type: 'brandTheme'),
+        ]);
+      final all = await source.getAllContents();
+      expect(all['brandTheme']!.map((d) => d.id), ['1', '3']);
+      expect(all['menu']!.map((d) => d.id), ['2']);
+    });
   });
 }

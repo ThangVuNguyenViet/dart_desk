@@ -73,11 +73,23 @@ class FakePublicContentSource implements PublicContentSource {
         .toList();
   }
 
-  bool _contains(Map<String, dynamic> haystack, Map<String, dynamic> needle) {
-    for (final entry in needle.entries) {
-      if (!haystack.containsKey(entry.key)) return false;
-      if (haystack[entry.key] != entry.value) return false;
+  // Mirrors Postgres `jsonb @>` deep containment semantics.
+  bool _contains(dynamic haystack, dynamic needle) {
+    if (needle is Map) {
+      if (haystack is! Map) return false;
+      for (final entry in needle.entries) {
+        if (!haystack.containsKey(entry.key)) return false;
+        if (!_contains(haystack[entry.key], entry.value)) return false;
+      }
+      return true;
     }
-    return true;
+    if (needle is List) {
+      if (haystack is! List) return false;
+      for (final item in needle) {
+        if (!haystack.any((h) => _contains(h, item))) return false;
+      }
+      return true;
+    }
+    return haystack == needle;
   }
 }
