@@ -6,6 +6,7 @@
 import 'dart:io';
 
 import 'package:dart_desk/testing.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
@@ -46,7 +47,12 @@ void main() {
             await seedShowcaseChef(source);
             final app = await buildScreenApp(source);
             await tester.pumpWidget(scaffold(tester, app));
-            await tester.pump(const Duration(seconds: 2));
+            // Let the shell auto-navigate to the first doc type (home).
+            await tester.pumpAndSettle();
+            // Tap the Chef sidebar entry to surface the chef list panel.
+            await tester
+                .tap(find.byKey(const ValueKey("doc_type_Chef's Choice")));
+            await tester.pumpAndSettle();
           },
         )
         .run(tester);

@@ -41,6 +41,26 @@ existing widget belong in that widget's gallery.
 If you find yourself wanting an 11th screen, ask whether the question is really
 about a single widget. Usually it is.
 
+### The canonical 10
+
+| # | Scene | Seed | What it pins |
+|---|---|---|---|
+| 1 | `empty_studio` | `MockDataSource()` (empty) | Empty-state landing, default route fallback |
+| 2 | `document_list_one_doc` | one chef showcase doc | List panel + doc card baseline |
+| 3 | `document_list_many_docs` | 5+ chef docs (showcase + drafts) | Density, scrolling, default-badge placement |
+| 4 | `document_editor_all_fields` | `ChefConfigFixtures.allFieldsPopulated()` | Every input type rendering together |
+| 5 | `document_editor_empty_defaults` | fresh new chef doc | Placeholders, hints, required-field affordances |
+| 6 | `document_editor_validation_error` | chef doc with required field cleared | Error chip, disabled save, scroll-to-error |
+| 7 | `media_gallery_populated` | 6+ seeded media assets | Grid layout, thumbnail rendering |
+| 8 | `media_gallery_empty` | empty media library | Empty-state CTA |
+| 9 | `version_history_panel` | chef doc with 3 versions | Version list, badges, restore affordances |
+| 10 | `mobile_layout` | chef list at 390×844 viewport | Mobile breakpoint, drawer chrome |
+
+Light theme is intentionally **not** a separate scene — theme variants are
+covered by widget goldens, which can swap `ShadThemeData` cheaply. Adding the
+same composition twice (once per theme) at the screen level would double the
+maintenance cost for a question already answered one layer down.
+
 ## Fixtures
 
 `examples/data_models/lib/src/fixtures/` exposes `*Fixtures` classes — one per
