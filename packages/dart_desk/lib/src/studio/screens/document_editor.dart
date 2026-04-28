@@ -5,7 +5,6 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../data/models/document_version.dart';
-import '../../inputs/serializable_encode.dart';
 import '../components/common/desk_button.dart';
 import '../components/forms/desk_form.dart';
 import '../core/view_models/desk_document_view_model.dart';
@@ -212,20 +211,20 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
             data: Map<String, dynamic>.from(documentData),
             title: widget.title,
             onFieldChanged: (fieldName, value) {
-              editedData[fieldName] = encodeForSave(value);
+              editedData[fieldName] = value;
               GetIt.I<DeskDocumentViewModel>().isDirty.value = true;
             },
           ),
         ),
-        if (hasUnsavedChanges)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              border: Border(top: BorderSide(color: theme.colorScheme.border)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: theme.colorScheme.border)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (hasUnsavedChanges) ...[
                 DeskButton(
                   key: const ValueKey('discard_document_button'),
                   text: 'Discard',
@@ -233,22 +232,23 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
                   onPressed: isAnyBusy ? null : _discardDocument,
                 ),
                 const SizedBox(width: 8),
-                DeskButton(
-                  key: const ValueKey('save_document_button'),
-                  text: 'Save',
-                  loading: isSaving,
-                  onPressed: isAnyBusy ? null : _saveDocument,
-                ),
-                const SizedBox(width: 8),
-                DeskButton(
-                  key: const ValueKey('publish_document_button'),
-                  text: 'Publish',
-                  loading: isPublishing,
-                  onPressed: isAnyBusy ? null : _publishDocument,
-                ),
               ],
-            ),
+              DeskButton(
+                key: const ValueKey('save_document_button'),
+                text: 'Save',
+                loading: isSaving,
+                onPressed: (isAnyBusy || !hasUnsavedChanges) ? null : _saveDocument,
+              ),
+              const SizedBox(width: 8),
+              DeskButton(
+                key: const ValueKey('publish_document_button'),
+                text: 'Publish',
+                loading: isPublishing,
+                onPressed: isAnyBusy ? null : _publishDocument,
+              ),
+            ],
           ),
+        ),
       ],
     );
   }
