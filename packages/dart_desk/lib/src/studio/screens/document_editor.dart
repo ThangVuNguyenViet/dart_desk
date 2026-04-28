@@ -151,23 +151,38 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
         ? viewModel.documentDataContainer(versionId).watch(context)
         : null;
 
-    // If editedData is already populated (e.g. by auto-version-select),
-    // skip the loading state and render the editor immediately.
     final edited = editedData.value;
+
     if (versionState == null) {
-      return _buildEditor(edited, isSaving: isSaving, isPublishing: isPublishing, isAnyBusy: isAnyBusy);
+      return _buildEditor(
+        edited,
+        isSaving: isSaving,
+        isPublishing: isPublishing,
+        isAnyBusy: isAnyBusy,
+        isVersionLoading: false,
+      );
     }
 
     return versionState.map<Widget>(
-      loading: () => const Center(child: ShadProgress()),
+      loading: () => _buildEditor(
+        edited,
+        isSaving: isSaving,
+        isPublishing: isPublishing,
+        isAnyBusy: isAnyBusy,
+        isVersionLoading: true,
+      ),
       error: (error, stackTrace) =>
           Center(child: Text('Error loading document: $error')),
       data: (versionData) {
         final versionDataMap = versionData?.data ?? {};
-        final displayData = editedData.value.isEmpty
-            ? versionDataMap
-            : editedData.value;
-        return _buildEditor(displayData, isSaving: isSaving, isPublishing: isPublishing, isAnyBusy: isAnyBusy);
+        final displayData = edited.isEmpty ? versionDataMap : edited;
+        return _buildEditor(
+          displayData,
+          isSaving: isSaving,
+          isPublishing: isPublishing,
+          isAnyBusy: isAnyBusy,
+          isVersionLoading: false,
+        );
       },
     );
   }
@@ -177,6 +192,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     required bool isSaving,
     required bool isPublishing,
     required bool isAnyBusy,
+    required bool isVersionLoading,
   }) {
     editedData.watch(context);
     final hasUnsavedChanges =
@@ -186,6 +202,10 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
 
     return Column(
       children: [
+        SizedBox(
+          height: 2,
+          child: isVersionLoading ? const LinearProgressIndicator(minHeight: 2) : null,
+        ),
         Expanded(
           child: DeskForm(
             fields: widget.fields,
