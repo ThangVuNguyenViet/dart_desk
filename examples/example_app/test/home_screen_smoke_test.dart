@@ -32,7 +32,7 @@ void main() {
         ),
       ),
     ));
-    expect(find.text('A table\nfor the\nlong evening.'), findsOneWidget);
+    expect(find.text('A table for the long evening.'), findsOneWidget);
     expect(find.text('Order now'), findsOneWidget);
   });
 }

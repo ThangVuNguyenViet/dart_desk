@@ -16,12 +16,14 @@ class _MockAuthSuccess extends Mock implements AuthSuccess {}
 
 void main() {
   late _MockClient client;
+  late _MockClient googleSignInClient;
   late _MockEndpointUser userEndpoint;
   late _MockSessionManager session;
   late ValueNotifier<AuthSuccess?> authNotifier;
 
   setUp(() {
     client = _MockClient();
+    googleSignInClient = _MockClient();
     userEndpoint = _MockEndpointUser();
     session = _MockSessionManager();
     authNotifier = ValueNotifier<AuthSuccess?>(null);
@@ -34,8 +36,11 @@ void main() {
 
   tearDown(() => authNotifier.dispose());
 
-  DartDeskAuthViewModel build() =>
-      DartDeskAuthViewModel(client: client, sessionManager: session);
+  DartDeskAuthViewModel build() => DartDeskAuthViewModel(
+        client: client,
+        googleSignInClient: googleSignInClient,
+        sessionManager: session,
+      );
 
   test(
     'authenticated + getCurrentUser 404 → AsyncError + signOutDevice called',
