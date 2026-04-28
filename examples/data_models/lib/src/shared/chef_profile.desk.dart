@@ -17,6 +17,11 @@ final chefProfileFields = [
     option: DeskImageOption(hotspot: true),
   ),
   DeskTextField(name: 'bio', title: 'Bio', option: DeskTextOption()),
+  DeskFileField(
+    name: 'cv',
+    title: 'Cv',
+    option: DeskFileOption(optional: true),
+  ),
 ];
 
 /// Generated document type spec for ChefProfile.
@@ -39,6 +44,7 @@ class ChefProfileDeskModel {
     required this.role,
     required this.portrait,
     required this.bio,
+    required this.cv,
   });
 
   final DeskData<String> name;
@@ -48,4 +54,6 @@ class ChefProfileDeskModel {
   final DeskData<ImageReference?> portrait;
 
   final DeskData<String> bio;
+
+  final DeskData<String?> cv;
 }
