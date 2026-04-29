@@ -6,7 +6,7 @@ A schema-driven CMS studio for Flutter. Define your content as annotated Dart cl
 > Bug reports and feature requests are very welcome — please open an issue at
 > [github.com/ThangVuNguyenViet/dart_desk/issues](https://github.com/ThangVuNguyenViet/dart_desk/issues).
 
-<!-- TODO: hero screenshot / GIF — provided later -->
+![dart_desk studio — editing a Home screen with live preview](doc/studio.png)
 
 ## How it works
 
@@ -94,8 +94,6 @@ void main() {
   ));
 }
 ```
-
-<!-- TODO: studio screenshot — provided later -->
 
 ### 4. Consume in your real app
 
