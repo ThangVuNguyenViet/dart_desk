@@ -1,6 +1,7 @@
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_desk/studio.dart';
 import 'package:flutter/material.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import 'document_types.dart';
 
@@ -8,11 +9,13 @@ Future<Widget> buildDeskApp({
   required DataSource dataSource,
   required VoidCallback onSignOut,
   DartDeskConfig? config,
+  ShadThemeData? theme,
 }) async {
   return DartDeskApp.withDataSource(
     dataSource: dataSource,
     onSignOut: onSignOut,
     config: config ?? _config,
+    theme: theme,
   );
 }
 

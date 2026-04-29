@@ -1,13 +1,18 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_test_goldens/flutter_test_goldens.dart';
+import 'package:golden_bricks/golden_bricks.dart';
 
-/// Loads every font declared in any dependency's `flutter: fonts:` block via
-/// the test runner's FontManifest.json — same trick golden_toolkit uses.
-/// Covers dart_desk's bundled families, shadcn_ui's Geist, and FontAwesome.
+/// See packages/dart_desk/test/flutter_test_config.dart. Tests opt the app
+/// theme into [goldenBricks] via `goldenBricksTheme()`; this just makes the
+/// font available to the loader.
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  await TestFonts.loadAppFonts();
+  final bytes = await rootBundle.load(
+    'packages/golden_bricks/golden_bricks.ttf',
+  );
+  final loader = FontLoader(goldenBricks)..addFont(Future.value(bytes));
+  await loader.load();
   await testMain();
 }

@@ -137,9 +137,15 @@ Future<String> seedChefWithVersions(MockDataSource source) async {
   return doc.id!;
 }
 
-/// Convenience: builds the desk app pointed at [source].
+/// Convenience: builds the desk app pointed at [source]. Passes the
+/// GoldenBricks theme through so all in-app text renders as deterministic
+/// rectangles, host-independent.
 Future<Widget> buildScreenApp(MockDataSource source) {
-  return buildDeskApp(dataSource: source, onSignOut: () {});
+  return buildDeskApp(
+    dataSource: source,
+    onSignOut: () {},
+    theme: goldenBricksTheme(),
+  );
 }
 
 class _FakeHttpOverrides extends HttpOverrides {
