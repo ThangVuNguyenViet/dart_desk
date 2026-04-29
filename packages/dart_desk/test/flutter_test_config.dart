@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -37,7 +35,7 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
 /// Allows up to [_kPixelTolerance] of pixels to differ by any amount before
 /// failing — covers macOS↔Linux antialiasing drift on text and borders.
 class _TolerantComparator extends LocalFileComparator {
-  _TolerantComparator(Uri testFile) : super(testFile);
+  _TolerantComparator(super.testFile);
 
   static const double _kPixelTolerance = 0.05;
 

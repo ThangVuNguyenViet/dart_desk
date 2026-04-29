@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +26,7 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
 }
 
 class _TolerantComparator extends LocalFileComparator {
-  _TolerantComparator(Uri testFile) : super(testFile);
+  _TolerantComparator(super.testFile);
 
   static const double _kPixelTolerance = 0.05;
 
