@@ -498,7 +498,7 @@ void main() {
   // ========================================================================
 
   group('Save and Discard buttons', () {
-    testWidgets('appear after edit', (tester) async {
+    testWidgets('Discard appears after edit (Save always visible)', (tester) async {
       await tester.pumpWidget(
         buildEditorPreviewTestApp(
           dataSource: dataSource,
@@ -507,9 +507,9 @@ void main() {
       );
       await tester.pump();
 
-      // Initially no Save/Discard.
-      expect(find.text('Save'), findsNothing);
-      expect(find.text('Discard'), findsNothing);
+      // Save/Publish are always rendered; Discard only when dirty.
+      expect(find.byKey(const ValueKey('save_document_button')), findsOneWidget);
+      expect(find.byKey(const ValueKey('discard_document_button')), findsNothing);
 
       // Type something to trigger unsaved changes.
       final stringField = find.byKey(const ValueKey('string_field'));
@@ -520,8 +520,8 @@ void main() {
       await tester.enterText(inputField, 'change');
       await tester.pump();
 
-      expect(find.text('Save'), findsOneWidget);
-      expect(find.text('Discard'), findsOneWidget);
+      expect(find.byKey(const ValueKey('save_document_button')), findsOneWidget);
+      expect(find.byKey(const ValueKey('discard_document_button')), findsOneWidget);
     });
 
     testWidgets('Discard resets editedData', (tester) async {

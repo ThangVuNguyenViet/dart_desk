@@ -183,7 +183,7 @@ void main() {
       );
     });
 
-    testWidgets('Save/Discard bar disappears after Save (isDirty = false)', (
+    testWidgets('Discard hidden + Save disabled after Save (isDirty = false)', (
       tester,
     ) async {
       final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
@@ -203,16 +203,24 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Save'), findsOneWidget);
+      expect(find.byKey(const ValueKey('discard_document_button')), findsOneWidget);
 
       await tester.tap(find.byKey(const ValueKey('save_document_button')));
       await tester.pumpAndSettle();
 
-      // Action bar hidden once isDirty is false.
+      // Discard goes away; Save stays visible but disabled.
       expect(
-        find.byKey(const ValueKey('save_document_button')),
+        find.byKey(const ValueKey('discard_document_button')),
         findsNothing,
-        reason: 'Save button must be hidden when isDirty is false',
+        reason: 'Discard must be hidden when isDirty is false',
+      );
+      final saveBtn = tester.widget<DeskButton>(
+        find.byKey(const ValueKey('save_document_button')),
+      );
+      expect(
+        saveBtn.onPressed,
+        isNull,
+        reason: 'Save must be disabled when isDirty is false',
       );
     });
 
