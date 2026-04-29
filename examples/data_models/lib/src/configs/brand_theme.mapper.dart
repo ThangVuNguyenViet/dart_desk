@@ -70,6 +70,12 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
     _$logo,
     opt: true,
   );
+  static String? _$brandGuidelinesPdf(BrandTheme v) => v.brandGuidelinesPdf;
+  static const Field<BrandTheme, String> _f$brandGuidelinesPdf = Field(
+    'brandGuidelinesPdf',
+    _$brandGuidelinesPdf,
+    opt: true,
+  );
 
   @override
   final MappableFields<BrandTheme> fields = const {
@@ -82,6 +88,7 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
     #bodyFont: _f$bodyFont,
     #cornerRadius: _f$cornerRadius,
     #logo: _f$logo,
+    #brandGuidelinesPdf: _f$brandGuidelinesPdf,
   };
 
   @override
@@ -103,6 +110,7 @@ class BrandThemeMapper extends SubClassMapperBase<BrandTheme> {
       bodyFont: data.dec(_f$bodyFont),
       cornerRadius: data.dec(_f$cornerRadius),
       logo: data.dec(_f$logo),
+      brandGuidelinesPdf: data.dec(_f$brandGuidelinesPdf),
     );
   }
 
@@ -177,6 +185,7 @@ abstract class BrandThemeCopyWith<$R, $In extends BrandTheme, $Out>
     String? bodyFont,
     num? cornerRadius,
     ImageReference? logo,
+    String? brandGuidelinesPdf,
   });
   BrandThemeCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
@@ -200,6 +209,7 @@ class _BrandThemeCopyWithImpl<$R, $Out>
     String? bodyFont,
     num? cornerRadius,
     Object? logo = $none,
+    Object? brandGuidelinesPdf = $none,
   }) => $apply(
     FieldCopyWithData({
       if (name != null) #name: name,
@@ -211,6 +221,7 @@ class _BrandThemeCopyWithImpl<$R, $Out>
       if (bodyFont != null) #bodyFont: bodyFont,
       if (cornerRadius != null) #cornerRadius: cornerRadius,
       if (logo != $none) #logo: logo,
+      if (brandGuidelinesPdf != $none) #brandGuidelinesPdf: brandGuidelinesPdf,
     }),
   );
   @override
@@ -224,6 +235,10 @@ class _BrandThemeCopyWithImpl<$R, $Out>
     bodyFont: data.get(#bodyFont, or: $value.bodyFont),
     cornerRadius: data.get(#cornerRadius, or: $value.cornerRadius),
     logo: data.get(#logo, or: $value.logo),
+    brandGuidelinesPdf: data.get(
+      #brandGuidelinesPdf,
+      or: $value.brandGuidelinesPdf,
+    ),
   );
 
   @override

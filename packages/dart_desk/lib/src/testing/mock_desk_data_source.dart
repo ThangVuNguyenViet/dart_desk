@@ -12,11 +12,103 @@ import '../data/models/document_version.dart';
 import '../data/models/image_types.dart';
 import '../data/models/media_asset.dart';
 import '../data/models/media_page.dart';
-import 'test_document_types.dart';
+
+// ---------------------------------------------------------------------------
+// Default seed data (inlined — no dependency on test_document_types.dart)
+// ---------------------------------------------------------------------------
+
+const _kDefaultDocumentSeedData = [
+  {
+    'title': 'Test Document Alpha',
+    'slug': 'test-document-alpha',
+    'data': {
+      'string_field': 'Hello World',
+      'text_field': 'This is a multi-line\ntext field value.',
+      'number_field': 42,
+      'boolean_field': true,
+      'checkbox_field': false,
+      'url_field': 'https://example.com',
+      'date_field': '2026-03-01',
+      'datetime_field': '2026-03-01T10:30:00',
+      'color_field': '#FF5733',
+      'image_field': {'_type': 'imageReference', 'assetId': 'asset-hero'},
+      'file_field': null,
+      'dropdown_field': 'option_a',
+      'document_ref_dropdown': <String>[],
+      'array_field': ['Item 1', 'Item 2', 'Item 3'],
+      'object_field': {
+        'nested_title': 'Nested Value',
+        'nested_count': 10,
+        'nested_tag': 'alpha',
+        'nested_notes': 'Some notes',
+      },
+      'block_field': null,
+      'geopoint_field': {'lat': 37.7749, 'lng': -122.4194},
+    },
+  },
+  {
+    'title': 'Test Document Beta',
+    'slug': 'test-document-beta',
+    'data': {
+      'string_field': 'Second Document',
+      'text_field': 'Beta text content.',
+      'number_field': 100,
+      'boolean_field': false,
+      'checkbox_field': true,
+      'url_field': 'https://flutter.dev',
+      'date_field': '2026-01-15',
+      'datetime_field': '2026-01-15T14:00:00',
+      'color_field': '#2196F3',
+      'image_field': null,
+      'file_field': null,
+      'dropdown_field': 'option_b',
+      'document_ref_dropdown': <String>[],
+      'array_field': ['Alpha', 'Beta'],
+      'object_field': {
+        'nested_title': 'Beta Nested',
+        'nested_count': 5,
+        'nested_tag': 'beta',
+        'nested_notes': '',
+      },
+      'block_field': null,
+      'geopoint_field': {'lat': 40.7128, 'lng': -74.0060},
+    },
+  },
+  {
+    'title': 'Test Document Gamma',
+    'slug': 'test-document-gamma',
+    'data': {
+      'string_field': 'Third Document',
+      'text_field': 'Gamma text.',
+      'number_field': 0,
+      'boolean_field': true,
+      'checkbox_field': true,
+      'url_field': '',
+      'date_field': null,
+      'datetime_field': null,
+      'color_field': '#4CAF50',
+      'image_field': {'_type': 'imageReference', 'assetId': 'asset-landscape'},
+      'file_field': null,
+      'dropdown_field': null,
+      'document_ref_dropdown': <String>[],
+      'array_field': <String>[],
+      'object_field': {
+        'nested_title': '',
+        'nested_count': 0,
+        'nested_tag': '',
+        'nested_notes': null,
+      },
+      'block_field': null,
+      'geopoint_field': null,
+    },
+  },
+];
 
 /// In-memory mock implementation of [DataSource] for testing.
 ///
-/// Pre-seeded with 3 documents from [testDocumentSeedData].
+/// Constructed empty by default. Call [seedDefaults] to populate with 3
+/// standard test documents and 4 media assets (the pre-Phase-4 behaviour).
+///
 /// All operations are synchronous in-memory. No network calls.
 class MockDataSource implements DataSource {
   final Map<String, DeskDocument> _documents = {};
@@ -27,16 +119,26 @@ class MockDataSource implements DataSource {
   int _nextVersionId = 1;
   int _nextMediaId = 1;
 
-  MockDataSource() {
-    _seed();
-  }
+  /// Constructs an empty [MockDataSource].
+  ///
+  /// Call [seedDefaults] to pre-populate with the standard test fixture data,
+  /// or use [createDocument] / [uploadImage] to add data incrementally.
+  MockDataSource();
 
   String _genDocId() => 'doc-${_nextDocId++}';
   String _genVersionId() => 'ver-${_nextVersionId++}';
   String _genMediaId() => 'media-${_nextMediaId++}';
 
-  void _seed() {
-    for (final seed in testDocumentSeedData) {
+  /// Seeds the store with 3 standard test documents of type `test_all_fields`
+  /// and 4 media assets.
+  ///
+  /// This reproduces the legacy auto-seed behaviour. Useful in [setUp] blocks
+  /// that need a pre-populated store:
+  /// ```dart
+  /// setUp(() { dataSource = MockDataSource()..seedDefaults(); });
+  /// ```
+  void seedDefaults() {
+    for (final seed in _kDefaultDocumentSeedData) {
       final docId = _genDocId();
       final versionId = _genVersionId();
       final now = DateTime.now();
@@ -84,7 +186,7 @@ class MockDataSource implements DataSource {
       createdAt: DateTime.now(),
     );
     _versionData[secondVersionId] = {
-      ...testDocumentSeedData[0]['data'] as Map<String, dynamic>,
+      ..._kDefaultDocumentSeedData[0]['data'] as Map<String, dynamic>,
       'string_field': 'Hello World (v2)',
     };
 
@@ -147,7 +249,9 @@ class MockDataSource implements DataSource {
     );
   }
 
-  /// Reset to initial seed state.
+  /// Clears all data and re-seeds with default fixture data.
+  ///
+  /// Equivalent to constructing a fresh `MockDataSource()..seedDefaults()`.
   void reset() {
     _documents.clear();
     _versions.clear();
@@ -156,7 +260,7 @@ class MockDataSource implements DataSource {
     _nextDocId = 1;
     _nextVersionId = 1;
     _nextMediaId = 1;
-    _seed();
+    seedDefaults();
   }
 
   @override

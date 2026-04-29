@@ -21,12 +21,22 @@ dependencies:
   shadcn_ui: ^0.52.1
 
 dependency_overrides:
+  super_editor: 0.3.0-dev.50
+  super_keyboard: 0.4.0
   dart_desk_annotation:
     path: packages/dart_desk_annotation
   dart_desk_generator:
     path: packages/dart_desk_generator
+  # Workspace must pin a single dart_desk_client source. example_app
+  # uses git, dart_desk uses hosted ^0.2.0 — without an override the
+  # workspace solver fails. Default to the git source so CI and any
+  # checkout-without-sibling resolves cleanly. Local devs working
+  # against a sibling dart_desk_be can swap this to:
+  #   path: ../dart_desk_be/dart_desk_client
   dart_desk_client:
-    path: ../dart_desk_be/dart_desk_client
+    git:
+      url: https://github.com/ThangVuNguyenViet/dart_desk_be.git
+      path: dart_desk_client
   signals:
     git:
       url: https://github.com/rodydavis/signals.dart.git

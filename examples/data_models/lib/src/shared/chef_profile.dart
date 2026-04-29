@@ -19,7 +19,16 @@ class ChefProfile with ChefProfileMappable implements Serializable<ChefProfile> 
   @DeskText(description: 'Bio', option: DeskTextOption())
   final String bio;
 
-  const ChefProfile({required this.name, required this.role, this.portrait, required this.bio});
+  @DeskFile(description: 'CV', option: DeskFileOption(optional: true))
+  final String? cv;
+
+  const ChefProfile({
+    required this.name,
+    required this.role,
+    this.portrait,
+    required this.bio,
+    this.cv,
+  });
 
   static ChefProfile defaultValue = const ChefProfile(
     name: 'Marco Vespucci',

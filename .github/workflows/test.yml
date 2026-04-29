@@ -1,0 +1,48 @@
+name: test
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    # Pin to the same Flutter image local devs use for `make goldens`.
+    # Linux runners + matching freetype/fontconfig keep golden pixels stable.
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.41.6
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: flutter pub get
+        run: flutter --suppress-analytics pub get
+        working-directory: packages/dart_desk
+
+      - name: analyze
+        run: flutter analyze packages/dart_desk examples/data_models examples/desk_app examples/example_app
+
+      - name: data_models — fixture round-trips
+        run: flutter test --concurrency=4
+        working-directory: examples/data_models
+
+      - name: dart_desk — widget + golden tests
+        run: flutter test --concurrency=4
+        working-directory: packages/dart_desk
+
+      - name: desk_app — screen goldens
+        run: flutter test --concurrency=4 test/screens/
+        working-directory: examples/desk_app
+
+      - name: upload golden failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-failures
+          path: |
+            packages/dart_desk/test/**/failures/**
+            examples/desk_app/test/**/failures/**
+          if-no-files-found: ignore

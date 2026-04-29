@@ -38,9 +38,22 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_lints: ^6.0.0
   build_runner: ^2.13.1
   dart_mappable_builder: ^4.6.1
+  # Used directly by integration_test/test_utils/test_app.dart for the
+  # pre-authenticated client setup.
+  serverpod_auth_idp_flutter: ^3.4.5
+  # Screen-golden infrastructure (test/screens/).
+  flutter_test_goldens: ^0.0.10
+  golden_bricks: ^1.0.0
+  get_it: ^9.2.1
+  image: ^4.5.0
+  irondash_message_channel: ^0.7.0
+  shared_preferences: ^2.2.2
+  super_native_extensions: ^0.9.0
 
 flutter:
   uses-material-design: true

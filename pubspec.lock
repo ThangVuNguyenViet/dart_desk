@@ -299,9 +299,11 @@ packages:
   dart_desk_client:
     dependency: "direct overridden"
     description:
-      path: "../dart_desk_be/dart_desk_client"
-      relative: true
-    source: path
+      path: dart_desk_client
+      ref: HEAD
+      resolved-ref: "94867709dba296bb2f3e7e84b7dc7a2ed1ad38c4"
+      url: "https://github.com/ThangVuNguyenViet/dart_desk_be.git"
+    source: git
     version: "0.2.1"
   dart_desk_generator:
     dependency: "direct overridden"
@@ -605,6 +607,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.3"
+  flutter_staggered_grid_view:
+    dependency: transitive
+    description:
+      name: flutter_staggered_grid_view
+      sha256: "19e7abb550c96fbfeb546b23f3ff356ee7c59a019a651f8f102a4ba9b7349395"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.0"
   flutter_svg:
     dependency: transitive
     description:
@@ -618,6 +628,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_test_goldens:
+    dependency: transitive
+    description:
+      name: flutter_test_goldens
+      sha256: c4feb17b801296664dafc00fe8c5b93268101882f55ecb289f44425506e1270f
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.11"
   flutter_test_robots:
     dependency: transitive
     description:
@@ -708,6 +726,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.3"
+  golden_bricks:
+    dependency: transitive
+    description:
+      name: golden_bricks
+      sha256: "91fa33d4f65dbb6911214915b3e601ad558ac3c4ff1faf2dd2a57ffe0af35a03"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   golden_toolkit:
     dependency: transitive
     description:
@@ -1193,6 +1219,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
+  patterns_canvas:
+    dependency: transitive
+    description:
+      name: patterns_canvas
+      sha256: f839fcc2b365a16c8391f488cb3ef9c78c565fe590664ce29f68fc4cf54f90b8
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   petitparser:
     dependency: transitive
     description:
@@ -1642,7 +1676,7 @@ packages:
     source: hosted
     version: "0.9.1"
   super_editor:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: super_editor
       sha256: e85d457603be37b16072802c505c166a0e69fcab7890ec6e2534114c4f644e2a
@@ -1650,13 +1684,13 @@ packages:
     source: hosted
     version: "0.3.0-dev.50"
   super_keyboard:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: super_keyboard
-      sha256: "47dfacfd617f7b704c3b9cc786930ced3b6e8698cb5ffd3b4a0cb705d42f679a"
+      sha256: b5381ca46cf2cbc8cae79f8304e848f83363a8f47c1851125133c8af87d0f488
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.1"
+    version: "0.4.0"
   super_native_extensions:
     dependency: transitive
     description:

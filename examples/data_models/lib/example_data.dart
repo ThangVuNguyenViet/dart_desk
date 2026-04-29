@@ -2,9 +2,9 @@ library;
 
 export 'src/configs/desk_content.dart';
 export 'src/configs/brand_theme.dart' hide BrandThemeColorMapper;
-export 'src/seed/aura_assets.dart';
-export 'src/seed/aura_enums.dart';
-export 'src/seed/aura_copy.dart';
+export 'src/primitives/aura_assets.dart';
+export 'src/primitives/aura_enums.dart';
+export 'src/primitives/aura_copy.dart';
 export 'src/configs/home_config.dart';
 export 'src/shared/cta_action.dart';
 export 'src/shared/featured_dish.dart';
@@ -21,3 +21,22 @@ export 'src/shared/store_hours_entry.dart';
 export 'src/configs/rewards_config.dart';
 export 'src/shared/coupon.dart';
 export 'src/shared/loyalty_tier.dart';
+
+// Fixtures (named factories per type).
+export 'src/fixtures/brand_theme_fixtures.dart';
+export 'src/fixtures/home_config_fixtures.dart';
+export 'src/fixtures/kiosk_config_fixtures.dart';
+export 'src/fixtures/chef_config_fixtures.dart';
+export 'src/fixtures/menu_config_fixtures.dart';
+export 'src/fixtures/rewards_config_fixtures.dart';
+export 'src/fixtures/kiosk_product_fixtures.dart';
+export 'src/fixtures/chef_profile_fixtures.dart';
+export 'src/fixtures/loyalty_tier_fixtures.dart';
+export 'src/fixtures/menu_item_entry_fixtures.dart';
+export 'src/fixtures/store_hours_entry_fixtures.dart';
+export 'src/fixtures/cta_action_fixtures.dart';
+export 'src/fixtures/coupon_fixtures.dart';
+export 'src/fixtures/curated_dish_fixtures.dart';
+export 'src/fixtures/store_callout_fixtures.dart';
+export 'src/fixtures/order_line_fixtures.dart';
+export 'src/fixtures/featured_dish_fixtures.dart';

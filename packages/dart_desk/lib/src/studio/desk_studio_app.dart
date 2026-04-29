@@ -100,25 +100,32 @@ class _DeskStudioAppState extends State<DeskStudioApp> {
             // fresh instance must be returned each time.
             navigatorObservers: () => [StudioRouteObserver(_router)],
           ),
-          builder: (context, child) => ResponsiveBreakpoints.builder(
-            child: child!,
-            breakpoints: [
-              const Breakpoint(
-                start: 0,
-                end: DeskBreakpoints.mobile,
-                name: DeskBreakpoints.mobileTag,
-              ),
-              const Breakpoint(
-                start: DeskBreakpoints.mobile,
-                end: DeskBreakpoints.tablet,
-                name: DeskBreakpoints.tabletTag,
-              ),
-              const Breakpoint(
-                start: DeskBreakpoints.tablet,
-                end: double.infinity,
-                name: DeskBreakpoints.desktopTag,
-              ),
-            ],
+          builder: (context, child) => DefaultTextStyle(
+            // ShadApp doesn't seed a top-level DefaultTextStyle, so plain Text
+            // widgets in the studio fall through to Flutter's hardcoded font
+            // (Ahem in tests). Anchor the studio chrome to the shadcn body
+            // style so descendant Texts inherit Geist.
+            style: ShadTheme.of(context).textTheme.p,
+            child: ResponsiveBreakpoints.builder(
+              child: child!,
+              breakpoints: [
+                const Breakpoint(
+                  start: 0,
+                  end: DeskBreakpoints.mobile,
+                  name: DeskBreakpoints.mobileTag,
+                ),
+                const Breakpoint(
+                  start: DeskBreakpoints.mobile,
+                  end: DeskBreakpoints.tablet,
+                  name: DeskBreakpoints.tabletTag,
+                ),
+                const Breakpoint(
+                  start: DeskBreakpoints.tablet,
+                  end: double.infinity,
+                  name: DeskBreakpoints.desktopTag,
+                ),
+              ],
+            ),
           ),
         ),
       ),

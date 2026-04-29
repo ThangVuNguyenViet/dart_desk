@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_desk/src/studio/providers/studio_provider.dart';
-import 'package:dart_desk/src/studio/screens/document_screen.dart';
-import 'package:dart_desk/src/studio/screens/document_type_screen.dart';
 import 'package:dart_desk/studio.dart';
 import 'package:dart_desk/testing.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +66,7 @@ void main() {
   });
 
   setUp(() {
-    dataSource = MockDataSource();
+    dataSource = MockDataSource()..seedDefaults();
   });
 
   group('DocumentTypeScreen (no document selected)', () {

@@ -34,6 +34,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   http: ^1.2.0
   collection: ^1.19.1
+  meta: ^1.17.0
   crypto: ^3.0.6
   image: ^4.5.0
   image_picker_platform_interface: ^2.10.0
@@ -45,6 +46,9 @@ dependencies:
   flutter_colorpicker: ^1.1.0
   marionette_flutter: ^0.5.0
   uuid: ^4.5.3
+  # Used by lib/src/testing/golden_bricks_theme.dart so consumers can opt their
+  # apps into a deterministic-glyph theme for golden tests.
+  golden_bricks: ^1.0.0
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +58,33 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   build_runner: ^2.13.1
   auto_route_generator: ^10.5.0
+  flutter_test_goldens: ^0.0.10
+  # Used by test/helpers/input_test_helpers.dart to stub native channels
+  # for super_drag_and_drop in widget tests.
+  irondash_message_channel: ^0.7.0
+  super_native_extensions: ^0.9.0
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: lib/fonts/Inter-Variable.ttf
+    - family: Manrope
+      fonts:
+        - asset: lib/fonts/Manrope-Variable.ttf
+    - family: DM Sans
+      fonts:
+        - asset: lib/fonts/DMSans-Variable.ttf
+    - family: Noto Serif
+      fonts:
+        - asset: lib/fonts/NotoSerif-Variable.ttf
+    - family: Playfair Display
+      fonts:
+        - asset: lib/fonts/PlayfairDisplay-Variable.ttf
+    - family: Cormorant Garamond
+      fonts:
+        - asset: lib/fonts/CormorantGaramond-Variable.ttf
+    - family: DM Serif Display
+      fonts:
+        - asset: lib/fonts/DMSerifDisplay-Regular.ttf

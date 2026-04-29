@@ -9,7 +9,7 @@ void main() {
   testWidgets(
     'tapping a tile shows AssetDetailPanel inline (no layout jump)',
     (tester) async {
-      final dataSource = MockDataSource();
+      final dataSource = MockDataSource()..seedDefaults();
       await tester.pumpWidget(
         ShadApp(
           home: Scaffold(

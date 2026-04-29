@@ -1,10 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:dart_desk/testing.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as img;
+import 'package:irondash_message_channel/irondash_message_channel.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+// ignore: implementation_imports
+import 'package:super_native_extensions/src/native/context.dart' as snx_ctx;
 
 /// 10×10 valid PNG bytes for tests that need an image (e.g. Image.network).
 late Uint8List testPngBytes;
@@ -20,6 +25,7 @@ void initTestPngBytes() {
 /// `ShadApp` > `Scaffold` > `ShadToaster` > `SingleChildScrollView` > `Padding`
 Widget buildInputApp(Widget child) {
   return ShadApp(
+    theme: goldenBricksTheme(),
     home: Scaffold(
       body: ShadToaster(
         child: SingleChildScrollView(
@@ -28,6 +34,47 @@ Widget buildInputApp(Widget child) {
       ),
     ),
   );
+}
+
+// ---------- Native plugin stubs for super_drag_and_drop ----------
+
+/// Stubs the platform channels used by `super_drag_and_drop` /
+/// `super_native_extensions` so widgets that mount drop targets (e.g.
+/// `DeskImageInput`) don't fail in `flutter_test` with
+/// `MissingPluginException` and `NoSuchChannelException`.
+///
+/// Must be called from `setUpAll` before any widget pumps. Registers a
+/// `MockMessageChannelContext` override on `super_native_extensions`,
+/// supplying no-op handlers for the channels touched by drop/drag/menu
+/// initialization.
+void installSuperDragAndDropMocks() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(
+    const MethodChannel('dev.irondash.engine_context'),
+    (call) async {
+      if (call.method == 'getEngineHandle') return 0;
+      return null;
+    },
+  );
+
+  final ctx = MockMessageChannelContext();
+  for (final channel in const [
+    'DropManager',
+    'DragManager',
+    'MenuManager',
+    'DataReaderManager',
+    'DataProviderManager',
+    'ClipboardReader',
+    'ClipboardWriter',
+    'ClipboardEventManager',
+    'HotKeyManager',
+    'KeyboardLayoutManager',
+  ]) {
+    ctx.registerMockMethodCallHandler(channel, (_) async => null);
+  }
+  snx_ctx.setContextOverride(ctx);
 }
 
 // ---------- HTTP mock for Image.network ----------

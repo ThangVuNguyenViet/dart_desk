@@ -43,6 +43,7 @@ final rewardsConfigFields = [
     ),
     fromMap: Coupon.$fromMap,
   ),
+  DeskBooleanField(name: 'enabled', title: 'Enabled'),
   DeskUrlField(name: 'termsUrl', title: 'Terms Url', option: DeskUrlOption()),
   DeskBlockField(
     name: 'fineprint',
@@ -71,6 +72,7 @@ class RewardsConfigDeskModel {
     required this.tiers,
     required this.currentUserPoints,
     required this.coupons,
+    required this.enabled,
     required this.termsUrl,
     required this.fineprint,
   });
@@ -82,6 +84,8 @@ class RewardsConfigDeskModel {
   final DeskData<num> currentUserPoints;
 
   final DeskData<List<Coupon>> coupons;
+
+  final DeskData<bool> enabled;
 
   final DeskData<String> termsUrl;
 

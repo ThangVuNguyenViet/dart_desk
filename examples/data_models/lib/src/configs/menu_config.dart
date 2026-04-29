@@ -4,8 +4,8 @@ import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/widgets.dart';
 
-import '../seed/aura_assets.dart';
-import '../seed/aura_enums.dart';
+import '../primitives/aura_assets.dart';
+import '../primitives/aura_enums.dart';
 import '../shared/menu_item_entry.dart';
 import '../shared/store_hours_entry.dart';
 import 'desk_content.dart';

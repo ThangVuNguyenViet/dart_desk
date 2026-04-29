@@ -35,6 +35,8 @@ class ChefProfileMapper extends ClassMapperBase<ChefProfile> {
   );
   static String _$bio(ChefProfile v) => v.bio;
   static const Field<ChefProfile, String> _f$bio = Field('bio', _$bio);
+  static String? _$cv(ChefProfile v) => v.cv;
+  static const Field<ChefProfile, String> _f$cv = Field('cv', _$cv, opt: true);
 
   @override
   final MappableFields<ChefProfile> fields = const {
@@ -42,6 +44,7 @@ class ChefProfileMapper extends ClassMapperBase<ChefProfile> {
     #role: _f$role,
     #portrait: _f$portrait,
     #bio: _f$bio,
+    #cv: _f$cv,
   };
 
   static ChefProfile _instantiate(DecodingData data) {
@@ -50,6 +53,7 @@ class ChefProfileMapper extends ClassMapperBase<ChefProfile> {
       role: data.dec(_f$role),
       portrait: data.dec(_f$portrait),
       bio: data.dec(_f$bio),
+      cv: data.dec(_f$cv),
     );
   }
 
@@ -113,7 +117,13 @@ extension ChefProfileValueCopy<$R, $Out>
 
 abstract class ChefProfileCopyWith<$R, $In extends ChefProfile, $Out>
     implements ClassCopyWith<$R, $In, $Out> {
-  $R call({String? name, String? role, ImageReference? portrait, String? bio});
+  $R call({
+    String? name,
+    String? role,
+    ImageReference? portrait,
+    String? bio,
+    String? cv,
+  });
   ChefProfileCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
 }
 
@@ -131,12 +141,14 @@ class _ChefProfileCopyWithImpl<$R, $Out>
     String? role,
     Object? portrait = $none,
     String? bio,
+    Object? cv = $none,
   }) => $apply(
     FieldCopyWithData({
       if (name != null) #name: name,
       if (role != null) #role: role,
       if (portrait != $none) #portrait: portrait,
       if (bio != null) #bio: bio,
+      if (cv != $none) #cv: cv,
     }),
   );
   @override
@@ -145,6 +157,7 @@ class _ChefProfileCopyWithImpl<$R, $Out>
     role: data.get(#role, or: $value.role),
     portrait: data.get(#portrait, or: $value.portrait),
     bio: data.get(#bio, or: $value.bio),
+    cv: data.get(#cv, or: $value.cv),
   );
 
   @override

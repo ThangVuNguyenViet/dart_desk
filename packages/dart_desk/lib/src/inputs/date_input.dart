@@ -52,6 +52,7 @@ class _DeskDateInputState extends State<DeskDateInput> {
     return ShadDatePickerFormField(
       initialValue: _selectedDate,
       label: Text(widget.field.title),
+      width: double.infinity,
       enabled: !widget.field.option.optional || _isEnabled,
       trailing: widget.field.option.optional
           ? ShadCheckbox(
