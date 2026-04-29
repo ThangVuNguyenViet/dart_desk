@@ -459,22 +459,25 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
 
   @override
   Widget build(BuildContext context) {
-    final state = _authVM.getCurrentUser.watch(context);
+    final state = _authVM.currentUser.watch(context);
+    final error = _authVM.displayError.watch(context);
 
-    if (state is AsyncLoading<User?>) return _buildLoadingScreen();
-
+    // Check AsyncData *before* AsyncLoading: AsyncDataReloading extends both,
+    // so a refresh keeps the authenticated subtree mounted instead of being
+    // swapped out for the loading screen (which would tear down all signals).
     if (state is AsyncData<User?> && state.value != null) {
       return widget.builder(context, _authVM.client, _handleSignOut);
     }
 
+    if (state is AsyncLoading<User?>) return _buildLoadingScreen();
+
     if (_showForgotPassword) return _buildForgotPasswordFlow();
 
-    return _buildSignInScreen(errorMessage: _errorMessageFor(state));
+    return _buildSignInScreen(errorMessage: _errorMessageFor(error));
   }
 
-  String? _errorMessageFor(AsyncState<User?> state) {
-    if (state is! AsyncError<User?>) return null;
-    final error = state.error;
+  String? _errorMessageFor(Object? error) {
+    if (error == null) return null;
     if (error is ServerpodClientException && error.statusCode == 404) {
       return 'Your account does not have access to this project. '
           'Please contact your administrator.';

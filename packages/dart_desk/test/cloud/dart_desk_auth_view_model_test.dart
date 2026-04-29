@@ -42,6 +42,14 @@ void main() {
         sessionManager: session,
       );
 
+  // Resolves microtasks queued by the awaitable future signal so its
+  // factory runs to completion before assertions.
+  Future<void> settle() async {
+    for (var i = 0; i < 5; i++) {
+      await Future<void>.delayed(Duration.zero);
+    }
+  }
+
   test(
     'authenticated + getCurrentUser 404 → AsyncError + signOutDevice called',
     () async {
@@ -51,12 +59,11 @@ void main() {
       ).thenThrow(const ServerpodClientException('not found', 404));
 
       final vm = build();
+      vm.currentUser.value; // force lazy factory to run.
       await vm.start();
-      // The error-reaction effect dispatches signOutDevice via an untracked
-      // async callback — let it settle.
-      await Future<void>.delayed(Duration.zero);
+      await settle();
 
-      final state = vm.getCurrentUser.value;
+      final state = vm.currentUser.value;
       expect(state, isA<AsyncError<User?>>());
       final error = (state as AsyncError<User?>).error;
       expect(error, isA<ServerpodClientException>());
@@ -73,9 +80,11 @@ void main() {
     when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async => user);
 
     final vm = build();
+    vm.currentUser.value;
     await vm.start();
+    await settle();
 
-    final state = vm.getCurrentUser.value;
+    final state = vm.currentUser.value;
     expect(state, isA<AsyncData<User?>>());
     expect((state as AsyncData<User?>).value, user);
     verifyNever(() => session.signOutDevice());
@@ -87,9 +96,11 @@ void main() {
     when(() => session.isAuthenticated).thenReturn(false);
 
     final vm = build();
+    vm.currentUser.value;
     await vm.start();
+    await settle();
 
-    final state = vm.getCurrentUser.value;
+    final state = vm.currentUser.value;
     expect(state, isA<AsyncData<User?>>());
     expect((state as AsyncData<User?>).value, isNull);
     verifyNever(() => userEndpoint.getCurrentUser());
@@ -97,41 +108,47 @@ void main() {
     vm.dispose();
   });
 
-  test('signInWithEmail with empty fields → validation AsyncError', () async {
+  test('signInWithEmail with empty fields → signInError set', () async {
     when(() => session.isAuthenticated).thenReturn(false);
 
     final vm = build();
+    vm.currentUser.value;
     await vm.start();
+    await settle();
 
     await vm.signInWithEmail(email: '', password: '');
-    final state = vm.getCurrentUser.value;
-    expect(state, isA<AsyncError<User?>>());
+    expect(vm.signInError.value, 'Please enter both email and password.');
     expect(
-      (state as AsyncError<User?>).error,
+      vm.displayError.value,
       'Please enter both email and password.',
     );
+    // currentUser stays as AsyncData(null) — sign-in errors don't taint
+    // the user state.
+    expect(vm.currentUser.value, isA<AsyncData<User?>>());
+    expect((vm.currentUser.value as AsyncData<User?>).value, isNull);
 
     vm.dispose();
   });
 
-  test('auth listener flipping to authenticated triggers loadCurrentUser', () async {
+  test('auth listener flipping to authenticated triggers reload', () async {
     var authed = false;
     when(() => session.isAuthenticated).thenAnswer((_) => authed);
     final user = User(email: 't@example.com');
     when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async => user);
 
     final vm = build();
+    vm.currentUser.value;
     await vm.start();
-    expect((vm.getCurrentUser.value as AsyncData<User?>).value, isNull);
+    await settle();
+    expect((vm.currentUser.value as AsyncData<User?>).value, isNull);
 
     // Simulate successful sign-in completing: isAuthenticated flips true and
-    // the listenable fires.
+    // the listenable fires with a fresh AuthSuccess.
     authed = true;
     authNotifier.value = _MockAuthSuccess();
-    // loadCurrentUser awaits; give the microtask queue a chance to finish.
-    await Future<void>.delayed(Duration.zero);
+    await settle();
 
-    expect((vm.getCurrentUser.value as AsyncData<User?>).value, user);
+    expect((vm.currentUser.value as AsyncData<User?>).value, user);
 
     vm.dispose();
   });
