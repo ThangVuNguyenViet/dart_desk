@@ -75,6 +75,34 @@ class _DelayingDataSource extends MockDataSource {
   }
 }
 
+/// Wraps [MockDataSource] and strips `isDefault` from every returned doc, so
+/// the auto-select fallback path ("no default → take first") is exercised
+/// even though MockDataSource auto-flags the first created doc as default.
+class _NoDefaultDataSource extends MockDataSource {
+  @override
+  Future<DocumentList> getDocuments(
+    String documentType, {
+    String? search,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final base = await super.getDocuments(
+      documentType,
+      search: search,
+      limit: limit,
+      offset: offset,
+    );
+    return DocumentList(
+      documents: base.documents
+          .map((d) => d.copyWith(isDefault: false))
+          .toList(),
+      total: base.total,
+      page: base.page,
+      pageSize: base.pageSize,
+    );
+  }
+}
+
 void main() {
   setUpAll(() {
     initTestPngBytes();
@@ -263,5 +291,34 @@ void main() {
       );
     });
 
+    testWidgets('falls back to first document when no default is marked', (
+      tester,
+    ) async {
+      _useDesktopViewport(tester);
+
+      // Strip isDefault from all returned docs so the effect must hit the
+      // `?? docs.first` fallback. seedDefaults is still used so the doc
+      // ordering matches the production data shape.
+      final source = _NoDefaultDataSource()..seedDefaults();
+      await pumpStudioShell(tester, source);
+      for (var i = 0; i < 8; i++) {
+        await tester.pump(const Duration(milliseconds: 16));
+      }
+
+      final docs = await source.getDocuments(allFieldsDocumentType.name);
+      // Sanity: no doc is flagged as default.
+      expect(docs.documents.any((d) => d.isDefault), isFalse);
+
+      expect(
+        GetIt.I<DeskViewModel>().currentDocumentId.value,
+        docs.documents.first.id,
+        reason:
+            'With no default doc, the effect should navigate to the first '
+            'document in the list.',
+      );
+
+      final overflow = tester.takeException();
+      expect(overflow, anyOf(isNull, isA<FlutterError>()));
+    });
   });
 }
