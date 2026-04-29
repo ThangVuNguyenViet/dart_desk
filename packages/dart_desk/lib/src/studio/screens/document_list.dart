@@ -539,11 +539,15 @@ class _DeskDocumentListViewState extends State<DeskDocumentListView> {
                     ),
                     const SizedBox(width: 6),
                   ],
-                  Text(
-                    _formatTimestamp(doc.updatedAt),
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: theme.colorScheme.mutedForeground,
+                  Flexible(
+                    child: Text(
+                      _formatTimestamp(doc.updatedAt),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: theme.colorScheme.mutedForeground,
+                      ),
                     ),
                   ),
                 ],
@@ -584,15 +588,18 @@ class _DocumentStatusPill extends StatelessWidget {
         .versionsContainer(documentId)
         .watch(context);
 
-    final status = versionsState.map(
-      loading: () => DocumentVersionStatus.draft,
-      error: (_, _) => DocumentVersionStatus.draft,
+    // Render nothing while loading/erroring instead of misleadingly showing
+    // "draft" — AsyncDataReloading still routes to data, so reloads keep the
+    // last known status visible.
+    return versionsState.map<Widget>(
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
       data: (versionList) {
-        if (versionList.versions.isEmpty) return DocumentVersionStatus.draft;
-        return versionList.versions.last.status;
+        if (versionList.versions.isEmpty) {
+          return const DeskStatusPill(status: DocumentVersionStatus.draft);
+        }
+        return DeskStatusPill(status: versionList.versions.last.status);
       },
     );
-
-    return DeskStatusPill(status: status);
   }
 }
