@@ -59,7 +59,7 @@ class DocumentScreen extends StatelessWidget {
             child: DocumentPreview(docType: docType),
           ),
         ),
-        ResizableChild(size: const ResizableSize.expand(), child: editor),
+        ResizableChild(size: const ResizableSize.pixels(500), child: editor),
       ],
     );
   }

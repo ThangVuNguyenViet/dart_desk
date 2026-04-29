@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
@@ -6,9 +7,11 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
+import '../../data/models/document_list.dart';
 import '../components/common/desk_collapse_bar.dart';
 import '../components/common/desk_top_bar.dart';
 import '../components/navigation/desk_document_type_sidebar.dart';
+import '../config/desk_breakpoints.dart';
 import '../config/studio_config.dart';
 import '../core/view_models/desk_view_model.dart';
 import '../providers/studio_provider.dart';
@@ -25,6 +28,40 @@ class StudioShellScreen extends StatefulWidget {
 }
 
 class _StudioShellScreenState extends State<StudioShellScreen> {
+  EffectCleanup? _autoSelectCleanup;
+
+  @override
+  void initState() {
+    super.initState();
+    final viewModel = GetIt.I<DeskViewModel>();
+    // Auto-navigate to the default (or first) document whenever a doc type is
+    // selected but no document is. Desktop-only — on mobile the document list
+    // is the screen itself, so jumping past it would be hostile.
+    _autoSelectCleanup = effect(() {
+      final slug = viewModel.currentDocumentTypeSlug.value;
+      final docId = viewModel.currentDocumentId.value;
+      if (slug == null || docId != null) return;
+      final state = viewModel.documentsContainer(slug).value;
+      if (state is! AsyncData<DocumentList>) return;
+      final docs = state.value.documents;
+      if (docs.isEmpty) return;
+      final picked =
+          docs.firstWhereOrNull((d) => d.isDefault) ?? docs.first;
+      final id = picked.id;
+      if (id == null) return;
+      untracked(() {
+        if (!mounted) return;
+        final isDesktop = ResponsiveBreakpoints.of(
+          context,
+        ).largerThan(DeskBreakpoints.tabletTag);
+        if (!isDesktop) return;
+        context.router.navigate(
+          DocumentScreenRoute(documentTypeSlug: slug, documentId: id),
+        );
+      });
+    });
+  }
+
   @override
   void didChangeDependencies() {
     final params = context.router.topRoute.params;
@@ -39,6 +76,12 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
       }
     }
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _autoSelectCleanup?.call();
+    super.dispose();
   }
 
   Future<void> _deleteDocument(BuildContext context, {String? docId}) async {
