@@ -33,31 +33,39 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
   @override
   void initState() {
     super.initState();
-    final viewModel = GetIt.I<DeskViewModel>();
-    // Auto-navigate to the default (or first) document whenever a doc type is
-    // selected but no document is. Desktop-only — on mobile the document list
-    // is the screen itself, so jumping past it would be hostile.
-    _autoSelectCleanup = effect(() {
-      final slug = viewModel.currentDocumentTypeSlug.value;
-      final docId = viewModel.currentDocumentId.value;
-      if (slug == null || docId != null) return;
-      final state = viewModel.documentsContainer(slug).value;
-      if (state is! AsyncData<DocumentList>) return;
-      final docs = state.value.documents;
-      if (docs.isEmpty) return;
-      final picked =
-          docs.firstWhereOrNull((d) => d.isDefault) ?? docs.first;
-      final id = picked.id;
-      if (id == null) return;
-      untracked(() {
-        if (!mounted) return;
-        final isDesktop = ResponsiveBreakpoints.of(
-          context,
-        ).largerThan(DeskBreakpoints.tabletTag);
-        if (!isDesktop) return;
-        context.router.navigate(
-          DocumentScreenRoute(documentTypeSlug: slug, documentId: id),
-        );
+    // StudioProvider registers DeskViewModel in its own initState — but the
+    // provider is a *descendant* of this shell, so its initState fires after
+    // ours. Defer effect installation to the first post-frame callback so
+    // the VM is guaranteed to be registered before we look it up.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final viewModel = GetIt.I<DeskViewModel>();
+      // Auto-navigate to the default (or first) document whenever a doc type
+      // is selected but no document is. Desktop-only — on mobile the
+      // document list is the screen itself, so jumping past it would be
+      // hostile.
+      _autoSelectCleanup = effect(() {
+        final slug = viewModel.currentDocumentTypeSlug.value;
+        final docId = viewModel.currentDocumentId.value;
+        if (slug == null || docId != null) return;
+        final state = viewModel.documentsContainer(slug).value;
+        if (state is! AsyncData<DocumentList>) return;
+        final docs = state.value.documents;
+        if (docs.isEmpty) return;
+        final picked =
+            docs.firstWhereOrNull((d) => d.isDefault) ?? docs.first;
+        final id = picked.id;
+        if (id == null) return;
+        untracked(() {
+          if (!mounted) return;
+          final isDesktop = ResponsiveBreakpoints.of(
+            context,
+          ).largerThan(DeskBreakpoints.tabletTag);
+          if (!isDesktop) return;
+          context.router.navigate(
+            DocumentScreenRoute(documentTypeSlug: slug, documentId: id),
+          );
+        });
       });
     });
   }
