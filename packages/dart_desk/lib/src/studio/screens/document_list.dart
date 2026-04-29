@@ -539,11 +539,15 @@ class _DeskDocumentListViewState extends State<DeskDocumentListView> {
                     ),
                     const SizedBox(width: 6),
                   ],
-                  Text(
-                    _formatTimestamp(doc.updatedAt),
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: theme.colorScheme.mutedForeground,
+                  Flexible(
+                    child: Text(
+                      _formatTimestamp(doc.updatedAt),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 9,
+                        color: theme.colorScheme.mutedForeground,
+                      ),
                     ),
                   ),
                 ],

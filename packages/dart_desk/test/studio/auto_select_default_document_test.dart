@@ -281,14 +281,6 @@ void main() {
             'route observer mirrors back into currentDocumentId.',
       );
 
-      // Drain a known-pre-existing RenderFlex overflow in the doc-list row
-      // (Default badge + timestamp at 220px panel width). Unrelated to the
-      // behaviour under test.
-      final overflow = tester.takeException();
-      expect(
-        overflow,
-        anyOf(isNull, isA<FlutterError>()),
-      );
     });
 
     testWidgets('falls back to first document when no default is marked', (
@@ -317,8 +309,6 @@ void main() {
             'document in the list.',
       );
 
-      final overflow = tester.takeException();
-      expect(overflow, anyOf(isNull, isA<FlutterError>()));
     });
   });
 }
