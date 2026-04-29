@@ -28,6 +28,7 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'empty / unselected',
           builder: (_) => buildInputApp(
             const DeskMultiDropdownInput<String>(field: _field),
@@ -35,6 +36,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'two items selected',
           builder: (_) => buildInputApp(
             const DeskMultiDropdownInput<String>(

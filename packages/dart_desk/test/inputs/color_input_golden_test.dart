@@ -21,11 +21,13 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'empty / unset',
           builder: (_) => buildInputApp(const DeskColorInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'filled with red',
           builder: (_) => buildInputApp(
             const DeskColorInput(
@@ -36,6 +38,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskColorInput(

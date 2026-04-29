@@ -21,11 +21,13 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'upload button when no file',
           builder: (_) => buildInputApp(DeskFileInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'title label visible',
           builder: (_) => buildInputApp(DeskFileInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),

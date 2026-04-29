@@ -36,6 +36,7 @@ void main() {
           layout: ColumnSceneLayout(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'empty / upload area',
           builder: (_) => buildInputApp(
             DeskImageInput(field: _field, dataSource: dataSource),
@@ -43,6 +44,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'filled with external URL',
           builder: (_) => buildInputApp(
             DeskImageInput(

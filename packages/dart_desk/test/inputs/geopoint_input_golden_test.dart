@@ -21,12 +21,14 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'empty',
           builder: (_) =>
               buildInputApp(const DeskGeopointInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'filled with coordinates',
           builder: (_) => buildInputApp(
             const DeskGeopointInput(

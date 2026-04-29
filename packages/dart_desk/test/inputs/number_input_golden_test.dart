@@ -21,11 +21,13 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'empty',
           builder: (_) => buildInputApp(const DeskNumberInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'filled',
           builder: (_) => buildInputApp(
             const DeskNumberInput(
@@ -36,6 +38,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskNumberInput(

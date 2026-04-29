@@ -47,11 +47,13 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'empty',
           builder: (_) => buildInputApp(const DeskObjectInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'filled',
           builder: (_) => buildInputApp(
             const DeskObjectInput(

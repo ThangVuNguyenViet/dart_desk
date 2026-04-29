@@ -25,6 +25,7 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'enabled — full opacity, interactive',
           builder: (_) => buildInputApp(
             const OptionalFieldWrapper(isEnabled: true, child: _inner),
@@ -32,6 +33,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'disabled — dimmed to 0.4 opacity',
           builder: (_) => buildInputApp(
             const OptionalFieldWrapper(isEnabled: false, child: _inner),

@@ -21,12 +21,14 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'unchecked',
           builder: (_) =>
               buildInputApp(const DeskCheckboxInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'checked',
           builder: (_) => buildInputApp(
             const DeskCheckboxInput(

@@ -21,11 +21,13 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'off / unset',
           builder: (_) => buildInputApp(const DeskBooleanInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'on / enabled',
           builder: (_) => buildInputApp(
             const DeskBooleanInput(

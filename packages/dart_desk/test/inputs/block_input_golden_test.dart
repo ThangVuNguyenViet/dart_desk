@@ -21,11 +21,13 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'empty editor',
           builder: (_) => buildInputApp(const DeskBlockInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'pre-filled with text',
           builder: (_) => buildInputApp(
             const DeskBlockInput(

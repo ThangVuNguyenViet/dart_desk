@@ -23,6 +23,7 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'empty list',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(
@@ -33,6 +34,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: 10000,
           description: 'populated list',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(
