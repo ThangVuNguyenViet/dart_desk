@@ -48,6 +48,7 @@ dev_dependencies:
   serverpod_auth_idp_flutter: ^3.4.5
   # Screen-golden infrastructure (test/screens/).
   flutter_test_goldens: ^0.0.10
+  golden_bricks: ^1.0.0
   get_it: ^9.2.1
   image: ^4.5.0
   irondash_message_channel: ^0.7.0
