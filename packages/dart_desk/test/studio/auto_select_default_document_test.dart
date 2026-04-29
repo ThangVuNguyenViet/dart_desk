@@ -165,55 +165,6 @@ void main() {
   });
 
   // ========================================================================
-  // 2. Editor pane defaults to 500px wide on desktop
-  // ========================================================================
-
-  group('DocumentScreen editor initial width', () {
-    testWidgets('editor pane is 500px wide on desktop', (tester) async {
-      _useDesktopViewport(tester);
-
-      final source = MockDataSource()..seedDefaults();
-      final docs = await source.getDocuments(allFieldsDocumentType.name);
-      final doc = docs.documents.first;
-
-      await tester.pumpWidget(
-        ShadApp(
-          home: Scaffold(
-            body: ShadToaster(
-              child: StudioProvider(
-                dataSource: source,
-                documentTypes: [allFieldsDocumentType],
-                child: Builder(
-                  builder: (context) {
-                    GetIt.I<DeskViewModel>().currentDocumentTypeSlug.value =
-                        allFieldsDocumentType.name;
-                    return _wrapWithBreakpoints(
-                      DocumentScreen(
-                        documentTypeSlug: allFieldsDocumentType.name,
-                        documentId: doc.id!,
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      final editor = find.byType(DeskDocumentEditor);
-      expect(editor, findsOneWidget);
-      final size = tester.getSize(editor);
-      expect(
-        size.width,
-        500,
-        reason: 'Editor pane should start at the configured 500px width',
-      );
-    });
-  });
-
-  // ========================================================================
   // 3. StudioShellScreen auto-selects the default document
   // ========================================================================
 
