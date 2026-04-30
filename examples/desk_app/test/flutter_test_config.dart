@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -30,7 +31,31 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
       },
     );
   }
+  // ARM↔x86 sub-pixel drift on real fonts. See dart_desk's flutter_test_config.
+  final defaultComparator = goldenFileComparator as LocalFileComparator;
+  goldenFileComparator = _TolerantComparator(
+    defaultComparator.basedir.resolve('flutter_test_config.dart'),
+  );
   await testMain();
+}
+
+class _TolerantComparator extends LocalFileComparator {
+  _TolerantComparator(super.testFile);
+
+  static const double _kPixelTolerance = 0.001;
+
+  @override
+  Future<bool> compare(Uint8List imageBytes, Uri golden) async {
+    final result = await GoldenFileComparator.compareLists(
+      imageBytes,
+      await getGoldenBytes(golden),
+    );
+    if (result.passed || result.diffPercent <= _kPixelTolerance) {
+      return true;
+    }
+    final error = await generateFailureOutput(result, golden, basedir);
+    throw FlutterError(error);
+  }
 }
 
 Future<Directory?> _resolvePackageDir({

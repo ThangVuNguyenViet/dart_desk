@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -22,7 +23,37 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   await _loadAuraFonts(Directory('lib/fonts'));
   await _loadShadcnGeist(packageRoot: Directory.current);
+  // Real fonts get sub-pixel rasterization drift between Apple Silicon's
+  // amd64 emulation (where local devs regenerate goldens) and CI's native
+  // x86 — order-of-magnitude single-pixel differences. Allow a tiny
+  // per-pixel tolerance so that doesn't fail; real layout changes still
+  // produce diffs orders of magnitude larger.
+  final defaultComparator = goldenFileComparator as LocalFileComparator;
+  goldenFileComparator = _TolerantComparator(
+    defaultComparator.basedir.resolve('flutter_test_config.dart'),
+  );
   await testMain();
+}
+
+class _TolerantComparator extends LocalFileComparator {
+  _TolerantComparator(super.testFile);
+
+  /// 0.1% — well above ARM↔x86 anti-aliasing drift, well below any real
+  /// visual change.
+  static const double _kPixelTolerance = 0.001;
+
+  @override
+  Future<bool> compare(Uint8List imageBytes, Uri golden) async {
+    final result = await GoldenFileComparator.compareLists(
+      imageBytes,
+      await getGoldenBytes(golden),
+    );
+    if (result.passed || result.diffPercent <= _kPixelTolerance) {
+      return true;
+    }
+    final error = await generateFailureOutput(result, golden, basedir);
+    throw FlutterError(error);
+  }
 }
 
 Future<void> _loadAuraFonts(Directory dir) async {
