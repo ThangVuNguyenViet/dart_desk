@@ -45,6 +45,19 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskNumberInput(
+              field: DeskNumberField(
+                name: 'discount',
+                title: 'Discount (optional)',
+                option: DeskNumberOption(optional: true),
+              ),
+              data: DeskData(value: 42, path: 'discount'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }
