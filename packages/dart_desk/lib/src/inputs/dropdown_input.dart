@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
+
 @Preview(name: 'DeskDropdownInput')
 Widget preview() => ShadApp(
   home: DeskDropdownInput<String>(
@@ -41,6 +44,7 @@ class DeskDropdownInput<T> extends StatelessWidget {
       return _DeskDropdownInput<T>(
         title: field.title,
         description: field.description,
+        isOptional: false,
         data: data,
         onChanged: onChanged,
       );
@@ -70,6 +74,7 @@ class DeskDropdownInput<T> extends StatelessWidget {
           return _DeskDropdownInput<T>(
             title: field.title,
             description: field.description,
+            isOptional: fieldOption.optional,
             placeholder: fieldOption.placeholder,
             options: loadedOptions,
             defaultValue: loadedDefaultValue,
@@ -84,6 +89,7 @@ class DeskDropdownInput<T> extends StatelessWidget {
     return _DeskDropdownInput<T>(
       title: field.title,
       description: field.description,
+      isOptional: fieldOption.optional,
       placeholder: fieldOption.placeholder,
       options: options,
       defaultValue: fieldOption.defaultValue as T?,
@@ -101,6 +107,7 @@ class _DeskDropdownInput<T> extends StatefulWidget {
   final String title;
   final String? description;
   final String? placeholder;
+  final bool isOptional;
   final T Function(Map<String, dynamic>)? fromMap;
 
   final ValueChanged<T?>? onChanged;
@@ -114,6 +121,7 @@ class _DeskDropdownInput<T> extends StatefulWidget {
     required this.title,
     this.description,
     this.placeholder,
+    this.isOptional = false,
     this.fromMap,
   });
 
@@ -125,12 +133,18 @@ class _DeskDropdownInputState<T> extends State<_DeskDropdownInput<T>> {
   late ShadSelectController<T> _controller;
   List<DropdownOption<T>> _filteredOptions = [];
   String _searchQuery = '';
+  late bool _isEnabled;
+  T? _lastValue;
+
+  bool get _isOptional => widget.isOptional;
 
   @override
   void initState() {
     super.initState();
     _controller = ShadSelectController<T>(initialValue: _resolveInitialSet());
     _filteredOptions = widget.options;
+    _isEnabled = _isOptional ? widget.data?.value != null : true;
+    _lastValue = _resolveRawValue();
   }
 
   @override
@@ -139,10 +153,38 @@ class _DeskDropdownInputState<T> extends State<_DeskDropdownInput<T>> {
     if (widget.data != oldWidget.data) {
       final resolved = _resolveInitialSet();
       _controller.value = resolved;
+      if (_isOptional) {
+        setState(() => _isEnabled = widget.data?.value != null);
+      }
     }
     if (widget.options != oldWidget.options) {
       _applySearch();
     }
+  }
+
+  T? _resolveRawValue() {
+    final raw = widget.data?.value ?? widget.defaultValue;
+    if (raw == null) return null;
+    if (raw is T) return raw;
+    if (widget.fromMap != null && raw is Map) {
+      return widget.fromMap!(Map<String, dynamic>.from(raw));
+    }
+    return raw as T?;
+  }
+
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastValue = _controller.value.firstOrNull;
+        _isEnabled = false;
+        _controller.value = {};
+      } else {
+        _isEnabled = true;
+        final restore = _lastValue;
+        _controller.value = restore != null ? {restore} : {};
+      }
+    });
+    widget.onChanged?.call(enabled ? _lastValue : null);
   }
 
   void _onSearchChanged(String query) {
@@ -193,18 +235,23 @@ class _DeskDropdownInputState<T> extends State<_DeskDropdownInput<T>> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.title,
-            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+          OptionalFieldHeader(
+            title: widget.title,
+            isOptional: _isOptional,
+            isEnabled: _isEnabled,
+            onToggle: _handleToggle,
           ),
           const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              border: Border.all(color: theme.colorScheme.border),
-              borderRadius: BorderRadius.circular(6),
+          OptionalFieldWrapper(
+            isEnabled: !_isOptional || _isEnabled,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: theme.colorScheme.border),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text('No options available', style: theme.textTheme.muted),
             ),
-            child: Text('No options available', style: theme.textTheme.muted),
           ),
           if (widget.description != null) ...[
             const SizedBox(height: 4),
@@ -225,32 +272,38 @@ class _DeskDropdownInputState<T> extends State<_DeskDropdownInput<T>> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.title.isNotEmpty) ...[
-          Text(
-            widget.title,
-            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+        OptionalFieldHeader(
+          title: widget.title,
+          isOptional: _isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
+        ),
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isEnabled: !_isOptional || _isEnabled,
+          child: ShadSelect<T>.withSearch(
+            controller: _controller,
+            searchPlaceholder: const Text('Search...'),
+            onSearchChanged: _onSearchChanged,
+            placeholder: Text(
+              widget.placeholder ?? 'Select an option...',
+              style: theme.textTheme.muted,
+            ),
+            allowDeselection: true,
+            options: selectOptions,
+            selectedOptionBuilder: (context, T value) {
+              final option = options.firstWhereOrNull(
+                (opt) => opt.value == value,
+              );
+              return Text(option?.label ?? value.toString());
+            },
+            onChanged: (value) {
+              if (_isEnabled) {
+                _lastValue = value;
+                widget.onChanged?.call(value);
+              }
+            },
           ),
-          const SizedBox(height: 8),
-        ],
-        ShadSelect<T>.withSearch(
-          controller: _controller,
-          searchPlaceholder: const Text('Search...'),
-          onSearchChanged: _onSearchChanged,
-          placeholder: Text(
-            widget.placeholder ?? 'Select an option...',
-            style: theme.textTheme.muted,
-          ),
-          allowDeselection: true,
-          options: selectOptions,
-          selectedOptionBuilder: (context, T value) {
-            final option = options.firstWhereOrNull(
-              (opt) => opt.value == value,
-            );
-            return Text(option?.label ?? value.toString());
-          },
-          onChanged: (value) {
-            widget.onChanged?.call(value);
-          },
         ),
         if (widget.description != null) ...[
           const SizedBox(height: 4),
