@@ -3,6 +3,9 @@ import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
+
 @Preview(name: 'DeskTextInput')
 Widget preview() => ShadApp(
   home: DeskTextInput(
@@ -33,7 +36,8 @@ class DeskTextInput extends StatefulWidget {
 class _DeskTextInputState extends State<DeskTextInput> {
   late final TextEditingController _controller;
   late final UndoHistoryController _undoController;
-  late bool _isEnabled;
+  String _lastText = '';
+  bool _isEnabled = true;
 
   @override
   void initState() {
@@ -46,22 +50,40 @@ class _DeskTextInputState extends State<DeskTextInput> {
     _isEnabled = widget.field.option.optional
         ? widget.data?.value != null
         : true;
+    _lastText = initialText;
   }
 
   void _onTextChanged() {
     if (_isEnabled) widget.onChanged?.call(_controller.text);
   }
 
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastText = _controller.text;
+        _isEnabled = false;
+      } else {
+        _isEnabled = true;
+        _controller.removeListener(_onTextChanged);
+        _controller.text = _lastText;
+        _controller.addListener(_onTextChanged);
+      }
+    });
+    widget.onChanged?.call(enabled ? _controller.text : null);
+  }
+
   @override
   void didUpdateWidget(covariant DeskTextInput oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final newText =
-        widget.data?.value ?? widget.field.option.initialValue ?? '';
-    if (newText != _controller.text &&
-        oldWidget.data?.value != widget.data?.value) {
+    final newValue = widget.data?.value;
+    if (oldWidget.data?.value != newValue) {
+      final newText = newValue ?? widget.field.option.initialValue ?? '';
       _controller.removeListener(_onTextChanged);
-      _controller.text = newText;
+      if (newText != _controller.text) _controller.text = newText;
       _controller.addListener(_onTextChanged);
+      if (widget.field.option.optional) {
+        setState(() => _isEnabled = newValue != null);
+      }
     }
   }
 
@@ -78,6 +100,7 @@ class _DeskTextInputState extends State<DeskTextInput> {
     if (widget.field.option.hidden) return const SizedBox.shrink();
 
     final theme = ShadTheme.of(context);
+    final isOptional = widget.field.option.optional;
     final label =
         widget.field.option.validation?.labelTransformer?.call(
           widget.field.title,
@@ -95,26 +118,26 @@ class _DeskTextInputState extends State<DeskTextInput> {
               style: theme.textTheme.small.copyWith(color: Colors.red),
             ),
           ),
-        ShadInputFormField(
-          controller: _controller,
-          undoController: _undoController,
-          label: Text(label),
-          placeholder: const Text('Enter text...'),
-          description: widget.field.description != null
-              ? Text(widget.field.description!)
-              : null,
-          maxLines: widget.field.option.rows,
-          readOnly: widget.field.option.readOnly,
-          enabled: !widget.field.option.optional || _isEnabled,
-          trailing: widget.field.option.optional
-              ? ShadCheckbox(
-                  value: _isEnabled,
-                  onChanged: (value) {
-                    setState(() => _isEnabled = value);
-                    widget.onChanged?.call(value ? _controller.text : null);
-                  },
-                )
-              : null,
+        OptionalFieldHeader(
+          title: label,
+          isOptional: isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
+        ),
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isEnabled: !isOptional || _isEnabled,
+          child: ShadInputFormField(
+            controller: _controller,
+            undoController: _undoController,
+            placeholder: const Text('Enter text...'),
+            description: widget.field.description != null
+                ? Text(widget.field.description!)
+                : null,
+            maxLines: widget.field.option.rows,
+            readOnly: widget.field.option.readOnly,
+            enabled: !isOptional || _isEnabled,
+          ),
         ),
       ],
     );

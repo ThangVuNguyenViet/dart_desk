@@ -49,6 +49,19 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskTextInput(
+              field: DeskTextField(
+                name: 'notes',
+                title: 'Notes (optional)',
+                option: DeskTextOption(rows: 3, optional: true),
+              ),
+              data: DeskData(value: 'Some notes here', path: 'notes'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }
