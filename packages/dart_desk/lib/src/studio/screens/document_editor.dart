@@ -32,45 +32,22 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     try {
       final documentViewModel = GetIt.I<DeskDocumentViewModel>();
       final docId = documentViewModel.documentId.value;
+      if (docId == null) return;
 
       final dataToSave = editedData.value;
 
-      if (docId != null) {
-        if (publish) {
-          await viewModel.publishDocumentData.run((
-            documentId: docId,
-            data: dataToSave,
-          ));
-        } else {
-          await viewModel.saveDocumentData.run((
-            documentId: docId,
-            data: dataToSave,
-          ));
-        }
-        documentViewModel.isDirty.value = false;
-      } else {
-        final title = documentViewModel.title.value;
-        final slug = documentViewModel.slug.value;
-
-        if (title.isEmpty || slug.isEmpty) {
-          ShadToaster.of(context).show(
-            const ShadToast(
-              description: Text(
-                'Title and Slug are required to create a document',
-              ),
-            ),
-          );
-          return;
-        }
-
-        await viewModel.createDocument.run((
-          title: title,
+      if (publish) {
+        await viewModel.publishDocumentData.run((
+          documentId: docId,
           data: dataToSave,
-          slug: slug,
-          isDefault: false,
-          publish: publish,
+        ));
+      } else {
+        await viewModel.saveDocumentData.run((
+          documentId: docId,
+          data: dataToSave,
         ));
       }
+      documentViewModel.isDirty.value = false;
 
       if (mounted) {
         ShadToaster.of(context).show(
@@ -96,6 +73,11 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
 
   Future<void> _saveDocument() => _performSave(publish: false);
   Future<void> _publishDocument() => _performSave(publish: true);
+
+  void _clearDocument() {
+    editedData.value = {};
+    GetIt.I<DeskDocumentViewModel>().isDirty.value = true;
+  }
 
   Future<void> _discardDocument() async {
     try {
@@ -221,9 +203,17 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
           decoration: BoxDecoration(
             border: Border(top: BorderSide(color: theme.colorScheme.border)),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          child: Wrap(
+            alignment: WrapAlignment.end,
+            spacing: 8,
+            runSpacing: 8,
             children: [
+              DeskButton(
+                key: const ValueKey('clear_document_button'),
+                text: 'Clear',
+                variant: ShadButtonVariant.outline,
+                onPressed: isAnyBusy ? null : _clearDocument,
+              ),
               if (hasUnsavedChanges) ...[
                 DeskButton(
                   key: const ValueKey('discard_document_button'),
@@ -231,7 +221,6 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
                   variant: ShadButtonVariant.outline,
                   onPressed: isAnyBusy ? null : _discardDocument,
                 ),
-                const SizedBox(width: 8),
               ],
               DeskButton(
                 key: const ValueKey('save_document_button'),
@@ -239,7 +228,6 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
                 loading: isSaving,
                 onPressed: (isAnyBusy || !hasUnsavedChanges) ? null : _saveDocument,
               ),
-              const SizedBox(width: 8),
               DeskButton(
                 key: const ValueKey('publish_document_button'),
                 text: 'Publish',

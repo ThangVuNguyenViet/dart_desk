@@ -10,9 +10,10 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 const _defaultServerUrl = 'http://localhost:8080/';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   if (kDebugMode) {
     MarionetteBinding.ensureInitialized(DeskMarionetteConfig.configuration);
+  } else {
+    WidgetsFlutterBinding.ensureInitialized();
   }
   const serverUrl = String.fromEnvironment(
     'SERVER_URL',

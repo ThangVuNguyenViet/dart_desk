@@ -494,8 +494,46 @@ void main() {
   });
 
   // ========================================================================
-  // Group 4: Save / Discard buttons
+  // Group 4: Save / Discard / Clear buttons
   // ========================================================================
+
+  group('Clear button', () {
+    testWidgets('Clear is always visible, even without unsaved changes',
+        (tester) async {
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(const ValueKey('clear_document_button')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Clear empties editedData and sets isDirty', (tester) async {
+      await tester.pumpWidget(
+        buildEditorPreviewTestApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          seedData: const {'string_field': 'seeded'},
+        ),
+      );
+      await tester.pump();
+
+      final docVM = GetIt.I<DeskDocumentViewModel>();
+      expect(docVM.editedData['string_field'], 'seeded');
+
+      await tester.tap(find.byKey(const ValueKey('clear_document_button')));
+      await tester.pump();
+
+      expect(docVM.editedData.value.isEmpty, isTrue);
+      expect(docVM.isDirty.value, isTrue);
+    });
+  });
 
   group('Save and Discard buttons', () {
     testWidgets('Discard appears after edit (Save always visible)', (tester) async {
