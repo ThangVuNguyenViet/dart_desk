@@ -66,6 +66,62 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskObjectInput(
+              field: DeskObjectField(
+                name: 'address',
+                title: 'Address',
+                option: DeskObjectOption(
+                  optional: true,
+                  children: [
+                    ColumnFields(
+                      children: [
+                        DeskStringField(
+                          name: 'street',
+                          title: 'Street',
+                          option: DeskStringOption(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              data: DeskData(
+                value: {'street': '123 Main St'},
+                path: 'address',
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            const DeskObjectInput(
+              field: DeskObjectField(
+                name: 'address',
+                title: 'Address',
+                option: DeskObjectOption(
+                  optional: true,
+                  children: [
+                    ColumnFields(
+                      children: [
+                        DeskStringField(
+                          name: 'street',
+                          title: 'Street',
+                          option: DeskStringOption(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }

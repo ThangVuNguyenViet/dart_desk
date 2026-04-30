@@ -41,6 +41,47 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskDropdownInput<String>(
+              field: DeskDropdownField<String>(
+                name: 'category',
+                title: 'Category',
+                option: DeskDropdownSimpleOption(
+                  options: [
+                    DropdownOption(value: 'tech', label: 'Technology'),
+                    DropdownOption(value: 'health', label: 'Health & Wellness'),
+                  ],
+                  placeholder: 'Select a category',
+                  optional: true,
+                ),
+              ),
+              data: DeskData(value: 'tech', path: 'category'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            const DeskDropdownInput<String>(
+              field: DeskDropdownField<String>(
+                name: 'category',
+                title: 'Category',
+                option: DeskDropdownSimpleOption(
+                  options: [
+                    DropdownOption(value: 'tech', label: 'Technology'),
+                    DropdownOption(value: 'health', label: 'Health & Wellness'),
+                  ],
+                  placeholder: 'Select a category',
+                  optional: true,
+                ),
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }
