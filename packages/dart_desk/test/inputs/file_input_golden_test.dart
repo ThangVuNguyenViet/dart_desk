@@ -28,6 +28,34 @@ void main() {
           builder: (_) => buildInputApp(DeskFileInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            DeskFileInput(
+              field: const DeskFileField(
+                name: 'document',
+                title: 'Document Upload (optional)',
+                option: DeskFileOption(optional: true),
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            DeskFileInput(
+              field: const DeskFileField(
+                name: 'document',
+                title: 'Document Upload (optional)',
+                option: DeskFileOption(optional: true),
+              ),
+              data: const DeskData(
+                value: 'https://example.com/report.pdf',
+                path: 'document',
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }
