@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'models/desk_document.dart';
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'models/document_list.dart';
 import 'models/document_version.dart';
 import 'models/image_types.dart';

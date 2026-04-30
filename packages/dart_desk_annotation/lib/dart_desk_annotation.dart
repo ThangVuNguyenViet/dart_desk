@@ -18,6 +18,8 @@ export 'src/fields/complex/multi_dropdown_field_config.dart';
 export 'src/fields/complex/geopoint_field.dart';
 export 'src/fields/complex/field_layout.dart';
 export 'src/fields/complex/object_field.dart';
+// Data models
+export 'src/data/desk_document.dart';
 // Models
 export 'src/models/image_ref.dart';
 export 'src/models/image_types.dart';

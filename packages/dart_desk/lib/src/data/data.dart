@@ -26,7 +26,9 @@ export 'desk_data_source.dart';
 // export 'serverpod_data_source.dart';
 
 // Models
-export 'models/desk_document.dart';
+// DeskDocument moved to dart_desk_annotation; re-exported here so existing
+// `package:dart_desk/...` imports keep working.
+export 'package:dart_desk_annotation/dart_desk_annotation.dart' show DeskDocument;
 export 'models/desk_document_data.dart';
 export 'models/document_list.dart';
 export 'models/document_version.dart';

@@ -6,7 +6,7 @@ import 'package:crypto/crypto.dart';
 import 'package:image/image.dart' as img;
 
 import '../data/desk_data_source.dart';
-import '../data/models/desk_document.dart';
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import '../data/models/document_list.dart';
 import '../data/models/document_version.dart';
 import '../data/models/image_types.dart';
