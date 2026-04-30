@@ -1,9 +1,16 @@
 import 'package:dart_desk/src/inputs/text_input.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../helpers/input_test_helpers.dart';
+
+const _optionalField = DeskTextField(
+  name: 'notes',
+  title: 'Notes',
+  option: DeskTextOption(rows: 3, optional: true),
+);
 
 void main() {
   final field = DeskTextField(
@@ -61,5 +68,53 @@ void main() {
       expect(find.text('Deprecated: Use new field instead'), findsOneWidget);
     });
 
+    testWidgets('optional toggle off then on restores last value', (
+      tester,
+    ) async {
+      String? captured;
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskTextInput(
+            field: _optionalField,
+            data: const DeskData(value: 'Hello', path: 'notes'),
+            onChanged: (v) => captured = v,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Toggle off.
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+      expect(captured, isNull);
+
+      // Toggle on.
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+      expect(captured, equals('Hello'));
+    });
+
+    testWidgets('external value flip to null does not fire onChanged', (
+      tester,
+    ) async {
+      var fireCount = 0;
+      Widget mk(String? value) => buildInputApp(
+        DeskTextInput(
+          field: _optionalField,
+          data: value == null ? null : DeskData(value: value, path: 'notes'),
+          onChanged: (_) => fireCount++,
+        ),
+      );
+
+      await tester.pumpWidget(mk('Hello'));
+      await tester.pumpAndSettle();
+      fireCount = 0;
+      await tester.pumpWidget(mk(null));
+      await tester.pumpAndSettle();
+      expect(fireCount, 0);
+      // Header reflects new state.
+      final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
+      expect(cb.value, isFalse);
+    });
   });
 }

@@ -2,6 +2,7 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:source_gen/source_gen.dart';
 
+import '../optional_resolver.dart';
 import 'field_code_generator.dart';
 
 class BooleanFieldGenerator implements FieldCodeGenerator {
@@ -23,11 +24,28 @@ class BooleanFieldGenerator implements FieldCodeGenerator {
     if (fieldName == null) {
       throw InvalidGenerationSourceError('Field has no name', element: field);
     }
+    final optional = resolveOptional(
+      field: field,
+      configOptional: config?.getField('optional')?.toBoolValue(),
+      optionalSource: null,
+    );
+
+    String? resolvedOption = optionSource;
+    if (optional && resolvedOption == null) {
+      resolvedOption = 'DeskBooleanOption(optional: true)';
+    } else if (optional && resolvedOption != null) {
+      if (!resolvedOption.contains('optional')) {
+        resolvedOption = resolvedOption.replaceFirst(
+          'DeskBooleanOption(',
+          'DeskBooleanOption(optional: true, ',
+        );
+      }
+    }
 
     return '''DeskBooleanField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
   }
 

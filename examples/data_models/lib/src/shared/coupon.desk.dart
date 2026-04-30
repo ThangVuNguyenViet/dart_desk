@@ -24,7 +24,7 @@ final couponFields = [
   DeskImageField(
     name: 'image',
     title: 'Image',
-    option: DeskImageOption(hotspot: false),
+    option: DeskImageOption(optional: true, hotspot: false),
   ),
   DeskMultiDropdownField<String>(
     name: 'tags',

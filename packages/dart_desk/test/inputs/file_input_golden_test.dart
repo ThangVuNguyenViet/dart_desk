@@ -20,16 +20,40 @@ void main() {
       fileName: 'file_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'upload button when no file',
+        .itemFromBuilder(          description: 'upload button when no file',
           builder: (_) => buildInputApp(DeskFileInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'title label visible',
+        .itemFromBuilder(          description: 'title label visible',
           builder: (_) => buildInputApp(DeskFileInput(field: _field)),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            DeskFileInput(
+              field: const DeskFileField(
+                name: 'document',
+                title: 'Document Upload (optional)',
+                option: DeskFileOption(optional: true),
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            DeskFileInput(
+              field: const DeskFileField(
+                name: 'document',
+                title: 'Document Upload (optional)',
+                option: DeskFileOption(optional: true),
+              ),
+              data: const DeskData(
+                value: 'https://example.com/report.pdf',
+                path: 'document',
+              ),
+            ),
+          ),
           setup: (t) async => t.pumpAndSettle(),
         )
         .run(tester);

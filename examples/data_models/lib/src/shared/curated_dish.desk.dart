@@ -20,15 +20,25 @@ final curatedDishFields = [
     title: 'Price',
     option: DeskNumberOption(min: 0),
   ),
+  DeskNumberField(
+    name: 'discountedPrice',
+    title: 'Discounted Price',
+    option: DeskNumberOption(optional: true, min: 0),
+  ),
+  DeskBooleanField(
+    name: 'isSeasonal',
+    title: 'Is Seasonal',
+    option: DeskBooleanOption(optional: true),
+  ),
   DeskImageField(
     name: 'image',
     title: 'Image',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
   DeskBlockField(
     name: 'description',
     title: 'Description',
-    option: DeskBlockOption(),
+    option: DeskBlockOption(optional: true),
   ),
 ];
 
@@ -51,6 +61,8 @@ class CuratedDishDeskModel {
     required this.numberLabel,
     required this.name,
     required this.price,
+    required this.discountedPrice,
+    required this.isSeasonal,
     required this.image,
     required this.description,
   });
@@ -60,6 +72,10 @@ class CuratedDishDeskModel {
   final DeskData<String> name;
 
   final DeskData<num> price;
+
+  final DeskData<num?> discountedPrice;
+
+  final DeskData<bool?> isSeasonal;
 
   final DeskData<ImageReference?> image;
 

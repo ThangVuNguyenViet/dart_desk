@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_desk/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,13 +22,25 @@ void initTestPngBytes() {
 /// Wraps [child] in the widget tree required by most CMS input tests.
 ///
 /// `ShadApp` > `Scaffold` > `ShadToaster` > `SingleChildScrollView` > `Padding`
+///
+/// ShadApp does not seed a top-level [DefaultTextStyle], so bare `Text`
+/// widgets fall through to Flutter's hardcoded default (Ahem in tests). We
+/// anchor descendants to the shadcn body style so plain text inherits
+/// Geist instead of rectangles.
 Widget buildInputApp(Widget child) {
   return ShadApp(
-    theme: goldenBricksTheme(),
-    home: Scaffold(
-      body: ShadToaster(
-        child: SingleChildScrollView(
-          child: Padding(padding: const EdgeInsets.all(16), child: child),
+    home: Builder(
+      builder: (context) => DefaultTextStyle(
+        style: ShadTheme.of(context).textTheme.p,
+        child: Scaffold(
+          body: ShadToaster(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: child,
+              ),
+            ),
+          ),
         ),
       ),
     ),

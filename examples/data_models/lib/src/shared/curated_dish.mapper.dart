@@ -32,6 +32,18 @@ class CuratedDishMapper extends ClassMapperBase<CuratedDish> {
   static const Field<CuratedDish, String> _f$name = Field('name', _$name);
   static num _$price(CuratedDish v) => v.price;
   static const Field<CuratedDish, num> _f$price = Field('price', _$price);
+  static num? _$discountedPrice(CuratedDish v) => v.discountedPrice;
+  static const Field<CuratedDish, num> _f$discountedPrice = Field(
+    'discountedPrice',
+    _$discountedPrice,
+    opt: true,
+  );
+  static bool? _$isSeasonal(CuratedDish v) => v.isSeasonal;
+  static const Field<CuratedDish, bool> _f$isSeasonal = Field(
+    'isSeasonal',
+    _$isSeasonal,
+    opt: true,
+  );
   static ImageReference? _$image(CuratedDish v) => v.image;
   static const Field<CuratedDish, ImageReference> _f$image = Field(
     'image',
@@ -50,6 +62,8 @@ class CuratedDishMapper extends ClassMapperBase<CuratedDish> {
     #numberLabel: _f$numberLabel,
     #name: _f$name,
     #price: _f$price,
+    #discountedPrice: _f$discountedPrice,
+    #isSeasonal: _f$isSeasonal,
     #image: _f$image,
     #description: _f$description,
   };
@@ -59,6 +73,8 @@ class CuratedDishMapper extends ClassMapperBase<CuratedDish> {
       numberLabel: data.dec(_f$numberLabel),
       name: data.dec(_f$name),
       price: data.dec(_f$price),
+      discountedPrice: data.dec(_f$discountedPrice),
+      isSeasonal: data.dec(_f$isSeasonal),
       image: data.dec(_f$image),
       description: data.dec(_f$description),
     );
@@ -128,6 +144,8 @@ abstract class CuratedDishCopyWith<$R, $In extends CuratedDish, $Out>
     String? numberLabel,
     String? name,
     num? price,
+    num? discountedPrice,
+    bool? isSeasonal,
     ImageReference? image,
     Object? description,
   });
@@ -147,6 +165,8 @@ class _CuratedDishCopyWithImpl<$R, $Out>
     String? numberLabel,
     String? name,
     num? price,
+    Object? discountedPrice = $none,
+    Object? isSeasonal = $none,
     Object? image = $none,
     Object? description = $none,
   }) => $apply(
@@ -154,6 +174,8 @@ class _CuratedDishCopyWithImpl<$R, $Out>
       if (numberLabel != null) #numberLabel: numberLabel,
       if (name != null) #name: name,
       if (price != null) #price: price,
+      if (discountedPrice != $none) #discountedPrice: discountedPrice,
+      if (isSeasonal != $none) #isSeasonal: isSeasonal,
       if (image != $none) #image: image,
       if (description != $none) #description: description,
     }),
@@ -163,6 +185,8 @@ class _CuratedDishCopyWithImpl<$R, $Out>
     numberLabel: data.get(#numberLabel, or: $value.numberLabel),
     name: data.get(#name, or: $value.name),
     price: data.get(#price, or: $value.price),
+    discountedPrice: data.get(#discountedPrice, or: $value.discountedPrice),
+    isSeasonal: data.get(#isSeasonal, or: $value.isSeasonal),
     image: data.get(#image, or: $value.image),
     description: data.get(#description, or: $value.description),
   );

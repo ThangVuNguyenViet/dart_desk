@@ -12,6 +12,15 @@ const _field = DeskCheckboxField(
   option: DeskCheckboxOption(label: 'I agree to the terms and conditions'),
 );
 
+const _optionalField = DeskCheckboxField(
+  name: 'accept_terms',
+  title: 'Accept Terms',
+  option: DeskCheckboxOption(
+    label: 'I agree to the terms and conditions',
+    optional: true,
+  ),
+);
+
 void main() {
   testGoldenScene('DeskCheckboxInput gallery', (tester) async {
     await Gallery(
@@ -21,18 +30,46 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
-          tolerancePx: 10000,
           description: 'unchecked',
           builder: (_) =>
               buildInputApp(const DeskCheckboxInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
-          tolerancePx: 10000,
           description: 'checked',
           builder: (_) => buildInputApp(
             const DeskCheckboxInput(
               field: _field,
+              data: DeskData(value: true, path: 'accept_terms'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional — null (indeterminate)',
+          builder: (_) => buildInputApp(
+            const DeskCheckboxInput(
+              field: _optionalField,
+              data: null,
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional — false',
+          builder: (_) => buildInputApp(
+            const DeskCheckboxInput(
+              field: _optionalField,
+              data: DeskData(value: false, path: 'accept_terms'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional — true',
+          builder: (_) => buildInputApp(
+            const DeskCheckboxInput(
+              field: _optionalField,
               data: DeskData(value: true, path: 'accept_terms'),
             ),
           ),

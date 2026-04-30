@@ -12,7 +12,7 @@ final kioskConfigFields = [
   DeskImageField(
     name: 'bannerImage',
     title: 'Banner Image',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
   DeskStringField(
     name: 'bannerHeadline',

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import 'optional_field_header.dart';
 import 'optional_field_wrapper.dart';
 
 @Preview(name: 'DeskDateTimeInput')
@@ -33,6 +35,7 @@ class DeskDateTimeInput extends StatefulWidget {
 
 class _DeskDateTimeInputState extends State<DeskDateTimeInput> {
   DateTime? _selectedDateTime;
+  DateTime? _lastValue;
   late bool _isEnabled;
 
   @override
@@ -46,6 +49,43 @@ class _DeskDateTimeInputState extends State<DeskDateTimeInput> {
     _isEnabled = widget.field.option.optional
         ? _selectedDateTime != null
         : true;
+    _lastValue = _selectedDateTime;
+  }
+
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastValue = _selectedDateTime;
+        _isEnabled = false;
+      } else {
+        _isEnabled = true;
+        _selectedDateTime = _lastValue;
+      }
+    });
+    widget.onChanged?.call(enabled ? _selectedDateTime : null);
+  }
+
+  @override
+  void didUpdateWidget(covariant DeskDateTimeInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newValue = switch (widget.data?.value) {
+      DateTime dt => dt,
+      String s => DateTime.tryParse(s),
+      _ => null,
+    };
+    final oldValue = switch (oldWidget.data?.value) {
+      DateTime dt => dt,
+      String s => DateTime.tryParse(s),
+      _ => null,
+    };
+    if (oldValue != newValue) {
+      setState(() {
+        _selectedDateTime = newValue;
+        if (widget.field.option.optional) {
+          _isEnabled = newValue != null;
+        }
+      });
+    }
   }
 
   Future<void> _selectDateTime() async {
@@ -124,29 +164,15 @@ class _DeskDateTimeInputState extends State<DeskDateTimeInput> {
   @override
   Widget build(BuildContext context) {
     final isOptional = widget.field.option.optional;
-    final theme = ShadTheme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(widget.field.title, style: theme.textTheme.small),
-            if (isOptional) ...[
-              const Spacer(),
-              ShadCheckbox(
-                value: _isEnabled,
-                onChanged: (value) {
-                  setState(() => _isEnabled = value);
-                  if (!value) {
-                    widget.onChanged?.call(null);
-                  } else if (_selectedDateTime != null) {
-                    widget.onChanged?.call(_selectedDateTime);
-                  }
-                },
-              ),
-            ],
-          ],
+        OptionalFieldHeader(
+          title: widget.field.title,
+          isOptional: isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
         ),
         const SizedBox(height: 8),
         OptionalFieldWrapper(

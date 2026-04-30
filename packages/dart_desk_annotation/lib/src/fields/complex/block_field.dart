@@ -1,7 +1,7 @@
 import '../base/field.dart';
 
 class DeskBlockOption extends DeskOption {
-  const DeskBlockOption({super.visibleWhen});
+  const DeskBlockOption({super.optional, super.visibleWhen});
 }
 
 class DeskBlockField extends DeskField {

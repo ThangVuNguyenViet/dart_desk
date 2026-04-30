@@ -14,6 +14,8 @@ import '../data/desk_data_source.dart';
 import '../data/models/image_types.dart';
 import 'hotspot/framing_status.dart';
 import 'image_input_view_model.dart';
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
 
 class DeskImageInput extends StatefulWidget {
   final DeskImageField field;
@@ -44,11 +46,20 @@ class _DeskImageInputState extends State<DeskImageInput>
     dataSource: widget.dataSource,
     fieldName: widget.field.name,
   );
+  late bool _isEnabled;
+  Map<String, dynamic>? _lastValue;
+
+  bool get _isOptional => widget.field.option?.optional ?? false;
 
   @override
   void initState() {
     super.initState();
     _viewModel.initFromData(widget.data?.value);
+    final initial = widget.data?.value;
+    _isEnabled = _isOptional ? initial != null : true;
+    if (initial is Map) {
+      _lastValue = Map<String, dynamic>.from(initial);
+    }
   }
 
   @override
@@ -59,7 +70,31 @@ class _DeskImageInputState extends State<DeskImageInput>
     if (oldWidget.data != widget.data) {
       _viewModel.resetForNewData();
       _viewModel.initFromData(widget.data?.value);
+      if (_isOptional) {
+        setState(() => _isEnabled = widget.data?.value != null);
+      }
     }
+  }
+
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        final ref = _viewModel.imageRef.value;
+        final ext = _viewModel.externalUrl.value;
+        if (ref != null) {
+          _lastValue = ref.toMap();
+        } else if (ext != null && ext.isNotEmpty) {
+          _lastValue = ImageReference(externalUrl: ext).toMap();
+        }
+        _viewModel.clear();
+        _isEnabled = false;
+      } else {
+        _isEnabled = true;
+        _viewModel.resetForNewData();
+        _viewModel.initFromData(_lastValue);
+      }
+    });
+    widget.onChanged?.call(enabled ? _lastValue : null);
   }
 
   @override
@@ -518,15 +553,20 @@ class _DeskImageInputState extends State<DeskImageInput>
         key: ValueKey('image_input_${widget.field.name}'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.field.title,
-            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+          OptionalFieldHeader(
+            title: widget.field.title,
+            isOptional: _isOptional,
+            isEnabled: _isEnabled,
+            onToggle: _handleToggle,
           ),
           SizedBox(height: DeskSpacing.md),
 
-          GestureDetector(
-            onTap: isUploading ? null : _handlePickFile,
-            child: _buildImagePreviewArea(theme),
+          OptionalFieldWrapper(
+            isEnabled: !_isOptional || _isEnabled,
+            child: GestureDetector(
+              onTap: isUploading ? null : _handlePickFile,
+              child: _buildImagePreviewArea(theme),
+            ),
           ),
 
           if (ref != null && hotspotEnabled) ...[

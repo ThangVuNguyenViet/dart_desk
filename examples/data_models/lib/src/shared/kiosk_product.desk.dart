@@ -18,7 +18,7 @@ final kioskProductFields = [
   DeskImageField(
     name: 'image',
     title: 'Image',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
   DeskDropdownField<String>(
     name: 'category',

@@ -1,6 +1,7 @@
 import 'package:dart_desk/dart_desk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../helpers/input_test_helpers.dart';
 
@@ -153,5 +154,100 @@ void main() {
         expect(received, isEmpty);
       },
     );
+
+    testWidgets('optional toggle off fires onChanged(null) once', (tester) async {
+      const optField = DeskMultiDropdownField<String>(
+        name: 'tags',
+        title: 'Tags',
+        option: DeskMultiDropdownSimpleOption(
+          options: [
+            DropdownOption(value: 'a', label: 'A'),
+            DropdownOption(value: 'b', label: 'B'),
+          ],
+          optional: true,
+        ),
+      );
+      final received = <List<String>?>[];
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskMultiDropdownInput<String>(
+            field: optField,
+            data: const DeskData(value: ['a'], path: 'tags'),
+            onChanged: received.add,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+
+      expect(received, [null]);
+    });
+
+    testWidgets('optional toggle off then on restores last value', (tester) async {
+      const optField = DeskMultiDropdownField<String>(
+        name: 'tags',
+        title: 'Tags',
+        option: DeskMultiDropdownSimpleOption(
+          options: [
+            DropdownOption(value: 'a', label: 'A'),
+            DropdownOption(value: 'b', label: 'B'),
+          ],
+          optional: true,
+        ),
+      );
+      final received = <List<String>?>[];
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskMultiDropdownInput<String>(
+            field: optField,
+            data: const DeskData(value: ['a'], path: 'tags'),
+            onChanged: received.add,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+
+      expect(received.length, 2);
+      expect(received[0], isNull);
+      expect(received[1], ['a']);
+    });
+
+    testWidgets('external value flip to null does not fire onChanged', (tester) async {
+      const optField = DeskMultiDropdownField<String>(
+        name: 'tags',
+        title: 'Tags',
+        option: DeskMultiDropdownSimpleOption(
+          options: [
+            DropdownOption(value: 'a', label: 'A'),
+            DropdownOption(value: 'b', label: 'B'),
+          ],
+          optional: true,
+        ),
+      );
+      var fireCount = 0;
+      Widget mk(List<String>? value) => buildInputApp(
+        DeskMultiDropdownInput<String>(
+          field: optField,
+          data: value == null ? null : DeskData(value: value, path: 'tags'),
+          onChanged: (_) => fireCount++,
+        ),
+      );
+
+      await tester.pumpWidget(mk(['a']));
+      await tester.pumpAndSettle();
+      fireCount = 0;
+      await tester.pumpWidget(mk(null));
+      await tester.pumpAndSettle();
+      expect(fireCount, 0);
+      final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
+      expect(cb.value, isFalse);
+    });
   });
 }

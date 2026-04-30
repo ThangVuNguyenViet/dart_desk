@@ -5,6 +5,7 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../helpers/input_test_helpers.dart';
 
@@ -563,6 +564,99 @@ void main() {
 
         expect(find.text('Second'), findsOneWidget);
         expect(find.text('B'), findsOneWidget);
+      });
+    });
+
+    group('optional', () {
+      const optField = DeskObjectField(
+        name: 'address',
+        title: 'Address',
+        option: DeskObjectOption(
+          optional: true,
+          children: [
+            ColumnFields(
+              children: [
+                DeskStringField(
+                  name: 'street',
+                  title: 'Street',
+                  option: DeskStringOption(),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+
+      testWidgets('toggle off fires onChanged(null) once', (tester) async {
+        final received = <Map<String, dynamic>?>[];
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskObjectInput(
+              field: optField,
+              data: const DeskData(
+                value: {'street': '123 Main St'},
+                path: 'address',
+              ),
+              onChanged: received.add,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byType(ShadCheckbox));
+        await tester.pumpAndSettle();
+
+        expect(received, [null]);
+      });
+
+      testWidgets('toggle off then on restores last value', (tester) async {
+        final received = <Map<String, dynamic>?>[];
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskObjectInput(
+              field: optField,
+              data: const DeskData(
+                value: {'street': '123 Main St'},
+                path: 'address',
+              ),
+              onChanged: received.add,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byType(ShadCheckbox));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byType(ShadCheckbox));
+        await tester.pumpAndSettle();
+
+        expect(received.length, 2);
+        expect(received[0], isNull);
+        expect(received[1]!['street'], '123 Main St');
+      });
+
+      testWidgets('external value flip to null does not fire onChanged', (
+        tester,
+      ) async {
+        var fireCount = 0;
+        Widget mk(Map<String, dynamic>? value) => buildInputApp(
+          DeskObjectInput(
+            field: optField,
+            data: value == null
+                ? null
+                : DeskData(value: value, path: 'address'),
+            onChanged: (_) => fireCount++,
+          ),
+        );
+
+        await tester.pumpWidget(mk({'street': '123 Main St'}));
+        await tester.pumpAndSettle();
+        fireCount = 0;
+        await tester.pumpWidget(mk(null));
+        await tester.pumpAndSettle();
+        expect(fireCount, 0);
+        final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
+        expect(cb.value, isFalse);
       });
     });
 

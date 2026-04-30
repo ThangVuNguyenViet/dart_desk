@@ -20,15 +20,11 @@ void main() {
       fileName: 'color_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty / unset',
+        .itemFromBuilder(          description: 'empty / unset',
           builder: (_) => buildInputApp(const DeskColorInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'filled with red',
+        .itemFromBuilder(          description: 'filled with red',
           builder: (_) => buildInputApp(
             const DeskColorInput(
               field: _field,
@@ -37,9 +33,7 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'optional / disabled',
+        .itemFromBuilder(          description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskColorInput(
               field: DeskColorField(
@@ -47,6 +41,19 @@ void main() {
                 title: 'Accent Color (optional)',
                 option: DeskColorOption(optional: true),
               ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskColorInput(
+              field: DeskColorField(
+                name: 'accent_color',
+                title: 'Accent Color (optional)',
+                option: DeskColorOption(optional: true),
+              ),
+              data: DeskData(value: '#E53E3E', path: 'accent_color'),
             ),
           ),
           setup: (t) async => t.pumpAndSettle(),

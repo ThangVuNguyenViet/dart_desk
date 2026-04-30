@@ -10,7 +10,11 @@ part of 'chef_config.dart';
 /// Generated DeskField list for ChefConfig
 final chefConfigFields = [
   DeskTextField(name: 'headline', title: 'Headline', option: DeskTextOption()),
-  DeskBlockField(name: 'intro', title: 'Intro', option: DeskBlockOption()),
+  DeskBlockField(
+    name: 'intro',
+    title: 'Intro',
+    option: DeskBlockOption(optional: true),
+  ),
   DeskObjectField(
     name: 'chef',
     title: 'Chef',

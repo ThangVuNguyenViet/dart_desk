@@ -27,7 +27,7 @@ class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemE
   final List<String> tags;
 
   @DeskCheckbox(description: 'Available', option: DeskCheckboxOption(label: 'Available'))
-  final bool isAvailable;
+  final bool? isAvailable;
 
   const MenuItemEntry({
     required this.name,
@@ -35,7 +35,7 @@ class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemE
     required this.shortDescription,
     this.image,
     required this.tags,
-    required this.isAvailable,
+    this.isAvailable,
   });
 
   static MenuItemEntry defaultValue = const MenuItemEntry(

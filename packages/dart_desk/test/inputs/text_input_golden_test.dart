@@ -20,15 +20,11 @@ void main() {
       fileName: 'text_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty',
+        .itemFromBuilder(          description: 'empty',
           builder: (_) => buildInputApp(const DeskTextInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'filled',
+        .itemFromBuilder(          description: 'filled',
           builder: (_) => buildInputApp(
             const DeskTextInput(
               field: _field,
@@ -41,9 +37,7 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'optional / disabled',
+        .itemFromBuilder(          description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskTextInput(
               field: DeskTextField(
@@ -51,6 +45,19 @@ void main() {
                 title: 'Notes (optional)',
                 option: DeskTextOption(rows: 3, optional: true),
               ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskTextInput(
+              field: DeskTextField(
+                name: 'notes',
+                title: 'Notes (optional)',
+                option: DeskTextOption(rows: 3, optional: true),
+              ),
+              data: DeskData(value: 'Some notes here', path: 'notes'),
             ),
           ),
           setup: (t) async => t.pumpAndSettle(),

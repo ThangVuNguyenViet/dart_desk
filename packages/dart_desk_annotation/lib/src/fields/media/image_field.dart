@@ -4,12 +4,13 @@ import '../../models/image_ref.dart'; // exports ImageReference (and deprecated 
 enum DeskMediaType { image, svg, lottie, video }
 
 class DeskImageOption extends DeskOption {
-  final bool hotspot;
+  final bool hotspot; // defaults to false
   final List<DeskMediaType>? acceptedTypes; // null = all types (default)
 
   const DeskImageOption({
-    required this.hotspot,
+    this.hotspot = false,
     this.acceptedTypes,
+    super.optional,
     super.visibleWhen,
   });
 }

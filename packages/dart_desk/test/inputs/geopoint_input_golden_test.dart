@@ -20,22 +20,48 @@ void main() {
       fileName: 'geopoint_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty',
+        .itemFromBuilder(          description: 'empty',
           builder: (_) =>
               buildInputApp(const DeskGeopointInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'filled with coordinates',
+        .itemFromBuilder(          description: 'filled with coordinates',
           builder: (_) => buildInputApp(
             const DeskGeopointInput(
               field: _field,
               data: DeskData(
                 value: {'lat': 37.7749, 'lng': -122.4194},
                 path: 'location',
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskGeopointInput(
+              field: DeskGeopointField(
+                name: 'location',
+                title: 'Location',
+                option: DeskGeopointOption(optional: true),
+              ),
+              data: DeskData(
+                value: {'lat': 37.7749, 'lng': -122.4194},
+                path: 'location',
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            const DeskGeopointInput(
+              field: DeskGeopointField(
+                name: 'location',
+                title: 'Location',
+                option: DeskGeopointOption(optional: true),
               ),
             ),
           ),

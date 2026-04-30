@@ -1,6 +1,7 @@
 import 'package:dart_desk/src/inputs/array_input.dart';
 import 'package:dart_desk/testing.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -228,6 +229,85 @@ void main() {
 
       expect(received, isNotNull);
       expect(received, contains('hello'));
+    });
+
+    group('optional', () {
+      final optField = DeskArrayField<String>(
+        name: 'tags',
+        title: 'Tags',
+        innerField: const DeskStringField(name: 'tag', title: 'Tag'),
+        option: const DeskArrayOption<String>(optional: true),
+      );
+
+      testWidgets('toggle off fires onChanged(null) once', (tester) async {
+        final received = <List?>[];
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskArrayInput(
+              field: optField,
+              data: DeskData(
+                value: List<String>.from(['A', 'B']),
+                path: 'tags',
+              ),
+              onChanged: received.add,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byType(ShadCheckbox));
+        await tester.pumpAndSettle();
+
+        expect(received, [null]);
+      });
+
+      testWidgets('toggle off then on restores last value', (tester) async {
+        final received = <List?>[];
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskArrayInput(
+              field: optField,
+              data: DeskData(
+                value: List<String>.from(['A', 'B']),
+                path: 'tags',
+              ),
+              onChanged: received.add,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byType(ShadCheckbox));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byType(ShadCheckbox));
+        await tester.pumpAndSettle();
+
+        expect(received.length, 2);
+        expect(received[0], isNull);
+        expect(received[1], ['A', 'B']);
+      });
+
+      testWidgets('external value flip to null does not fire onChanged', (
+        tester,
+      ) async {
+        var fireCount = 0;
+        Widget mk(List<String>? value) => buildInputApp(
+          DeskArrayInput(
+            field: optField,
+            data: value == null ? null : DeskData(value: value, path: 'tags'),
+            onChanged: (_) => fireCount++,
+          ),
+        );
+
+        await tester.pumpWidget(mk(['A']));
+        await tester.pumpAndSettle();
+        fireCount = 0;
+        await tester.pumpWidget(mk(null));
+        await tester.pumpAndSettle();
+        expect(fireCount, 0);
+        final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
+        expect(cb.value, isFalse);
+      });
     });
 
     group('reference isolation', () {

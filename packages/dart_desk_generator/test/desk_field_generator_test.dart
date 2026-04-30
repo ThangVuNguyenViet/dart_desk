@@ -22,13 +22,13 @@ class ChildConfig {
 @DeskModel(title: 'All Fields', description: 'All fields config')
 class AllFieldsConfig {
   @DeskText(optional: true)
-  final String textField;
+  final String? textField;
 
   @DeskString(option: DeskStringOption(optional: true))
   final String stringField;
 
   @DeskNumber(optional: true)
-  final num numberField;
+  final num? numberField;
 
   @DeskBoolean(option: DeskBooleanOption())
   final bool booleanField;
@@ -39,22 +39,22 @@ class AllFieldsConfig {
   final bool checkboxField;
 
   @DeskDate(optional: true)
-  final DateTime dateField;
+  final DateTime? dateField;
 
   @DeskDateTime(optional: true)
-  final DateTime dateTimeField;
+  final DateTime? dateTimeField;
 
   @DeskUrl(optional: true)
-  final Uri urlField;
+  final Uri? urlField;
 
   @DeskImage(option: DeskImageOption(hotspot: true))
   final Object imageField;
 
   @DeskFile(optional: true)
-  final String fileField;
+  final String? fileField;
 
   @DeskColor(optional: true)
-  final String colorField;
+  final String? colorField;
 
   @DeskDropdown<String>(
     option: DeskDropdownSimpleOption<String>(
@@ -83,17 +83,17 @@ class AllFieldsConfig {
   final Object geopointField;
 
   const AllFieldsConfig({
-    required this.textField,
+    this.textField,
     required this.stringField,
-    required this.numberField,
+    this.numberField,
     required this.booleanField,
     required this.checkboxField,
-    required this.dateField,
-    required this.dateTimeField,
-    required this.urlField,
+    this.dateField,
+    this.dateTimeField,
+    this.urlField,
     required this.imageField,
-    required this.fileField,
-    required this.colorField,
+    this.fileField,
+    this.colorField,
     required this.dropdownField,
     required this.multiDropdownField,
     required this.arrayField,
@@ -155,41 +155,41 @@ class AllFieldsConfig {
 @DeskModel(title: 'Optional Fields', description: 'Optional fields config')
 class OptionalFieldsConfig {
   @DeskText(optional: true, option: DeskTextOption(rows: 3))
-  final String textField;
+  final String? textField;
 
   @DeskString(optional: true, option: DeskStringOption())
-  final String stringField;
+  final String? stringField;
 
   @DeskNumber(optional: true, option: DeskNumberOption(min: 1))
-  final num numberField;
+  final num? numberField;
 
   @DeskDate(optional: true, option: DeskDateOption())
-  final DateTime dateField;
+  final DateTime? dateField;
 
   @DeskDateTime(
     optional: true,
     option: DeskDateTimeOption(),
   )
-  final DateTime dateTimeField;
+  final DateTime? dateTimeField;
 
   @DeskUrl(optional: true, option: DeskUrlOption())
-  final Uri urlField;
+  final Uri? urlField;
 
   @DeskFile(optional: true, option: DeskFileOption())
-  final String fileField;
+  final String? fileField;
 
   @DeskColor(optional: true, option: DeskColorOption(showAlpha: true))
-  final String colorField;
+  final String? colorField;
 
   const OptionalFieldsConfig({
-    required this.textField,
-    required this.stringField,
-    required this.numberField,
-    required this.dateField,
-    required this.dateTimeField,
-    required this.urlField,
-    required this.fileField,
-    required this.colorField,
+    this.textField,
+    this.stringField,
+    this.numberField,
+    this.dateField,
+    this.dateTimeField,
+    this.urlField,
+    this.fileField,
+    this.colorField,
   });
 
   static OptionalFieldsConfig? defaultValue;
@@ -354,6 +354,317 @@ part 'input.desk.dart';
 const badConfig = 1;
 ''', anything),
         throwsA(anything),
+      );
+    });
+
+    test('infers optional from nullable String field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'Nullable', description: 'Nullable String test')
+class NullableConfig {
+  @DeskString()
+  final String? maybeTitle;
+
+  const NullableConfig({this.maybeTitle});
+
+  static NullableConfig? defaultValue;
+}
+'''),
+        contains('DeskStringOption(optional: true)'),
+      );
+    });
+
+    test('explicit optional: false overrides nullable inference', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'Override', description: 'Override test')
+class OverrideConfig {
+  @DeskString(optional: false)
+  final String? maybeTitle;
+
+  const OverrideConfig({this.maybeTitle});
+
+  static OverrideConfig? defaultValue;
+}
+'''),
+        isNot(contains('optional: true')),
+      );
+    });
+
+    // build_test wraps InvalidGenerationSourceError in a TestFailure, so
+    // throwsA(anything) is intentional — the exact type is not observable here.
+    test('non-nullable + optional: true throws', () async {
+      await expectLater(
+        _testDeskBuilder(
+          _fixture('''
+@DeskModel(title: 'Bad', description: 'Bad config')
+class BadConfig {
+  @DeskString(optional: true)
+  final String requiredTitle;
+
+  const BadConfig({required this.requiredTitle});
+
+  static BadConfig? defaultValue;
+}
+'''),
+          anything,
+        ),
+        throwsA(anything),
+      );
+    });
+
+    test('infers optional from nullable Text field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableText', description: 'test')
+class NullableTextConfig {
+  @DeskText()
+  final String? maybeBody;
+
+  const NullableTextConfig({this.maybeBody});
+
+  static NullableTextConfig? defaultValue;
+}
+'''),
+        contains('DeskTextOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Number field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableNum', description: 'test')
+class NullableNumConfig {
+  @DeskNumber()
+  final num? maybeAge;
+
+  const NullableNumConfig({this.maybeAge});
+
+  static NullableNumConfig? defaultValue;
+}
+'''),
+        contains('DeskNumberOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Url field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableUrl', description: 'test')
+class NullableUrlConfig {
+  @DeskUrl()
+  final Uri? maybeLink;
+
+  const NullableUrlConfig({this.maybeLink});
+
+  static NullableUrlConfig? defaultValue;
+}
+'''),
+        contains('DeskUrlOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Color field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableColor', description: 'test')
+class NullableColorConfig {
+  @DeskColor()
+  final String? maybeTint;
+
+  const NullableColorConfig({this.maybeTint});
+
+  static NullableColorConfig? defaultValue;
+}
+'''),
+        contains('DeskColorOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Date field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableDate', description: 'test')
+class NullableDateConfig {
+  @DeskDate()
+  final DateTime? maybeDob;
+
+  const NullableDateConfig({this.maybeDob});
+
+  static NullableDateConfig? defaultValue;
+}
+'''),
+        contains('DeskDateOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable DateTime field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableDt', description: 'test')
+class NullableDtConfig {
+  @DeskDateTime()
+  final DateTime? maybeAt;
+
+  const NullableDtConfig({this.maybeAt});
+
+  static NullableDtConfig? defaultValue;
+}
+'''),
+        contains('DeskDateTimeOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable File field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableFile', description: 'test')
+class NullableFileConfig {
+  @DeskFile()
+  final String? maybeFile;
+
+  const NullableFileConfig({this.maybeFile});
+
+  static NullableFileConfig? defaultValue;
+}
+'''),
+        contains('DeskFileOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Boolean field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableBool', description: 'test')
+class NullableBoolConfig {
+  @DeskBoolean()
+  final bool? maybeFlag;
+
+  const NullableBoolConfig({this.maybeFlag});
+
+  static NullableBoolConfig? defaultValue;
+}
+'''),
+        contains('DeskBooleanOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Checkbox field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableCheck', description: 'test')
+class NullableCheckConfig {
+  @DeskCheckbox()
+  final bool? maybeChecked;
+
+  const NullableCheckConfig({this.maybeChecked});
+
+  static NullableCheckConfig? defaultValue;
+}
+'''),
+        contains('DeskCheckboxOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Image field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableImage', description: 'test')
+class NullableImageConfig {
+  @DeskImage()
+  final Object? maybeImage;
+
+  const NullableImageConfig({this.maybeImage});
+
+  static NullableImageConfig? defaultValue;
+}
+'''),
+        contains('DeskImageOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Geopoint field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableGeopoint', description: 'test')
+class NullableGeopointConfig {
+  @DeskGeopoint()
+  final Object? maybeGeo;
+
+  const NullableGeopointConfig({this.maybeGeo});
+
+  static NullableGeopointConfig? defaultValue;
+}
+'''),
+        contains('DeskGeopointOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Dropdown field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableDropdown', description: 'test')
+class NullableDropdownConfig {
+  @DeskDropdown<String>(option: DeskDropdownSimpleOption<String>(options: []))
+  final String? maybeChoice;
+
+  const NullableDropdownConfig({this.maybeChoice});
+
+  static NullableDropdownConfig? defaultValue;
+}
+'''),
+        contains('optional: true'),
+      );
+    });
+
+    test('infers optional from nullable MultiDropdown field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableMultiDropdown', description: 'test')
+class NullableMultiDropdownConfig {
+  @DeskMultiDropdown<String>(option: DeskMultiDropdownSimpleOption<String>(options: []))
+  final List<String>? maybeTags;
+
+  const NullableMultiDropdownConfig({this.maybeTags});
+
+  static NullableMultiDropdownConfig? defaultValue;
+}
+'''),
+        contains('optional: true'),
+      );
+    });
+
+    test('infers optional from nullable Array field (outer)', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableArray', description: 'test')
+class NullableArrayConfig {
+  @DeskArray<String>()
+  final List<String>? maybeTags;
+
+  const NullableArrayConfig({this.maybeTags});
+
+  static NullableArrayConfig? defaultValue;
+}
+'''),
+        contains('DeskArrayOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Block field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableBlock', description: 'test')
+class NullableBlockConfig {
+  @DeskBlock()
+  final Object? maybeContent;
+
+  const NullableBlockConfig({this.maybeContent});
+
+  static NullableBlockConfig? defaultValue;
+}
+'''),
+        contains('DeskBlockOption(optional: true)'),
       );
     });
   });

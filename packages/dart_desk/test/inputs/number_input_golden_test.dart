@@ -20,15 +20,11 @@ void main() {
       fileName: 'number_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty',
+        .itemFromBuilder(          description: 'empty',
           builder: (_) => buildInputApp(const DeskNumberInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'filled',
+        .itemFromBuilder(          description: 'filled',
           builder: (_) => buildInputApp(
             const DeskNumberInput(
               field: _field,
@@ -37,9 +33,7 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'optional / disabled',
+        .itemFromBuilder(          description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskNumberInput(
               field: DeskNumberField(
@@ -47,6 +41,19 @@ void main() {
                 title: 'Discount (optional)',
                 option: DeskNumberOption(optional: true),
               ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskNumberInput(
+              field: DeskNumberField(
+                name: 'discount',
+                title: 'Discount (optional)',
+                option: DeskNumberOption(optional: true),
+              ),
+              data: DeskData(value: 42, path: 'discount'),
             ),
           ),
           setup: (t) async => t.pumpAndSettle(),

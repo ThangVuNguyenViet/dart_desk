@@ -20,16 +20,12 @@ void main() {
       fileName: 'datetime_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty',
+        .itemFromBuilder(          description: 'empty',
           builder: (_) =>
               buildInputApp(const DeskDateTimeInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'filled',
+        .itemFromBuilder(          description: 'filled',
           builder: (_) => buildInputApp(
             const DeskDateTimeInput(
               field: _field,
@@ -41,8 +37,34 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        // Note: optional variant with trailing checkbox overflows the
-        // 800px test viewport (ShadCN layout issue in tests only). Skipped.
+        .itemFromBuilder(          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            const DeskDateTimeInput(
+              field: DeskDateTimeField(
+                name: 'created_at',
+                title: 'Created At (optional)',
+                option: DeskDateTimeOption(optional: true),
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskDateTimeInput(
+              field: DeskDateTimeField(
+                name: 'created_at',
+                title: 'Created At (optional)',
+                option: DeskDateTimeOption(optional: true),
+              ),
+              data: DeskData(
+                value: '2026-04-28T14:30:00.000',
+                path: 'created_at',
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }

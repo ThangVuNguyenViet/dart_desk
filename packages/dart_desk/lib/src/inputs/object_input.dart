@@ -5,6 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../studio/components/forms/desk_form.dart';
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
 
 @Preview(name: 'DeskObjectInput')
 Widget preview() => ShadApp(
@@ -82,6 +84,10 @@ class DeskObjectInput extends StatefulWidget {
 
 class _DeskObjectInputState extends State<DeskObjectInput> {
   late Map<String, dynamic> _value;
+  late bool _isEnabled;
+  Map<String, dynamic>? _lastValue;
+
+  bool get _isOptional => widget.field.option.optional;
 
   static Map<String, dynamic> _toMap(Object? value) {
     if (value is Map<String, dynamic>) return Map<String, dynamic>.from(value);
@@ -93,6 +99,8 @@ class _DeskObjectInputState extends State<DeskObjectInput> {
   void initState() {
     super.initState();
     _value = _toMap(widget.data?.value);
+    _isEnabled = _isOptional ? widget.data?.value != null : true;
+    _lastValue = _isEnabled ? Map<String, dynamic>.from(_value) : null;
   }
 
   @override
@@ -100,13 +108,35 @@ class _DeskObjectInputState extends State<DeskObjectInput> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.data?.value != widget.data?.value) {
       _value = _toMap(widget.data?.value);
+      if (_isOptional) {
+        setState(() => _isEnabled = widget.data?.value != null);
+      }
     }
+  }
+
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastValue = Map<String, dynamic>.from(_value);
+        _isEnabled = false;
+        _value = {};
+      } else {
+        _isEnabled = true;
+        _value = _lastValue != null
+            ? Map<String, dynamic>.from(_lastValue!)
+            : <String, dynamic>{};
+      }
+    });
+    widget.onChanged?.call(
+      enabled ? Map<String, dynamic>.from(_value) : null,
+    );
   }
 
   void _onChildChanged(String fieldName, dynamic childValue) {
     setState(() {
       _value[fieldName] = childValue;
     });
+    _lastValue = Map<String, dynamic>.from(_value);
     widget.onChanged?.call(Map<String, dynamic>.from(_value));
   }
 
@@ -185,28 +215,38 @@ class _DeskObjectInputState extends State<DeskObjectInput> {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
 
-    return ShadCard(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.field.title,
-            style: theme.textTheme.large.copyWith(fontWeight: FontWeight.bold),
-          ),
-          if (widget.field.description != null) ...[
-            const SizedBox(height: 4),
-            Text(widget.field.description!, style: theme.textTheme.muted),
-          ],
-          const SizedBox(height: 16),
-          ...widget.field.option.children.map(
-            (layout) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _buildLayout(layout),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        OptionalFieldHeader(
+          title: widget.field.title,
+          isOptional: _isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
+        ),
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isEnabled: !_isOptional || _isEnabled,
+          child: ShadCard(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (widget.field.description != null) ...[
+                  Text(widget.field.description!, style: theme.textTheme.muted),
+                  const SizedBox(height: 16),
+                ],
+                ...widget.field.option.children.map(
+                  (layout) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _buildLayout(layout),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

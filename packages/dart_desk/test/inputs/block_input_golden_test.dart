@@ -20,21 +20,44 @@ void main() {
       fileName: 'block_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty editor',
+        .itemFromBuilder(          description: 'empty editor',
           builder: (_) => buildInputApp(const DeskBlockInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'pre-filled with text',
+        .itemFromBuilder(          description: 'pre-filled with text',
           builder: (_) => buildInputApp(
             const DeskBlockInput(
               field: _field,
               data: DeskData(
                 value: 'This is a **bold** example paragraph.',
                 path: 'content',
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskBlockInput(
+              field: DeskBlockField(
+                name: 'content',
+                title: 'Content',
+                option: DeskBlockOption(optional: true),
+              ),
+              data: DeskData(value: 'Hello world', path: 'content'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            const DeskBlockInput(
+              field: DeskBlockField(
+                name: 'content',
+                title: 'Content',
+                option: DeskBlockOption(optional: true),
               ),
             ),
           ),

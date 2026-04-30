@@ -47,6 +47,7 @@ might need into `evaluate` as a structured object.
 > clarity: `true` ⇒ visible). Per-input `if (option.hidden)` guards are also
 > removed — `DeskForm`-level filtering already owns visibility.
 
+
 ### Public API (in `dart_desk_annotation`)
 
 ```dart

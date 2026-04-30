@@ -12,6 +12,12 @@ const _field = DeskBooleanField(
   option: DeskBooleanOption(),
 );
 
+const _optionalField = DeskBooleanField(
+  name: 'is_active',
+  title: 'Is Active',
+  option: DeskBooleanOption(optional: true),
+);
+
 void main() {
   testGoldenScene('DeskBooleanInput gallery', (tester) async {
     await Gallery(
@@ -21,17 +27,45 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
-          tolerancePx: 10000,
           description: 'off / unset',
           builder: (_) => buildInputApp(const DeskBooleanInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
-          tolerancePx: 10000,
           description: 'on / enabled',
           builder: (_) => buildInputApp(
             const DeskBooleanInput(
               field: _field,
+              data: DeskData(value: true, path: 'is_active'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional — null (unset)',
+          builder: (_) => buildInputApp(
+            const DeskBooleanInput(
+              field: _optionalField,
+              data: null,
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional — false',
+          builder: (_) => buildInputApp(
+            const DeskBooleanInput(
+              field: _optionalField,
+              data: DeskData(value: false, path: 'is_active'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional — true',
+          builder: (_) => buildInputApp(
+            const DeskBooleanInput(
+              field: _optionalField,
               data: DeskData(value: true, path: 'is_active'),
             ),
           ),

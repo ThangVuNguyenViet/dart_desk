@@ -1,7 +1,10 @@
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
 
 @Preview(name: 'DeskStringInput')
 Widget preview() => ShadApp(
@@ -33,7 +36,8 @@ class DeskStringInput extends StatefulWidget {
 class _DeskStringInputState extends State<DeskStringInput> {
   late final TextEditingController _controller;
   late final UndoHistoryController _undoController;
-  late bool _isEnabled;
+  String _lastText = '';
+  bool _isEnabled = true;
 
   @override
   void initState() {
@@ -45,21 +49,40 @@ class _DeskStringInputState extends State<DeskStringInput> {
     _isEnabled = widget.field.option.optional
         ? widget.data?.value != null
         : true;
+    _lastText = initialText;
   }
 
   void _onTextChanged() {
     if (_isEnabled) widget.onChanged?.call(_controller.text);
   }
 
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastText = _controller.text;
+        _isEnabled = false;
+      } else {
+        _isEnabled = true;
+        _controller.removeListener(_onTextChanged);
+        _controller.text = _lastText;
+        _controller.addListener(_onTextChanged);
+      }
+    });
+    widget.onChanged?.call(enabled ? _controller.text : null);
+  }
+
   @override
   void didUpdateWidget(covariant DeskStringInput oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final newText = widget.data?.value?.toString() ?? '';
-    if (newText != _controller.text &&
-        oldWidget.data?.value != widget.data?.value) {
+    final newValue = widget.data?.value;
+    if (oldWidget.data?.value != newValue) {
+      final newText = newValue?.toString() ?? '';
       _controller.removeListener(_onTextChanged);
-      _controller.text = newText;
+      if (newText != _controller.text) _controller.text = newText;
       _controller.addListener(_onTextChanged);
+      if (widget.field.option.optional) {
+        setState(() => _isEnabled = newValue != null);
+      }
     }
   }
 
@@ -73,25 +96,32 @@ class _DeskStringInputState extends State<DeskStringInput> {
 
   @override
   Widget build(BuildContext context) {
-    return ShadInputFormField(
-      controller: _controller,
-      undoController: _undoController,
-      label: Text(widget.field.title),
-      placeholder: const Text('Enter text...'),
-      description: widget.field.description != null
-          ? Text(widget.field.description!)
-          : null,
-      maxLines: 1,
-      enabled: !widget.field.option.optional || _isEnabled,
-      trailing: widget.field.option.optional
-          ? ShadCheckbox(
-              value: _isEnabled,
-              onChanged: (value) {
-                setState(() => _isEnabled = value);
-                widget.onChanged?.call(value ? _controller.text : null);
-              },
-            )
-          : null,
+    final isOptional = widget.field.option.optional;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        OptionalFieldHeader(
+          title: widget.field.title,
+          isOptional: isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
+        ),
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isEnabled: !isOptional || _isEnabled,
+          child: ShadInputFormField(
+            controller: _controller,
+            undoController: _undoController,
+            placeholder: const Text('Enter text...'),
+            description: widget.field.description != null
+                ? Text(widget.field.description!)
+                : null,
+            maxLines: 1,
+            enabled: !isOptional || _isEnabled,
+          ),
+        ),
+      ],
     );
   }
 }

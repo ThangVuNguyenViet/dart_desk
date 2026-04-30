@@ -20,15 +20,11 @@ void main() {
       fileName: 'string_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty',
+        .itemFromBuilder(          description: 'empty',
           builder: (_) => buildInputApp(const DeskStringInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'filled',
+        .itemFromBuilder(          description: 'filled',
           builder: (_) => buildInputApp(
             const DeskStringInput(
               field: _field,
@@ -40,9 +36,7 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'optional / disabled',
+        .itemFromBuilder(          description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskStringInput(
               field: DeskStringField(
@@ -50,6 +44,20 @@ void main() {
                 title: 'Subtitle (optional)',
                 option: DeskStringOption(optional: true),
               ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskStringInput(
+              field: DeskStringField(
+                name: 'title',
+                title: 'Article Title',
+                option: DeskStringOption(optional: true),
+              ),
+              data: DeskData(value: 'My Awesome Article', path: 'title'),
             ),
           ),
           setup: (t) async => t.pumpAndSettle(),

@@ -1,43 +1,46 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_bricks/golden_bricks.dart';
 
-/// Loads the GoldenBricks font under its canonical family name. Test helpers
-/// (`buildInputApp`, etc.) opt their app theme into [goldenBricks] via
-/// [goldenBricksTheme]; widgets outside that theme get Flutter's Ahem
-/// fallback, which is also host-independent.
+/// Loads bundled fonts so goldens render with real typefaces.
 ///
-/// Also installs a [_TolerantComparator] so `matchesGoldenFile` accepts a
-/// small per-pixel + per-channel diff. macOS (CoreText) and Linux
-/// (FreeType) render the same scene with sub-pixel drift even with
-/// GoldenBricks; without tolerance, CI on Linux fails goldens authored on
-/// macOS.
+/// Two sources:
+///   - `lib/fonts/` in this package — the Aura design fonts (Inter, Manrope,
+///     DM Sans, Noto Serif, Playfair Display, Cormorant Garamond,
+///     DM Serif Display) used by data_models brand themes.
+///   - `package:shadcn_ui` — Geist + GeistMono, the default text family for
+///     ShadApp. Resolved through `.dart_tool/package_config.json` because
+///     `Isolate.resolvePackageUri` is unsupported in `flutter_test`.
+///
+/// `flutter_test` does not honour `flutter:` `fonts:` declarations in
+/// pubspec.yaml; every face has to be registered via [FontLoader] or text
+/// falls back to Ahem (solid rectangles).
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();
-  final bytes = await rootBundle.load(
-    'packages/golden_bricks/golden_bricks.ttf',
-  );
-  final loader = FontLoader(goldenBricks)..addFont(Future.value(bytes));
-  await loader.load();
-
+  await _loadAuraFonts(Directory('lib/fonts'));
+  await _loadShadcnGeist(packageRoot: Directory.current);
+  // Real fonts get sub-pixel rasterization drift between Apple Silicon's
+  // amd64 emulation (where local devs regenerate goldens) and CI's native
+  // x86 — order-of-magnitude single-pixel differences. Allow a tiny
+  // per-pixel tolerance so that doesn't fail; real layout changes still
+  // produce diffs orders of magnitude larger.
   final defaultComparator = goldenFileComparator as LocalFileComparator;
   goldenFileComparator = _TolerantComparator(
     defaultComparator.basedir.resolve('flutter_test_config.dart'),
   );
-
   await testMain();
 }
 
-/// Wraps the default [LocalFileComparator] with a per-pixel diff threshold.
-/// Allows up to [_kPixelTolerance] of pixels to differ by any amount before
-/// failing — covers macOS↔Linux antialiasing drift on text and borders.
 class _TolerantComparator extends LocalFileComparator {
   _TolerantComparator(super.testFile);
 
-  static const double _kPixelTolerance = 0.05;
+  /// 0.1% — well above ARM↔x86 anti-aliasing drift, well below any real
+  /// visual change.
+  static const double _kPixelTolerance = 0.001;
 
   @override
   Future<bool> compare(Uint8List imageBytes, Uri golden) async {
@@ -45,10 +48,97 @@ class _TolerantComparator extends LocalFileComparator {
       imageBytes,
       await getGoldenBytes(golden),
     );
-    if (result.passed || (result.diffPercent <= _kPixelTolerance)) {
+    if (result.passed || result.diffPercent <= _kPixelTolerance) {
       return true;
     }
     final error = await generateFailureOutput(result, golden, basedir);
     throw FlutterError(error);
   }
+}
+
+Future<void> _loadAuraFonts(Directory dir) async {
+  await _loadFontsFromDir(
+    dir,
+    family: (name) => _familyFromFilename(name),
+  );
+}
+
+Future<void> _loadShadcnGeist({required Directory packageRoot}) async {
+  final fontsDir = await _resolvePackageDir(
+    packageRoot: packageRoot,
+    package: 'shadcn_ui',
+    subdir: 'fonts',
+  );
+  if (fontsDir == null) return;
+  await _loadFontsFromDir(
+    fontsDir,
+    // ShadApp uses 'packages/shadcn_ui/Geist' (and GeistMono) as family
+    // names — Flutter prefixes package-bundled fonts that way.
+    family: (name) {
+      final base = name.split('-').first; // Geist | GeistMono
+      return 'packages/shadcn_ui/$base';
+    },
+  );
+}
+
+Future<Directory?> _resolvePackageDir({
+  required Directory packageRoot,
+  required String package,
+  required String subdir,
+}) async {
+  // Workspace setups (resolution: workspace) keep one package_config.json at
+  // the workspace root, not per-package. Walk up from the package directory
+  // until we find it.
+  File? config;
+  for (var d = packageRoot; ; d = d.parent) {
+    final candidate = File('${d.path}/.dart_tool/package_config.json');
+    if (candidate.existsSync()) {
+      config = candidate;
+      break;
+    }
+    if (d.parent.path == d.path) break; // hit filesystem root
+  }
+  if (config == null) return null;
+  final data = jsonDecode(config.readAsStringSync()) as Map<String, dynamic>;
+  final packages = (data['packages'] as List).cast<Map<String, dynamic>>();
+  final entry = packages.firstWhere(
+    (p) => p['name'] == package,
+    orElse: () => <String, dynamic>{},
+  );
+  final rootUri = entry['rootUri'] as String?;
+  if (rootUri == null) return null;
+  // Ensure trailing slash so URI resolution treats rootUri as a directory.
+  final normalisedRoot = rootUri.endsWith('/') ? rootUri : '$rootUri/';
+  final base = config.parent.uri;
+  return Directory.fromUri(base.resolve(normalisedRoot).resolve('$subdir/'));
+}
+
+Future<void> _loadFontsFromDir(
+  Directory dir, {
+  required String Function(String filename) family,
+}) async {
+  if (!dir.existsSync()) return;
+  // Group faces by family so each family's variants share one FontLoader.
+  final byFamily = <String, List<File>>{};
+  for (final f in dir.listSync().whereType<File>()) {
+    final name = f.uri.pathSegments.last;
+    if (!name.endsWith('.ttf') && !name.endsWith('.otf')) continue;
+    byFamily.putIfAbsent(family(name), () => []).add(f);
+  }
+  for (final entry in byFamily.entries) {
+    final loader = FontLoader(entry.key);
+    for (final file in entry.value) {
+      loader.addFont(
+        Future.value(ByteData.view(file.readAsBytesSync().buffer)),
+      );
+    }
+    await loader.load();
+  }
+}
+
+String _familyFromFilename(String filename) {
+  final base = filename.split('.').first.split('-').first;
+  return base
+      .replaceAllMapped(RegExp(r'(?<=[a-z])(?=[A-Z])'), (_) => ' ')
+      .replaceAllMapped(RegExp(r'(?<=[A-Z])(?=[A-Z][a-z])'), (_) => ' ');
 }
