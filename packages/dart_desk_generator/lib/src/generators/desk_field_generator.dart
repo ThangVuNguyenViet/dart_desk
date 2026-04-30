@@ -490,18 +490,18 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final _optionalSrc = _namedArgumentSource(
+          final optionalSrc = _namedArgumentSource(
             annotationSource ?? '',
             'optional',
           );
           final optional = resolveOptional(
             field: field,
-            configOptional: _optionalSrc == 'true'
+            configOptional: optionalSrc == 'true'
                 ? true
-                : _optionalSrc == 'false'
+                : optionalSrc == 'false'
                 ? false
                 : null,
-            optionalSource: _optionalSrc,
+            optionalSource: optionalSrc,
           );
 
           String? resolvedOption = optionSource;

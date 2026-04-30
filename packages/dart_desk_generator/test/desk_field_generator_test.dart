@@ -1,7 +1,6 @@
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 import 'package:dart_desk_generator/dart_desk_generator.dart';
-import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -380,7 +379,7 @@ class NullableConfig {
         _fixture('''
 @DeskModel(title: 'Override', description: 'Override test')
 class OverrideConfig {
-  @DeskString(option: DeskStringOption(optional: false))
+  @DeskString(optional: false)
   final String? maybeTitle;
 
   const OverrideConfig({this.maybeTitle});
@@ -392,6 +391,8 @@ class OverrideConfig {
       );
     });
 
+    // build_test wraps InvalidGenerationSourceError in a TestFailure, so
+    // throwsA(anything) is intentional — the exact type is not observable here.
     test('non-nullable + optional: true throws', () async {
       await expectLater(
         _testDeskBuilder(

@@ -18,8 +18,9 @@ import 'utils.dart';
 /// from `_namedArgumentSource`, used to detect the `optional: true` shorthand
 /// passed at the annotation level (e.g. `@DeskString(optional: true)`).
 ///
-/// Both parameters derive from the same annotation argument and must not
-/// disagree; callers populate whichever path is available.
+/// Callers populate whichever path is available (`configOptional` from a const
+/// reader, `optionalSource` from raw source parsing) and must not provide
+/// conflicting values.
 bool resolveOptional({
   required FieldElement field,
   required bool? configOptional,
