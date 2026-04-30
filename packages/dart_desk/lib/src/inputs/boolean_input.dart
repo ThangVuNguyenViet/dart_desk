@@ -29,16 +29,59 @@ class DeskBooleanInput extends StatefulWidget {
 }
 
 class _DeskBooleanInputState extends State<DeskBooleanInput> {
-  late bool _value;
+  late bool? _value;
+
   @override
   void initState() {
     super.initState();
-    final raw = widget.data?.value;
-    _value = switch (raw) {
-      bool b => b,
-      'true' => true,
-      _ => false,
-    };
+    _value = _parseValue(widget.data);
+  }
+
+  @override
+  void didUpdateWidget(DeskBooleanInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.data != oldWidget.data) {
+      setState(() {
+        _value = _parseValue(widget.data);
+      });
+    }
+  }
+
+  bool? _parseValue(DeskData? data) {
+    if (widget.field.option.optional) {
+      final raw = data?.value;
+      if (raw == null) return null;
+      return switch (raw) {
+        bool b => b,
+        'true' => true,
+        'false' => false,
+        _ => null,
+      };
+    } else {
+      final raw = data?.value;
+      return switch (raw) {
+        bool b => b,
+        'true' => true,
+        _ => false,
+      };
+    }
+  }
+
+  void _handleTap() {
+    final bool? next;
+    if (widget.field.option.optional) {
+      next = switch (_value) {
+        null => false,
+        false => true,
+        true => null,
+      };
+    } else {
+      next = !(_value ?? false);
+    }
+    setState(() {
+      _value = next;
+    });
+    widget.onChanged?.call(next);
   }
 
   @override
@@ -47,20 +90,23 @@ class _DeskBooleanInputState extends State<DeskBooleanInput> {
       return const SizedBox.shrink();
     }
     final theme = ShadTheme.of(context);
-    return Row(
-      children: [
-        ShadSwitch(
-          value: _value,
-          onChanged: (value) {
-            setState(() {
-              _value = value;
-            });
-            widget.onChanged?.call(value);
-          },
-        ),
-        const SizedBox(width: 12),
-        Text(widget.field.title, style: theme.textTheme.small),
-      ],
+    final isOptional = widget.field.option.optional;
+    final isNull = _value == null;
+
+    // When optional and null, show the switch in the off position with reduced
+    // opacity to indicate the indeterminate/unset state.
+    return Opacity(
+      opacity: (isOptional && isNull) ? 0.4 : 1.0,
+      child: Row(
+        children: [
+          ShadSwitch(
+            value: _value ?? false,
+            onChanged: (_) => _handleTap(),
+          ),
+          const SizedBox(width: 12),
+          Text(widget.field.title, style: theme.textTheme.small),
+        ],
+      ),
     );
   }
 }
