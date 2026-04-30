@@ -50,7 +50,7 @@ class Coupon with CouponMappable implements Serializable<Coupon> {
 }
 
 class CouponTagsOption extends DeskMultiDropdownOption<String> {
-  const CouponTagsOption({super.hidden});
+  const CouponTagsOption({super.visibleWhen});
   @override
   List<String>? get defaultValues => const [];
   @override

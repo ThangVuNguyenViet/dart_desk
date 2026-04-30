@@ -28,7 +28,7 @@ class StoreHoursEntry with StoreHoursEntryMappable implements Serializable<Store
 }
 
 class DayOfWeekOption extends DeskDropdownOption<String> {
-  const DayOfWeekOption({super.hidden});
+  const DayOfWeekOption({super.visibleWhen});
   @override
   bool get allowNull => false;
   @override
