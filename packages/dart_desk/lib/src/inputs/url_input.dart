@@ -96,8 +96,6 @@ class _DeskUrlInputState extends State<DeskUrlInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) return const SizedBox.shrink();
-
     return ShadInputFormField(
       controller: _controller,
       undoController: _undoController,

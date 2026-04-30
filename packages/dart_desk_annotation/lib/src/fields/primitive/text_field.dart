@@ -10,13 +10,12 @@ class DeskTextOption extends DeskOption {
 
   const DeskTextOption({
     this.rows = 1,
-    super.hidden,
     this.validation,
     this.initialValue,
     this.readOnly = false,
     this.deprecatedReason,
     super.optional,
-    super.condition,
+    super.visibleWhen,
   });
 }
 

@@ -4,7 +4,7 @@ import 'field_layout.dart';
 class DeskObjectOption extends DeskOption {
   final List<DeskFieldLayout> children;
 
-  const DeskObjectOption({required this.children, super.hidden, super.condition});
+  const DeskObjectOption({required this.children, super.visibleWhen});
 
   /// Walk the layout tree to collect all leaf [DeskField] instances.
   List<DeskField> get fields => children.expand((c) => c.flatFields).toList();

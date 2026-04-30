@@ -73,16 +73,15 @@ class AnyCondition extends DeskCondition {
 }
 
 abstract class DeskOption {
-  const DeskOption({this.hidden = false, this.optional = false, this.condition});
-
-  final bool hidden;
+  const DeskOption({this.optional = false, this.visibleWhen});
 
   /// Whether the field is optional (can be null/unset).
   final bool optional;
 
   /// Condition that determines field visibility based on the editor context.
-  /// When null, the field is always visible (unless [hidden] is true).
-  final DeskCondition? condition;
+  /// When null, the field is always visible. When set, the field is rendered
+  /// only if [visibleWhen.evaluate(ctx)] returns true.
+  final DeskCondition? visibleWhen;
 }
 
 abstract class DeskField {

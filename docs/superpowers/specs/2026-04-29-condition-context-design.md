@@ -41,6 +41,12 @@ might need into `evaluate` as a structured object.
 
 ## Design
 
+> **`hidden: bool` removed.** `DeskOption.hidden` was redundant with a
+> condition that always returns false. It is removed in this patch and replaced
+> by the single `visibleWhen: DeskCondition?` field (`condition` renamed for
+> clarity: `true` ⇒ visible). Per-input `if (option.hidden)` guards are also
+> removed — `DeskForm`-level filtering already owns visibility.
+
 ### Public API (in `dart_desk_annotation`)
 
 ```dart
@@ -110,7 +116,7 @@ class _GetItConditionContext extends DeskConditionContext {
 ```dart
 // dart_desk/lib/src/studio/components/forms/desk_form.dart
 const _ctx = _GetItConditionContext();
-final visible = field.option?.condition?.evaluate(_ctx) ?? true;
+final visible = field.option?.visibleWhen?.evaluate(_ctx) ?? true;
 ```
 
 GetIt remains internal. Swapping to a different DI container later is a
@@ -127,8 +133,10 @@ local change in `dart_desk`; consumer code never references GetIt.
   in the same patch; the change is mechanical (read from
   `ctx.document?.activeVersionData` instead of `data`); third-party
   conditions outside this monorepo are not believed to exist.
-- Annotation grammar is unchanged: `@DeskOption(condition: const X())`
-  continues to work; `X.evaluate` simply has a new signature.
+- Annotation grammar is updated: `condition:` is renamed to `visibleWhen:`
+  (`@DeskStringOption(visibleWhen: const X())`). The `hidden: bool` field is
+  removed — it was redundant with a condition that always returns false, and
+  `DeskForm`-level filtering already handled visibility centrally.
 
 ## Consumer-side example (HG kiosk)
 
@@ -143,7 +151,7 @@ class HideWhenDefaultDocument extends DeskCondition {
 
 class DeviceGroupsDropdownOption extends DeskMultiDropdownOption<DeviceGroup> {
   const DeviceGroupsDropdownOption()
-      : super(condition: const HideWhenDefaultDocument());
+      : super(visibleWhen: const HideWhenDefaultDocument());
   // ... existing options() / placeholder / etc.
 }
 ```

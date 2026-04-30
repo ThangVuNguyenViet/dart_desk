@@ -272,9 +272,9 @@ class _DeskFormState extends State<DeskForm> {
                     const SizedBox(height: 12),
                     ...widget.fields
                         .where((field) {
-                          final condition = field.option?.condition;
-                          return condition == null ||
-                              condition.evaluate(const GetItConditionContext());
+                          final visibleWhen = field.option?.visibleWhen;
+                          return visibleWhen == null ||
+                              visibleWhen.evaluate(const GetItConditionContext());
                         })
                         .map((field) {
                           return Padding(

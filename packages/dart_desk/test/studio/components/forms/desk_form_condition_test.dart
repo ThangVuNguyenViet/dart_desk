@@ -50,7 +50,7 @@ Future<void> _registerVm(DeskDocument? doc) async {
 DeskStringField _gatedField() => const DeskStringField(
       name: 'deviceOverrideGroups',
       title: 'Device override groups',
-      option: DeskStringOption(condition: _HideOnDefault()),
+      option: DeskStringOption(visibleWhen: _HideOnDefault()),
     );
 
 // ---------------------------------------------------------------------------

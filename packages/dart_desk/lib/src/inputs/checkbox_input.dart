@@ -49,10 +49,6 @@ class _DeskCheckboxInputState extends State<DeskCheckboxInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) {
-      return const SizedBox.shrink();
-    }
-
     final theme = ShadTheme.of(context);
     final label = widget.field.option.label ?? widget.field.title;
 

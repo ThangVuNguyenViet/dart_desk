@@ -63,19 +63,5 @@ void main() {
       expect(received, isNull);
     });
 
-    testWidgets('hidden field renders nothing', (tester) async {
-      const hiddenField = DeskNumberField(
-        name: 'hidden',
-        title: 'Hidden',
-        option: DeskNumberOption(hidden: true),
-      );
-
-      await tester.pumpWidget(
-        buildInputApp(DeskNumberInput(field: hiddenField)),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.byType(ShadInputFormField), findsNothing);
-    });
   });
 }

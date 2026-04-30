@@ -43,9 +43,6 @@ class _DeskBooleanInputState extends State<DeskBooleanInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) {
-      return const SizedBox.shrink();
-    }
     final theme = ShadTheme.of(context);
     return Row(
       children: [

@@ -24,13 +24,13 @@ class AllFieldsConfig {
   @DeskText(optional: true)
   final String textField;
 
-  @DeskString(option: DeskStringOption(hidden: true))
+  @DeskString(option: DeskStringOption(optional: true))
   final String stringField;
 
   @DeskNumber(optional: true)
   final num numberField;
 
-  @DeskBoolean(option: DeskBooleanOption(hidden: true))
+  @DeskBoolean(option: DeskBooleanOption())
   final bool booleanField;
 
   @DeskCheckbox(
@@ -110,11 +110,11 @@ class AllFieldsConfig {
             contains('DeskTextField('),
             contains('option: DeskTextOption(optional: true)'),
             contains('DeskStringField('),
-            contains('option: DeskStringOption(hidden: true)'),
+            contains('option: DeskStringOption(optional: true)'),
             contains('DeskNumberField('),
             contains('option: DeskNumberOption(optional: true)'),
             contains('DeskBooleanField('),
-            contains('option: DeskBooleanOption(hidden: true)'),
+            contains('option: DeskBooleanOption()'),
             contains('DeskCheckboxField('),
             contains(
               "option: DeskCheckboxOption(label: 'Check me', initialValue: true)",
@@ -157,25 +157,25 @@ class OptionalFieldsConfig {
   @DeskText(optional: true, option: DeskTextOption(rows: 3))
   final String textField;
 
-  @DeskString(optional: true, option: DeskStringOption(hidden: true))
+  @DeskString(optional: true, option: DeskStringOption())
   final String stringField;
 
   @DeskNumber(optional: true, option: DeskNumberOption(min: 1))
   final num numberField;
 
-  @DeskDate(optional: true, option: DeskDateOption(hidden: true))
+  @DeskDate(optional: true, option: DeskDateOption())
   final DateTime dateField;
 
   @DeskDateTime(
     optional: true,
-    option: DeskDateTimeOption(hidden: true),
+    option: DeskDateTimeOption(),
   )
   final DateTime dateTimeField;
 
-  @DeskUrl(optional: true, option: DeskUrlOption(hidden: true))
+  @DeskUrl(optional: true, option: DeskUrlOption())
   final Uri urlField;
 
-  @DeskFile(optional: true, option: DeskFileOption(hidden: true))
+  @DeskFile(optional: true, option: DeskFileOption())
   final String fileField;
 
   @DeskColor(optional: true, option: DeskColorOption(showAlpha: true))
@@ -197,12 +197,12 @@ class OptionalFieldsConfig {
 '''),
         allOf([
           contains('option: DeskTextOption(optional: true, rows: 3)'),
-          contains('option: DeskStringOption(optional: true, hidden: true)'),
+          contains('option: DeskStringOption(optional: true)'),
           contains('option: DeskNumberOption(optional: true, min: 1)'),
-          contains('option: DeskDateOption(optional: true, hidden: true)'),
-          contains('option: DeskDateTimeOption(optional: true, hidden: true)'),
-          contains('option: DeskUrlOption(optional: true, hidden: true)'),
-          contains('option: DeskFileOption(optional: true, hidden: true)'),
+          contains('option: DeskDateOption(optional: true)'),
+          contains('option: DeskDateTimeOption(optional: true)'),
+          contains('option: DeskUrlOption(optional: true)'),
+          contains('option: DeskFileOption(optional: true)'),
           contains('option: DeskColorOption(optional: true, showAlpha: true)'),
         ]),
       );
@@ -422,7 +422,7 @@ class ArrayConfig {
       title: 'Tag',
       description: 'Visible tag',
       optional: true,
-      option: DeskStringOption(hidden: true),
+      option: DeskStringOption(optional: true),
     ),
     option: DeskArrayOption(horizontal: true),
   )
@@ -438,7 +438,7 @@ class ArrayConfig {
             contains("name: 'tag'"),
             contains("title: 'Tag'"),
             contains("description: 'Visible tag'"),
-            contains('option: DeskStringOption(optional: true, hidden: true)'),
+            contains('option: DeskStringOption(optional: true)'),
             contains('option: DeskArrayOption(horizontal: true)'),
           ),
         );

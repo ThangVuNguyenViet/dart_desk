@@ -10,9 +10,8 @@ class DeskNumberOption extends DeskOption {
     this.validation,
     this.min,
     this.max,
-    super.hidden,
     super.optional,
-    super.condition,
+    super.visibleWhen,
   });
 }
 

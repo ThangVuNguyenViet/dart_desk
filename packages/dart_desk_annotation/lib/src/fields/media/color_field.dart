@@ -13,8 +13,7 @@ class DeskColorOption extends DeskOption {
     this.showAlpha = false,
     this.presetColors,
     super.optional,
-    super.hidden,
-    super.condition,
+    super.visibleWhen,
   });
 }
 

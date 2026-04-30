@@ -1,6 +1,5 @@
 import 'package:dart_desk/src/inputs/text_input.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -62,18 +61,5 @@ void main() {
       expect(find.text('Deprecated: Use new field instead'), findsOneWidget);
     });
 
-    testWidgets('hidden field renders nothing', (tester) async {
-      final hiddenField = DeskTextField(
-        name: 'hidden',
-        title: 'Hidden',
-        option: DeskTextOption(rows: 1, hidden: true),
-      );
-
-      await tester.pumpWidget(buildInputApp(DeskTextInput(field: hiddenField)));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(SizedBox), findsWidgets);
-      expect(find.byType(ShadInputFormField), findsNothing);
-    });
   });
 }
