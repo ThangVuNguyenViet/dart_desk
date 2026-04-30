@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
+
 /// Color picker input widget with full functionality
 class DeskColorInput extends StatefulWidget {
   final DeskColorField field;
@@ -22,6 +25,7 @@ class DeskColorInput extends StatefulWidget {
 
 class _DeskColorInputState extends State<DeskColorInput> {
   late Color _selectedColor;
+  String? _lastValue;
   late bool _isEnabled;
 
   @override
@@ -30,6 +34,7 @@ class _DeskColorInputState extends State<DeskColorInput> {
     final parsedColor = _parseColor(widget.data?.value?.toString());
     _selectedColor = parsedColor ?? Colors.black;
     _isEnabled = widget.field.option.optional ? parsedColor != null : true;
+    _lastValue = widget.data?.value?.toString();
   }
 
   Color? _parseColor(String? colorString) {
@@ -49,6 +54,37 @@ class _DeskColorInputState extends State<DeskColorInput> {
 
   String _colorToHex(Color color) {
     return '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
+  }
+
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastValue = _colorToHex(_selectedColor);
+        _isEnabled = false;
+      } else {
+        _isEnabled = true;
+        if (_lastValue != null) {
+          final restored = _parseColor(_lastValue);
+          if (restored != null) _selectedColor = restored;
+        }
+      }
+    });
+    widget.onChanged?.call(enabled ? _colorToHex(_selectedColor) : null);
+  }
+
+  @override
+  void didUpdateWidget(covariant DeskColorInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newValue = widget.data?.value?.toString();
+    if (oldWidget.data?.value?.toString() != newValue) {
+      final parsedColor = _parseColor(newValue);
+      setState(() {
+        _selectedColor = parsedColor ?? Colors.black;
+        if (widget.field.option.optional) {
+          _isEnabled = parsedColor != null;
+        }
+      });
+    }
   }
 
   void _showColorPicker() {
@@ -100,75 +136,51 @@ class _DeskColorInputState extends State<DeskColorInput> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.field.title,
-            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+          OptionalFieldHeader(
+            title: widget.field.title,
+            isOptional: isOptional,
+            isEnabled: _isEnabled,
+            onToggle: _handleToggle,
           ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: IgnorePointer(
-                  ignoring: !_isEnabled,
-                  child: AnimatedOpacity(
-                    opacity: _isEnabled ? 1.0 : 0.4,
-                    duration: const Duration(milliseconds: 200),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: _showColorPicker,
-                          borderRadius: BorderRadius.circular(8),
-                          child: Container(
-                            width: 80,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: _selectedColor,
-                              border: Border.all(
-                                color: theme.colorScheme.border,
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ShadInput(
-                            initialValue: _colorToHex(_selectedColor),
-                            onChanged: (value) {
-                              final color = _parseColor(value);
-                              if (color != null) {
-                                setState(() {
-                                  _selectedColor = color;
-                                });
-                                widget.onChanged?.call(value);
-                              }
-                            },
-                            placeholder: const Text('#RRGGBB'),
-                          ),
-                        ),
-                      ],
+          OptionalFieldWrapper(
+            isEnabled: !isOptional || _isEnabled,
+            child: Row(
+              children: [
+                InkWell(
+                  onTap: _showColorPicker,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    width: 80,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: _selectedColor,
+                      border: Border.all(
+                        color: theme.colorScheme.border,
+                        width: 2,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
-              ),
-              if (isOptional) ...[
-                const SizedBox(width: 8),
-                ShadCheckbox(
-                  value: _isEnabled,
-                  onChanged: (value) {
-                    setState(() {
-                      _isEnabled = value;
-                    });
-                    if (!value) {
-                      widget.onChanged?.call(null);
-                    } else {
-                      widget.onChanged?.call(_colorToHex(_selectedColor));
-                    }
-                  },
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ShadInput(
+                    initialValue: _colorToHex(_selectedColor),
+                    onChanged: (value) {
+                      final color = _parseColor(value);
+                      if (color != null) {
+                        setState(() {
+                          _selectedColor = color;
+                        });
+                        widget.onChanged?.call(value);
+                      }
+                    },
+                    placeholder: const Text('#RRGGBB'),
+                  ),
                 ),
               ],
-            ],
+            ),
           ),
         ],
       ),
