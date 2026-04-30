@@ -39,9 +39,31 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        // Note: optional variant with trailing checkbox overflows the
-        // 800px test viewport by 4px (ShadCN layout issue in tests only).
-        // The optional state is visually identical to empty but disabled.
+        .itemFromBuilder(          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            const DeskDateInput(
+              field: DeskDateField(
+                name: 'publish_date',
+                title: 'Publish Date (optional)',
+                option: DeskDateOption(optional: true),
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskDateInput(
+              field: DeskDateField(
+                name: 'publish_date',
+                title: 'Publish Date (optional)',
+                option: DeskDateOption(optional: true),
+              ),
+              data: DeskData(value: '2026-04-28', path: 'publish_date'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }
