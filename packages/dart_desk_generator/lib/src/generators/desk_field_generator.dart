@@ -23,6 +23,7 @@ import 'field_code_generators/reference_field_generator.dart';
 import 'field_code_generators/slug_field_generator.dart';
 import 'field_code_generators/string_field_generator.dart';
 import 'field_code_generators/url_field_generator.dart';
+import 'optional_resolver.dart';
 import 'field_code_registry.dart'
     as registry
     show
@@ -443,6 +444,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -478,6 +480,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -487,7 +490,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final _optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: _optionalSrc == 'true'
+                ? true
+                : _optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: _optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -513,6 +528,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -548,6 +564,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -569,6 +586,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -591,6 +609,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -626,6 +645,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -661,6 +681,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -696,6 +717,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -718,6 +740,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -740,6 +763,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -775,6 +799,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -877,6 +902,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -898,6 +924,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -919,6 +946,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -940,6 +968,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -961,6 +990,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -996,6 +1026,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -1049,6 +1080,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -1104,6 +1136,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -1356,6 +1389,7 @@ final $typeSpecName = DocumentTypeSpec<$topLevelClassName>(
           annotationValue,
           optionSource: optionSource,
           innerSource: innerSource,
+          annotationSource: annotation.toSource(),
           discoveryQueue: discoveredClasses,
         );
 

@@ -1,6 +1,7 @@
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 import 'package:dart_desk_generator/dart_desk_generator.dart';
+import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -158,7 +159,7 @@ class OptionalFieldsConfig {
   final String textField;
 
   @DeskString(optional: true, option: DeskStringOption(hidden: true))
-  final String stringField;
+  final String? stringField;
 
   @DeskNumber(optional: true, option: DeskNumberOption(min: 1))
   final num numberField;
@@ -183,7 +184,7 @@ class OptionalFieldsConfig {
 
   const OptionalFieldsConfig({
     required this.textField,
-    required this.stringField,
+    this.stringField,
     required this.numberField,
     required this.dateField,
     required this.dateTimeField,
@@ -353,6 +354,60 @@ part 'input.desk.dart';
 @DeskModel(title: 'Bad', description: 'Bad config')
 const badConfig = 1;
 ''', anything),
+        throwsA(anything),
+      );
+    });
+
+    test('infers optional from nullable String field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'Nullable', description: 'Nullable String test')
+class NullableConfig {
+  @DeskString()
+  final String? maybeTitle;
+
+  const NullableConfig({this.maybeTitle});
+
+  static NullableConfig? defaultValue;
+}
+'''),
+        contains('DeskStringOption(optional: true)'),
+      );
+    });
+
+    test('explicit optional: false overrides nullable inference', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'Override', description: 'Override test')
+class OverrideConfig {
+  @DeskString(option: DeskStringOption(optional: false))
+  final String? maybeTitle;
+
+  const OverrideConfig({this.maybeTitle});
+
+  static OverrideConfig? defaultValue;
+}
+'''),
+        isNot(contains('optional: true')),
+      );
+    });
+
+    test('non-nullable + optional: true throws', () async {
+      await expectLater(
+        _testDeskBuilder(
+          _fixture('''
+@DeskModel(title: 'Bad', description: 'Bad config')
+class BadConfig {
+  @DeskString(optional: true)
+  final String requiredTitle;
+
+  const BadConfig({required this.requiredTitle});
+
+  static BadConfig? defaultValue;
+}
+'''),
+          anything,
+        ),
         throwsA(anything),
       );
     });
