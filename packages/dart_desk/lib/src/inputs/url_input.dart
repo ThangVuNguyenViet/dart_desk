@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
+
 @Preview(name: 'DeskUrlInput')
 Widget preview() => ShadApp(
   home: DeskUrlInput(
@@ -33,6 +36,7 @@ class DeskUrlInput extends StatefulWidget {
 class _DeskUrlInputState extends State<DeskUrlInput> {
   late final TextEditingController _controller;
   late final UndoHistoryController _undoController;
+  String _lastText = '';
   late bool _isEnabled;
   String? _validationError;
 
@@ -46,6 +50,7 @@ class _DeskUrlInputState extends State<DeskUrlInput> {
     _isEnabled = widget.field.option.optional
         ? widget.data?.value != null
         : true;
+    _lastText = initialText;
   }
 
   void _onTextChanged() {
@@ -74,15 +79,33 @@ class _DeskUrlInputState extends State<DeskUrlInput> {
     }
   }
 
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastText = _controller.text;
+        _isEnabled = false;
+      } else {
+        _isEnabled = true;
+        _controller.removeListener(_onTextChanged);
+        _controller.text = _lastText;
+        _controller.addListener(_onTextChanged);
+      }
+    });
+    widget.onChanged?.call(enabled ? _controller.text : null);
+  }
+
   @override
   void didUpdateWidget(covariant DeskUrlInput oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final newText = widget.data?.value?.toString() ?? '';
-    if (newText != _controller.text &&
-        oldWidget.data?.value != widget.data?.value) {
+    final newValue = widget.data?.value;
+    if (oldWidget.data?.value != newValue) {
+      final newText = newValue?.toString() ?? '';
       _controller.removeListener(_onTextChanged);
-      _controller.text = newText;
+      if (newText != _controller.text) _controller.text = newText;
       _controller.addListener(_onTextChanged);
+      if (widget.field.option.optional) {
+        setState(() => _isEnabled = newValue != null);
+      }
     }
   }
 
@@ -98,26 +121,35 @@ class _DeskUrlInputState extends State<DeskUrlInput> {
   Widget build(BuildContext context) {
     if (widget.field.option.hidden) return const SizedBox.shrink();
 
-    return ShadInputFormField(
-      controller: _controller,
-      undoController: _undoController,
-      label: Text(widget.field.title),
-      description: widget.field.description != null
-          ? Text(widget.field.description!)
-          : null,
-      placeholder: const Text('https://example.com'),
-      maxLines: 1,
-      error: _validationError != null ? (_) => Text(_validationError!) : null,
-      enabled: !widget.field.option.optional || _isEnabled,
-      trailing: widget.field.option.optional
-          ? ShadCheckbox(
-              value: _isEnabled,
-              onChanged: (value) {
-                setState(() => _isEnabled = value);
-                widget.onChanged?.call(value ? _controller.text : null);
-              },
-            )
-          : null,
+    final isOptional = widget.field.option.optional;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        OptionalFieldHeader(
+          title: widget.field.title,
+          isOptional: isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
+        ),
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isEnabled: !isOptional || _isEnabled,
+          child: ShadInputFormField(
+            controller: _controller,
+            undoController: _undoController,
+            description: widget.field.description != null
+                ? Text(widget.field.description!)
+                : null,
+            placeholder: const Text('https://example.com'),
+            maxLines: 1,
+            error: _validationError != null
+                ? (_) => Text(_validationError!)
+                : null,
+            enabled: !isOptional || _isEnabled,
+          ),
+        ),
+      ],
     );
   }
 }
