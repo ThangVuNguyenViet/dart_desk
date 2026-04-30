@@ -454,7 +454,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -538,7 +550,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -574,10 +598,28 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
+          final optional = resolveOptional(
+            field: field,
+            configOptional: null,
+            optionalSource: null,
+          );
+
+          String? resolvedOption = optionSource;
+          if (optional && resolvedOption == null) {
+            resolvedOption = 'DeskBooleanOption(optional: true)';
+          } else if (optional && resolvedOption != null) {
+            if (!resolvedOption.contains('optional')) {
+              resolvedOption = resolvedOption.replaceFirst(
+                'DeskBooleanOption(',
+                'DeskBooleanOption(optional: true, ',
+              );
+            }
+          }
+
           return '''DeskBooleanField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
         },
     'DeskCheckbox':
@@ -596,11 +638,28 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
+          final optional = resolveOptional(
+            field: field,
+            configOptional: null,
+            optionalSource: null,
+          );
+
+          String? resolvedOption = optionSource;
+          if (optional && resolvedOption == null) {
+            resolvedOption = 'DeskCheckboxOption(optional: true)';
+          } else if (optional && resolvedOption != null) {
+            if (!resolvedOption.contains('optional')) {
+              resolvedOption = resolvedOption.replaceFirst(
+                'DeskCheckboxOption(',
+                'DeskCheckboxOption(optional: true, ',
+              );
+            }
+          }
 
           return '''DeskCheckboxField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
         },
     'DeskDate':
@@ -619,7 +678,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -655,7 +726,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -691,7 +774,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -773,7 +868,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -1000,7 +1107,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {

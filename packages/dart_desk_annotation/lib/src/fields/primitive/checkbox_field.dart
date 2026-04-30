@@ -6,6 +6,7 @@ class DeskCheckboxOption extends DeskOption {
 
   const DeskCheckboxOption({
     super.hidden,
+    super.optional,
     this.label,
     this.initialValue = false,
   });

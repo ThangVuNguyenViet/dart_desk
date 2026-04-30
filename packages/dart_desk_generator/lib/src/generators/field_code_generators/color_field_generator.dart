@@ -2,6 +2,7 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:source_gen/source_gen.dart';
 
+import '../optional_resolver.dart';
 import 'field_code_generator.dart';
 
 class ColorFieldGenerator implements FieldCodeGenerator {
@@ -23,7 +24,11 @@ class ColorFieldGenerator implements FieldCodeGenerator {
     if (fieldName == null) {
       throw InvalidGenerationSourceError('Field has no name', element: field);
     }
-    final optional = config?.getField('optional')?.toBoolValue() ?? false;
+    final optional = resolveOptional(
+      field: field,
+      configOptional: config?.getField('optional')?.toBoolValue(),
+      optionalSource: null,
+    );
 
     String? resolvedOption = optionSource;
     if (optional && resolvedOption == null) {
