@@ -20,16 +20,12 @@ void main() {
       fileName: 'geopoint_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty',
+        .itemFromBuilder(          description: 'empty',
           builder: (_) =>
               buildInputApp(const DeskGeopointInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'filled with coordinates',
+        .itemFromBuilder(          description: 'filled with coordinates',
           builder: (_) => buildInputApp(
             const DeskGeopointInput(
               field: _field,

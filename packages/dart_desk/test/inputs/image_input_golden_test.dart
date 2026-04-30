@@ -35,17 +35,13 @@ void main() {
           fileName: 'image_input_gallery',
           layout: ColumnSceneLayout(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty / upload area',
+        .itemFromBuilder(          description: 'empty / upload area',
           builder: (_) => buildInputApp(
             DeskImageInput(field: _field, dataSource: dataSource),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'filled with external URL',
+        .itemFromBuilder(          description: 'filled with external URL',
           builder: (_) => buildInputApp(
             DeskImageInput(
               field: _field,

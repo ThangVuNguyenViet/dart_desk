@@ -22,9 +22,7 @@ void main() {
       fileName: 'array_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty list',
+        .itemFromBuilder(          description: 'empty list',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(
               field: _field,
@@ -33,9 +31,7 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'populated list',
+        .itemFromBuilder(          description: 'populated list',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(
               field: _field,

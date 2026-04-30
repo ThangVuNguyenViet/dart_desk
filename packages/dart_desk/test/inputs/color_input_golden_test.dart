@@ -20,15 +20,11 @@ void main() {
       fileName: 'color_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty / unset',
+        .itemFromBuilder(          description: 'empty / unset',
           builder: (_) => buildInputApp(const DeskColorInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'filled with red',
+        .itemFromBuilder(          description: 'filled with red',
           builder: (_) => buildInputApp(
             const DeskColorInput(
               field: _field,
@@ -37,9 +33,7 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'optional / disabled',
+        .itemFromBuilder(          description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskColorInput(
               field: DeskColorField(

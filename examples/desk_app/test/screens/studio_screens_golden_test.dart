@@ -32,9 +32,7 @@ void main() {
       fileName: 'studio_screens_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromPumper(
-          tolerancePx: 100,
-          id: 'empty_studio',
+        .itemFromPumper(          id: 'empty_studio',
           description: 'empty studio (no documents)',
           constraints: _desktop,
           pumper: (tester, scaffold, _) async {
@@ -43,9 +41,7 @@ void main() {
             await tester.pump(const Duration(seconds: 2));
           },
         )
-        .itemFromPumper(
-          tolerancePx: 100,
-          id: 'chef_list_one_doc',
+        .itemFromPumper(          id: 'chef_list_one_doc',
           description: 'document list — chef profile (1 doc)',
           constraints: _desktop,
           pumper: (tester, scaffold, _) async {
@@ -54,9 +50,7 @@ void main() {
             await _pumpAndOpenChefList(tester, scaffold, source);
           },
         )
-        .itemFromPumper(
-          tolerancePx: 100,
-          id: 'chef_list_many_docs',
+        .itemFromPumper(          id: 'chef_list_many_docs',
           description: 'document list — chef profile (5 docs)',
           constraints: _desktop,
           pumper: (tester, scaffold, _) async {
@@ -65,9 +59,7 @@ void main() {
             await _pumpAndOpenChefList(tester, scaffold, source);
           },
         )
-        .itemFromPumper(
-          tolerancePx: 100,
-          id: 'document_editor_all_fields',
+        .itemFromPumper(          id: 'document_editor_all_fields',
           description: 'editor — chef profile (all fields populated)',
           constraints: _desktop,
           pumper: (tester, scaffold, _) async {
@@ -79,9 +71,7 @@ void main() {
             await _pumpAndOpenChefDoc(tester, scaffold, source);
           },
         )
-        .itemFromPumper(
-          tolerancePx: 100,
-          id: 'document_editor_empty_defaults',
+        .itemFromPumper(          id: 'document_editor_empty_defaults',
           description: 'editor — chef profile (empty defaults)',
           constraints: _desktop,
           pumper: (tester, scaffold, _) async {
@@ -90,9 +80,7 @@ void main() {
             await _pumpAndOpenChefDoc(tester, scaffold, source);
           },
         )
-        .itemFromPumper(
-          tolerancePx: 100,
-          id: 'document_editor_validation_error',
+        .itemFromPumper(          id: 'document_editor_validation_error',
           description: 'editor — chef profile (required field empty)',
           constraints: _desktop,
           pumper: (tester, scaffold, _) async {
@@ -104,9 +92,7 @@ void main() {
             await _pumpAndOpenChefDoc(tester, scaffold, source);
           },
         )
-        .itemFromPumper(
-          tolerancePx: 100,
-          id: 'media_gallery_populated',
+        .itemFromPumper(          id: 'media_gallery_populated',
           description: 'media library — 4 seeded assets',
           constraints: _desktop,
           pumper: (tester, scaffold, _) async {
@@ -114,18 +100,14 @@ void main() {
             await _pumpAndOpenMedia(tester, scaffold, source);
           },
         )
-        .itemFromPumper(
-          tolerancePx: 100,
-          id: 'media_gallery_empty',
+        .itemFromPumper(          id: 'media_gallery_empty',
           description: 'media library — empty state',
           constraints: _desktop,
           pumper: (tester, scaffold, _) async {
             await _pumpAndOpenMedia(tester, scaffold, MockDataSource());
           },
         )
-        .itemFromPumper(
-          tolerancePx: 100,
-          id: 'version_history_panel',
+        .itemFromPumper(          id: 'version_history_panel',
           description: 'editor — version history popover open',
           constraints: _desktop,
           pumper: (tester, scaffold, _) async {

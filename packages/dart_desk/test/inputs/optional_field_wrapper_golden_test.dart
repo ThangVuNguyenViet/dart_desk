@@ -24,17 +24,13 @@ void main() {
       fileName: 'optional_field_wrapper_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'enabled — full opacity, interactive',
+        .itemFromBuilder(          description: 'enabled — full opacity, interactive',
           builder: (_) => buildInputApp(
             const OptionalFieldWrapper(isEnabled: true, child: _inner),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'disabled — dimmed to 0.4 opacity',
+        .itemFromBuilder(          description: 'disabled — dimmed to 0.4 opacity',
           builder: (_) => buildInputApp(
             const OptionalFieldWrapper(isEnabled: false, child: _inner),
           ),

@@ -27,16 +27,12 @@ void main() {
       fileName: 'dropdown_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty / unselected',
+        .itemFromBuilder(          description: 'empty / unselected',
           builder: (_) =>
               buildInputApp(const DeskDropdownInput<String>(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'selected value',
+        .itemFromBuilder(          description: 'selected value',
           builder: (_) => buildInputApp(
             const DeskDropdownInput<String>(
               field: _field,

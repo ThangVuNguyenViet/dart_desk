@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:dart_desk/testing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,7 +24,6 @@ void initTestPngBytes() {
 /// `ShadApp` > `Scaffold` > `ShadToaster` > `SingleChildScrollView` > `Padding`
 Widget buildInputApp(Widget child) {
   return ShadApp(
-    theme: goldenBricksTheme(),
     home: Scaffold(
       body: ShadToaster(
         child: SingleChildScrollView(

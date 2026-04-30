@@ -20,15 +20,11 @@ void main() {
       fileName: 'boolean_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'off / unset',
+        .itemFromBuilder(          description: 'off / unset',
           builder: (_) => buildInputApp(const DeskBooleanInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'on / enabled',
+        .itemFromBuilder(          description: 'on / enabled',
           builder: (_) => buildInputApp(
             const DeskBooleanInput(
               field: _field,

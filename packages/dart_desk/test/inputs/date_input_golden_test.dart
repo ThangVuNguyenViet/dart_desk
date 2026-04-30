@@ -23,15 +23,11 @@ void main() {
       itemConstraints: const BoxConstraints(minWidth: 500, maxWidth: 500),
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'empty',
+        .itemFromBuilder(          description: 'empty',
           builder: (_) => buildInputApp(const DeskDateInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'filled',
+        .itemFromBuilder(          description: 'filled',
           builder: (_) => buildInputApp(
             const DeskDateInput(
               field: _field,

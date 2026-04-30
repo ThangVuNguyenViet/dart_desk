@@ -20,16 +20,12 @@ void main() {
       fileName: 'checkbox_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'unchecked',
+        .itemFromBuilder(          description: 'unchecked',
           builder: (_) =>
               buildInputApp(const DeskCheckboxInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: 10000,
-          description: 'checked',
+        .itemFromBuilder(          description: 'checked',
           builder: (_) => buildInputApp(
             const DeskCheckboxInput(
               field: _field,
