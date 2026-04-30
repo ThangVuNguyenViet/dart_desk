@@ -48,7 +48,7 @@ final rewardsConfigFields = [
   DeskBlockField(
     name: 'fineprint',
     title: 'Fineprint',
-    option: DeskBlockOption(),
+    option: DeskBlockOption(optional: true),
   ),
 ];
 

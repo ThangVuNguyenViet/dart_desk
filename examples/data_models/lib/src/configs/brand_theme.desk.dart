@@ -50,7 +50,7 @@ final brandThemeFields = [
   DeskImageField(
     name: 'logo',
     title: 'Logo',
-    option: DeskImageOption(hotspot: false),
+    option: DeskImageOption(optional: true, hotspot: false),
   ),
   DeskFileField(
     name: 'brandGuidelinesPdf',

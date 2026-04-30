@@ -24,7 +24,7 @@ final featuredDishFields = [
   DeskImageField(
     name: 'image',
     title: 'Image',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
 ];
 

@@ -12,7 +12,7 @@ final homeConfigFields = [
   DeskImageField(
     name: 'heroImage',
     title: 'Hero Image',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
   DeskStringField(
     name: 'heroEyebrow',

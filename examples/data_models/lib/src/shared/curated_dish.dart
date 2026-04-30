@@ -16,6 +16,12 @@ class CuratedDish with CuratedDishMappable implements Serializable<CuratedDish> 
   @DeskNumber(description: 'Price', option: DeskNumberOption(min: 0))
   final num price;
 
+  @DeskNumber(description: 'Discounted price', option: DeskNumberOption(min: 0))
+  final num? discountedPrice;
+
+  @DeskBoolean(description: 'Seasonal', option: DeskBooleanOption())
+  final bool? isSeasonal;
+
   @DeskImage(description: 'Photo', option: DeskImageOption(hotspot: true))
   final ImageReference? image;
 
@@ -26,6 +32,8 @@ class CuratedDish with CuratedDishMappable implements Serializable<CuratedDish> 
     required this.numberLabel,
     required this.name,
     required this.price,
+    this.discountedPrice,
+    this.isSeasonal,
     this.image,
     this.description,
   });

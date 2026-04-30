@@ -19,6 +19,12 @@ class ChefProfile with ChefProfileMappable implements Serializable<ChefProfile> 
   @DeskText(description: 'Bio', option: DeskTextOption())
   final String bio;
 
+  @DeskString(description: 'Subtitle', option: DeskStringOption())
+  final String? subtitle;
+
+  @DeskDateTime(description: 'Awards received at', option: DeskDateTimeOption())
+  final DateTime? awardsReceivedAt;
+
   @DeskFile(description: 'CV', option: DeskFileOption(optional: true))
   final String? cv;
 
@@ -27,6 +33,8 @@ class ChefProfile with ChefProfileMappable implements Serializable<ChefProfile> 
     required this.role,
     this.portrait,
     required this.bio,
+    this.subtitle,
+    this.awardsReceivedAt,
     this.cv,
   });
 
