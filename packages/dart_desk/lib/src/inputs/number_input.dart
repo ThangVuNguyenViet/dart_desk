@@ -112,8 +112,6 @@ class _DeskNumberInputState extends State<DeskNumberInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) return const SizedBox.shrink();
-
     final isOptional = widget.field.option.optional;
     final inputFormatters = [
       FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),

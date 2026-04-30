@@ -49,7 +49,7 @@ class FeaturedDish
 }
 
 class FeaturedDishTagOption extends DeskDropdownOption<String> {
-  const FeaturedDishTagOption({super.hidden});
+  const FeaturedDishTagOption({super.visibleWhen});
   @override
   bool get allowNull => false;
   @override

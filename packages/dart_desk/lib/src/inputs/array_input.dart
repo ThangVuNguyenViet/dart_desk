@@ -151,10 +151,6 @@ class _DeskArrayInputState<T> extends State<DeskArrayInput<T>> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option?.hidden ?? false) {
-      return const SizedBox.shrink();
-    }
-
     final theme = ShadTheme.of(context);
 
     return Column(

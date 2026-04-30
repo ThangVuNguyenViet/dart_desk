@@ -163,8 +163,6 @@ class _DeskDateTimeInputState extends State<DeskDateTimeInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) return const SizedBox.shrink();
-
     final isOptional = widget.field.option.optional;
 
     return Column(

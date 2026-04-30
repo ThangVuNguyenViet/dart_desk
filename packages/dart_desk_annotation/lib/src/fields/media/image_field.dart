@@ -10,8 +10,8 @@ class DeskImageOption extends DeskOption {
   const DeskImageOption({
     this.hotspot = false,
     this.acceptedTypes,
-    super.hidden,
     super.optional,
+    super.visibleWhen,
   });
 }
 

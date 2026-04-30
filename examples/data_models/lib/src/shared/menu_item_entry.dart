@@ -50,7 +50,7 @@ class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemE
 }
 
 class MenuItemTagsOption extends DeskMultiDropdownOption<String> {
-  const MenuItemTagsOption({super.hidden});
+  const MenuItemTagsOption({super.visibleWhen});
   @override
   List<String>? get defaultValues => const [];
   @override

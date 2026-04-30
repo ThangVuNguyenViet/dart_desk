@@ -125,10 +125,6 @@ class _DeskColorInputState extends State<DeskColorInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) {
-      return const SizedBox.shrink();
-    }
-
     final theme = ShadTheme.of(context);
     final isOptional = widget.field.option.optional;
 

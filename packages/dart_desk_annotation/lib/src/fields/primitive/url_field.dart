@@ -1,7 +1,7 @@
 import '../base/field.dart';
 
 class DeskUrlOption extends DeskOption {
-  const DeskUrlOption({super.optional, super.hidden});
+  const DeskUrlOption({super.optional, super.visibleWhen});
 }
 
 class DeskUrlField extends DeskField {

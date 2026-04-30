@@ -97,8 +97,6 @@ class _DeskTextInputState extends State<DeskTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) return const SizedBox.shrink();
-
     final theme = ShadTheme.of(context);
     final isOptional = widget.field.option.optional;
     final label =

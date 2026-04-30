@@ -175,21 +175,6 @@ void main() {
         expect(find.text('Home address'), findsOneWidget);
       });
 
-      testWidgets('hidden field renders nothing', (tester) async {
-        const hiddenField = DeskObjectField(
-          name: 'hidden',
-          title: 'Hidden',
-          option: DeskObjectOption(children: [], hidden: true),
-        );
-
-        await tester.pumpWidget(
-          buildInputApp(DeskObjectInput(field: hiddenField)),
-        );
-        await tester.pumpAndSettle();
-
-        expect(find.text('Hidden'), findsNothing);
-      });
-
       testWidgets('renders without description when null', (tester) async {
         const noDescField = DeskObjectField(
           name: 'simple',

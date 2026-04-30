@@ -67,7 +67,7 @@ class MenuConfig extends DeskContent with MenuConfigMappable, Serializable<MenuC
 }
 
 class MenuCategoriesOption extends DeskMultiDropdownOption<String> {
-  const MenuCategoriesOption({super.hidden});
+  const MenuCategoriesOption({super.visibleWhen});
   @override
   List<String>? get defaultValues => const [];
   @override
@@ -83,7 +83,7 @@ class MenuCategoriesOption extends DeskMultiDropdownOption<String> {
 }
 
 class MenuFilterTagsOption extends DeskMultiDropdownOption<String> {
-  const MenuFilterTagsOption({super.hidden});
+  const MenuFilterTagsOption({super.visibleWhen});
   @override
   List<String>? get defaultValues => const [];
   @override

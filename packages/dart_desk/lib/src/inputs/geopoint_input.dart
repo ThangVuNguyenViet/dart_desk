@@ -146,10 +146,6 @@ class _DeskGeopointInputState extends State<DeskGeopointInput> {
   @override
   Widget build(BuildContext context) {
     final isOptional = widget.field.option.optional;
-    if (widget.field.option.hidden) {
-      return const SizedBox.shrink();
-    }
-
     final theme = ShadTheme.of(context);
 
     return Column(
