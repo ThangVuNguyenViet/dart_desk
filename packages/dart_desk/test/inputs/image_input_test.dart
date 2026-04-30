@@ -337,6 +337,115 @@ void main() {
       expect(received!['_type'], 'imageReference');
     });
 
+    testWidgets('optional toggle off fires onChanged(null) once', (tester) async {
+      const optField = DeskImageField(
+        name: 'hero',
+        title: 'Hero Image',
+        option: DeskImageOption(hotspot: false, optional: true),
+      );
+      final received = <Map<String, dynamic>?>[];
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskImageInput(
+            field: optField,
+            data: const DeskData(
+              value: {
+                '_type': 'imageReference',
+                'externalUrl': 'https://example.com/photo.jpg',
+              },
+              path: 'hero',
+            ),
+            dataSource: MockDataSource(),
+            onChanged: received.add,
+          ),
+        ),
+      );
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pump();
+
+      expect(received.length, 1);
+      expect(received[0], isNull);
+    });
+
+    testWidgets('optional toggle off then on restores last value', (tester) async {
+      const optField = DeskImageField(
+        name: 'hero',
+        title: 'Hero Image',
+        option: DeskImageOption(hotspot: false, optional: true),
+      );
+      final received = <Map<String, dynamic>?>[];
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskImageInput(
+            field: optField,
+            data: const DeskData(
+              value: {
+                '_type': 'imageReference',
+                'externalUrl': 'https://example.com/photo.jpg',
+              },
+              path: 'hero',
+            ),
+            dataSource: MockDataSource(),
+            onChanged: received.add,
+          ),
+        ),
+      );
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pump();
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pump();
+
+      expect(received.length, 2);
+      expect(received[0], isNull);
+      expect(received[1], isNotNull);
+      expect(received[1]!['externalUrl'], 'https://example.com/photo.jpg');
+    });
+
+    testWidgets('optional external value flip to null does not fire onChanged', (
+      tester,
+    ) async {
+      const optField = DeskImageField(
+        name: 'hero',
+        title: 'Hero Image',
+        option: DeskImageOption(hotspot: false, optional: true),
+      );
+      var fireCount = 0;
+      Widget mk(Map<String, dynamic>? value) => buildInputApp(
+        DeskImageInput(
+          field: optField,
+          data: value == null ? null : DeskData(value: value, path: 'hero'),
+          dataSource: MockDataSource(),
+          onChanged: (_) => fireCount++,
+        ),
+      );
+
+      await tester.pumpWidget(
+        mk({
+          '_type': 'imageReference',
+          'externalUrl': 'https://example.com/photo.jpg',
+        }),
+      );
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+      fireCount = 0;
+      await tester.pumpWidget(mk(null));
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+      expect(fireCount, 0);
+      final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
+      expect(cb.value, isFalse);
+    });
+
     testWidgets('no tabs present in unified layout', (tester) async {
       await tester.pumpWidget(
         buildInputApp(
