@@ -1,5 +1,6 @@
 import 'package:dart_desk/src/inputs/geopoint_input.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
@@ -82,6 +83,89 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Location'), findsOneWidget);
+    });
+
+    testWidgets('optional toggle off fires onChanged(null) once', (tester) async {
+      const optField = DeskGeopointField(
+        name: 'location',
+        title: 'Location',
+        option: DeskGeopointOption(optional: true),
+      );
+      final received = <Map<String, double>?>[];
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskGeopointInput(
+            field: optField,
+            data: const DeskData(
+              value: {'lat': 1.0, 'lng': 2.0},
+              path: 'location',
+            ),
+            onChanged: received.add,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+
+      expect(received, [null]);
+    });
+
+    testWidgets('optional toggle off then on restores last value', (tester) async {
+      const optField = DeskGeopointField(
+        name: 'location',
+        title: 'Location',
+        option: DeskGeopointOption(optional: true),
+      );
+      final received = <Map<String, double>?>[];
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskGeopointInput(
+            field: optField,
+            data: const DeskData(
+              value: {'lat': 1.0, 'lng': 2.0},
+              path: 'location',
+            ),
+            onChanged: received.add,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+
+      expect(received.length, 2);
+      expect(received[0], isNull);
+      expect(received[1], {'lat': 1.0, 'lng': 2.0});
+    });
+
+    testWidgets('external value flip to null does not fire onChanged', (tester) async {
+      const optField = DeskGeopointField(
+        name: 'location',
+        title: 'Location',
+        option: DeskGeopointOption(optional: true),
+      );
+      var fireCount = 0;
+      Widget mk(Map<String, double>? value) => buildInputApp(
+        DeskGeopointInput(
+          field: optField,
+          data: value == null ? null : DeskData(value: value, path: 'location'),
+          onChanged: (_) => fireCount++,
+        ),
+      );
+
+      await tester.pumpWidget(mk({'lat': 1.0, 'lng': 2.0}));
+      await tester.pumpAndSettle();
+      fireCount = 0;
+      await tester.pumpWidget(mk(null));
+      await tester.pumpAndSettle();
+      expect(fireCount, 0);
+      final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
+      expect(cb.value, isFalse);
     });
   });
 }
