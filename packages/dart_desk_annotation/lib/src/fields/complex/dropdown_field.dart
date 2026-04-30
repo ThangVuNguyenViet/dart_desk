@@ -47,6 +47,7 @@ class DeskDropdownSimpleOption<T> extends DeskDropdownOption<T> {
 
   const DeskDropdownSimpleOption({
     super.hidden,
+    super.condition,
     required List<DropdownOption<T>> options,
     this.defaultValue,
     this.placeholder,
