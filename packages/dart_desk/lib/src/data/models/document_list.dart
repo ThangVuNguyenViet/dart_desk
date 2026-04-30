@@ -1,4 +1,4 @@
-import 'desk_document.dart';
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 
 /// Paginated list of CMS documents.
 ///

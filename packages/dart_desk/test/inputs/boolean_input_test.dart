@@ -71,19 +71,5 @@ void main() {
       expect(received, isTrue);
     });
 
-    testWidgets('hidden field renders nothing', (tester) async {
-      const hiddenField = DeskBooleanField(
-        name: 'hidden',
-        title: 'Hidden',
-        option: DeskBooleanOption(hidden: true),
-      );
-
-      await tester.pumpWidget(
-        buildInputApp(DeskBooleanInput(field: hiddenField)),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.byType(ShadSwitch), findsNothing);
-    });
   });
 }

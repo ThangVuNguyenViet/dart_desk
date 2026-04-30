@@ -83,7 +83,7 @@ void main() {
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 
 const stringAlias = DeskString(
-  option: DeskStringOption(hidden: true),
+  option: DeskStringOption(optional: true),
 );
 const indirectStringAlias = stringAlias;
 
@@ -104,7 +104,7 @@ class DerivedAnnotation extends BaseAnnotation {
 }
 
 class Example {
-  @DeskString(option: DeskStringOption(hidden: true))
+  @DeskString(option: DeskStringOption(optional: true))
   final String direct;
 
   @indirectStringAlias
@@ -119,14 +119,14 @@ class Example {
   const Example(
     this.direct,
     this.aliased, {
-    @DeskString(option: DeskStringOption(hidden: true))
+    @DeskString(option: DeskStringOption(optional: true))
     required this.nullableString,
     required this.dynamicValue,
     required this.genericValue,
   });
 }
 
-@DeskString(option: DeskStringOption(hidden: true))
+@DeskString(option: DeskStringOption(optional: true))
 class AnnotatedClass {}
 
 @TypeArgsAnnotation([String, int])
@@ -136,7 +136,7 @@ class TypeTarget {}
 class SuperTarget {}
 
 class RecordHolder {
-  final ({@DeskString(option: DeskStringOption(hidden: true)) String value})
+  final ({@DeskString(option: DeskStringOption(optional: true)) String value})
   record;
 
   const RecordHolder(this.record);
@@ -148,7 +148,7 @@ class RecordHolder {
           outputs: {
             'dart_desk_generator|lib/input.out': decodedMatches(
               contains(
-                'DeskStringOption(hidden: true)|DeskStringOption(hidden: true)',
+                'DeskStringOption(optional: true)|DeskStringOption(optional: true)',
               ),
             ),
           },

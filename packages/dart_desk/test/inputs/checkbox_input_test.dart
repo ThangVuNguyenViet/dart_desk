@@ -60,19 +60,5 @@ void main() {
       expect(received, isTrue);
     });
 
-    testWidgets('hidden field renders nothing', (tester) async {
-      const hiddenField = DeskCheckboxField(
-        name: 'hidden',
-        title: 'Hidden',
-        option: DeskCheckboxOption(hidden: true),
-      );
-
-      await tester.pumpWidget(
-        buildInputApp(DeskCheckboxInput(field: hiddenField)),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.byType(ShadCheckbox), findsNothing);
-    });
   });
 }

@@ -28,7 +28,7 @@ class CtaAction with CtaActionMappable implements Serializable<CtaAction> {
 }
 
 class CtaStyleDropdownOption extends DeskDropdownOption<String> {
-  const CtaStyleDropdownOption({super.hidden});
+  const CtaStyleDropdownOption({super.visibleWhen});
   @override
   bool get allowNull => false;
   @override

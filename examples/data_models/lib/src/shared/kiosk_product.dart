@@ -31,7 +31,7 @@ class KioskProduct with KioskProductMappable implements Serializable<KioskProduc
 }
 
 class KioskCategoryOption extends DeskDropdownOption<String> {
-  const KioskCategoryOption({super.hidden});
+  const KioskCategoryOption({super.visibleWhen});
   @override
   bool get allowNull => false;
   @override

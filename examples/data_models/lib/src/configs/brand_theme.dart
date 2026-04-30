@@ -124,7 +124,7 @@ class BrandThemeColorMapper extends SimpleMapper<Color> {
 }
 
 class HeadlineFontDropdownOption extends DeskDropdownOption<String> {
-  const HeadlineFontDropdownOption({super.hidden});
+  const HeadlineFontDropdownOption({super.visibleWhen});
   @override
   bool get allowNull => false;
   @override
@@ -138,7 +138,7 @@ class HeadlineFontDropdownOption extends DeskDropdownOption<String> {
 }
 
 class BodyFontDropdownOption extends DeskDropdownOption<String> {
-  const BodyFontDropdownOption({super.hidden});
+  const BodyFontDropdownOption({super.visibleWhen});
   @override
   bool get allowNull => false;
   @override

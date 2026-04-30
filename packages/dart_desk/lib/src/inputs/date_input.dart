@@ -47,8 +47,6 @@ class _DeskDateInputState extends State<DeskDateInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) return const SizedBox.shrink();
-
     return ShadDatePickerFormField(
       initialValue: _selectedDate,
       label: Text(widget.field.title),

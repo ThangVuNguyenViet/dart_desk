@@ -484,9 +484,7 @@ class _DeskImageInputState extends State<DeskImageInput>
   @override
   Widget build(BuildContext context) {
     super.build(context); // required by AutomaticKeepAliveClientMixin
-    if (widget.field.option?.hidden ?? false) {
-      return const SizedBox.shrink();
-    }
+
 
     final theme = ShadTheme.of(context);
     final ref = _viewModel.imageRef.watch(context);
