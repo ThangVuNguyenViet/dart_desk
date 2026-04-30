@@ -566,20 +566,107 @@ class NullableCheckConfig {
       );
     });
 
-    // TODO(task4): DeskImage — DeskImage annotation has no top-level optional:
-    // param and ImageFieldGenerator.generate() doesn't read optional. A test
-    // needs DeskImageOption to be produced; requires verifying the option type
-    // name first and wiring resolveOptional into the generator.
-    // TODO(task4): DeskGeopoint — same situation as DeskImage.
-    // TODO(task4): DeskDropdown — option is generic (DeskDropdownSimpleOption<T>);
-    // skipped because DeskDropdown<T> has no top-level optional: param and the
-    // option type name is ambiguous without deeper investigation.
-    // TODO(task4): DeskMultiDropdown — same situation as DeskDropdown.
-    // TODO(task4): DeskArray — DeskArray outer field doesn't map to a simple
-    // option type; the optional path for the array container itself is not
-    // clearly defined.
-    // TODO(task4): DeskBlock — DeskBlock has no optional param; skip.
-    // TODO(task4): DeskObject — DeskObject has no optional param; skip.
+    test('infers optional from nullable Image field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableImage', description: 'test')
+class NullableImageConfig {
+  @DeskImage()
+  final Object? maybeImage;
+
+  const NullableImageConfig({this.maybeImage});
+
+  static NullableImageConfig? defaultValue;
+}
+'''),
+        contains('DeskImageOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Geopoint field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableGeopoint', description: 'test')
+class NullableGeopointConfig {
+  @DeskGeopoint()
+  final Object? maybeGeo;
+
+  const NullableGeopointConfig({this.maybeGeo});
+
+  static NullableGeopointConfig? defaultValue;
+}
+'''),
+        contains('DeskGeopointOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Dropdown field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableDropdown', description: 'test')
+class NullableDropdownConfig {
+  @DeskDropdown<String>(option: DeskDropdownSimpleOption<String>(options: []))
+  final String? maybeChoice;
+
+  const NullableDropdownConfig({this.maybeChoice});
+
+  static NullableDropdownConfig? defaultValue;
+}
+'''),
+        contains('optional: true'),
+      );
+    });
+
+    test('infers optional from nullable MultiDropdown field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableMultiDropdown', description: 'test')
+class NullableMultiDropdownConfig {
+  @DeskMultiDropdown<String>(option: DeskMultiDropdownSimpleOption<String>(options: []))
+  final List<String>? maybeTags;
+
+  const NullableMultiDropdownConfig({this.maybeTags});
+
+  static NullableMultiDropdownConfig? defaultValue;
+}
+'''),
+        contains('optional: true'),
+      );
+    });
+
+    test('infers optional from nullable Array field (outer)', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableArray', description: 'test')
+class NullableArrayConfig {
+  @DeskArray<String>()
+  final List<String>? maybeTags;
+
+  const NullableArrayConfig({this.maybeTags});
+
+  static NullableArrayConfig? defaultValue;
+}
+'''),
+        contains('DeskArrayOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Block field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableBlock', description: 'test')
+class NullableBlockConfig {
+  @DeskBlock()
+  final Object? maybeContent;
+
+  const NullableBlockConfig({this.maybeContent});
+
+  static NullableBlockConfig? defaultValue;
+}
+'''),
+        contains('DeskBlockOption(optional: true)'),
+      );
+    });
   });
 
   group('DeskFieldGenerator arrays', () {

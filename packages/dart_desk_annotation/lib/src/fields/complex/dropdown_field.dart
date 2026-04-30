@@ -29,7 +29,7 @@ abstract class DeskDropdownOption<T> extends DeskOption {
   String? get placeholder;
   bool get allowNull;
 
-  const DeskDropdownOption({super.hidden});
+  const DeskDropdownOption({super.hidden, super.optional});
 }
 
 class DeskDropdownSimpleOption<T> extends DeskDropdownOption<T> {
@@ -47,6 +47,7 @@ class DeskDropdownSimpleOption<T> extends DeskDropdownOption<T> {
 
   const DeskDropdownSimpleOption({
     super.hidden,
+    super.optional,
     required List<DropdownOption<T>> options,
     this.defaultValue,
     this.placeholder,
