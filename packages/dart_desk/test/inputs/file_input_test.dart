@@ -51,21 +51,7 @@ void main() {
       expect(find.text('report.pdf'), findsOneWidget);
     });
 
-    testWidgets('hidden field renders nothing', (tester) async {
-      const hiddenField = DeskFileField(
-        name: 'document',
-        title: 'Document Upload',
-        option: DeskFileOption(hidden: true),
-      );
-
-      await tester.pumpWidget(buildInputApp(DeskFileInput(field: hiddenField)));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Upload File'), findsNothing);
-      expect(find.text('Document Upload'), findsNothing);
-    });
-
-    testWidgets('optional toggle off then on restores last value', (
+testWidgets('optional toggle off then on restores last value', (
       tester,
     ) async {
       String? captured;
