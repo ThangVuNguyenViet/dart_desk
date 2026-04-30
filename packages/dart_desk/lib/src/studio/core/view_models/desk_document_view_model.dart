@@ -25,15 +25,6 @@ class DeskDocumentViewModel {
     return await dataSource.getDocument(docId);
   }, debugLabel: 'selectedDocument');
 
-  /// Signal for the document title
-  final title = Signal<String>('', debugLabel: 'title');
-
-  /// Signal for the document slug
-  final slug = Signal<String>('', debugLabel: 'slug');
-
-  /// Signal for whether the document is the default for its type
-  final isDefault = Signal<bool>(false, debugLabel: 'isDefault');
-
   /// Shared edited data signal — written by the editor, read by the preview.
   final editedData = MapSignal<String, dynamic>({}, debugLabel: 'editedData');
 
@@ -141,10 +132,7 @@ class DeskDocumentViewModel {
         );
 
         if (result != null && args.documentId == documentId.value) {
-          // Update local signals if we're still on the same document
-          if (args.newTitle != null) title.value = args.newTitle!;
-          if (args.newSlug != null) slug.value = args.newSlug!;
-          if (args.newIsDefault != null) isDefault.value = args.newIsDefault!;
+          await selectedDocument.awaitableReload();
         }
 
         return result;
@@ -169,29 +157,12 @@ class DeskDocumentViewModel {
     return await dataSource.deleteDocument(docId);
   }, debugLabel: 'delete');
 
-  /// Loads a document by ID and updates the signals
-  Future<DeskDocument?> loadDocument(String id) async {
-    documentId.value = id;
-
-    final doc = await dataSource.getDocument(id);
-    if (doc != null) {
-      title.value = doc.title;
-      slug.value = doc.slug ?? '';
-      isDefault.value = doc.isDefault;
-    }
-
-    return doc;
-  }
-
   /// Disposes all signals
   void dispose() {
     for (final cleanup in _cleanups) {
       cleanup();
     }
     documentId.dispose();
-    title.dispose();
-    slug.dispose();
-    isDefault.dispose();
     editedData.dispose();
     isDirty.dispose();
   }

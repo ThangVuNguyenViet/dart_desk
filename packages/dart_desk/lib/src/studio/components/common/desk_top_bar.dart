@@ -62,7 +62,8 @@ class DeskTopBar extends StatelessWidget {
 
     if (docId != null) {
       final documentViewModel = GetIt.I<DeskDocumentViewModel>();
-      final title = documentViewModel.title.watch(context);
+      final title =
+          documentViewModel.selectedDocument.watch(context).value?.title ?? '';
       segments.add(
         BreadcrumbSegment(label: title.isNotEmpty ? title : 'Document'),
       );

@@ -33,7 +33,7 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromPumper(
-          tolerancePx: 50000,
+          tolerancePx: 100,
           id: 'empty_studio',
           description: 'empty studio (no documents)',
           constraints: _desktop,
@@ -44,7 +44,7 @@ void main() {
           },
         )
         .itemFromPumper(
-          tolerancePx: 50000,
+          tolerancePx: 100,
           id: 'chef_list_one_doc',
           description: 'document list — chef profile (1 doc)',
           constraints: _desktop,
@@ -55,7 +55,7 @@ void main() {
           },
         )
         .itemFromPumper(
-          tolerancePx: 50000,
+          tolerancePx: 100,
           id: 'chef_list_many_docs',
           description: 'document list — chef profile (5 docs)',
           constraints: _desktop,
@@ -66,7 +66,7 @@ void main() {
           },
         )
         .itemFromPumper(
-          tolerancePx: 50000,
+          tolerancePx: 100,
           id: 'document_editor_all_fields',
           description: 'editor — chef profile (all fields populated)',
           constraints: _desktop,
@@ -80,7 +80,7 @@ void main() {
           },
         )
         .itemFromPumper(
-          tolerancePx: 50000,
+          tolerancePx: 100,
           id: 'document_editor_empty_defaults',
           description: 'editor — chef profile (empty defaults)',
           constraints: _desktop,
@@ -91,7 +91,7 @@ void main() {
           },
         )
         .itemFromPumper(
-          tolerancePx: 50000,
+          tolerancePx: 100,
           id: 'document_editor_validation_error',
           description: 'editor — chef profile (required field empty)',
           constraints: _desktop,
@@ -105,7 +105,7 @@ void main() {
           },
         )
         .itemFromPumper(
-          tolerancePx: 50000,
+          tolerancePx: 100,
           id: 'media_gallery_populated',
           description: 'media library — 4 seeded assets',
           constraints: _desktop,
@@ -115,7 +115,7 @@ void main() {
           },
         )
         .itemFromPumper(
-          tolerancePx: 50000,
+          tolerancePx: 100,
           id: 'media_gallery_empty',
           description: 'media library — empty state',
           constraints: _desktop,
@@ -124,7 +124,7 @@ void main() {
           },
         )
         .itemFromPumper(
-          tolerancePx: 50000,
+          tolerancePx: 100,
           id: 'version_history_panel',
           description: 'editor — version history popover open',
           constraints: _desktop,
