@@ -21,6 +21,7 @@ import '../../../inputs/string_input.dart';
 import '../../../inputs/text_input.dart';
 import '../../../inputs/url_input.dart';
 import '../../core/view_models/desk_view_model.dart';
+import '../../internal/get_it_condition_context.dart';
 
 /// Type definition for field value change callbacks
 typedef OnFieldChanged = void Function(String fieldName, dynamic value);
@@ -273,7 +274,7 @@ class _DeskFormState extends State<DeskForm> {
                         .where((field) {
                           final condition = field.option?.condition;
                           return condition == null ||
-                              condition.evaluate(widget.data);
+                              condition.evaluate(const GetItConditionContext());
                         })
                         .map((field) {
                           return Padding(
