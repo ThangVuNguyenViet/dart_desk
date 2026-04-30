@@ -19,21 +19,6 @@ class _HideOnDefault extends DeskCondition {
   bool evaluate(DeskConditionContext ctx) => ctx.document?.isDefault != true;
 }
 
-/// A [DeskStringOption] subclass that overrides [condition] to return a
-/// fixed [DeskCondition].
-///
-/// [DeskStringOption] does not expose [condition] in its constructor (it only
-/// forwards [optional] and [hidden] to [DeskOption]). We override the getter
-/// here so the field carries the gating condition without modifying production
-/// code.
-class _ConditionStringOption extends DeskStringOption {
-  final DeskCondition _cond;
-  const _ConditionStringOption(this._cond);
-
-  @override
-  DeskCondition? get condition => _cond;
-}
-
 /// Fake view model that returns a fixed [DeskDocument] from [selectedDocument].
 class _FakeViewModel implements DeskDocumentViewModel {
   _FakeViewModel(this._doc);
@@ -62,10 +47,10 @@ Future<void> _registerVm(DeskDocument? doc) async {
 }
 
 /// The field under test — a string field gated by [_HideOnDefault].
-DeskStringField _gatedField() => DeskStringField(
+DeskStringField _gatedField() => const DeskStringField(
       name: 'deviceOverrideGroups',
       title: 'Device override groups',
-      option: _ConditionStringOption(const _HideOnDefault()),
+      option: DeskStringOption(condition: _HideOnDefault()),
     );
 
 // ---------------------------------------------------------------------------

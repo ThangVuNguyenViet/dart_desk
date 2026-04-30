@@ -1,7 +1,7 @@
 import '../base/field.dart';
 
 class DeskBooleanOption extends DeskOption {
-  const DeskBooleanOption({super.hidden});
+  const DeskBooleanOption({super.hidden, super.condition});
 }
 
 class DeskBooleanField extends DeskField {

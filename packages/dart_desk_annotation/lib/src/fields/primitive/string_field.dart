@@ -1,7 +1,7 @@
 import '../base/field.dart';
 
 class DeskStringOption extends DeskOption {
-  const DeskStringOption({super.optional, super.hidden});
+  const DeskStringOption({super.optional, super.hidden, super.condition});
 }
 
 class DeskStringField extends DeskField {

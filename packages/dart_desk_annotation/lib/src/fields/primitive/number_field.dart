@@ -12,6 +12,7 @@ class DeskNumberOption extends DeskOption {
     this.max,
     super.hidden,
     super.optional,
+    super.condition,
   });
 }
 

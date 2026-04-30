@@ -11,6 +11,7 @@ class DeskImageOption extends DeskOption {
     required this.hotspot,
     this.acceptedTypes,
     super.hidden,
+    super.condition,
   });
 }
 

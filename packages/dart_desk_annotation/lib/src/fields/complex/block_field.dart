@@ -1,7 +1,7 @@
 import '../base/field.dart';
 
 class DeskBlockOption extends DeskOption {
-  const DeskBlockOption();
+  const DeskBlockOption({super.condition});
 }
 
 class DeskBlockField extends DeskField {

@@ -1,7 +1,7 @@
 import '../base/field.dart';
 
 class DeskDateOption extends DeskOption {
-  const DeskDateOption({super.optional, super.hidden});
+  const DeskDateOption({super.optional, super.hidden, super.condition});
 }
 
 class DeskDateField extends DeskField {

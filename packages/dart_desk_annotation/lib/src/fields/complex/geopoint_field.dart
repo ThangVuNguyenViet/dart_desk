@@ -1,7 +1,7 @@
 import '../base/field.dart';
 
 class DeskGeopointOption extends DeskOption {
-  const DeskGeopointOption();
+  const DeskGeopointOption({super.condition});
 }
 
 class DeskGeopointField extends DeskField {

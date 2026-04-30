@@ -28,7 +28,7 @@ abstract class DeskMultiDropdownOption<T> extends DeskOption {
   int? get minSelected;
   int? get maxSelected;
 
-  const DeskMultiDropdownOption({super.hidden});
+  const DeskMultiDropdownOption({super.hidden, super.condition});
 }
 
 /// Simple multi-dropdown option with static options list.

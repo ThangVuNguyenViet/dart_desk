@@ -1,7 +1,7 @@
 import '../base/field.dart';
 
 class DeskFileOption extends DeskOption {
-  const DeskFileOption({super.optional, super.hidden});
+  const DeskFileOption({super.optional, super.hidden, super.condition});
 }
 
 class DeskFileField extends DeskField {

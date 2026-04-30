@@ -16,6 +16,7 @@ class DeskTextOption extends DeskOption {
     this.readOnly = false,
     this.deprecatedReason,
     super.optional,
+    super.condition,
   });
 }
 

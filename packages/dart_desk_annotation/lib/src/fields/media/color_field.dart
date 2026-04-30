@@ -14,6 +14,7 @@ class DeskColorOption extends DeskOption {
     this.presetColors,
     super.optional,
     super.hidden,
+    super.condition,
   });
 }
 

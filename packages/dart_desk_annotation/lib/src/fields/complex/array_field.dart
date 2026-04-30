@@ -16,7 +16,7 @@ typedef DeskArrayInputFactory =
     );
 
 class DeskArrayOption<T> extends DeskOption {
-  const DeskArrayOption({super.hidden, this.itemBuilder});
+  const DeskArrayOption({super.hidden, super.condition, this.itemBuilder});
 
   final DeskArrayFieldItemBuilder<T>? itemBuilder;
 
