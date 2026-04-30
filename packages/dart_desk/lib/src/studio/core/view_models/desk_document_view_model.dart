@@ -1,7 +1,7 @@
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../../data/desk_data_source.dart';
-import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import '../../../extensions/awaitable_future_signal.dart';
 import '../signals/mutation_signal.dart';
 import 'desk_view_model.dart';
