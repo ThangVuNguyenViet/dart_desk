@@ -75,7 +75,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
   Future<void> _publishDocument() => _performSave(publish: true);
 
   void _clearDocument() {
-    editedData.value = {};
+    editedData.value = {for (final f in widget.fields) f.name: null};
     GetIt.I<DeskDocumentViewModel>().isDirty.value = true;
   }
 
@@ -97,7 +97,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
       } else {
         // Reset to default values
         final docType = viewModel.currentDocumentType.value;
-        editedData.value = docType?.defaultValue?.toMap() ?? {};
+        editedData.value = docType?.initialValue?.toMap() ?? {};
       }
       documentViewModel.isDirty.value = false;
 
@@ -182,6 +182,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     final theme = ShadTheme.of(context);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
           height: 2,
