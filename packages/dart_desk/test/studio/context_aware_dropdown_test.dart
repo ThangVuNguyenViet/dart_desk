@@ -74,7 +74,7 @@ final _testDocType = DocumentType(
   title: 'Test Type',
   description: 'Test document type',
   fields: const [],
-  builder: (_) => const SizedBox(),
+  builder: (_, _) => const SizedBox(),
 );
 
 // ---------------------------------------------------------------------------

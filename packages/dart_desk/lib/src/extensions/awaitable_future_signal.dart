@@ -8,7 +8,8 @@ import 'package:signals/signals_flutter.dart';
 ///
 /// Use [awaitableFutureSignal] as a drop-in replacement for [futureSignal].
 /// Use [awaitableReload] instead of [reload].
-class AwaitableFutureSignal<T> extends FutureSignal<T> {
+class AwaitableFutureSignal<T> extends FutureSignal<T>
+    with ValueListenableSignalMixin<AsyncState<T>> {
   AwaitableFutureSignal(
     super.fn, {
     super.initialValue,

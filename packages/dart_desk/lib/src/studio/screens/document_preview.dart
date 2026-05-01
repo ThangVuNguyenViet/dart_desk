@@ -57,7 +57,9 @@ class DocumentPreview extends StatelessWidget {
                 borderRadius: BorderRadius.circular(DeskBorderRadius.lg),
               ),
               clipBehavior: Clip.antiAlias,
-              child: docType.builder(data),
+              child: Builder(
+                builder: (context) => docType.builder(context, data),
+              ),
             ),
           ),
         ),
