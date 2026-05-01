@@ -59,7 +59,7 @@ final chefConfigTypeSpec = DocumentTypeSpec<ChefConfig>(
   title: 'Chef\'s Choice',
   description: 'Mobile upsell — curated list + pull-quote',
   fields: chefConfigFields,
-  defaultValue: ChefConfig.defaultValue,
+  initialValue: ChefConfig.initialValue,
 );
 
 // **************************************************************************

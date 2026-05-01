@@ -2,7 +2,7 @@ import '../configs/kiosk_config.dart';
 
 class KioskConfigFixtures {
   /// The demo-quality fixture used by showcase apps and happy-path tests.
-  static KioskConfig showcase() => KioskConfig.defaultValue;
+  static KioskConfig showcase() => KioskConfig.initialValue;
 
   /// Required fields at minimum, optionals null/empty.
   static KioskConfig empty() => const KioskConfig(

@@ -72,7 +72,7 @@ final kioskConfigTypeSpec = DocumentTypeSpec<KioskConfig>(
   title: 'Kiosk screen',
   description: 'Tablet landscape in-store terminal',
   fields: kioskConfigFields,
-  defaultValue: KioskConfig.defaultValue,
+  initialValue: KioskConfig.initialValue,
 );
 
 // **************************************************************************

@@ -84,7 +84,7 @@ final homeConfigTypeSpec = DocumentTypeSpec<HomeConfig>(
   title: 'Home screen',
   description: 'Mobile home — hero, welcome, featured carousel, store card',
   fields: homeConfigFields,
-  defaultValue: HomeConfig.defaultValue,
+  initialValue: HomeConfig.initialValue,
 );
 
 // **************************************************************************

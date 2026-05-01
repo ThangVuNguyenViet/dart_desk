@@ -41,7 +41,7 @@ final couponTypeSpec = DocumentTypeSpec<Coupon>(
   title: 'Coupon',
   description: 'Reward redeemable by the guest',
   fields: couponFields,
-  defaultValue: Coupon.defaultValue,
+  initialValue: Coupon.initialValue,
 );
 
 // **************************************************************************

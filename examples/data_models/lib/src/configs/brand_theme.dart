@@ -91,7 +91,7 @@ class BrandTheme extends DeskContent
     this.brandGuidelinesPdf,
   });
 
-  static BrandTheme defaultValue = const BrandTheme(
+  static BrandTheme initialValue = const BrandTheme(
     name: 'Aura Gastronomy',
     primaryColor: Color(0xFF496455),
     surfaceColor: Color(0xFFF6F1E7),
@@ -128,7 +128,7 @@ class HeadlineFontDropdownOption extends DeskDropdownOption<String> {
   @override
   bool get allowNull => false;
   @override
-  FutureOr<String?>? get defaultValue => 'Noto Serif';
+  FutureOr<String?>? get initialValue => 'Noto Serif';
   @override
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
         for (final f in headlineFonts) DropdownOption(value: f, label: f),
@@ -142,7 +142,7 @@ class BodyFontDropdownOption extends DeskDropdownOption<String> {
   @override
   bool get allowNull => false;
   @override
-  FutureOr<String?>? get defaultValue => 'Manrope';
+  FutureOr<String?>? get initialValue => 'Manrope';
   @override
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
         for (final f in bodyFonts) DropdownOption(value: f, label: f),

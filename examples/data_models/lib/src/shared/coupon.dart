@@ -38,7 +38,7 @@ class Coupon with CouponMappable implements Serializable<Coupon> {
     required this.tags,
   });
 
-  static Coupon defaultValue = Coupon(
+  static Coupon initialValue = Coupon(
     title: 'House wine by the glass',
     code: 'AURA-WINE',
     discountPercent: 100,
@@ -52,7 +52,7 @@ class Coupon with CouponMappable implements Serializable<Coupon> {
 class CouponTagsOption extends DeskMultiDropdownOption<String> {
   const CouponTagsOption({super.visibleWhen});
   @override
-  List<String>? get defaultValues => const [];
+  List<String>? get initialValues => const [];
   @override
   int? get maxSelected => null;
   @override

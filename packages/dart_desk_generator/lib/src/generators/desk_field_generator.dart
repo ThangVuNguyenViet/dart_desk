@@ -1623,7 +1623,7 @@ final $typeSpecName = DocumentTypeSpec<$topLevelClassName>(
   title: '${title.replaceAll("'", "\\'")}',
   description: '${description.replaceAll("'", "\\'")}',
   fields: $topLevelFieldsListName,
-  defaultValue: $topLevelClassName.defaultValue,
+  initialValue: $topLevelClassName.initialValue,
 );
 ''';
 
@@ -1639,7 +1639,7 @@ final $typeSpecName = DocumentTypeSpec<$topLevelClassName>(
     bool inferUnannotatedFields = false,
   }) async {
     final fields = element.fields.where(
-      (f) => !f.isStatic && f.name != 'defaultValue',
+      (f) => !f.isStatic && f.name != 'initialValue',
     );
     final fieldConfigs = <String>[];
     final discoveredClasses = <ClassElement>[];

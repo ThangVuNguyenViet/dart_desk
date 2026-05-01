@@ -38,7 +38,7 @@ class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemE
     this.isAvailable,
   });
 
-  static MenuItemEntry defaultValue = const MenuItemEntry(
+  static MenuItemEntry initialValue = const MenuItemEntry(
     name: 'Orecchiette \'Nduja',
     price: 24,
     shortDescription: 'House-made orecchiette, spicy \'nduja, pecorino.',
@@ -52,7 +52,7 @@ class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemE
 class MenuItemTagsOption extends DeskMultiDropdownOption<String> {
   const MenuItemTagsOption({super.visibleWhen});
   @override
-  List<String>? get defaultValues => const [];
+  List<String>? get initialValues => const [];
   @override
   int? get maxSelected => null;
   @override

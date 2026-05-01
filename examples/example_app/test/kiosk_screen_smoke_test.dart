@@ -25,8 +25,8 @@ void main() {
       home: Scaffold(
         body: Center(
           child: KioskScreen(
-            config: KioskConfig.defaultValue,
-            theme: BrandTheme.defaultValue,
+            config: KioskConfig.initialValue,
+            theme: BrandTheme.initialValue,
           ),
         ),
       ),

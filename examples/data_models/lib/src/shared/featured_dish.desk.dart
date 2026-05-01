@@ -35,7 +35,7 @@ final featuredDishTypeSpec = DocumentTypeSpec<FeaturedDish>(
   title: 'Featured dish',
   description: 'Home screen carousel item',
   fields: featuredDishFields,
-  defaultValue: FeaturedDish.defaultValue,
+  initialValue: FeaturedDish.initialValue,
 );
 
 // **************************************************************************

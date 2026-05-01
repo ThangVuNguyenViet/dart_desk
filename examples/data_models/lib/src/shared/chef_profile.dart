@@ -38,7 +38,7 @@ class ChefProfile with ChefProfileMappable implements Serializable<ChefProfile> 
     this.cv,
   });
 
-  static ChefProfile defaultValue = const ChefProfile(
+  static ChefProfile initialValue = const ChefProfile(
     name: 'Marco Vespucci',
     role: 'Head Chef · Aura Tribeca',
     bio: 'Twelve years between Milan and Brooklyn. Cooks seasonally, apologizes rarely.',

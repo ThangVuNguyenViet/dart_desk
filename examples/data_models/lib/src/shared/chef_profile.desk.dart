@@ -41,7 +41,7 @@ final chefProfileTypeSpec = DocumentTypeSpec<ChefProfile>(
   title: 'Chef profile',
   description: 'Head chef bio block',
   fields: chefProfileFields,
-  defaultValue: ChefProfile.defaultValue,
+  initialValue: ChefProfile.initialValue,
 );
 
 // **************************************************************************

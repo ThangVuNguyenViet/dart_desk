@@ -56,7 +56,7 @@ class DeskConfigGenerator extends GeneratorForAnnotation<DeskModel> {
     // 2. Transform each field to DeskData<T>
     final typeChecker = TypeChecker.typeNamed(DeskModel);
     final fields = element.fields
-        .where((field) => !field.isStatic && field.name != 'defaultValue')
+        .where((field) => !field.isStatic && field.name != 'initialValue')
         .map((field) {
           final fieldType = field.type.getDisplayString();
           final fieldElement = field.type.element;
@@ -91,7 +91,7 @@ class DeskConfigGenerator extends GeneratorForAnnotation<DeskModel> {
       (b) => b
         ..optionalParameters.addAll(
           element.fields
-              .where((field) => !field.isStatic && field.name != 'defaultValue')
+              .where((field) => !field.isStatic && field.name != 'initialValue')
               .map((field) {
                 final fieldName = field.displayName;
                 return Parameter(

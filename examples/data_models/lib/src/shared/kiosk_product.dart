@@ -25,7 +25,7 @@ class KioskProduct with KioskProductMappable implements Serializable<KioskProduc
 
   const KioskProduct({required this.name, required this.price, this.image, required this.category});
 
-  static KioskProduct defaultValue = const KioskProduct(name: 'Orecchiette', price: 24, category: 'Signature');
+  static KioskProduct initialValue = const KioskProduct(name: 'Orecchiette', price: 24, category: 'Signature');
 
   static KioskProduct $fromMap(Map<String, dynamic> map) => KioskProductMapper.fromMap(map);
 }
@@ -35,7 +35,7 @@ class KioskCategoryOption extends DeskDropdownOption<String> {
   @override
   bool get allowNull => false;
   @override
-  FutureOr<String?>? get defaultValue => 'Signature';
+  FutureOr<String?>? get initialValue => 'Signature';
   @override
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
         for (final c in kioskCategories) DropdownOption(value: c, label: c),

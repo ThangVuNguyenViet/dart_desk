@@ -55,7 +55,7 @@ final blogPostType = DocumentType<BlogPost>(
     ),
   ],
   builder: (data) => Text(data['title'] as String? ?? 'Untitled'),
-  defaultValue: const BlogPost(title: 'New Post', body: ''),
+  initialValue: const BlogPost(title: 'New Post', body: ''),
 );
 
 // Using validators

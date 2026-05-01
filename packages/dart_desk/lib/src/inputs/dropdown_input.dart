@@ -54,11 +54,11 @@ class DeskDropdownInput<T> extends StatelessWidget {
 
     // If options is a Future, use FutureBuilder to handle async loading
     if (options is Future<List<DropdownOption<T>>>) {
-      final defaultValue = fieldOption.defaultValue;
+      final initialValue = fieldOption.initialValue;
       return FutureBuilder(
         future: Future.wait([
           options,
-          if (defaultValue is Future<T?>) defaultValue,
+          if (initialValue is Future<T?>) initialValue,
         ]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -67,9 +67,9 @@ class DeskDropdownInput<T> extends StatelessWidget {
 
           final List<DropdownOption<T>> loadedOptions =
               snapshot.data?.first as List<DropdownOption<T>>? ?? [];
-          final loadedDefaultValue = (defaultValue is Future<T?>)
+          final loadedDefaultValue = (initialValue is Future<T?>)
               ? snapshot.data?.last as T?
-              : defaultValue;
+              : initialValue;
 
           return _DeskDropdownInput<T>(
             title: field.title,
@@ -77,7 +77,7 @@ class DeskDropdownInput<T> extends StatelessWidget {
             isOptional: fieldOption.optional,
             placeholder: fieldOption.placeholder,
             options: loadedOptions,
-            defaultValue: loadedDefaultValue,
+            initialValue: loadedDefaultValue,
             data: data,
             onChanged: onChanged,
             fromMap: field.fromMap,
@@ -92,7 +92,7 @@ class DeskDropdownInput<T> extends StatelessWidget {
       isOptional: fieldOption.optional,
       placeholder: fieldOption.placeholder,
       options: options,
-      defaultValue: fieldOption.defaultValue as T?,
+      initialValue: fieldOption.initialValue as T?,
       data: data,
       onChanged: onChanged,
       fromMap: field.fromMap,
@@ -102,7 +102,7 @@ class DeskDropdownInput<T> extends StatelessWidget {
 
 class _DeskDropdownInput<T> extends StatefulWidget {
   final List<DropdownOption<T>> options;
-  final T? defaultValue;
+  final T? initialValue;
   final DeskData? data;
   final String title;
   final String? description;
@@ -115,7 +115,7 @@ class _DeskDropdownInput<T> extends StatefulWidget {
   const _DeskDropdownInput({
     super.key,
     this.onChanged,
-    this.defaultValue,
+    this.initialValue,
     this.data,
     this.options = const [],
     required this.title,
@@ -163,7 +163,7 @@ class _DeskDropdownInputState<T> extends State<_DeskDropdownInput<T>> {
   }
 
   T? _resolveRawValue() {
-    final raw = widget.data?.value ?? widget.defaultValue;
+    final raw = widget.data?.value ?? widget.initialValue;
     if (raw == null) return null;
     if (raw is T) return raw;
     if (widget.fromMap != null && raw is Map) {
@@ -213,7 +213,7 @@ class _DeskDropdownInputState<T> extends State<_DeskDropdownInput<T>> {
 
   /// Resolves the initial value set, returning empty set when no valid selection.
   Set<T> _resolveInitialSet() {
-    final raw = widget.data?.value ?? widget.defaultValue;
+    final raw = widget.data?.value ?? widget.initialValue;
     if (raw == null) return {};
     final T value;
     if (raw is T) {

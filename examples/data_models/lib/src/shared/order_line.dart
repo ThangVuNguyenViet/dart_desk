@@ -18,7 +18,7 @@ class OrderLine with OrderLineMappable implements Serializable<OrderLine> {
 
   const OrderLine({required this.itemName, required this.qty, required this.price});
 
-  static OrderLine defaultValue = const OrderLine(itemName: 'Olive Oil Cake', qty: 1, price: 11);
+  static OrderLine initialValue = const OrderLine(itemName: 'Olive Oil Cake', qty: 1, price: 11);
 
   static OrderLine $fromMap(Map<String, dynamic> map) => OrderLineMapper.fromMap(map);
 }

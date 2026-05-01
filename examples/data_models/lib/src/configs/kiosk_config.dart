@@ -52,7 +52,7 @@ class KioskConfig extends DeskContent with KioskConfigMappable, Serializable<Kio
     required this.footerNote,
   });
 
-  static KioskConfig defaultValue = KioskConfig(
+  static KioskConfig initialValue = KioskConfig(
     bannerImage: const ImageReference(externalUrl: AuraAssets.heroPlating),
     bannerHeadline: AuraCopy.kioskBannerHeadline,
     bannerSubtitle: AuraCopy.kioskBannerSubtitle,

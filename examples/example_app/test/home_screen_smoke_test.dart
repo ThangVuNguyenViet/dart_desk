@@ -26,8 +26,8 @@ void main() {
       home: Scaffold(
         body: Center(
           child: HomeScreen(
-            config: HomeConfig.defaultValue,
-            theme: BrandTheme.defaultValue,
+            config: HomeConfig.initialValue,
+            theme: BrandTheme.initialValue,
           ),
         ),
       ),

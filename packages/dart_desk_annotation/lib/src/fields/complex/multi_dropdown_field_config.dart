@@ -23,7 +23,7 @@ class DeskMultiDropdown<T> extends DeskFieldConfig {
 /// Abstract option class for multi-select dropdown fields.
 abstract class DeskMultiDropdownOption<T> extends DeskOption {
   FutureOr<List<DropdownOption<T>>> options(BuildContext context);
-  List<T>? get defaultValues;
+  List<T>? get initialValues;
   String? get placeholder;
   int? get minSelected;
   int? get maxSelected;
@@ -39,7 +39,7 @@ class DeskMultiDropdownSimpleOption<T> extends DeskMultiDropdownOption<T> {
   FutureOr<List<DropdownOption<T>>> options(BuildContext context) => _options;
 
   @override
-  final List<T>? defaultValues;
+  final List<T>? initialValues;
   @override
   final String? placeholder;
   @override
@@ -51,7 +51,7 @@ class DeskMultiDropdownSimpleOption<T> extends DeskMultiDropdownOption<T> {
     super.optional,
     super.visibleWhen,
     required List<DropdownOption<T>> options,
-    this.defaultValues,
+    this.initialValues,
     this.placeholder,
     this.minSelected,
     this.maxSelected,
