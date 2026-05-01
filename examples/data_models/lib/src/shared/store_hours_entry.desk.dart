@@ -34,7 +34,7 @@ final storeHoursEntryTypeSpec = DocumentTypeSpec<StoreHoursEntry>(
   title: 'Store hours entry',
   description: 'Open/close times for a single day',
   fields: storeHoursEntryFields,
-  defaultValue: StoreHoursEntry.defaultValue,
+  initialValue: StoreHoursEntry.initialValue,
 );
 
 // **************************************************************************

@@ -61,7 +61,7 @@ class HomeConfig extends DeskContent with HomeConfigMappable, Serializable<HomeC
     required this.storeCallout,
   });
 
-  static HomeConfig defaultValue = HomeConfig(
+  static HomeConfig initialValue = HomeConfig(
     heroImage: const ImageReference(externalUrl: AuraAssets.heroTable),
     heroEyebrow: AuraCopy.homeEyebrow,
     heroHeadline: AuraCopy.homeHeadline,
@@ -76,6 +76,6 @@ class HomeConfig extends DeskContent with HomeConfigMappable, Serializable<HomeC
       FeaturedDish(name: 'Olive Oil Cake',      price: 11, tag: 'Seasonal',    image: ImageReference(externalUrl: AuraAssets.dish5)),
       FeaturedDish(name: 'Citrus & Fennel',     price: 15, tag: 'Vegan',       image: ImageReference(externalUrl: AuraAssets.citrus)),
     ],
-    storeCallout: StoreCallout.defaultValue,
+    storeCallout: StoreCallout.initialValue,
   );
 }

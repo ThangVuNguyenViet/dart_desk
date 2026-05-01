@@ -6,7 +6,7 @@ import '../primitives/aura_assets.dart';
 
 class BrandThemeFixtures {
   /// The demo-quality fixture used by showcase apps and happy-path tests.
-  static BrandTheme showcase() => BrandTheme.defaultValue;
+  static BrandTheme showcase() => BrandTheme.initialValue;
 
   /// Required fields at minimum, optionals null.
   static BrandTheme empty() => const BrandTheme(

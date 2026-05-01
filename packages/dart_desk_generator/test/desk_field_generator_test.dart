@@ -16,7 +16,7 @@ class ChildConfig {
 
   const ChildConfig({required this.childTitle});
 
-  static ChildConfig? defaultValue;
+  static ChildConfig? initialValue;
 }
 
 @DeskModel(title: 'All Fields', description: 'All fields config')
@@ -102,7 +102,7 @@ class AllFieldsConfig {
     required this.geopointField,
   });
 
-  static AllFieldsConfig? defaultValue;
+  static AllFieldsConfig? initialValue;
 }
 '''),
           allOf([
@@ -192,7 +192,7 @@ class OptionalFieldsConfig {
     this.colorField,
   });
 
-  static OptionalFieldsConfig? defaultValue;
+  static OptionalFieldsConfig? initialValue;
 }
 '''),
         allOf([
@@ -268,7 +268,7 @@ class LegacyFieldsConfig {
     required this.crossDatasetReferenceField,
   });
 
-  static LegacyFieldsConfig? defaultValue;
+  static LegacyFieldsConfig? initialValue;
 }
 '''),
           allOf([
@@ -301,7 +301,7 @@ class DropdownsConfig {
     required this.multiDropdownField,
   });
 
-  static DropdownsConfig? defaultValue;
+  static DropdownsConfig? initialValue;
 }
 '''),
         allOf([
@@ -321,7 +321,7 @@ class NestedConfig {
 
   const NestedConfig({required this.title});
 
-  static NestedConfig? defaultValue;
+  static NestedConfig? initialValue;
 }
 
 @DeskModel(title: 'Document', description: 'Document config', id: 'custom-id')
@@ -333,7 +333,7 @@ class DocumentConfig {
 
   const DocumentConfig({required this.nested, this.nullableNested});
 
-  static DocumentConfig? defaultValue;
+  static DocumentConfig? initialValue;
 }
 '''),
         allOf(
@@ -367,7 +367,7 @@ class NullableConfig {
 
   const NullableConfig({this.maybeTitle});
 
-  static NullableConfig? defaultValue;
+  static NullableConfig? initialValue;
 }
 '''),
         contains('DeskStringOption(optional: true)'),
@@ -384,7 +384,7 @@ class OverrideConfig {
 
   const OverrideConfig({this.maybeTitle});
 
-  static OverrideConfig? defaultValue;
+  static OverrideConfig? initialValue;
 }
 '''),
         isNot(contains('optional: true')),
@@ -404,7 +404,7 @@ class BadConfig {
 
   const BadConfig({required this.requiredTitle});
 
-  static BadConfig? defaultValue;
+  static BadConfig? initialValue;
 }
 '''),
           anything,
@@ -423,7 +423,7 @@ class NullableTextConfig {
 
   const NullableTextConfig({this.maybeBody});
 
-  static NullableTextConfig? defaultValue;
+  static NullableTextConfig? initialValue;
 }
 '''),
         contains('DeskTextOption(optional: true)'),
@@ -440,7 +440,7 @@ class NullableNumConfig {
 
   const NullableNumConfig({this.maybeAge});
 
-  static NullableNumConfig? defaultValue;
+  static NullableNumConfig? initialValue;
 }
 '''),
         contains('DeskNumberOption(optional: true)'),
@@ -457,7 +457,7 @@ class NullableUrlConfig {
 
   const NullableUrlConfig({this.maybeLink});
 
-  static NullableUrlConfig? defaultValue;
+  static NullableUrlConfig? initialValue;
 }
 '''),
         contains('DeskUrlOption(optional: true)'),
@@ -474,7 +474,7 @@ class NullableColorConfig {
 
   const NullableColorConfig({this.maybeTint});
 
-  static NullableColorConfig? defaultValue;
+  static NullableColorConfig? initialValue;
 }
 '''),
         contains('DeskColorOption(optional: true)'),
@@ -491,7 +491,7 @@ class NullableDateConfig {
 
   const NullableDateConfig({this.maybeDob});
 
-  static NullableDateConfig? defaultValue;
+  static NullableDateConfig? initialValue;
 }
 '''),
         contains('DeskDateOption(optional: true)'),
@@ -508,7 +508,7 @@ class NullableDtConfig {
 
   const NullableDtConfig({this.maybeAt});
 
-  static NullableDtConfig? defaultValue;
+  static NullableDtConfig? initialValue;
 }
 '''),
         contains('DeskDateTimeOption(optional: true)'),
@@ -525,7 +525,7 @@ class NullableFileConfig {
 
   const NullableFileConfig({this.maybeFile});
 
-  static NullableFileConfig? defaultValue;
+  static NullableFileConfig? initialValue;
 }
 '''),
         contains('DeskFileOption(optional: true)'),
@@ -542,7 +542,7 @@ class NullableBoolConfig {
 
   const NullableBoolConfig({this.maybeFlag});
 
-  static NullableBoolConfig? defaultValue;
+  static NullableBoolConfig? initialValue;
 }
 '''),
         contains('DeskBooleanOption(optional: true)'),
@@ -559,7 +559,7 @@ class NullableCheckConfig {
 
   const NullableCheckConfig({this.maybeChecked});
 
-  static NullableCheckConfig? defaultValue;
+  static NullableCheckConfig? initialValue;
 }
 '''),
         contains('DeskCheckboxOption(optional: true)'),
@@ -576,7 +576,7 @@ class NullableImageConfig {
 
   const NullableImageConfig({this.maybeImage});
 
-  static NullableImageConfig? defaultValue;
+  static NullableImageConfig? initialValue;
 }
 '''),
         contains('DeskImageOption(optional: true)'),
@@ -593,7 +593,7 @@ class NullableGeopointConfig {
 
   const NullableGeopointConfig({this.maybeGeo});
 
-  static NullableGeopointConfig? defaultValue;
+  static NullableGeopointConfig? initialValue;
 }
 '''),
         contains('DeskGeopointOption(optional: true)'),
@@ -610,7 +610,7 @@ class NullableDropdownConfig {
 
   const NullableDropdownConfig({this.maybeChoice});
 
-  static NullableDropdownConfig? defaultValue;
+  static NullableDropdownConfig? initialValue;
 }
 '''),
         contains('optional: true'),
@@ -627,7 +627,7 @@ class NullableMultiDropdownConfig {
 
   const NullableMultiDropdownConfig({this.maybeTags});
 
-  static NullableMultiDropdownConfig? defaultValue;
+  static NullableMultiDropdownConfig? initialValue;
 }
 '''),
         contains('optional: true'),
@@ -644,7 +644,7 @@ class NullableArrayConfig {
 
   const NullableArrayConfig({this.maybeTags});
 
-  static NullableArrayConfig? defaultValue;
+  static NullableArrayConfig? initialValue;
 }
 '''),
         contains('DeskArrayOption(optional: true)'),
@@ -661,7 +661,7 @@ class NullableBlockConfig {
 
   const NullableBlockConfig({this.maybeContent});
 
-  static NullableBlockConfig? defaultValue;
+  static NullableBlockConfig? initialValue;
 }
 '''),
         contains('DeskBlockOption(optional: true)'),
@@ -682,7 +682,7 @@ class ArrayConfig {
 
   const ArrayConfig({required this.imageItems});
 
-  static ArrayConfig? defaultValue = const ArrayConfig(imageItems: []);
+  static ArrayConfig? initialValue = const ArrayConfig(imageItems: []);
 }
 '''),
           allOf(
@@ -707,7 +707,7 @@ class ArrayConfig {
 
   const ArrayConfig({required this.tags});
 
-  static ArrayConfig? defaultValue = const ArrayConfig(tags: []);
+  static ArrayConfig? initialValue = const ArrayConfig(tags: []);
 }
 '''),
           allOf(
@@ -741,7 +741,7 @@ class ArrayConfig {
 
   const ArrayConfig({required this.tags});
 
-  static ArrayConfig? defaultValue = const ArrayConfig(tags: []);
+  static ArrayConfig? initialValue = const ArrayConfig(tags: []);
 }
 '''),
           allOf(
@@ -766,7 +766,7 @@ class ArrayConfig {
 
   const ArrayConfig({required this.scores});
 
-  static ArrayConfig? defaultValue = const ArrayConfig(scores: []);
+  static ArrayConfig? initialValue = const ArrayConfig(scores: []);
 }
 '''),
         allOf(
@@ -785,7 +785,7 @@ class ItemConfig {
 
   const ItemConfig({required this.title});
 
-  static ItemConfig? defaultValue = const ItemConfig(title: '');
+  static ItemConfig? initialValue = const ItemConfig(title: '');
 }
 
 @DeskModel(title: 'Array Config', description: 'Array config')
@@ -795,7 +795,7 @@ class ArrayConfig {
 
   const ArrayConfig({required this.items});
 
-  static ArrayConfig? defaultValue = const ArrayConfig(items: []);
+  static ArrayConfig? initialValue = const ArrayConfig(items: []);
 }
 '''),
         allOf(
@@ -822,7 +822,7 @@ class ItemConfig {
 
   const ItemConfig({required this.title, this.image});
 
-  static ItemConfig? defaultValue = const ItemConfig(title: '');
+  static ItemConfig? initialValue = const ItemConfig(title: '');
 }
 
 @DeskModel(title: 'Array Config', description: 'Array config')
@@ -837,7 +837,7 @@ class ArrayConfig {
     required this.unannotatedTopLevelField,
   });
 
-  static ArrayConfig? defaultValue = const ArrayConfig(
+  static ArrayConfig? initialValue = const ArrayConfig(
     items: [],
     unannotatedTopLevelField: '',
   );
@@ -867,7 +867,7 @@ class HeroConfig {
 
   const HeroConfig({required this.heroName});
 
-  static HeroConfig? defaultValue;
+  static HeroConfig? initialValue;
 }
 
 @DeskModel(title: 'Array Test', description: 'Array test config')
@@ -877,7 +877,7 @@ class ArrayTestConfig {
 
   const ArrayTestConfig({required this.heroes});
 
-  static ArrayTestConfig? defaultValue = const ArrayTestConfig(heroes: []);
+  static ArrayTestConfig? initialValue = const ArrayTestConfig(heroes: []);
 }
 '''),
           _containsExactCount('final heroConfigFields = [', 1),
@@ -896,7 +896,7 @@ class SampleConfig {
 
   const SampleConfig({required this.sampleName});
 
-  static SampleConfig? defaultValue;
+  static SampleConfig? initialValue;
 }
 
 @DeskModel(title: 'Parent', description: 'Parent config')
@@ -906,7 +906,7 @@ class ParentConfig {
 
   const ParentConfig({required this.samples});
 
-  static ParentConfig? defaultValue = const ParentConfig(samples: []);
+  static ParentConfig? initialValue = const ParentConfig(samples: []);
 }
 '''),
           allOf(
@@ -929,7 +929,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.name});
 
-  static AutoDetectConfig? defaultValue;
+  static AutoDetectConfig? initialValue;
 }
 '''),
         contains('DeskStringField(name: \'name\', title: \'Name\')'),
@@ -947,7 +947,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.tags});
 
-  static AutoDetectConfig? defaultValue = const AutoDetectConfig(tags: []);
+  static AutoDetectConfig? initialValue = const AutoDetectConfig(tags: []);
 }
 '''),
           allOf(
@@ -967,7 +967,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.count});
 
-  static AutoDetectConfig? defaultValue;
+  static AutoDetectConfig? initialValue;
 }
 '''),
         contains('DeskNumberField(name: \'count\', title: \'Count\')'),
@@ -983,7 +983,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.enabled});
 
-  static AutoDetectConfig? defaultValue;
+  static AutoDetectConfig? initialValue;
 }
 '''),
         contains('DeskBooleanField(name: \'enabled\', title: \'Enabled\')'),
@@ -999,7 +999,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.createdAt});
 
-  static AutoDetectConfig? defaultValue;
+  static AutoDetectConfig? initialValue;
 }
 '''),
         contains(
@@ -1017,7 +1017,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.website});
 
-  static AutoDetectConfig? defaultValue;
+  static AutoDetectConfig? initialValue;
 }
 '''),
         contains('DeskUrlField(name: \'website\', title: \'Website\')'),
@@ -1036,7 +1036,7 @@ class MixedConfig {
 
   const MixedConfig({required this.name, required this.description});
 
-  static MixedConfig? defaultValue;
+  static MixedConfig? initialValue;
 }
 '''),
         allOf(

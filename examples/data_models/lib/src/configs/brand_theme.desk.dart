@@ -66,7 +66,7 @@ final brandThemeTypeSpec = DocumentTypeSpec<BrandTheme>(
   title: 'Brand Theme',
   description: 'Colors and typography shared across every Aura screen.',
   fields: brandThemeFields,
-  defaultValue: BrandTheme.defaultValue,
+  initialValue: BrandTheme.initialValue,
 );
 
 // **************************************************************************

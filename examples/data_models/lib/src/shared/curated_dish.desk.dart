@@ -49,7 +49,7 @@ final curatedDishTypeSpec = DocumentTypeSpec<CuratedDish>(
   title: 'Curated dish',
   description: 'Entry in the Chef\'s Choice list',
   fields: curatedDishFields,
-  defaultValue: CuratedDish.defaultValue,
+  initialValue: CuratedDish.initialValue,
 );
 
 // **************************************************************************

@@ -48,7 +48,7 @@ class DeskMultiDropdownInput<T> extends StatelessWidget {
             isOptional: fieldOption.optional,
             placeholder: fieldOption.placeholder,
             options: loadedOptions,
-            defaultValues: fieldOption.defaultValues,
+            initialValues: fieldOption.initialValues,
             minSelected: fieldOption.minSelected,
             maxSelected: fieldOption.maxSelected,
             data: data,
@@ -65,7 +65,7 @@ class DeskMultiDropdownInput<T> extends StatelessWidget {
       isOptional: fieldOption.optional,
       placeholder: fieldOption.placeholder,
       options: options,
-      defaultValues: fieldOption.defaultValues,
+      initialValues: fieldOption.initialValues,
       minSelected: fieldOption.minSelected,
       maxSelected: fieldOption.maxSelected,
       data: data,
@@ -77,7 +77,7 @@ class DeskMultiDropdownInput<T> extends StatelessWidget {
 
 class _DeskMultiDropdownInput<T> extends StatefulWidget {
   final List<DropdownOption<T>> options;
-  final List<T>? defaultValues;
+  final List<T>? initialValues;
   final DeskData? data;
   final String title;
   final String? description;
@@ -91,7 +91,7 @@ class _DeskMultiDropdownInput<T> extends StatefulWidget {
   const _DeskMultiDropdownInput({
     super.key,
     this.onChanged,
-    this.defaultValues,
+    this.initialValues,
     this.data,
     this.options = const [],
     required this.title,
@@ -156,7 +156,7 @@ class _DeskMultiDropdownInputState<T> extends State<_DeskMultiDropdownInput<T>> 
   }
 
   Set<T> _resolveInitialSet() {
-    final value = widget.data?.value ?? widget.defaultValues;
+    final value = widget.data?.value ?? widget.initialValues;
     if (value == null) return {};
     if (value is List) {
       return value.map<T>((e) {

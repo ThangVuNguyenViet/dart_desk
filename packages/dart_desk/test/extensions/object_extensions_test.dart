@@ -6,13 +6,13 @@ void main() {
     group('let', () {
       test('returns block result when value is non-null', () {
         const String value = 'hello';
-        final result = (value as String?).let((v) => v.length, defaultValue: 0);
+        final result = (value as String?).let((v) => v.length, initialValue: 0);
         expect(result, 5);
       });
 
-      test('returns defaultValue when value is null', () {
+      test('returns initialValue when value is null', () {
         const String? value = null;
-        final result = value.let((v) => v.length, defaultValue: 0);
+        final result = value.let((v) => v.length, initialValue: 0);
         expect(result, 0);
       });
     });

@@ -35,7 +35,7 @@ final kioskProductTypeSpec = DocumentTypeSpec<KioskProduct>(
   title: 'Kiosk product',
   description: 'Tile in the kiosk grid',
   fields: kioskProductFields,
-  defaultValue: KioskProduct.defaultValue,
+  initialValue: KioskProduct.initialValue,
 );
 
 // **************************************************************************

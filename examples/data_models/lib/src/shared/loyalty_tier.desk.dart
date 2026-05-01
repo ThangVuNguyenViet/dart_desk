@@ -34,7 +34,7 @@ final loyaltyTierTypeSpec = DocumentTypeSpec<LoyaltyTier>(
   title: 'Loyalty tier',
   description: 'A tier in the rewards program',
   fields: loyaltyTierFields,
-  defaultValue: LoyaltyTier.defaultValue,
+  initialValue: LoyaltyTier.initialValue,
 );
 
 // **************************************************************************

@@ -45,7 +45,7 @@ final menuItemEntryTypeSpec = DocumentTypeSpec<MenuItemEntry>(
   title: 'Menu item',
   description: 'Row in the menu browse list',
   fields: menuItemEntryFields,
-  defaultValue: MenuItemEntry.defaultValue,
+  initialValue: MenuItemEntry.initialValue,
 );
 
 // **************************************************************************

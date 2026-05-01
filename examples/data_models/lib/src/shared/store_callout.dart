@@ -26,7 +26,7 @@ class StoreCallout with StoreCalloutMappable implements Serializable<StoreCallou
     required this.directionsLabel,
   });
 
-  static StoreCallout defaultValue = const StoreCallout(
+  static StoreCallout initialValue = const StoreCallout(
     venueName: 'Aura Tribeca',
     hoursLabel: 'Open till 11:30pm',
     distanceLabel: '0.4 mi away',

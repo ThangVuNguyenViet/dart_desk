@@ -59,7 +59,7 @@ final rewardsConfigTypeSpec = DocumentTypeSpec<RewardsConfig>(
   title: 'Rewards screen',
   description: 'Mobile loyalty card + coupons',
   fields: rewardsConfigFields,
-  defaultValue: RewardsConfig.defaultValue,
+  initialValue: RewardsConfig.initialValue,
 );
 
 // **************************************************************************

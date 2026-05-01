@@ -68,7 +68,7 @@ class DeskDocumentViewModel {
         final docType = deskVM.currentDocumentType.value;
         final docId =
             documentId.value; // tracked — re-run when document changes
-        final defaults = docType?.defaultValue?.toMap() ?? {};
+        final defaults = docType?.initialValue?.toMap() ?? {};
         if (docId == null) {
           // New-document form: always seed current type's defaults, even if
           // editedData already has stale data from a previous type.

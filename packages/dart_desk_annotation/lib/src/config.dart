@@ -21,14 +21,14 @@ class DocumentType<T extends Serializable<dynamic>> {
   final Widget Function(Map<String, dynamic> data) builder;
 
   /// Function to create a default instance of T
-  final T? defaultValue;
+  final T? initialValue;
   const DocumentType({
     required this.name,
     required this.title,
     required this.description,
     required this.fields,
     required this.builder,
-    this.defaultValue,
+    this.initialValue,
   });
 }
 
@@ -58,14 +58,14 @@ class DocumentTypeSpec<T extends Serializable<dynamic>> {
   final List<DeskField> fields;
 
   /// Optional default instance of T
-  final T? defaultValue;
+  final T? initialValue;
 
   const DocumentTypeSpec({
     required this.name,
     required this.title,
     required this.description,
     required this.fields,
-    this.defaultValue,
+    this.initialValue,
   });
 
   /// Produces a full [DocumentType] by supplying a preview [builder].
@@ -81,7 +81,7 @@ class DocumentTypeSpec<T extends Serializable<dynamic>> {
       description: description,
       fields: fields,
       builder: builder,
-      defaultValue: defaultValue,
+      initialValue: initialValue,
     );
   }
 }

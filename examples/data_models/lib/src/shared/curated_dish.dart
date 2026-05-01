@@ -38,7 +38,7 @@ class CuratedDish with CuratedDishMappable implements Serializable<CuratedDish> 
     this.description,
   });
 
-  static CuratedDish defaultValue = const CuratedDish(numberLabel: '01', name: 'Pea Tendril Agnolotti', price: 26);
+  static CuratedDish initialValue = const CuratedDish(numberLabel: '01', name: 'Pea Tendril Agnolotti', price: 26);
 
   static CuratedDish $fromMap(Map<String, dynamic> map) => CuratedDishMapper.fromMap(map);
 }

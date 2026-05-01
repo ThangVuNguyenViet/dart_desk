@@ -25,8 +25,8 @@ void main() {
       home: Scaffold(
         body: Center(
           child: ChefScreen(
-            config: ChefConfig.defaultValue,
-            theme: BrandTheme.defaultValue,
+            config: ChefConfig.initialValue,
+            theme: BrandTheme.initialValue,
           ),
         ),
       ),

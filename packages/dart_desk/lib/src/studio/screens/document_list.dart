@@ -359,7 +359,7 @@ class _DeskDocumentListViewState extends State<DeskDocumentListView> {
                       final document = await viewModel.createDocument.run((
                         title: title,
                         data:
-                            viewModel.currentDocumentType.value?.defaultValue
+                            viewModel.currentDocumentType.value?.initialValue
                                 ?.toMap() ??
                             {},
                         slug: slug,

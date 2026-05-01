@@ -59,7 +59,7 @@ final menuConfigTypeSpec = DocumentTypeSpec<MenuConfig>(
   title: 'Menu screen',
   description: 'Mobile menu browse with categories, filters, hours, location',
   fields: menuConfigFields,
-  defaultValue: MenuConfig.defaultValue,
+  initialValue: MenuConfig.initialValue,
 );
 
 // **************************************************************************

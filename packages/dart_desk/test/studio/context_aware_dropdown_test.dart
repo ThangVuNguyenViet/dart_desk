@@ -37,7 +37,7 @@ class _ContextAwareDropdownOption extends DeskMultiDropdownOption<String> {
   }
 
   @override
-  List<String>? get defaultValues => null;
+  List<String>? get initialValues => null;
 
   @override
   String? get placeholder => 'Select a document...';

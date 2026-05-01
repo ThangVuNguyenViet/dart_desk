@@ -29,7 +29,7 @@ class LoyaltyTier with LoyaltyTierMappable implements Serializable<LoyaltyTier> 
     this.perks,
   });
 
-  static LoyaltyTier defaultValue = const LoyaltyTier(
+  static LoyaltyTier initialValue = const LoyaltyTier(
     name: 'Cedar',
     threshold: 0,
     tierColor: Color(0xFF6B4E2E),
