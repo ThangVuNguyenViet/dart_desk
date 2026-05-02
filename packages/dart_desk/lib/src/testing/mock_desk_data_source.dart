@@ -578,9 +578,17 @@ class MockDataSource implements DataSource {
     String documentId,
     String versionId,
   ) async {
-    throw UnimplementedError(
-      'restoreDocumentVersion not implemented in MockDeskDataSource',
+    final doc = _documents[documentId];
+    if (doc == null) throw StateError('Document $documentId not found');
+    final version = _versions[documentId]?[versionId];
+    if (version == null) throw StateError('Version $versionId not found');
+    final restoredData = _versionData[versionId] ?? {};
+    final updated = doc.copyWith(
+      activeVersionData: restoredData,
+      updatedAt: DateTime.now(),
     );
+    _documents[documentId] = updated;
+    return updated;
   }
 
   @override
