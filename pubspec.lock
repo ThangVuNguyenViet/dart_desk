@@ -300,7 +300,7 @@ packages:
     dependency: "direct overridden"
     description:
       path: dart_desk_client
-      ref: c0c1b921738465fabf298bcb6529113ee37f634d
+      ref: main
       resolved-ref: c0c1b921738465fabf298bcb6529113ee37f634d
       url: "https://github.com/ThangVuNguyenViet/dart_desk_be.git"
     source: git
