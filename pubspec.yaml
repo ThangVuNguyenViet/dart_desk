@@ -34,7 +34,10 @@ dependency_overrides:
   # against a sibling dart_desk_be can swap this to:
   #   path: ../dart_desk_be/dart_desk_client
   dart_desk_client:
-    path: ../dart_desk_be/dart_desk_client
+    git:
+      url: https://github.com/ThangVuNguyenViet/dart_desk_be.git
+      path: dart_desk_client
+      ref: save-publish-redesign
   signals:
     git:
       url: https://github.com/rodydavis/signals.dart.git
