@@ -125,6 +125,7 @@ class DartDeskAuthViewModel {
   }, debugLabel: 'displayError');
 
   EffectCleanup? _disposeErrorEffect;
+  EffectCleanup? _disposeDisplayErrorLog;
   bool _started = false;
 
   /// Initializes the session manager, wires the auth listener, and unblocks
@@ -151,6 +152,15 @@ class DartDeskAuthViewModel {
           await sessionManager.signOutDevice();
         }
       });
+    });
+
+    // Surface any error that the auth UI shows into the console too.
+    // Without this, errors are silently rendered as a red banner with no
+    // way to diagnose the underlying cause from logs.
+    _disposeDisplayErrorLog = effect(() {
+      final err = displayError.value;
+      if (err == null) return;
+      authLogger.severe('auth display error', err);
     });
 
     // Seed the auth signals to current state and unblock the factory in one
@@ -204,6 +214,7 @@ class DartDeskAuthViewModel {
 
   void dispose() {
     _disposeErrorEffect?.call();
+    _disposeDisplayErrorLog?.call();
     sessionManager.authInfoListenable.removeListener(_onAuthChanged);
     currentUser.dispose();
     displayError.dispose();
