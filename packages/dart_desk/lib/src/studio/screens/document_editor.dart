@@ -151,8 +151,6 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     final isPublishing = publishStatus.isLoading || createStatus.isLoading;
     final isAnyBusy = isSaving || isPublishing;
 
-    final hasChanges = viewModel.hasUnpublishedChanges.watch(context);
-
     final versionId = viewModel.selectedVersionId.watch(context);
     final versionState = versionId != null
         ? viewModel.documentDataContainer(versionId).watch(context)
@@ -166,7 +164,6 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
         isPublishing: isPublishing,
         isAnyBusy: isAnyBusy,
         isVersionLoading: false,
-        hasChanges: hasChanges,
       );
     }
 
@@ -176,7 +173,6 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
         isPublishing: isPublishing,
         isAnyBusy: isAnyBusy,
         isVersionLoading: true,
-        hasChanges: hasChanges,
       ),
       error: (error, stackTrace) =>
           Center(child: Text('Error loading document: $error')),
@@ -188,8 +184,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
           isPublishing: isPublishing,
           isAnyBusy: isAnyBusy,
           isVersionLoading: false,
-          hasChanges: hasChanges,
-        );
+          );
       },
     );
   }
@@ -199,7 +194,6 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     required bool isPublishing,
     required bool isAnyBusy,
     required bool isVersionLoading,
-    required bool hasChanges,
   }) {
     editedData.watch(context);
 
@@ -239,38 +233,12 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
                 variant: ShadButtonVariant.outline,
                 onPressed: isAnyBusy ? null : _clearDocument,
               ),
-              if (hasChanges)
-                DeskButton(
-                  key: const ValueKey('publish_document_button'),
-                  text: 'Publish',
-                  loading: isPublishing,
-                  onPressed: isAnyBusy ? null : _publishDocument,
-                )
-              else
-                Padding(
-                  key: const ValueKey('published_badge'),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        LucideIcons.check,
-                        size: 14,
-                        color: theme.colorScheme.mutedForeground,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'Published',
-                        style: theme.textTheme.small.copyWith(
-                          color: theme.colorScheme.mutedForeground,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              DeskButton(
+                key: const ValueKey('publish_document_button'),
+                text: 'Publish',
+                loading: isPublishing,
+                onPressed: isAnyBusy ? null : _publishDocument,
+              ),
             ],
           ),
         ),
