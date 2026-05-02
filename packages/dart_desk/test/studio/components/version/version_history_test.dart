@@ -36,16 +36,6 @@ class _TrackingDataSource extends MockDataSource {
   }
 }
 
-/// A [MockDataSource] whose [getDocumentVersionData] never completes —
-/// keeps the mutation in [MutationPending] for in-flight assertions.
-class _HangingRestoreDataSource extends MockDataSource {
-  @override
-  Future<Map<String, dynamic>?> getDocumentVersionData(String versionId) {
-    // Never completes.
-    return Future<Map<String, dynamic>?>.delayed(const Duration(days: 999));
-  }
-}
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -76,40 +66,6 @@ Widget _buildApp({
       ),
     ),
   );
-}
-
-/// Seeds [dataSource] with a document that has [publishedCount] published
-/// versions and [draftCount] draft versions, and sets the active document
-/// in [DeskDocumentViewModel].
-///
-/// Returns the document ID.
-Future<String> _seedVersions(
-  MockDataSource dataSource, {
-  int publishedCount = 2,
-  int draftCount = 1,
-}) async {
-  final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
-  final docId = docs.documents.first.id!;
-
-  // Get the existing version for this doc (seeded by seedDefaults).
-  final existingVersions = await dataSource.getDocumentVersions(docId);
-  // Archive any pre-existing versions so our counts are exact.
-  for (final v in existingVersions.versions) {
-    if (v.id != null && v.isPublished) {
-      await dataSource.archiveDocumentVersion(v.id!);
-    }
-  }
-
-  // Add published versions with distinct timestamps.
-  for (int i = 0; i < publishedCount; i++) {
-    await dataSource.publishCurrentVersion(docId);
-  }
-  // Add draft versions.
-  for (int i = 0; i < draftCount; i++) {
-    await dataSource.createDocumentVersion(docId);
-  }
-
-  return docId;
 }
 
 // ---------------------------------------------------------------------------

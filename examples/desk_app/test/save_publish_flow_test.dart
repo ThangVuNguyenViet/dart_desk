@@ -21,8 +21,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
-import 'screens/screen_test_helpers.dart';
-
 // ---------------------------------------------------------------------------
 // Widget helper
 // ---------------------------------------------------------------------------
