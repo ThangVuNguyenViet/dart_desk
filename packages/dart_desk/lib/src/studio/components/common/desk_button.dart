@@ -24,6 +24,7 @@ class DeskButton extends StatelessWidget {
       variant: variant,
       size: size,
       onPressed: loading ? null : onPressed,
+      enabled: !loading,
       leading: loading
           ? SizedBox.square(
               dimension: 16,

@@ -37,6 +37,7 @@ dependency_overrides:
     git:
       url: https://github.com/ThangVuNguyenViet/dart_desk_be.git
       path: dart_desk_client
+      ref: main
   signals:
     git:
       url: https://github.com/rodydavis/signals.dart.git

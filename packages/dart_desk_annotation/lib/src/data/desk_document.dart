@@ -38,6 +38,13 @@ class DeskDocument {
   /// ID of the user who last updated this document
   final String? updatedByUserId;
 
+  /// The document's current CRDT HLC (Hybrid Logical Clock) timestamp.
+  ///
+  /// Reflects the timestamp of the most-recently applied CRDT operation.
+  /// Used to determine whether the draft is ahead of the latest published
+  /// version's [DocumentVersion.snapshotHlc].
+  final String? crdtHlc;
+
   const DeskDocument({
     this.id,
     required this.clientId,
@@ -50,6 +57,7 @@ class DeskDocument {
     this.updatedAt,
     this.createdByUserId,
     this.updatedByUserId,
+    this.crdtHlc,
   });
 
   /// Creates a copy of this document with the given fields replaced.
@@ -65,6 +73,7 @@ class DeskDocument {
     DateTime? updatedAt,
     String? createdByUserId,
     String? updatedByUserId,
+    String? crdtHlc,
   }) {
     return DeskDocument(
       id: id ?? this.id,
@@ -82,6 +91,7 @@ class DeskDocument {
       updatedAt: updatedAt ?? this.updatedAt,
       createdByUserId: createdByUserId ?? this.createdByUserId,
       updatedByUserId: updatedByUserId ?? this.updatedByUserId,
+      crdtHlc: crdtHlc ?? this.crdtHlc,
     );
   }
 
@@ -116,6 +126,7 @@ class DeskDocument {
           : null,
       createdByUserId: json['createdByUserId']?.toString(),
       updatedByUserId: json['updatedByUserId']?.toString(),
+      crdtHlc: json['crdtHlc'] as String?,
     );
   }
 
@@ -133,6 +144,7 @@ class DeskDocument {
       if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
       if (createdByUserId != null) 'createdByUserId': createdByUserId,
       if (updatedByUserId != null) 'updatedByUserId': updatedByUserId,
+      if (crdtHlc != null) 'crdtHlc': crdtHlc,
     };
   }
 

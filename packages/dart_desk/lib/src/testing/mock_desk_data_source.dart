@@ -115,6 +115,15 @@ class MockDataSource implements DataSource {
   final Map<String, Map<String, DocumentVersion>> _versions = {};
   final Map<String, Map<String, dynamic>> _versionData = {};
   final Map<String, MediaAsset> _media = {};
+
+  /// Snapshot of document data taken at the moment [publishCurrentVersion] was
+  /// last called for each document. Mirrors the `published_documents` table in
+  /// the real backend — holds the data that public readers see.
+  ///
+  /// Key: documentId. Value: data snapshot frozen at publish time.
+  /// NOT updated by [updateDocumentData]; only updated by [publishCurrentVersion].
+  final Map<String, Map<String, dynamic>> _publishedDataStore = {};
+
   int _nextDocId = 1;
   int _nextVersionId = 1;
   int _nextMediaId = 1;
@@ -257,10 +266,22 @@ class MockDataSource implements DataSource {
     _versions.clear();
     _versionData.clear();
     _media.clear();
+    _publishedDataStore.clear();
     _nextDocId = 1;
     _nextVersionId = 1;
     _nextMediaId = 1;
     seedDefaults();
+  }
+
+  /// Returns the data snapshot that was frozen at the last [publishCurrentVersion]
+  /// call for [documentId], or `null` if the document has never been published.
+  ///
+  /// This is the mock equivalent of reading from the `published_documents` table:
+  /// subsequent draft edits ([updateDocumentData]) do NOT mutate this value.
+  Future<Map<String, dynamic>?> getPublishedData(String documentId) async {
+    final stored = _publishedDataStore[documentId];
+    if (stored == null) return null;
+    return Map<String, dynamic>.from(stored);
   }
 
   @override
@@ -288,6 +309,16 @@ class MockDataSource implements DataSource {
       page: (offset ~/ limit) + 1,
       pageSize: limit,
     );
+  }
+
+  /// Test helper: forcibly sets crdtHlc on a document without going through
+  /// the full updateDocumentData path. Useful when that method is overridden
+  /// in a subclass (e.g. _HangingDataSource) to simulate in-flight requests.
+  void forceSetCrdtHlc(String documentId, String hlc) {
+    final doc = _documents[documentId];
+    if (doc != null) {
+      _documents[documentId] = doc.copyWith(crdtHlc: hlc);
+    }
   }
 
   @override
@@ -513,9 +544,12 @@ class MockDataSource implements DataSource {
     final doc = _documents[documentId]!;
     final updatedData = Map<String, dynamic>.from(doc.activeVersionData ?? {});
     updatedData.addAll(updates);
+    // Advance crdtHlc so hasUnpublishedChanges can detect unsaved changes.
+    final hlc = DateTime.now().microsecondsSinceEpoch.toString();
     _documents[documentId] = doc.copyWith(
       activeVersionData: updatedData,
       updatedAt: DateTime.now(),
+      crdtHlc: hlc,
     );
 
     return _documents[documentId]!;
@@ -541,6 +575,39 @@ class MockDataSource implements DataSource {
       }
     }
     return false;
+  }
+
+  @override
+  Future<DocumentVersion> publishCurrentVersion(String documentId) async {
+    // Snapshot the current draft data BEFORE creating the published version.
+    // This mirrors the backend transaction: the published_documents row is
+    // written with the data as it exists at this exact moment.
+    final doc = _documents[documentId];
+    final currentData = Map<String, dynamic>.from(doc?.activeVersionData ?? {});
+
+    // Create a new version snapshot and immediately publish it.
+    final version = await createDocumentVersion(documentId);
+
+    // Copy the current active data into the new version's data store so that
+    // getDocumentVersionData returns the published snapshot correctly.
+    _versionData[version.id!] = Map<String, dynamic>.from(currentData);
+
+    final published = await publishDocumentVersion(version.id!);
+
+    // Freeze the public-read snapshot (mirrors published_documents table).
+    // This is intentionally a separate copy: future draft edits via
+    // updateDocumentData must NOT mutate this store.
+    _publishedDataStore[documentId] = Map<String, dynamic>.from(currentData);
+
+    // Stamp snapshotHlc so hasUnpublishedChanges can detect the publish boundary.
+    final hlc = doc?.crdtHlc ?? DateTime.now().microsecondsSinceEpoch.toString();
+    for (final docVersions in _versions.values) {
+      if (docVersions.containsKey(published!.id)) {
+        docVersions[published.id!] = published.copyWith(snapshotHlc: hlc);
+        return docVersions[published.id!]!;
+      }
+    }
+    return published!;
   }
 
   @override

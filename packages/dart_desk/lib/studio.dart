@@ -15,6 +15,7 @@ export 'src/studio/components/common/desk_breadcrumbs.dart';
 export 'src/studio/components/common/desk_button.dart';
 export 'src/studio/components/common/desk_document_type_decoration.dart';
 export 'src/studio/components/common/desk_document_type_item.dart';
+export 'src/studio/components/common/cms_status_pill.dart';
 export 'src/studio/components/common/desk_status_pill.dart';
 export 'src/studio/components/common/desk_theme_toggle.dart';
 export 'src/studio/components/common/desk_top_bar.dart';

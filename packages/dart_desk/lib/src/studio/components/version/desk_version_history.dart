@@ -11,17 +11,65 @@ import '../../core/view_models/desk_document_view_model.dart';
 import '../../core/view_models/desk_view_model.dart';
 import '../../router/studio_router.dart';
 
-/// A version history dropdown component that displays and manages document versions.
+// ---------------------------------------------------------------------------
+// HistoryEvent ADT
+// ---------------------------------------------------------------------------
+
+/// Sealed base for all history timeline events.
+sealed class HistoryEvent {
+  DateTime get timestamp;
+  String? get authorUserId;
+}
+
+/// A version publish event — emitted when a [DocumentVersion] transitions to
+/// [DocumentVersionStatus.published].
+class PublishedEvent extends HistoryEvent {
+  final DocumentVersion version;
+
+  PublishedEvent(this.version);
+
+  @override
+  DateTime get timestamp => version.publishedAt!;
+
+  @override
+  String? get authorUserId => version.createdByUserId;
+}
+
+// TODO(version-history-edits): emit EditedEvent bursts once the backend
+// exposes raw CRDT ops over an endpoint. Today's data source only returns
+// DocumentVersions, so the timeline shows publish events only.
+class EditedEvent extends HistoryEvent {
+  final DateTime burstStart;
+  final DateTime burstEnd;
+  @override
+  final String? authorUserId;
+
+  EditedEvent({
+    required this.burstStart,
+    required this.burstEnd,
+    this.authorUserId,
+  });
+
+  @override
+  DateTime get timestamp => burstEnd;
+}
+
+// ---------------------------------------------------------------------------
+// DeskVersionHistory widget
+// ---------------------------------------------------------------------------
+
+/// A version history dropdown component that displays an event-style timeline.
 ///
 /// This component uses Signals' [Watch] widget to reactively display
 /// versions from the [DeskViewModel.versionsContainer]. It provides:
 ///
 /// - Compact dropdown trigger showing selected version
-/// - Expandable list with all versions
-/// - Version selection (updates [DeskViewModel.selectedVersionId])
-/// - Visual indicator for currently selected version
-/// - Status color coding (draft=yellow, published=green, archived=gray, scheduled=blue)
+/// - Event-style timeline showing [PublishedEvent]s sorted newest-first
+/// - Restore action wired to [DeskViewModel.restoreVersion]
 /// - Loading, error, and empty states
+///
+/// Only [DocumentVersionStatus.published] versions appear in the timeline.
+/// Draft and archived versions are excluded.
 ///
 /// ## Usage
 ///
@@ -83,9 +131,13 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
                 ),
         );
 
+        // Build timeline: published versions only, newest first.
+        final events = _buildEvents(data);
+
         return ShadPopover(
           controller: _popoverController,
-          popover: (context) => _buildVersionsList(context, theme, data),
+          popover: (context) =>
+              _buildTimeline(context, theme, data, events, docId),
           child: _buildTrigger(context, theme, selectedVersion, data),
         );
       },
@@ -96,6 +148,15 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
         return _buildLoadingTrigger(context, theme);
       },
     );
+  }
+
+  /// Builds the list of [PublishedEvent]s from [data], sorted newest first.
+  List<PublishedEvent> _buildEvents(DocumentVersionList data) {
+    return data.versions
+        .where((v) => v.isPublished && v.publishedAt != null)
+        .map((v) => PublishedEvent(v))
+        .toList()
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
   }
 
   /// Builds the dropdown trigger button.
@@ -204,13 +265,15 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
     );
   }
 
-  /// Builds the dropdown content with the list of versions.
-  Widget _buildVersionsList(
+  /// Builds the event-style timeline panel.
+  Widget _buildTimeline(
     BuildContext context,
     ShadThemeData theme,
     DocumentVersionList data,
+    List<PublishedEvent> events,
+    String? docId,
   ) {
-    if (data.versions.isEmpty) {
+    if (events.isEmpty) {
       return _buildEmptyState(context, theme);
     }
 
@@ -245,47 +308,42 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
             ),
           ),
           Container(height: 1, color: theme.colorScheme.border),
-          // Version list
+          // Timeline list
           Flexible(
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: 4),
               shrinkWrap: true,
-              itemCount: data.versions.length,
+              itemCount: events.length,
               separatorBuilder: (context, index) => Container(
                 height: 1,
                 margin: const EdgeInsets.symmetric(horizontal: 8),
                 color: theme.colorScheme.border.withValues(alpha: 0.3),
               ),
               itemBuilder: (context, index) {
-                final version = data.versions[index];
-                final isSelected =
-                    widget.viewModel.selectedVersionId.value == version.id;
-
-                return _VersionMenuItem(
-                  version: version,
-                  isSelected: isSelected,
-                  onTap: () {
-                    if (version.id != null) {
+                final event = events[index];
+                return _TimelineEventRow(
+                  key: ValueKey('timeline_event_${event.version.id}'),
+                  event: event,
+                  onViewVersion: () {
+                    if (event.version.id != null && docId != null) {
                       final docTypeSlug =
                           widget.viewModel.currentDocumentTypeSlug.value;
-                      final docId = widget.viewModel.currentDocumentId.value;
-                      if (docTypeSlug != null && docId != null) {
+                      final documentId =
+                          widget.viewModel.currentDocumentId.value;
+                      if (docTypeSlug != null && documentId != null) {
                         context.router.navigate(
                           DocumentScreenRoute(
                             documentTypeSlug: docTypeSlug,
-                            documentId: docId,
-                            versionId: version.id.toString(),
+                            documentId: documentId,
+                            versionId: event.version.id.toString(),
                           ),
                         );
                       }
                       _popoverController.toggle();
                     }
                   },
-                  onPublish: version.isDraft
-                      ? () => _publishVersion(context, version)
-                      : null,
-                  onArchive: version.isPublished
-                      ? () => _archiveVersion(context, version)
+                  onRestore: docId != null && event.version.id != null
+                      ? () => _restoreVersion(context, docId, event)
                       : null,
                 );
               },
@@ -296,95 +354,41 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
     );
   }
 
-  Future<void> _publishVersion(
+  Future<void> _restoreVersion(
     BuildContext context,
-    DocumentVersion version,
+    String docId,
+    PublishedEvent event,
   ) async {
     final toaster = ShadToaster.of(context);
-
-    final confirmed = await showShadDialog<bool>(
-      context: context,
-      builder: (context) => ShadDialog(
-        title: const Text('Publish version'),
-        actions: [
-          ShadButton.outline(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ShadButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Publish'),
-          ),
-        ],
-        child: const Text(
-          'Publishing this version will archive any currently published version.',
-        ),
-      ),
-    );
-
-    if (confirmed != true || !mounted) return;
-
-    widget.viewModel.selectedVersionId.value = version.id;
+    _popoverController.hide();
 
     try {
-      await widget.viewModel.publishVersion.run(version.id!);
+      await widget.viewModel.restoreVersion.run((
+        documentId: docId,
+        versionId: event.version.id!,
+      ));
       if (mounted) {
-        toaster.show(const ShadToast(description: Text('Version published')));
+        toaster.show(
+          ShadToast(
+            description: Text(
+              'Restored to version ${event.version.versionNumber} — '
+              'review and Publish to make it live',
+            ),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
         toaster.show(
-          ShadToast.destructive(description: Text('Failed to publish: $e')),
+          ShadToast.destructive(
+            description: Text('Failed to restore: $e'),
+          ),
         );
       }
     }
   }
 
-  Future<void> _archiveVersion(
-    BuildContext context,
-    DocumentVersion version,
-  ) async {
-    final toaster = ShadToaster.of(context);
-
-    final confirmed = await showShadDialog<bool>(
-      context: context,
-      builder: (context) => ShadDialog(
-        title: const Text('Archive version'),
-        actions: [
-          ShadButton.outline(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ShadButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Archive'),
-          ),
-        ],
-        child: const Text(
-          'This version will no longer be the active published version.',
-        ),
-      ),
-    );
-
-    if (confirmed != true || !mounted) return;
-
-    widget.viewModel.selectedVersionId.value = version.id;
-
-    try {
-      await widget.viewModel.archiveVersion.run(version.id!);
-      if (mounted) {
-        toaster.show(const ShadToast(description: Text('Version archived')));
-      }
-    } catch (e) {
-      if (mounted) {
-        toaster.show(
-          ShadToast.destructive(description: Text('Failed to archive: $e')),
-        );
-      }
-    }
-  }
-
-  /// Builds the empty state UI.
+  /// Builds the empty state UI (no published versions yet).
   Widget _buildEmptyState(BuildContext context, ShadThemeData theme) {
     return Container(
       width: 300,
@@ -412,7 +416,7 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No versions yet',
+            'No published versions yet',
             style: theme.textTheme.small.copyWith(
               fontWeight: FontWeight.w600,
               color: theme.colorScheme.foreground,
@@ -420,7 +424,7 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Versions will appear here once you create them.',
+            'Publish a version to start tracking history.',
             style: theme.textTheme.muted.copyWith(fontSize: 12),
             textAlign: TextAlign.center,
           ),
@@ -430,70 +434,63 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
   }
 }
 
-/// A single version menu item in the dropdown.
-class _VersionMenuItem extends StatefulWidget {
-  final DocumentVersion version;
-  final bool isSelected;
-  final VoidCallback? onTap;
-  final VoidCallback? onPublish;
-  final VoidCallback? onArchive;
+// ---------------------------------------------------------------------------
+// _TimelineEventRow
+// ---------------------------------------------------------------------------
 
-  const _VersionMenuItem({
-    required this.version,
-    required this.isSelected,
-    this.onTap,
-    this.onPublish,
-    this.onArchive,
+/// A single row in the event-style timeline.
+class _TimelineEventRow extends StatefulWidget {
+  final PublishedEvent event;
+  final VoidCallback? onViewVersion;
+  final VoidCallback? onRestore;
+
+  const _TimelineEventRow({
+    super.key,
+    required this.event,
+    this.onViewVersion,
+    this.onRestore,
   });
 
   @override
-  State<_VersionMenuItem> createState() => _VersionMenuItemState();
+  State<_TimelineEventRow> createState() => _TimelineEventRowState();
 }
 
-class _VersionMenuItemState extends State<_VersionMenuItem> {
+class _TimelineEventRowState extends State<_TimelineEventRow> {
   bool _isHovered = false;
 
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
+    final version = widget.event.version;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
       onExit: (_) => setState(() => _isHovered = false),
       child: GestureDetector(
-        onTap: widget.onTap,
+        onTap: widget.onViewVersion,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: widget.isSelected
-                ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                : _isHovered
+            color: _isHovered
                 ? theme.colorScheme.muted.withValues(alpha: 0.3)
                 : Colors.transparent,
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Version circle
+              // Publish icon
               Container(
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: widget.isSelected
-                      ? theme.colorScheme.primary.withValues(alpha: 0.15)
-                      : theme.colorScheme.muted.withValues(alpha: 0.5),
+                  color: const Color(0xFFD1FAE5), // Green-100
                   shape: BoxShape.circle,
                 ),
-                child: Center(
-                  child: Text(
-                    'v${widget.version.versionNumber}',
-                    style: theme.textTheme.small.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: widget.isSelected
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.mutedForeground,
-                      fontSize: 11,
-                    ),
+                child: const Center(
+                  child: FaIcon(
+                    FontAwesomeIcons.arrowUpFromBracket,
+                    size: 14,
+                    color: Color(0xFF065F46), // Green-900
                   ),
                 ),
               ),
@@ -503,88 +500,52 @@ class _VersionMenuItemState extends State<_VersionMenuItem> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header row
+                    // Label row
                     Row(
                       children: [
                         Text(
-                          'Version ${widget.version.versionNumber}',
+                          'Published',
                           style: theme.textTheme.small.copyWith(
                             fontWeight: FontWeight.w600,
-                            color: widget.isSelected
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.foreground,
+                            color: theme.colorScheme.foreground,
                             fontSize: 13,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        _StatusBadge(version: widget.version, compact: true),
+                        const SizedBox(width: 6),
+                        Text(
+                          'v${version.versionNumber}',
+                          style: theme.textTheme.muted.copyWith(fontSize: 12),
+                        ),
                       ],
                     ),
-                    // Date
-                    if (widget.version.createdAt != null) ...[
+                    // Relative timestamp
+                    const SizedBox(height: 2),
+                    Text(
+                      _formatRelativeTime(widget.event.timestamp),
+                      style: theme.textTheme.muted.copyWith(fontSize: 11),
+                    ),
+                    // Author (userId text, no avatar in v1)
+                    if (version.createdByUserId != null) ...[
                       const SizedBox(height: 2),
                       Text(
-                        _formatDate(widget.version.createdAt!),
+                        'by ${version.createdByUserId}',
                         style: theme.textTheme.muted.copyWith(fontSize: 11),
-                      ),
-                    ],
-                    // Change log preview
-                    if (widget.version.changeLog != null &&
-                        widget.version.changeLog!.isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        widget.version.changeLog!,
-                        style: theme.textTheme.muted.copyWith(fontSize: 11),
-                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ],
                 ),
               ),
-              // Action button (publish for draft, archive for published)
-              if (widget.onPublish != null) ...[
-                const SizedBox(width: 8),
-                ShadButton(
-                  key: ValueKey('publish_button_${widget.version.id}'),
-                  size: ShadButtonSize.sm,
-                  height: 24,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  onPressed: widget.onPublish,
-                  child: const Text('Publish', style: TextStyle(fontSize: 11)),
-                ),
-              ],
-              if (widget.onArchive != null) ...[
+              // Restore button
+              if (widget.onRestore != null) ...[
                 const SizedBox(width: 8),
                 ShadButton.outline(
-                  key: ValueKey('archive_button_${widget.version.id}'),
+                  key: ValueKey('restore_button_${version.id}'),
                   size: ShadButtonSize.sm,
                   height: 24,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  onPressed: widget.onArchive,
-                  child: const Text('Archive', style: TextStyle(fontSize: 11)),
-                ),
-              ],
-              // Selection checkmark
-              if (widget.isSelected) ...[
-                const SizedBox(width: 8),
-                Container(
-                  width: 16,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primary,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '✓',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primaryForeground,
-                      ),
-                    ),
-                  ),
+                  onPressed: widget.onRestore,
+                  child: const Text('Restore', style: TextStyle(fontSize: 11)),
                 ),
               ],
             ],
@@ -594,35 +555,25 @@ class _VersionMenuItemState extends State<_VersionMenuItem> {
     );
   }
 
-  /// Formats a date to a human-readable string.
-  String _formatDate(DateTime date) {
+  /// Returns a human-readable relative time string (e.g. "2h ago").
+  String _formatRelativeTime(DateTime timestamp) {
     final now = DateTime.now();
-    final difference = now.difference(date);
+    final diff = now.difference(timestamp);
 
-    if (difference.inDays == 0) {
-      if (difference.inHours == 0) {
-        if (difference.inMinutes == 0) {
-          return 'Just now';
-        }
-        return '${difference.inMinutes}m ago';
-      }
-      return '${difference.inHours}h ago';
-    } else if (difference.inDays == 1) {
-      return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
-    } else if (difference.inDays < 30) {
-      final weeks = (difference.inDays / 7).floor();
-      return '${weeks}w ago';
-    } else if (difference.inDays < 365) {
-      final months = (difference.inDays / 30).floor();
-      return '${months}mo ago';
-    } else {
-      final years = (difference.inDays / 365).floor();
-      return '${years}y ago';
-    }
+    if (diff.inSeconds < 60) return 'Just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inDays == 1) return 'Yesterday';
+    if (diff.inDays < 7) return '${diff.inDays}d ago';
+    if (diff.inDays < 30) return '${(diff.inDays / 7).floor()}w ago';
+    if (diff.inDays < 365) return '${(diff.inDays / 30).floor()}mo ago';
+    return '${(diff.inDays / 365).floor()}y ago';
   }
 }
+
+// ---------------------------------------------------------------------------
+// _StatusBadge (kept for trigger button)
+// ---------------------------------------------------------------------------
 
 /// A status badge for a document version.
 class _StatusBadge extends StatelessWidget {
@@ -635,7 +586,6 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
 
-    // Determine badge style based on status
     final Color backgroundColor;
     final Color foregroundColor;
     final String label;

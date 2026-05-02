@@ -300,8 +300,8 @@ packages:
     dependency: "direct overridden"
     description:
       path: dart_desk_client
-      ref: HEAD
-      resolved-ref: "94867709dba296bb2f3e7e84b7dc7a2ed1ad38c4"
+      ref: main
+      resolved-ref: c0c1b921738465fabf298bcb6529113ee37f634d
       url: "https://github.com/ThangVuNguyenViet/dart_desk_be.git"
     source: git
     version: "0.2.1"
@@ -1375,58 +1375,58 @@ packages:
     dependency: transitive
     description:
       name: serverpod_auth_core_client
-      sha256: "7634a907eb4ee55ff527f4cf0cb148085c6e53bd4fdad121b96ac8ed3847cbe6"
+      sha256: "43b80ed694f9ad3742816c72f0c4eda35c63a3d8c0dff68dd319724775943244"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.5"
+    version: "3.5.0-beta.5"
   serverpod_auth_core_flutter:
     dependency: transitive
     description:
       name: serverpod_auth_core_flutter
-      sha256: "74cfceea3dcb429378d4b6bbd7311c65a6e42d7f325a71bce2aea2259b1c0bc9"
+      sha256: b16a5a3ef242805a95041f3eea15613c65e7b39ba5d57196b719f7dc26782a83
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.5"
+    version: "3.5.0-beta.5"
   serverpod_auth_idp_client:
     dependency: transitive
     description:
       name: serverpod_auth_idp_client
-      sha256: "8057313bcb23932d5088d0ddc50cc9db820f7d252b9cd1fbc8139d6bfc5e30a1"
+      sha256: "5a799a1fa8551c77f1d12ea1c0c9de7c35e555d882cc44b699dc370bce332660"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.5"
+    version: "3.5.0-beta.5"
   serverpod_auth_idp_flutter:
     dependency: transitive
     description:
       name: serverpod_auth_idp_flutter
-      sha256: "7f633482c0ca63456c4c9bba24eab47d5971867708a9e07e396e3c9ffab905b4"
+      sha256: ea7fdc1805bbc5e03159823880709ef30205795b2568b5e9562da3d246595a16
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.5"
+    version: "3.5.0-beta.5"
   serverpod_client:
     dependency: transitive
     description:
       name: serverpod_client
-      sha256: bb927f4880cfb982c198426818d09cd3b07830f6232e25169dfc0ab443fc83a7
+      sha256: e8065d76e246d44bf7b1d493632cabc3c424aba18e6a4d500e11c38c912c0f91
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.5"
+    version: "3.5.0-beta.5"
   serverpod_flutter:
     dependency: transitive
     description:
       name: serverpod_flutter
-      sha256: c6257998b3e8bf5d5a33ec5cf3031165ea96d21c8eaf2af9d93db85bbf43af88
+      sha256: "2e02183601ec4827b7c497b3a634a311f64f8168241d7cd1801ad5ab377c4578"
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.5"
+    version: "3.5.0-beta.5"
   serverpod_serialization:
     dependency: transitive
     description:
       name: serverpod_serialization
-      sha256: be8f84c9409bafe35d1ab65abeaa5c2f7d92116155059e489366c7fdedcca55f
+      sha256: bd9d9c4c4daf06701ce3f59d24d72125e638d27d0d3883f3c7a10582c2ed5455
       url: "https://pub.dev"
     source: hosted
-    version: "3.4.5"
+    version: "3.5.0-beta.5"
   shadcn_ui:
     dependency: "direct main"
     description:
@@ -2020,5 +2020,5 @@ packages:
     source: hosted
     version: "2.2.4"
 sdks:
-  dart: ">=3.10.1 <4.0.0"
-  flutter: ">=3.38.0"
+  dart: ">=3.10.3 <4.0.0"
+  flutter: ">=3.38.4"

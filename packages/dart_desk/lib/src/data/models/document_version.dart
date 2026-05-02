@@ -45,6 +45,14 @@ class DocumentVersion {
   /// The document data at this version (reconstructed from CRDT operations)
   final Map<String, dynamic>? data;
 
+  /// The CRDT HLC timestamp at which this version's snapshot was taken.
+  ///
+  /// A version's data reflects all CRDT operations up to and including this HLC.
+  /// Comparing the document's current [DeskDocument.crdtHlc] against
+  /// [snapshotHlc] of the latest published version determines whether there
+  /// are unpublished changes.
+  final String? snapshotHlc;
+
   /// Optional changelog describing what changed in this version
   final String? changeLog;
 
@@ -69,6 +77,7 @@ class DocumentVersion {
     required this.versionNumber,
     required this.status,
     this.data,
+    this.snapshotHlc,
     this.changeLog,
     this.publishedAt,
     this.scheduledAt,
@@ -97,6 +106,7 @@ class DocumentVersion {
     int? versionNumber,
     DocumentVersionStatus? status,
     Map<String, dynamic>? data,
+    String? snapshotHlc,
     String? changeLog,
     DateTime? publishedAt,
     DateTime? scheduledAt,
@@ -110,6 +120,7 @@ class DocumentVersion {
       versionNumber: versionNumber ?? this.versionNumber,
       status: status ?? this.status,
       data: data ?? this.data,
+      snapshotHlc: snapshotHlc ?? this.snapshotHlc,
       changeLog: changeLog ?? this.changeLog,
       publishedAt: publishedAt ?? this.publishedAt,
       scheduledAt: scheduledAt ?? this.scheduledAt,
@@ -127,6 +138,7 @@ class DocumentVersion {
       versionNumber: json['versionNumber'] as int,
       status: DocumentVersionStatus.fromString(json['status'] as String),
       data: json['data'] as Map<String, dynamic>?,
+      snapshotHlc: json['snapshotHlc'] as String?,
       changeLog: json['changeLog'] as String?,
       publishedAt: json['publishedAt'] != null
           ? DateTime.parse(json['publishedAt'] as String)
@@ -152,6 +164,7 @@ class DocumentVersion {
       'versionNumber': versionNumber,
       'status': status.value,
       if (data != null) 'data': data,
+      if (snapshotHlc != null) 'snapshotHlc': snapshotHlc,
       if (changeLog != null) 'changeLog': changeLog,
       if (publishedAt != null) 'publishedAt': publishedAt!.toIso8601String(),
       if (scheduledAt != null) 'scheduledAt': scheduledAt!.toIso8601String(),

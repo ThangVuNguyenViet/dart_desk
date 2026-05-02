@@ -223,6 +223,20 @@ abstract class DataSource {
   /// Throws [DeskAuthenticationException] if authentication is required.
   Future<DocumentVersion?> publishDocumentVersion(String versionId);
 
+  /// Atomically publishes the document's current draft as a new version.
+  ///
+  /// The server snapshots the current CRDT HLC, creates a new version row
+  /// with status=published, and upserts the published_documents row — all
+  /// in a single transaction.
+  ///
+  /// [documentId] - The ID of the document to publish
+  ///
+  /// Returns the newly created [DocumentVersion] with published status.
+  ///
+  /// Throws [DeskDataSourceException] if the operation fails.
+  /// Throws [DeskAuthenticationException] if authentication is required.
+  Future<DocumentVersion> publishCurrentVersion(String documentId);
+
   /// Archives a document version.
   ///
   /// [versionId] - The ID of the version to archive
