@@ -111,19 +111,124 @@ void main() {
   // After the fix: only `isDirty` is cleared; `editedData` keeps its values.
   //
   // The Save button has been removed (Task 13: debounced autosave).
-  // TODO(Task 16): rewrite save-button tests for autosave path (advance fake
-  // time, assert dataSource.updateDocumentData was called).
+  // Autosave fires 1 second after the last edit via a debounce timer in
+  // _DeskDocumentEditorState.
   // =========================================================================
 
   group('Bug 1: editedData retained after save', () {
-    // TODO(Task 16): rewrite for autosave — Save button removed in Task 13.
-    // testWidgets('editedData keeps its value after Save completes', ...);
+    testWidgets('editedData keeps its value after autosave completes', (
+      tester,
+    ) async {
+      final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
+      final doc = docs.documents.first;
 
-    // TODO(Task 16): rewrite for autosave — Save button removed in Task 13.
-    // testWidgets('isDirty is false after Save completes', ...);
+      await tester.pumpWidget(
+        _buildEditorApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          onBuilt: (context) {
+            final docVM = GetIt.I<DeskDocumentViewModel>();
+            docVM.documentId.value = doc.id!;
+            docVM.editedData.value = {'string_field': 'autosave value'};
+            docVM.isDirty.value = true;
+            GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
 
-    // TODO(Task 16): rewrite for autosave — Save button removed in Task 13.
-    // testWidgets('Discard hidden + Save disabled after Save (isDirty = false)', ...);
+      // Advance past the 1-second autosave debounce window.
+      await tester.pump(const Duration(seconds: 1, milliseconds: 100));
+      // Let the async save complete.
+      await tester.pumpAndSettle();
+
+      final docVM = GetIt.I<DeskDocumentViewModel>();
+      expect(
+        docVM.editedData.value,
+        isNotEmpty,
+        reason: 'editedData must not be cleared after autosave',
+      );
+      expect(
+        docVM.editedData['string_field'],
+        'autosave value',
+        reason: 'editedData must retain the edited value after autosave',
+      );
+    });
+
+    testWidgets('isDirty is false after autosave completes', (tester) async {
+      final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
+      final doc = docs.documents.first;
+
+      await tester.pumpWidget(
+        _buildEditorApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          onBuilt: (context) {
+            final docVM = GetIt.I<DeskDocumentViewModel>();
+            docVM.documentId.value = doc.id!;
+            docVM.editedData.value = {'string_field': 'dirty check value'};
+            docVM.isDirty.value = true;
+            GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // isDirty is true while the debounce window is still open.
+      expect(
+        GetIt.I<DeskDocumentViewModel>().isDirty.value,
+        isTrue,
+        reason: 'isDirty must be true before the autosave debounce fires',
+      );
+
+      // Advance past the 1-second autosave debounce, then flush the save.
+      await tester.pump(const Duration(seconds: 1, milliseconds: 100));
+      await tester.pumpAndSettle();
+
+      expect(
+        GetIt.I<DeskDocumentViewModel>().isDirty.value,
+        isFalse,
+        reason: 'isDirty must be false after autosave completes',
+      );
+    });
+
+    testWidgets('Discard hidden after autosave completes', (tester) async {
+      final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
+      final doc = docs.documents.first;
+
+      await tester.pumpWidget(
+        _buildEditorApp(
+          dataSource: dataSource,
+          docType: allFieldsDocumentType,
+          onBuilt: (context) {
+            final docVM = GetIt.I<DeskDocumentViewModel>();
+            docVM.documentId.value = doc.id!;
+            docVM.editedData.value = {'string_field': 'discard test value'};
+            docVM.isDirty.value = true;
+            GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Discard button is visible while isDirty = true.
+      expect(
+        find.byKey(const ValueKey('discard_document_button')),
+        findsOneWidget,
+        reason: 'Discard button must be visible while isDirty = true',
+      );
+
+      // Advance past the 1-second debounce, then flush the autosave.
+      await tester.pump(const Duration(seconds: 1, milliseconds: 100));
+      await tester.pumpAndSettle();
+
+      // isDirty = false → Discard button is hidden.
+      expect(
+        find.byKey(const ValueKey('discard_document_button')),
+        findsNothing,
+        reason: 'Discard button must be hidden after autosave (isDirty = false)',
+      );
+    });
 
     testWidgets('editedData keeps its value after Publish completes', (
       tester,
@@ -178,13 +283,53 @@ void main() {
   // After the redesign (Task 13): the Save button is removed; autosave handles
   // data persistence. Publish uses `DeskViewModel.publishCurrentDraft` and
   // flushes pending autosave before publishing.
-  //
-  // TODO(Task 16): rewrite loading-state tests for autosave path.
   // =========================================================================
 
   group('Bug 2: Save and Publish loading are independent', () {
-    // TODO(Task 16): rewrite for autosave — Save button removed in Task 13.
-    // testWidgets('Save shows spinner only on Save button', ...);
+    testWidgets(
+        'Publish button is disabled while autosave is in flight (updateData.isLoading)',
+        (tester) async {
+      // Use the hanging data source so updateDocumentData never completes —
+      // this freezes the autosave in the isLoading = true state for inspection.
+      final hangingDataSource = _HangingDataSource()..seedDefaults();
+      final docs = await hangingDataSource.getDocuments(
+        allFieldsDocumentType.name,
+      );
+      final doc = docs.documents.first;
+      // Pre-stamp crdtHlc so hasUnpublishedChanges = true (Publish button enabled
+      // in the normal idle state).
+      hangingDataSource.forceSetCrdtHlc(doc.id!, '9999999999999999');
+
+      await tester.pumpWidget(
+        _buildEditorApp(
+          dataSource: hangingDataSource,
+          docType: allFieldsDocumentType,
+          onBuilt: (context) {
+            final docVM = GetIt.I<DeskDocumentViewModel>();
+            docVM.documentId.value = doc.id!;
+            docVM.editedData.value = {'string_field': 'in-flight check'};
+            docVM.isDirty.value = true;
+            GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
+          },
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Advance past the debounce — autosave fires but hangs in updateDocumentData.
+      await tester.pump(const Duration(seconds: 1, milliseconds: 100));
+      // One pump so the hanging future starts (isLoading = true) without settling.
+      await tester.pump();
+
+      final publishBtn = tester.widget<DeskButton>(
+        find.byKey(const ValueKey('publish_document_button')),
+      );
+      expect(
+        publishBtn.onPressed,
+        isNull,
+        reason:
+            'Publish button must be disabled while autosave updateData is in flight (isAnyBusy = true)',
+      );
+    });
 
     testWidgets(
         'Publish button is disabled while the flush-save step is in progress',
