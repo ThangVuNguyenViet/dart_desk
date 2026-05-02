@@ -26,7 +26,7 @@ class _PreviewPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final edited = GetIt.I<DeskDocumentViewModel>().editedData.watch(context);
-    return docType.builder(edited);
+    return docType.builder(context, edited);
   }
 }
 

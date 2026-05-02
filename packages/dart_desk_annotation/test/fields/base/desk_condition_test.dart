@@ -1,16 +1,20 @@
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _FakeContext extends DeskConditionContext {
+class _FakeContext extends DeskContext {
   const _FakeContext({this.document});
   @override
   final DeskDocument? document;
+  @override
+  ValueListenable<List<DeskDocument>> documents(String documentType) =>
+      throw StateError('documents() not stubbed in this test');
   @override
   T read<T extends Object>() =>
       throw StateError('read<$T>() not stubbed in this test');
 }
 
-DeskConditionContext _ctxWithData(Map<String, dynamic> data) {
+DeskContext _ctxWithData(Map<String, dynamic> data) {
   return _FakeContext(
     document: DeskDocument(
       clientId: 'c',

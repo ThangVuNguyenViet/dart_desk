@@ -1,4 +1,4 @@
-import 'desk_condition_context.dart';
+import 'desk_context.dart';
 
 /// Base condition class for conditional field visibility.
 /// Subclass and override [evaluate] to create custom conditions.
@@ -7,7 +7,7 @@ abstract class DeskCondition {
   const DeskCondition();
 
   /// Returns true if the field should be visible given the current [ctx].
-  bool evaluate(DeskConditionContext ctx);
+  bool evaluate(DeskContext ctx);
 }
 
 /// Shows the field when [field] equals [value].
@@ -17,7 +17,7 @@ class FieldEquals extends DeskCondition {
   const FieldEquals(this.field, this.value);
 
   @override
-  bool evaluate(DeskConditionContext ctx) =>
+  bool evaluate(DeskContext ctx) =>
       ctx.document?.activeVersionData?[field] == value;
 }
 
@@ -28,7 +28,7 @@ class FieldNotEquals extends DeskCondition {
   const FieldNotEquals(this.field, this.value);
 
   @override
-  bool evaluate(DeskConditionContext ctx) =>
+  bool evaluate(DeskContext ctx) =>
       ctx.document?.activeVersionData?[field] != value;
 }
 
@@ -38,7 +38,7 @@ class FieldNotNull extends DeskCondition {
   const FieldNotNull(this.field);
 
   @override
-  bool evaluate(DeskConditionContext ctx) =>
+  bool evaluate(DeskContext ctx) =>
       ctx.document?.activeVersionData?[field] != null;
 }
 
@@ -48,7 +48,7 @@ class FieldIsNull extends DeskCondition {
   const FieldIsNull(this.field);
 
   @override
-  bool evaluate(DeskConditionContext ctx) =>
+  bool evaluate(DeskContext ctx) =>
       ctx.document?.activeVersionData?[field] == null;
 }
 
@@ -58,7 +58,7 @@ class AllConditions extends DeskCondition {
   const AllConditions(this.conditions);
 
   @override
-  bool evaluate(DeskConditionContext ctx) =>
+  bool evaluate(DeskContext ctx) =>
       conditions.every((c) => c.evaluate(ctx));
 }
 
@@ -68,7 +68,7 @@ class AnyCondition extends DeskCondition {
   const AnyCondition(this.conditions);
 
   @override
-  bool evaluate(DeskConditionContext ctx) =>
+  bool evaluate(DeskContext ctx) =>
       conditions.any((c) => c.evaluate(ctx));
 }
 
