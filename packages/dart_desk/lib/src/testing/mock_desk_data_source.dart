@@ -544,6 +544,16 @@ class MockDataSource implements DataSource {
   }
 
   @override
+  Future<DeskDocument> restoreDocumentVersion(
+    String documentId,
+    String versionId,
+  ) async {
+    throw UnimplementedError(
+      'restoreDocumentVersion not implemented in MockDeskDataSource',
+    );
+  }
+
+  @override
   Future<MediaAsset> uploadImage(String fileName, Uint8List fileData) async {
     final ext = fileName.contains('.')
         ? fileName.split('.').last.toLowerCase()

@@ -362,6 +362,27 @@ class CloudDataSource implements DataSource {
     }
   }
 
+  @override
+  Future<DeskDocument> restoreDocumentVersion(
+    String documentId,
+    String versionId,
+  ) async {
+    try {
+      final response = await _client.document.restoreDocumentVersion(
+        UuidValue.fromString(documentId),
+        UuidValue.fromString(versionId),
+      );
+      return _toDeskDocument(response);
+    } on serverpod.ServerpodClientException catch (e, st) {
+      if (e.statusCode == 401) {
+        throw const DeskAuthenticationException();
+      }
+      _throw('Failed to restore document version', e, st);
+    } catch (e, st) {
+      _throw('Failed to restore document version', e, st);
+    }
+  }
+
   // ============================================================
   // Media Operations
   // ============================================================

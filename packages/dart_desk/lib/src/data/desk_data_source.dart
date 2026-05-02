@@ -233,6 +233,22 @@ abstract class DataSource {
   /// Throws [DeskAuthenticationException] if authentication is required.
   Future<DocumentVersion?> archiveDocumentVersion(String versionId);
 
+  /// Restores a previous version's data into the current draft. Appends CRDT
+  /// ops bringing the document back to the historical state. Does not
+  /// auto-publish.
+  ///
+  /// [documentId] - The ID of the document
+  /// [versionId] - The ID of the version to restore from
+  ///
+  /// Returns the updated [DeskDocument] with the restored draft data.
+  ///
+  /// Throws [DeskDataSourceException] if the operation fails.
+  /// Throws [DeskAuthenticationException] if authentication is required.
+  Future<DeskDocument> restoreDocumentVersion(
+    String documentId,
+    String versionId,
+  );
+
   /// Deletes a document version.
   ///
   /// [versionId] - The ID of the version to delete
