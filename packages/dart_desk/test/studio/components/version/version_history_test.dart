@@ -13,33 +13,36 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 // Data sources
 // ---------------------------------------------------------------------------
 
-/// A [MockDataSource] with a working [restoreDocumentVersion] that records
-/// the last call for assertion.
+/// A [MockDataSource] that records the last restore call (via
+/// [getDocumentVersionData] + [updateDocumentData]) for assertion.
 class _TrackingDataSource extends MockDataSource {
   String? lastRestoredDocumentId;
   String? lastRestoredVersionId;
 
   @override
-  Future<DeskDocument> restoreDocumentVersion(
-    String documentId,
-    String versionId,
-  ) async {
-    lastRestoredDocumentId = documentId;
+  Future<Map<String, dynamic>?> getDocumentVersionData(String versionId) async {
     lastRestoredVersionId = versionId;
-    return super.restoreDocumentVersion(documentId, versionId);
+    return super.getDocumentVersionData(versionId);
+  }
+
+  @override
+  Future<DeskDocument> updateDocumentData(
+    String documentId,
+    Map<String, dynamic> updates, {
+    String? sessionId,
+  }) async {
+    lastRestoredDocumentId = documentId;
+    return super.updateDocumentData(documentId, updates, sessionId: sessionId);
   }
 }
 
-/// A [MockDataSource] whose [restoreDocumentVersion] never completes —
+/// A [MockDataSource] whose [getDocumentVersionData] never completes —
 /// keeps the mutation in [MutationPending] for in-flight assertions.
 class _HangingRestoreDataSource extends MockDataSource {
   @override
-  Future<DeskDocument> restoreDocumentVersion(
-    String documentId,
-    String versionId,
-  ) {
+  Future<Map<String, dynamic>?> getDocumentVersionData(String versionId) {
     // Never completes.
-    return Future<DeskDocument>.delayed(const Duration(days: 999));
+    return Future<Map<String, dynamic>?>.delayed(const Duration(days: 999));
   }
 }
 

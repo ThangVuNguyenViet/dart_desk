@@ -160,13 +160,6 @@ class _FakeDataSource implements DataSource {
       throw UnimplementedError();
 
   @override
-  Future<DeskDocument> restoreDocumentVersion(
-    String documentId,
-    String versionId,
-  ) async =>
-      throw UnimplementedError();
-
-  @override
   Future<bool> deleteDocumentVersion(String versionId) async =>
       throw UnimplementedError();
 

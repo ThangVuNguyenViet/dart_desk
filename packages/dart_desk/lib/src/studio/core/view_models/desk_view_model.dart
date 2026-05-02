@@ -249,14 +249,18 @@ class DeskViewModel {
         return version;
       }, debugLabel: 'publishCurrentDraft');
 
-  /// Restores a previous version's data into the current draft by appending
-  /// CRDT ops. Does not auto-publish.
+  /// Restores a previous version's data into the current draft by fetching the
+  /// reconstructed version state and pushing it through updateDocumentData.
+  /// Does not auto-publish.
   late final restoreVersion =
       mutationSignal<DeskDocument, ({String documentId, String versionId})>(
         (args) async {
-          final updated = await dataSource.restoreDocumentVersion(
-            args.documentId,
+          final versionData = await dataSource.getDocumentVersionData(
             args.versionId,
+          );
+          final updated = await dataSource.updateDocumentData(
+            args.documentId,
+            versionData ?? {},
           );
           versionsContainer(args.documentId).awaitableReload();
           selectedDocumentContainer(args.documentId).awaitableReload();

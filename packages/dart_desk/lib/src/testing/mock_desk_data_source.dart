@@ -611,24 +611,6 @@ class MockDataSource implements DataSource {
   }
 
   @override
-  Future<DeskDocument> restoreDocumentVersion(
-    String documentId,
-    String versionId,
-  ) async {
-    final doc = _documents[documentId];
-    if (doc == null) throw StateError('Document $documentId not found');
-    final version = _versions[documentId]?[versionId];
-    if (version == null) throw StateError('Version $versionId not found');
-    final restoredData = _versionData[versionId] ?? {};
-    final updated = doc.copyWith(
-      activeVersionData: restoredData,
-      updatedAt: DateTime.now(),
-    );
-    _documents[documentId] = updated;
-    return updated;
-  }
-
-  @override
   Future<MediaAsset> uploadImage(String fileName, Uint8List fileData) async {
     final ext = fileName.contains('.')
         ? fileName.split('.').last.toLowerCase()
