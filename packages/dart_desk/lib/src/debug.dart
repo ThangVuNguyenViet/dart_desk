@@ -3,10 +3,10 @@ import 'package:logging/logging.dart';
 import 'package:signals/signals.dart';
 
 /// Logger for Serverpod client request/response activity.
-final Logger clientLogger = Logger('dart_desk.client')..level = Level.OFF;
+final Logger clientLogger = Logger('dart_desk.client');
 
 /// Logger for signal/effect updates emitted by [LoggingSignalsObserver].
-final Logger signalsLogger = Logger('dart_desk.signals')..level = Level.OFF;
+final Logger signalsLogger = Logger('dart_desk.signals');
 
 /// Runtime debug flags for the Dart Desk app.
 ///
@@ -40,12 +40,13 @@ class DartDeskDebug {
   static set debugShowSignalLogs(bool value) {
     if (value == _debugShowSignalLogs) return;
     _debugShowSignalLogs = value;
-    signalsLogger.level = value ? Level.ALL : Level.OFF;
     if (value) {
       _ensurePrinter();
+      signalsLogger.level = Level.ALL;
       _previousObserver = SignalsObserver.instance;
       SignalsObserver.instance = _LoggerSignalsObserver();
     } else {
+      signalsLogger.level = Level.OFF;
       SignalsObserver.instance = _previousObserver;
       _previousObserver = null;
     }
@@ -58,8 +59,12 @@ class DartDeskDebug {
   static set debugShowClientLog(bool value) {
     if (value == _debugShowClientLog) return;
     _debugShowClientLog = value;
-    clientLogger.level = value ? Level.ALL : Level.OFF;
-    if (value) _ensurePrinter();
+    if (value) {
+      _ensurePrinter();
+      clientLogger.level = Level.ALL;
+    } else {
+      clientLogger.level = Level.OFF;
+    }
   }
 
   static void _ensurePrinter() {
