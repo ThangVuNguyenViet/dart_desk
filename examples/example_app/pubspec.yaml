@@ -14,7 +14,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   dart_mappable: ^4.6.1
   intl: ^0.20.2
-  serverpod_flutter: ^3.3.1
+  serverpod_flutter: ^3.5.0-beta.5
   data_models:
     git:
       url: https://github.com/ThangVuNguyenViet/dart_desk.git
@@ -32,7 +32,7 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  serverpod_auth_idp_flutter: ^3.3.1
+  serverpod_auth_idp_flutter: ^3.5.0-beta.5
 
 flutter:
   uses-material-design: true

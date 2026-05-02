@@ -27,7 +27,7 @@ dependencies:
   dart_mappable: ^4.6.1
   intl: ^0.20.2
   shadcn_ui: ^0.52.1
-  serverpod_flutter: ^3.3.1
+  serverpod_flutter: ^3.5.0-beta.5
   http: ^1.2.0
   dart_desk_client:
     git:
@@ -45,7 +45,7 @@ dev_dependencies:
   dart_mappable_builder: ^4.6.1
   # Used directly by integration_test/test_utils/test_app.dart for the
   # pre-authenticated client setup.
-  serverpod_auth_idp_flutter: ^3.4.5
+  serverpod_auth_idp_flutter: ^3.5.0-beta.5
   # Screen-golden infrastructure (test/screens/).
   flutter_test_goldens: ^0.0.10
   get_it: ^9.2.1
