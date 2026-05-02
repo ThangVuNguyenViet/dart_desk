@@ -363,6 +363,23 @@ class CloudDataSource implements DataSource {
   }
 
   @override
+  Future<DocumentVersion> publishCurrentVersion(String documentId) async {
+    try {
+      final response = await _client.document.publishCurrentVersion(
+        UuidValue.fromString(documentId),
+      );
+      return _toDocumentVersion(response);
+    } on serverpod.ServerpodClientException catch (e, st) {
+      if (e.statusCode == 401) {
+        throw const DeskAuthenticationException();
+      }
+      _throw('Failed to publish current version', e, st);
+    } catch (e, st) {
+      _throw('Failed to publish current version', e, st);
+    }
+  }
+
+  @override
   Future<DeskDocument> restoreDocumentVersion(
     String documentId,
     String versionId,
@@ -546,6 +563,7 @@ class CloudDataSource implements DataSource {
       updatedAt: doc.updatedAt,
       createdByUserId: doc.createdByUserId?.toString(),
       updatedByUserId: doc.updatedByUserId?.toString(),
+      crdtHlc: doc.crdtHlc,
     );
   }
 
@@ -616,6 +634,7 @@ class CloudDataSource implements DataSource {
       documentId: version.documentId.toString(),
       versionNumber: version.versionNumber,
       status: DocumentVersionStatus.fromString(version.status.name),
+      snapshotHlc: version.snapshotHlc,
       changeLog: version.changeLog,
       publishedAt: version.publishedAt,
       scheduledAt: version.scheduledAt,
@@ -636,6 +655,7 @@ class CloudDataSource implements DataSource {
       versionNumber: version.versionNumber,
       status: DocumentVersionStatus.fromString(version.status.name),
       data: Map<String, dynamic>.from(data), // Copy to avoid mutation
+      snapshotHlc: version.snapshotHlc,
       changeLog: version.changeLog,
       publishedAt: version.publishedAt,
       scheduledAt: version.scheduledAt,

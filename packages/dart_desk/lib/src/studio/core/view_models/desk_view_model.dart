@@ -79,6 +79,17 @@ class DeskViewModel {
     cache: true,
   );
 
+  /// Fetches the full [DeskDocument] for the given ID.
+  ///
+  /// Used by [hasUnpublishedChanges] to read the document's [crdtHlc].
+  late final selectedDocumentContainer = SignalContainer(
+    (String documentId) => AwaitableFutureSignal(
+      () => dataSource.getDocument(documentId),
+      debugLabel: 'selectedDocument',
+    ),
+    cache: true,
+  );
+
   // ============================================================
   // Constructor
   // ============================================================
@@ -215,52 +226,85 @@ class DeskViewModel {
         return (deleted: true, newDefault: null);
       }, debugLabel: 'deleteDocument');
 
-  late final saveDocumentData =
-      mutationSignal<
-        DeskDocument?,
-        ({String documentId, Map<String, dynamic> data})
-      >((args) async {
-        final result = await dataSource.updateDocumentData(
-          args.documentId,
-          args.data,
-        );
+  /// Atomically publishes the document's current draft as a new version.
+  ///
+  /// Delegates to the single backend endpoint [DataSource.publishCurrentVersion]
+  /// which snapshots the current CRDT HLC, creates a published version row,
+  /// and upserts the public content row — all in one transaction.
+  late final publishCurrentDraft =
+      mutationSignal<DocumentVersion, String>((documentId) async {
+        final version = await dataSource.publishCurrentVersion(documentId);
 
         documentsContainer(
           currentDocumentType.value?.name ?? '',
         ).awaitableReload();
-
-        return result;
-      }, debugLabel: 'saveDocumentData');
-
-  late final publishDocumentData =
-      mutationSignal<
-        DeskDocument?,
-        ({String documentId, Map<String, dynamic> data})
-      >((args) async {
-        final result = await dataSource.updateDocumentData(
-          args.documentId,
-          args.data,
-        );
-
-        final newVersion = await dataSource.createDocumentVersion(
-          args.documentId,
-          changeLog: 'Saved and published',
-        );
-        await dataSource.publishDocumentVersion(newVersion.id!);
-        selectedVersionId.value = newVersion.id;
-
-        documentsContainer(
-          currentDocumentType.value?.name ?? '',
-        ).awaitableReload();
-
-        versionsContainer(args.documentId).awaitableReload();
-        final versionId = selectedVersionId.value;
-        if (versionId != null) {
-          documentDataContainer(versionId).awaitableReload();
+        versionsContainer(documentId).awaitableReload();
+        selectedVersionId.value = version.id;
+        if (version.id != null) {
+          documentDataContainer(version.id!).awaitableReload();
         }
+        // Reload the selected document so crdtHlc is fresh for hasUnpublishedChanges.
+        selectedDocumentContainer(documentId).awaitableReload();
 
-        return result;
-      }, debugLabel: 'publishDocumentData');
+        return version;
+      }, debugLabel: 'publishCurrentDraft');
+
+  /// Restores a previous version's data into the current draft by appending
+  /// CRDT ops. Does not auto-publish.
+  late final restoreVersion =
+      mutationSignal<DeskDocument, ({String documentId, String versionId})>(
+        (args) async {
+          final updated = await dataSource.restoreDocumentVersion(
+            args.documentId,
+            args.versionId,
+          );
+          versionsContainer(args.documentId).awaitableReload();
+          selectedDocumentContainer(args.documentId).awaitableReload();
+          return updated;
+        },
+        debugLabel: 'restoreVersion',
+      );
+
+  /// True when the document has unsaved (unpublished) changes.
+  ///
+  /// Compares the document's current [DeskDocument.crdtHlc] against the
+  /// [DocumentVersion.snapshotHlc] of the highest-numbered published version.
+  /// - Returns `true` if no published version exists yet.
+  /// - Returns `true` if the document's HLC is lexicographically greater
+  ///   than the latest published version's snapshot HLC.
+  /// - Returns `false` otherwise.
+  late final hasUnpublishedChanges = Computed<bool>(() {
+    final docId = selectedDocumentId.value;
+    if (docId == null) return false;
+
+    final versionsState = versionsContainer(docId).value;
+    final versions = versionsState.map(
+      data: (d) => d.versions,
+      loading: () => const <DocumentVersion>[],
+      error: (_, __) => const <DocumentVersion>[],
+    );
+
+    final docState = selectedDocumentContainer(docId).value;
+    final crdtHlc = docState.map(
+      data: (doc) => doc?.crdtHlc,
+      loading: () => null,
+      error: (_, __) => null,
+    );
+
+    if (crdtHlc == null) return false;
+
+    final latestPublished = versions
+        .where((v) => v.status == DocumentVersionStatus.published)
+        .fold<DocumentVersion?>(
+          null,
+          (acc, v) =>
+              acc == null || v.versionNumber > acc.versionNumber ? v : acc,
+        );
+
+    if (latestPublished == null) return true; // never published
+    if (latestPublished.snapshotHlc == null) return true;
+    return crdtHlc.compareTo(latestPublished.snapshotHlc!) > 0;
+  }, debugLabel: 'hasUnpublishedChanges');
 
   // ============================================================
   // Version Status Operations
@@ -347,5 +391,6 @@ class DeskViewModel {
     selectedDocumentId.dispose();
     sidebarCollapsed.dispose();
     documentListVisible.dispose();
+    hasUnpublishedChanges.dispose();
   }
 }

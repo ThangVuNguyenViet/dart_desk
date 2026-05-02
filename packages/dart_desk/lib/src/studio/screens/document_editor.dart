@@ -37,14 +37,16 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
       final dataToSave = editedData.value;
 
       if (publish) {
-        await viewModel.publishDocumentData.run((
+        // Save the current data first, then atomically publish.
+        await documentViewModel.updateData.run((
           documentId: docId,
-          data: dataToSave,
+          updates: dataToSave,
         ));
+        await viewModel.publishCurrentDraft.run(docId);
       } else {
-        await viewModel.saveDocumentData.run((
+        await documentViewModel.updateData.run((
           documentId: docId,
-          data: dataToSave,
+          updates: dataToSave,
         ));
       }
       documentViewModel.isDirty.value = false;
@@ -119,8 +121,9 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
   Widget build(BuildContext context) {
     final viewModel = GetIt.I<DeskViewModel>();
 
-    final saveStatus = viewModel.saveDocumentData.watch(context);
-    final publishStatus = viewModel.publishDocumentData.watch(context);
+    final documentViewModel = GetIt.I<DeskDocumentViewModel>();
+    final saveStatus = documentViewModel.updateData.watch(context);
+    final publishStatus = viewModel.publishCurrentDraft.watch(context);
     final createStatus = viewModel.createDocument.watch(context);
 
     final isSaving = saveStatus.isLoading || createStatus.isLoading;

@@ -544,6 +544,14 @@ class MockDataSource implements DataSource {
   }
 
   @override
+  Future<DocumentVersion> publishCurrentVersion(String documentId) async {
+    // Create a new version snapshot and immediately publish it.
+    final version = await createDocumentVersion(documentId);
+    final published = await publishDocumentVersion(version.id!);
+    return published!;
+  }
+
+  @override
   Future<DeskDocument> restoreDocumentVersion(
     String documentId,
     String versionId,
