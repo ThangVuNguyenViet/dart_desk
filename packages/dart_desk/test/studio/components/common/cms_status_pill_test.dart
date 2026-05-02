@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:dart_desk/dart_desk.dart';
-import 'package:dart_desk/src/studio/components/common/cms_status_pill.dart';
 import 'package:dart_desk/src/studio/core/view_models/desk_document_view_model.dart';
 import 'package:dart_desk/src/studio/providers/studio_provider.dart';
 import 'package:dart_desk/studio.dart';

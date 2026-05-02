@@ -285,14 +285,14 @@ class DeskViewModel {
     final versions = versionsState.map(
       data: (d) => d.versions,
       loading: () => const <DocumentVersion>[],
-      error: (_, __) => const <DocumentVersion>[],
+      error: (_, _) => const <DocumentVersion>[],
     );
 
     final docState = selectedDocumentContainer(docId).value;
     final crdtHlc = docState.map(
       data: (doc) => doc?.crdtHlc,
       loading: () => null,
-      error: (_, __) => null,
+      error: (_, _) => null,
     );
 
     if (crdtHlc == null) return false;
