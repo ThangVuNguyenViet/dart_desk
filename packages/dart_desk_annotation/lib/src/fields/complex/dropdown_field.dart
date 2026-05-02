@@ -25,11 +25,11 @@ class DropdownOption<T> {
 
 abstract class DeskDropdownOption<T> extends DeskOption {
   FutureOr<List<DropdownOption<T>>> options(BuildContext context);
-  FutureOr<T?>? get defaultValue;
+  FutureOr<T?>? get initialValue;
   String? get placeholder;
   bool get allowNull;
 
-  const DeskDropdownOption({super.hidden});
+  const DeskDropdownOption({super.optional, super.visibleWhen});
 }
 
 class DeskDropdownSimpleOption<T> extends DeskDropdownOption<T> {
@@ -39,16 +39,17 @@ class DeskDropdownSimpleOption<T> extends DeskDropdownOption<T> {
   FutureOr<List<DropdownOption<T>>> options(BuildContext context) => _options;
 
   @override
-  final T? defaultValue;
+  final T? initialValue;
   @override
   final String? placeholder;
   @override
   final bool allowNull;
 
   const DeskDropdownSimpleOption({
-    super.hidden,
+    super.optional,
+    super.visibleWhen,
     required List<DropdownOption<T>> options,
-    this.defaultValue,
+    this.initialValue,
     this.placeholder,
     this.allowNull = true,
   }) : _options = options;

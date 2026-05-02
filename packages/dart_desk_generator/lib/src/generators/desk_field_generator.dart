@@ -23,6 +23,7 @@ import 'field_code_generators/reference_field_generator.dart';
 import 'field_code_generators/slug_field_generator.dart';
 import 'field_code_generators/string_field_generator.dart';
 import 'field_code_generators/url_field_generator.dart';
+import 'optional_resolver.dart';
 import 'field_code_registry.dart'
     as registry
     show
@@ -443,6 +444,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -452,7 +454,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -478,6 +492,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -487,7 +502,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -513,6 +540,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -522,7 +550,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -548,6 +588,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -557,10 +598,28 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
+          final optional = resolveOptional(
+            field: field,
+            configOptional: null,
+            optionalSource: null,
+          );
+
+          String? resolvedOption = optionSource;
+          if (optional && resolvedOption == null) {
+            resolvedOption = 'DeskBooleanOption(optional: true)';
+          } else if (optional && resolvedOption != null) {
+            if (!resolvedOption.contains('optional')) {
+              resolvedOption = resolvedOption.replaceFirst(
+                'DeskBooleanOption(',
+                'DeskBooleanOption(optional: true, ',
+              );
+            }
+          }
+
           return '''DeskBooleanField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
         },
     'DeskCheckbox':
@@ -569,6 +628,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -578,11 +638,28 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
+          final optional = resolveOptional(
+            field: field,
+            configOptional: null,
+            optionalSource: null,
+          );
+
+          String? resolvedOption = optionSource;
+          if (optional && resolvedOption == null) {
+            resolvedOption = 'DeskCheckboxOption(optional: true)';
+          } else if (optional && resolvedOption != null) {
+            if (!resolvedOption.contains('optional')) {
+              resolvedOption = resolvedOption.replaceFirst(
+                'DeskCheckboxOption(',
+                'DeskCheckboxOption(optional: true, ',
+              );
+            }
+          }
 
           return '''DeskCheckboxField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
         },
     'DeskDate':
@@ -591,6 +668,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -600,7 +678,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -626,6 +716,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -635,7 +726,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -661,6 +764,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -670,7 +774,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -696,6 +812,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -718,6 +835,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -727,11 +845,36 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
+
+          String? resolvedOption = optionSource;
+          if (optional && resolvedOption == null) {
+            resolvedOption = 'DeskImageOption(optional: true)';
+          } else if (optional && resolvedOption != null) {
+            if (!resolvedOption.contains('optional')) {
+              resolvedOption = resolvedOption.replaceFirst(
+                'DeskImageOption(',
+                'DeskImageOption(optional: true, ',
+              );
+            }
+          }
 
           return '''DeskImageField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
         },
     'DeskFile':
@@ -740,6 +883,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -749,7 +893,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -775,6 +931,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -863,12 +1020,38 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
             fromMapCode = 'fromMap: $genericType.\$fromMap,';
           }
 
+          final arrayOptionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final arrayOptional = resolveOptional(
+            field: field,
+            configOptional: arrayOptionalSrc == 'true'
+                ? true
+                : arrayOptionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: arrayOptionalSrc,
+          );
+
+          String? resolvedArrayOption = optionSource;
+          if (arrayOptional && resolvedArrayOption == null) {
+            resolvedArrayOption = 'DeskArrayOption(optional: true)';
+          } else if (arrayOptional && resolvedArrayOption != null) {
+            if (!resolvedArrayOption.contains('optional')) {
+              resolvedArrayOption = resolvedArrayOption.replaceFirst(
+                'DeskArrayOption(',
+                'DeskArrayOption(optional: true, ',
+              );
+            }
+          }
+
           return '''DeskArrayField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     innerField: $inferredFieldCode,
     ${fromMapCode ?? ''}
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedArrayOption != null ? 'option: $resolvedArrayOption,' : ''}
   )''';
         },
     'DeskBlock':
@@ -877,6 +1060,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -886,10 +1070,36 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
+
+          String? resolvedOption = optionSource;
+          if (optional && resolvedOption == null) {
+            resolvedOption = 'DeskBlockOption(optional: true)';
+          } else if (optional && resolvedOption != null) {
+            if (!resolvedOption.contains('optional')) {
+              resolvedOption = resolvedOption.replaceFirst(
+                'DeskBlockOption(',
+                'DeskBlockOption(optional: true, ',
+              );
+            }
+          }
+
           return '''DeskBlockField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
         },
     'DeskReferenceFieldConfig':
@@ -898,6 +1108,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -919,6 +1130,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -940,6 +1152,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -949,10 +1162,36 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
+
+          String? resolvedOption = optionSource;
+          if (optional && resolvedOption == null) {
+            resolvedOption = 'DeskGeopointOption(optional: true)';
+          } else if (optional && resolvedOption != null) {
+            if (!resolvedOption.contains('optional')) {
+              resolvedOption = resolvedOption.replaceFirst(
+                'DeskGeopointOption(',
+                'DeskGeopointOption(optional: true, ',
+              );
+            }
+          }
+
           return '''DeskGeopointField(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
         },
     'DeskColor':
@@ -961,6 +1200,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -970,7 +1210,19 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
               element: field,
             );
           }
-          final optional = config?.getField('optional')?.toBoolValue() ?? false;
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
 
           String? resolvedOption = optionSource;
           if (optional && resolvedOption == null) {
@@ -996,6 +1248,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -1036,11 +1289,39 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
             fromMapCode = 'fromMap: $genericType.\$fromMap,';
           }
 
+          final optionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final optional = resolveOptional(
+            field: field,
+            configOptional: optionalSrc == 'true'
+                ? true
+                : optionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: optionalSrc,
+          );
+
+          String? resolvedOption = optionSource;
+          if (optional && resolvedOption != null) {
+            if (!resolvedOption.contains('optional')) {
+              // Inject optional: true into the option constructor call.
+              // DeskDropdown always requires an option, so resolvedOption has
+              // the form DeskDropdownSimpleOption<T>(... or similar.
+              final parenIdx = resolvedOption.indexOf('(');
+              if (parenIdx != -1) {
+                resolvedOption =
+                    '${resolvedOption.substring(0, parenIdx + 1)}optional: true, ${resolvedOption.substring(parenIdx + 1)}';
+              }
+            }
+          }
+
           return '''DeskDropdownField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${fromMapCode ?? ''}
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedOption != null ? 'option: $resolvedOption,' : ''}
   )''';
         },
     'DeskMultiDropdown':
@@ -1049,6 +1330,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -1091,11 +1373,36 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
             multiFromMapCode = 'fromMap: $genericType.\$fromMap,';
           }
 
+          final multiOptionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final multiOptional = resolveOptional(
+            field: field,
+            configOptional: multiOptionalSrc == 'true'
+                ? true
+                : multiOptionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: multiOptionalSrc,
+          );
+
+          String? resolvedMultiOption = optionSource;
+          if (multiOptional && resolvedMultiOption != null) {
+            if (!resolvedMultiOption.contains('optional')) {
+              final parenIdx = resolvedMultiOption.indexOf('(');
+              if (parenIdx != -1) {
+                resolvedMultiOption =
+                    '${resolvedMultiOption.substring(0, parenIdx + 1)}optional: true, ${resolvedMultiOption.substring(parenIdx + 1)}';
+              }
+            }
+          }
+
           return '''DeskMultiDropdownField<$genericType>(
     name: '$fieldName',
     title: '${_titleCase(fieldName)}',
     ${multiFromMapCode ?? ''}
-    ${optionSource != null ? 'option: $optionSource,' : ''}
+    ${resolvedMultiOption != null ? 'option: $resolvedMultiOption,' : ''}
   )''';
         },
     'DeskObject':
@@ -1104,6 +1411,7 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
           DartObject? config, {
           String? optionSource,
           String? innerSource,
+          String? annotationSource,
           List<ClassElement>? discoveryQueue,
         }) {
           final fieldName = field.name;
@@ -1168,6 +1476,29 @@ class DeskFieldGenerator extends GeneratorForAnnotation<DeskModel> {
                 }
                 objFromMapCode = 'fromMap: $typeName.\$fromMap,';
               }
+            }
+          }
+
+          final objOptionalSrc = _namedArgumentSource(
+            annotationSource ?? '',
+            'optional',
+          );
+          final objOptional = resolveOptional(
+            field: field,
+            configOptional: objOptionalSrc == 'true'
+                ? true
+                : objOptionalSrc == 'false'
+                ? false
+                : null,
+            optionalSource: objOptionalSrc,
+          );
+
+          if (objOptional && resolvedOption != null) {
+            if (!resolvedOption.contains('optional')) {
+              resolvedOption = resolvedOption.replaceFirst(
+                'DeskObjectOption(',
+                'DeskObjectOption(optional: true, ',
+              );
             }
           }
 
@@ -1292,7 +1623,7 @@ final $typeSpecName = DocumentTypeSpec<$topLevelClassName>(
   title: '${title.replaceAll("'", "\\'")}',
   description: '${description.replaceAll("'", "\\'")}',
   fields: $topLevelFieldsListName,
-  defaultValue: $topLevelClassName.defaultValue,
+  initialValue: $topLevelClassName.initialValue,
 );
 ''';
 
@@ -1308,7 +1639,7 @@ final $typeSpecName = DocumentTypeSpec<$topLevelClassName>(
     bool inferUnannotatedFields = false,
   }) async {
     final fields = element.fields.where(
-      (f) => !f.isStatic && f.name != 'defaultValue',
+      (f) => !f.isStatic && f.name != 'initialValue',
     );
     final fieldConfigs = <String>[];
     final discoveredClasses = <ClassElement>[];
@@ -1356,6 +1687,7 @@ final $typeSpecName = DocumentTypeSpec<$topLevelClassName>(
           annotationValue,
           optionSource: optionSource,
           innerSource: innerSource,
+          annotationSource: annotation.toSource(),
           discoveryQueue: discoveredClasses,
         );
 

@@ -36,6 +36,33 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskBlockInput(
+              field: DeskBlockField(
+                name: 'content',
+                title: 'Content',
+                option: DeskBlockOption(optional: true),
+              ),
+              data: DeskData(value: 'Hello world', path: 'content'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            const DeskBlockInput(
+              field: DeskBlockField(
+                name: 'content',
+                title: 'Content',
+                option: DeskBlockOption(optional: true),
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }

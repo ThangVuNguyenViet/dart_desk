@@ -3,6 +3,9 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
+
 class DeskMultiDropdownInput<T> extends StatelessWidget {
   const DeskMultiDropdownInput({
     super.key,
@@ -13,7 +16,7 @@ class DeskMultiDropdownInput<T> extends StatelessWidget {
 
   final DeskMultiDropdownField<T> field;
   final DeskData? data;
-  final ValueChanged<List<T>>? onChanged;
+  final ValueChanged<List<T>?>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +25,7 @@ class DeskMultiDropdownInput<T> extends StatelessWidget {
       return _DeskMultiDropdownInput<T>(
         title: field.title,
         description: field.description,
+        isOptional: false,
         data: data,
         onChanged: onChanged,
       );
@@ -41,9 +45,10 @@ class DeskMultiDropdownInput<T> extends StatelessWidget {
           return _DeskMultiDropdownInput<T>(
             title: field.title,
             description: field.description,
+            isOptional: fieldOption.optional,
             placeholder: fieldOption.placeholder,
             options: loadedOptions,
-            defaultValues: fieldOption.defaultValues,
+            initialValues: fieldOption.initialValues,
             minSelected: fieldOption.minSelected,
             maxSelected: fieldOption.maxSelected,
             data: data,
@@ -57,9 +62,10 @@ class DeskMultiDropdownInput<T> extends StatelessWidget {
     return _DeskMultiDropdownInput<T>(
       title: field.title,
       description: field.description,
+      isOptional: fieldOption.optional,
       placeholder: fieldOption.placeholder,
       options: options,
-      defaultValues: fieldOption.defaultValues,
+      initialValues: fieldOption.initialValues,
       minSelected: fieldOption.minSelected,
       maxSelected: fieldOption.maxSelected,
       data: data,
@@ -71,25 +77,27 @@ class DeskMultiDropdownInput<T> extends StatelessWidget {
 
 class _DeskMultiDropdownInput<T> extends StatefulWidget {
   final List<DropdownOption<T>> options;
-  final List<T>? defaultValues;
+  final List<T>? initialValues;
   final DeskData? data;
   final String title;
   final String? description;
   final String? placeholder;
+  final bool isOptional;
   final int? minSelected;
   final int? maxSelected;
   final T Function(Map<String, dynamic>)? fromMap;
-  final ValueChanged<List<T>>? onChanged;
+  final ValueChanged<List<T>?>? onChanged;
 
   const _DeskMultiDropdownInput({
     super.key,
     this.onChanged,
-    this.defaultValues,
+    this.initialValues,
     this.data,
     this.options = const [],
     required this.title,
     this.description,
     this.placeholder,
+    this.isOptional = false,
     this.minSelected,
     this.maxSelected,
     this.fromMap,
@@ -102,11 +110,17 @@ class _DeskMultiDropdownInput<T> extends StatefulWidget {
 
 class _DeskMultiDropdownInputState<T> extends State<_DeskMultiDropdownInput<T>> {
   late ShadSelectController<T> _controller;
+  late bool _isEnabled;
+  List<T>? _lastValue;
+
+  bool get _isOptional => widget.isOptional;
 
   @override
   void initState() {
     super.initState();
     _controller = ShadSelectController<T>(initialValue: _resolveInitialSet());
+    _isEnabled = _isOptional ? widget.data?.value != null : true;
+    _lastValue = _isEnabled ? _controller.value.toList() : null;
   }
 
   @override
@@ -114,7 +128,25 @@ class _DeskMultiDropdownInputState<T> extends State<_DeskMultiDropdownInput<T>> 
     super.didUpdateWidget(oldWidget);
     if (widget.data != oldWidget.data) {
       _controller.value = _resolveInitialSet();
+      if (_isOptional) {
+        setState(() => _isEnabled = widget.data?.value != null);
+      }
     }
+  }
+
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastValue = _controller.value.toList();
+        _isEnabled = false;
+        _controller.value = {};
+      } else {
+        _isEnabled = true;
+        final restore = _lastValue ?? <T>[];
+        _controller.value = restore.toSet();
+      }
+    });
+    widget.onChanged?.call(enabled ? (_lastValue ?? <T>[]) : null);
   }
 
   @override
@@ -124,7 +156,7 @@ class _DeskMultiDropdownInputState<T> extends State<_DeskMultiDropdownInput<T>> 
   }
 
   Set<T> _resolveInitialSet() {
-    final value = widget.data?.value ?? widget.defaultValues;
+    final value = widget.data?.value ?? widget.initialValues;
     if (value == null) return {};
     if (value is List) {
       return value.map<T>((e) {
@@ -147,18 +179,23 @@ class _DeskMultiDropdownInputState<T> extends State<_DeskMultiDropdownInput<T>> 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.title,
-            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+          OptionalFieldHeader(
+            title: widget.title,
+            isOptional: _isOptional,
+            isEnabled: _isEnabled,
+            onToggle: _handleToggle,
           ),
           const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              border: Border.all(color: theme.colorScheme.border),
-              borderRadius: BorderRadius.circular(6),
+          OptionalFieldWrapper(
+            isEnabled: !_isOptional || _isEnabled,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: theme.colorScheme.border),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text('No options available', style: theme.textTheme.muted),
             ),
-            child: Text('No options available', style: theme.textTheme.muted),
           ),
           if (widget.description != null) ...[
             const SizedBox(height: 4),
@@ -182,41 +219,46 @@ class _DeskMultiDropdownInputState<T> extends State<_DeskMultiDropdownInput<T>> 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (widget.title.isNotEmpty) ...[
-          Text(
-            widget.title,
-            style: theme.textTheme.small.copyWith(fontWeight: FontWeight.w500),
+        OptionalFieldHeader(
+          title: widget.title,
+          isOptional: _isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
+        ),
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isEnabled: !_isOptional || _isEnabled,
+          child: ShadSelect<T>.multiple(
+            controller: _controller,
+            placeholder: Text(
+              widget.placeholder ?? 'Select options...',
+              style: theme.textTheme.muted,
+            ),
+            allowDeselection: !atMin,
+            closeOnSelect: false,
+            options: selectOptions,
+            selectedOptionsBuilder: (context, values) {
+              final labels = values
+                  .map(
+                    (v) =>
+                        options.firstWhereOrNull((o) => o.value == v)?.label ??
+                        v.toString(),
+                  )
+                  .join(', ');
+              return Text(labels);
+            },
+            onChanged: (Set<T> values) {
+              if (!_isEnabled) return;
+              // Enforce maxSelected
+              if (widget.maxSelected != null &&
+                  values.length > widget.maxSelected!) {
+                return;
+              }
+              setState(() {}); // Rebuild for allowDeselection check
+              _lastValue = values.toList();
+              widget.onChanged?.call(values.toList());
+            },
           ),
-          const SizedBox(height: 8),
-        ],
-        ShadSelect<T>.multiple(
-          controller: _controller,
-          placeholder: Text(
-            widget.placeholder ?? 'Select options...',
-            style: theme.textTheme.muted,
-          ),
-          allowDeselection: !atMin,
-          closeOnSelect: false,
-          options: selectOptions,
-          selectedOptionsBuilder: (context, values) {
-            final labels = values
-                .map(
-                  (v) =>
-                      options.firstWhereOrNull((o) => o.value == v)?.label ??
-                      v.toString(),
-                )
-                .join(', ');
-            return Text(labels);
-          },
-          onChanged: (Set<T> values) {
-            // Enforce maxSelected
-            if (widget.maxSelected != null &&
-                values.length > widget.maxSelected!) {
-              return;
-            }
-            setState(() {}); // Rebuild for allowDeselection check
-            widget.onChanged?.call(values.toList());
-          },
         ),
         if (widget.description != null) ...[
           const SizedBox(height: 4),

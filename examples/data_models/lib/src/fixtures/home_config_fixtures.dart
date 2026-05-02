@@ -4,7 +4,7 @@ import '../shared/store_callout.dart';
 
 class HomeConfigFixtures {
   /// The demo-quality fixture used by showcase apps and happy-path tests.
-  static HomeConfig showcase() => HomeConfig.defaultValue;
+  static HomeConfig showcase() => HomeConfig.initialValue;
 
   /// Required fields at minimum, optionals null/empty.
   static HomeConfig empty() => const HomeConfig(

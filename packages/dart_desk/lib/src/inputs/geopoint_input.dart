@@ -5,6 +5,9 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
+
 @Preview(name: 'DeskGeopointInput')
 Widget preview() => ShadApp(
   home: DeskGeopointInput(
@@ -35,22 +38,67 @@ class DeskGeopointInput extends StatefulWidget {
 class _DeskGeopointInputState extends State<DeskGeopointInput> {
   late TextEditingController _latController;
   late TextEditingController _lngController;
+  late bool _isEnabled;
+  Map<String, double>? _lastValue;
+  bool _suppressEmit = false;
 
   @override
   void initState() {
     super.initState();
-    // Parse initial value if it's a geopoint object
-    final data = widget.data?.value;
-    double? lat;
-    double? lng;
+    final parsed = _parseValue(widget.data?.value);
+    _latController = TextEditingController(text: parsed?['lat']?.toString());
+    _lngController = TextEditingController(text: parsed?['lng']?.toString());
+    _isEnabled = widget.field.option.optional ? parsed != null : true;
+    _lastValue = parsed;
+  }
 
-    if (data is Map) {
-      lat = data['lat'] as double?;
-      lng = data['lng'] as double?;
+  Map<String, double>? _parseValue(Object? raw) {
+    if (raw is Map) {
+      final lat = raw['lat'];
+      final lng = raw['lng'];
+      if (lat is num && lng is num) {
+        return {'lat': lat.toDouble(), 'lng': lng.toDouble()};
+      }
     }
+    return null;
+  }
 
-    _latController = TextEditingController(text: lat?.toString());
-    _lngController = TextEditingController(text: lng?.toString());
+  @override
+  void didUpdateWidget(covariant DeskGeopointInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newValue = _parseValue(widget.data?.value);
+    final oldValue = _parseValue(oldWidget.data?.value);
+    final changed =
+        newValue?['lat'] != oldValue?['lat'] ||
+        newValue?['lng'] != oldValue?['lng'];
+    if (changed) {
+      _suppressEmit = true;
+      _latController.text = newValue?['lat']?.toString() ?? '';
+      _lngController.text = newValue?['lng']?.toString() ?? '';
+      _suppressEmit = false;
+      if (widget.field.option.optional) {
+        setState(() => _isEnabled = newValue != null);
+      }
+    }
+  }
+
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        final lat = double.tryParse(_latController.text);
+        final lng = double.tryParse(_lngController.text);
+        if (lat != null && lng != null) {
+          _lastValue = {'lat': lat, 'lng': lng};
+        }
+        _isEnabled = false;
+      } else {
+        _isEnabled = true;
+        final restore = _lastValue;
+        _latController.text = restore?['lat']?.toString() ?? '';
+        _lngController.text = restore?['lng']?.toString() ?? '';
+      }
+    });
+    widget.onChanged?.call(enabled ? _lastValue : null);
   }
 
   @override
@@ -83,119 +131,130 @@ class _DeskGeopointInputState extends State<DeskGeopointInput> {
     return null;
   }
 
+  void _emit() {
+    if (!_isEnabled || _suppressEmit) return;
+    final lat = double.tryParse(_latController.text);
+    final lng = double.tryParse(_lngController.text);
+    if (lat != null && lng != null) {
+      _lastValue = {'lat': lat, 'lng': lng};
+      widget.onChanged?.call({'lat': lat, 'lng': lng});
+    } else {
+      widget.onChanged?.call(null);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) {
-      return const SizedBox.shrink();
-    }
-
+    final isOptional = widget.field.option.optional;
     final theme = ShadTheme.of(context);
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.border),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.field.title,
-            style: theme.textTheme.large.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: ShadInputFormField(
-                  controller: _latController,
-                  label: const Text('Latitude'),
-                  placeholder: const Text('e.g., 37.7749'),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
-                  ],
-                  validator: (value) => _validateCoordinate(value, 'latitude'),
-                  onChanged: (value) {
-                    final lat = double.tryParse(value);
-                    final lng = double.tryParse(_lngController.text);
-                    if (lat != null && lng != null) {
-                      widget.onChanged?.call({'lat': lat, 'lng': lng});
-                    } else {
-                      widget.onChanged?.call(null);
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: ShadInputFormField(
-                  controller: _lngController,
-                  label: const Text('Longitude'),
-                  placeholder: const Text('e.g., -122.4194'),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*')),
-                  ],
-                  validator: (value) => _validateCoordinate(value, 'longitude'),
-                  onChanged: (value) {
-                    final lat = double.tryParse(_latController.text);
-                    final lng = double.tryParse(value);
-                    if (lat != null && lng != null) {
-                      widget.onChanged?.call({'lat': lat, 'lng': lng});
-                    } else {
-                      widget.onChanged?.call(null);
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              FaIcon(
-                FontAwesomeIcons.circleInfo,
-                size: 16,
-                color: theme.colorScheme.mutedForeground,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Latitude: -90 to 90, Longitude: -180 to 180',
-                  style: theme.textTheme.small.copyWith(
-                    color: theme.colorScheme.mutedForeground,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          // Optional: Add map picker button
-          ShadButton.outline(
-            size: ShadButtonSize.sm,
-            onPressed: () {
-              // TODO: Implement map picker
-              ShadToaster.of(context).show(
-                const ShadToast(description: Text('Map picker coming soon!')),
-              );
-            },
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        OptionalFieldHeader(
+          title: widget.field.title,
+          isOptional: isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
+        ),
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isEnabled: !isOptional || _isEnabled,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              border: Border.all(color: theme.colorScheme.border),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FaIcon(FontAwesomeIcons.locationDot, size: 16),
-                SizedBox(width: 8),
-                Text('Pick from map'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ShadInputFormField(
+                        controller: _latController,
+                        label: const Text('Latitude'),
+                        placeholder: const Text('e.g., 37.7749'),
+                        enabled: !isOptional || _isEnabled,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^-?\d*\.?\d*'),
+                          ),
+                        ],
+                        validator: (value) =>
+                            _validateCoordinate(value, 'latitude'),
+                        onChanged: (_) => _emit(),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ShadInputFormField(
+                        controller: _lngController,
+                        label: const Text('Longitude'),
+                        placeholder: const Text('e.g., -122.4194'),
+                        enabled: !isOptional || _isEnabled,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^-?\d*\.?\d*'),
+                          ),
+                        ],
+                        validator: (value) =>
+                            _validateCoordinate(value, 'longitude'),
+                        onChanged: (_) => _emit(),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    FaIcon(
+                      FontAwesomeIcons.circleInfo,
+                      size: 16,
+                      color: theme.colorScheme.mutedForeground,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Latitude: -90 to 90, Longitude: -180 to 180',
+                        style: theme.textTheme.small.copyWith(
+                          color: theme.colorScheme.mutedForeground,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ShadButton.outline(
+                  size: ShadButtonSize.sm,
+                  onPressed: () {
+                    ShadToaster.of(context).show(
+                      const ShadToast(
+                        description: Text('Map picker coming soon!'),
+                      ),
+                    );
+                  },
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FaIcon(FontAwesomeIcons.locationDot, size: 16),
+                      SizedBox(width: 8),
+                      Text('Pick from map'),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

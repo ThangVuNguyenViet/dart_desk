@@ -337,7 +337,7 @@ class _MenuRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Opacity(
-      opacity: item.isAvailable ? 1.0 : 0.5,
+      opacity: (item.isAvailable ?? true) ? 1.0 : 0.5,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),
         decoration: BoxDecoration(
@@ -405,7 +405,7 @@ class _MenuRow extends StatelessWidget {
                               ),
                             ),
                           ),
-                        if (!item.isAvailable)
+                        if (item.isAvailable == false)
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 6,
@@ -448,7 +448,7 @@ class _MenuRow extends StatelessWidget {
                   width: 30,
                   height: 30,
                   decoration: BoxDecoration(
-                    color: item.isAvailable ? scheme.primary : tokens.mute,
+                    color: (item.isAvailable ?? true) ? scheme.primary : tokens.mute,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(

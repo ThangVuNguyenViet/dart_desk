@@ -1,8 +1,8 @@
 extension ObjectExtensions<T> on T? {
   /// Returns the object if it is not null, otherwise returns the default value.
-  R let<R>(R Function(T) block, {required R defaultValue}) {
+  R let<R>(R Function(T) block, {required R initialValue}) {
     if (this == null) {
-      return defaultValue;
+      return initialValue;
     }
     return block(this as T);
   }

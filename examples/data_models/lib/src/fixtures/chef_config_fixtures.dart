@@ -6,7 +6,7 @@ import '../shared/chef_profile.dart';
 
 class ChefConfigFixtures {
   /// The demo-quality fixture used by showcase apps and happy-path tests.
-  static ChefConfig showcase() => ChefConfig.defaultValue;
+  static ChefConfig showcase() => ChefConfig.initialValue;
 
   /// Required fields at minimum, optionals null/empty.
   ///

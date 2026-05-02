@@ -24,7 +24,7 @@ final featuredDishFields = [
   DeskImageField(
     name: 'image',
     title: 'Image',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
 ];
 
@@ -35,7 +35,7 @@ final featuredDishTypeSpec = DocumentTypeSpec<FeaturedDish>(
   title: 'Featured dish',
   description: 'Home screen carousel item',
   fields: featuredDishFields,
-  defaultValue: FeaturedDish.defaultValue,
+  initialValue: FeaturedDish.initialValue,
 );
 
 // **************************************************************************

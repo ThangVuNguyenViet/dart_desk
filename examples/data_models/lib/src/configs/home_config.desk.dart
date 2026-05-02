@@ -12,7 +12,7 @@ final homeConfigFields = [
   DeskImageField(
     name: 'heroImage',
     title: 'Hero Image',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
   DeskStringField(
     name: 'heroEyebrow',
@@ -84,7 +84,7 @@ final homeConfigTypeSpec = DocumentTypeSpec<HomeConfig>(
   title: 'Home screen',
   description: 'Mobile home — hero, welcome, featured carousel, store card',
   fields: homeConfigFields,
-  defaultValue: HomeConfig.defaultValue,
+  initialValue: HomeConfig.initialValue,
 );
 
 // **************************************************************************

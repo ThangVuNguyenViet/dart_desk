@@ -6,6 +6,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:super_editor/super_editor.dart';
 
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
+
 @Preview(name: 'DeskBlockInput')
 Widget preview() => ShadApp(
   home: DeskBlockInput(
@@ -38,6 +41,11 @@ class _DeskBlockInputState extends State<DeskBlockInput> {
   late final MutableDocumentComposer _composer;
   late final Editor _editor;
   late final FocusNode _editorFocusNode;
+  late bool _isEnabled;
+  String? _lastValue;
+  bool _suppressEmit = false;
+
+  bool get _isOptional => widget.field.option.optional;
 
   @override
   void initState() {
@@ -52,11 +60,48 @@ class _DeskBlockInputState extends State<DeskBlockInput> {
       composer: _composer,
       isHistoryEnabled: true,
     );
+
+    final initial = widget.data?.value;
+    _isEnabled = _isOptional ? initial != null : true;
+    _lastValue = initial?.toString();
   }
 
   void _onDocumentChange(_) {
+    if (_suppressEmit || !_isEnabled) return;
     final markdown = serializeDocumentToMarkdown(_document);
+    _lastValue = markdown;
     widget.onChanged?.call(markdown);
+  }
+
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastValue = serializeDocumentToMarkdown(_document);
+        _isEnabled = false;
+      } else {
+        _isEnabled = true;
+        _replaceDocumentText(_lastValue);
+      }
+    });
+    widget.onChanged?.call(enabled ? (_lastValue ?? '') : null);
+  }
+
+  void _replaceDocumentText(String? text) {
+    _suppressEmit = true;
+    final ids = _document.map((n) => n.id).toList();
+    for (final id in ids) {
+      _document.deleteNode(id);
+    }
+    if (text == null || text.isEmpty) {
+      _document.add(
+        ParagraphNode(id: Editor.createNodeId(), text: AttributedText()),
+      );
+    } else {
+      _document.add(
+        ParagraphNode(id: Editor.createNodeId(), text: AttributedText(text)),
+      );
+    }
+    _suppressEmit = false;
   }
 
   MutableDocument _createDocumentFromData() {
@@ -88,44 +133,48 @@ class _DeskBlockInputState extends State<DeskBlockInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) {
-      return const SizedBox.shrink();
-    }
-
     final theme = ShadTheme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.field.title, style: theme.textTheme.large),
+        OptionalFieldHeader(
+          title: widget.field.title,
+          isOptional: _isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
+        ),
         SizedBox(height: 12),
-        ShadCard(
-          padding: EdgeInsets.zero,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _BlockEditorToolbar(
-                editor: _editor,
-                document: _document,
-                composer: _composer,
-                editorFocusNode: _editorFocusNode,
-              ),
-              const Divider(height: 1),
-              _FakeViewport(
-                child: SuperEditor(
+        OptionalFieldWrapper(
+          isEnabled: !_isOptional || _isEnabled,
+          child: ShadCard(
+            padding: EdgeInsets.zero,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _BlockEditorToolbar(
                   editor: _editor,
-                  focusNode: _editorFocusNode,
-                  stylesheet: _buildStylesheet(theme),
-                  documentOverlayBuilders: [
-                    DefaultCaretOverlayBuilder(
-                      caretStyle: const CaretStyle().copyWith(
-                        color: theme.colorScheme.foreground,
-                      ),
-                    ),
-                  ],
+                  document: _document,
+                  composer: _composer,
+                  editorFocusNode: _editorFocusNode,
                 ),
-              ),
-            ],
+                const Divider(height: 1),
+                _FakeViewport(
+                  child: SuperEditor(
+                    editor: _editor,
+                    focusNode: _editorFocusNode,
+                    stylesheet: _buildStylesheet(theme),
+                    documentOverlayBuilders: [
+                      DefaultCaretOverlayBuilder(
+                        caretStyle: const CaretStyle().copyWith(
+                          color: theme.colorScheme.foreground,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],

@@ -3,7 +3,6 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../../data/desk_data_source.dart';
-import '../../../data/models/desk_document.dart';
 import '../../../data/models/document_version.dart';
 import '../../../extensions/awaitable_future_signal.dart';
 import '../signals/mutation_signal.dart';

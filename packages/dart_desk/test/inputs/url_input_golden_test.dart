@@ -48,6 +48,19 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskUrlInput(
+              field: DeskUrlField(
+                name: 'blog',
+                title: 'Blog URL (optional)',
+                option: DeskUrlOption(optional: true),
+              ),
+              data: DeskData(value: 'https://example.com', path: 'blog'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }

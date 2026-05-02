@@ -20,7 +20,11 @@ final loyaltyTierFields = [
     title: 'Tier Color',
     option: DeskColorOption(),
   ),
-  DeskBlockField(name: 'perks', title: 'Perks', option: DeskBlockOption()),
+  DeskBlockField(
+    name: 'perks',
+    title: 'Perks',
+    option: DeskBlockOption(optional: true),
+  ),
 ];
 
 /// Generated document type spec for LoyaltyTier.
@@ -30,7 +34,7 @@ final loyaltyTierTypeSpec = DocumentTypeSpec<LoyaltyTier>(
   title: 'Loyalty tier',
   description: 'A tier in the rewards program',
   fields: loyaltyTierFields,
-  defaultValue: LoyaltyTier.defaultValue,
+  initialValue: LoyaltyTier.initialValue,
 );
 
 // **************************************************************************

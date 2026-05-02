@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:developer' as developer;
 
 import 'package:dart_desk_client/dart_desk_client.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:signals/signals.dart';
 
+import '../debug.dart';
 import '../extensions/awaitable_future_signal.dart';
 
 /// Owns the top-level auth state for [DartDeskAuth].
@@ -57,17 +57,15 @@ class DartDeskAuthViewModel {
     final client = Client(
           serverUrl,
           onFailedCall: (context, error, stackTrace) {
-            developer.log(
+            clientLogger.severe(
               'API call failed: ${context.endpointName}.${context.methodName}',
-              name: 'ServerpodClient',
-              error: error,
-              stackTrace: stackTrace,
+              error,
+              stackTrace,
             );
           },
           onSucceededCall: (context) {
-            developer.log(
+            clientLogger.info(
               'API call succeeded: ${context.endpointName}.${context.methodName}',
-              name: 'ServerpodClient',
             );
           },
         )

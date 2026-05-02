@@ -57,6 +57,41 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            DeskImageInput(
+              field: const DeskImageField(
+                name: 'hero',
+                title: 'Hero Image',
+                option: DeskImageOption(hotspot: false, optional: true),
+              ),
+              dataSource: dataSource,
+              data: const DeskData(
+                value: {
+                  '_type': 'imageReference',
+                  'externalUrl': 'https://cdn.example.com/hero.png',
+                },
+                path: 'hero',
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            DeskImageInput(
+              field: const DeskImageField(
+                name: 'hero',
+                title: 'Hero Image',
+                option: DeskImageOption(hotspot: false, optional: true),
+              ),
+              dataSource: dataSource,
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }

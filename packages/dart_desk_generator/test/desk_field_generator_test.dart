@@ -16,21 +16,21 @@ class ChildConfig {
 
   const ChildConfig({required this.childTitle});
 
-  static ChildConfig? defaultValue;
+  static ChildConfig? initialValue;
 }
 
 @DeskModel(title: 'All Fields', description: 'All fields config')
 class AllFieldsConfig {
   @DeskText(optional: true)
-  final String textField;
+  final String? textField;
 
-  @DeskString(option: DeskStringOption(hidden: true))
+  @DeskString(option: DeskStringOption(optional: true))
   final String stringField;
 
   @DeskNumber(optional: true)
-  final num numberField;
+  final num? numberField;
 
-  @DeskBoolean(option: DeskBooleanOption(hidden: true))
+  @DeskBoolean(option: DeskBooleanOption())
   final bool booleanField;
 
   @DeskCheckbox(
@@ -39,22 +39,22 @@ class AllFieldsConfig {
   final bool checkboxField;
 
   @DeskDate(optional: true)
-  final DateTime dateField;
+  final DateTime? dateField;
 
   @DeskDateTime(optional: true)
-  final DateTime dateTimeField;
+  final DateTime? dateTimeField;
 
   @DeskUrl(optional: true)
-  final Uri urlField;
+  final Uri? urlField;
 
   @DeskImage(option: DeskImageOption(hotspot: true))
   final Object imageField;
 
   @DeskFile(optional: true)
-  final String fileField;
+  final String? fileField;
 
   @DeskColor(optional: true)
-  final String colorField;
+  final String? colorField;
 
   @DeskDropdown<String>(
     option: DeskDropdownSimpleOption<String>(
@@ -83,17 +83,17 @@ class AllFieldsConfig {
   final Object geopointField;
 
   const AllFieldsConfig({
-    required this.textField,
+    this.textField,
     required this.stringField,
-    required this.numberField,
+    this.numberField,
     required this.booleanField,
     required this.checkboxField,
-    required this.dateField,
-    required this.dateTimeField,
-    required this.urlField,
+    this.dateField,
+    this.dateTimeField,
+    this.urlField,
     required this.imageField,
-    required this.fileField,
-    required this.colorField,
+    this.fileField,
+    this.colorField,
     required this.dropdownField,
     required this.multiDropdownField,
     required this.arrayField,
@@ -102,7 +102,7 @@ class AllFieldsConfig {
     required this.geopointField,
   });
 
-  static AllFieldsConfig? defaultValue;
+  static AllFieldsConfig? initialValue;
 }
 '''),
           allOf([
@@ -110,11 +110,11 @@ class AllFieldsConfig {
             contains('DeskTextField('),
             contains('option: DeskTextOption(optional: true)'),
             contains('DeskStringField('),
-            contains('option: DeskStringOption(hidden: true)'),
+            contains('option: DeskStringOption(optional: true)'),
             contains('DeskNumberField('),
             contains('option: DeskNumberOption(optional: true)'),
             contains('DeskBooleanField('),
-            contains('option: DeskBooleanOption(hidden: true)'),
+            contains('option: DeskBooleanOption()'),
             contains('DeskCheckboxField('),
             contains(
               "option: DeskCheckboxOption(label: 'Check me', initialValue: true)",
@@ -155,54 +155,54 @@ class AllFieldsConfig {
 @DeskModel(title: 'Optional Fields', description: 'Optional fields config')
 class OptionalFieldsConfig {
   @DeskText(optional: true, option: DeskTextOption(rows: 3))
-  final String textField;
+  final String? textField;
 
-  @DeskString(optional: true, option: DeskStringOption(hidden: true))
-  final String stringField;
+  @DeskString(optional: true, option: DeskStringOption())
+  final String? stringField;
 
   @DeskNumber(optional: true, option: DeskNumberOption(min: 1))
-  final num numberField;
+  final num? numberField;
 
-  @DeskDate(optional: true, option: DeskDateOption(hidden: true))
-  final DateTime dateField;
+  @DeskDate(optional: true, option: DeskDateOption())
+  final DateTime? dateField;
 
   @DeskDateTime(
     optional: true,
-    option: DeskDateTimeOption(hidden: true),
+    option: DeskDateTimeOption(),
   )
-  final DateTime dateTimeField;
+  final DateTime? dateTimeField;
 
-  @DeskUrl(optional: true, option: DeskUrlOption(hidden: true))
-  final Uri urlField;
+  @DeskUrl(optional: true, option: DeskUrlOption())
+  final Uri? urlField;
 
-  @DeskFile(optional: true, option: DeskFileOption(hidden: true))
-  final String fileField;
+  @DeskFile(optional: true, option: DeskFileOption())
+  final String? fileField;
 
   @DeskColor(optional: true, option: DeskColorOption(showAlpha: true))
-  final String colorField;
+  final String? colorField;
 
   const OptionalFieldsConfig({
-    required this.textField,
-    required this.stringField,
-    required this.numberField,
-    required this.dateField,
-    required this.dateTimeField,
-    required this.urlField,
-    required this.fileField,
-    required this.colorField,
+    this.textField,
+    this.stringField,
+    this.numberField,
+    this.dateField,
+    this.dateTimeField,
+    this.urlField,
+    this.fileField,
+    this.colorField,
   });
 
-  static OptionalFieldsConfig? defaultValue;
+  static OptionalFieldsConfig? initialValue;
 }
 '''),
         allOf([
           contains('option: DeskTextOption(optional: true, rows: 3)'),
-          contains('option: DeskStringOption(optional: true, hidden: true)'),
+          contains('option: DeskStringOption(optional: true)'),
           contains('option: DeskNumberOption(optional: true, min: 1)'),
-          contains('option: DeskDateOption(optional: true, hidden: true)'),
-          contains('option: DeskDateTimeOption(optional: true, hidden: true)'),
-          contains('option: DeskUrlOption(optional: true, hidden: true)'),
-          contains('option: DeskFileOption(optional: true, hidden: true)'),
+          contains('option: DeskDateOption(optional: true)'),
+          contains('option: DeskDateTimeOption(optional: true)'),
+          contains('option: DeskUrlOption(optional: true)'),
+          contains('option: DeskFileOption(optional: true)'),
           contains('option: DeskColorOption(optional: true, showAlpha: true)'),
         ]),
       );
@@ -268,7 +268,7 @@ class LegacyFieldsConfig {
     required this.crossDatasetReferenceField,
   });
 
-  static LegacyFieldsConfig? defaultValue;
+  static LegacyFieldsConfig? initialValue;
 }
 '''),
           allOf([
@@ -301,7 +301,7 @@ class DropdownsConfig {
     required this.multiDropdownField,
   });
 
-  static DropdownsConfig? defaultValue;
+  static DropdownsConfig? initialValue;
 }
 '''),
         allOf([
@@ -321,7 +321,7 @@ class NestedConfig {
 
   const NestedConfig({required this.title});
 
-  static NestedConfig? defaultValue;
+  static NestedConfig? initialValue;
 }
 
 @DeskModel(title: 'Document', description: 'Document config', id: 'custom-id')
@@ -333,7 +333,7 @@ class DocumentConfig {
 
   const DocumentConfig({required this.nested, this.nullableNested});
 
-  static DocumentConfig? defaultValue;
+  static DocumentConfig? initialValue;
 }
 '''),
         allOf(
@@ -356,6 +356,317 @@ const badConfig = 1;
         throwsA(anything),
       );
     });
+
+    test('infers optional from nullable String field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'Nullable', description: 'Nullable String test')
+class NullableConfig {
+  @DeskString()
+  final String? maybeTitle;
+
+  const NullableConfig({this.maybeTitle});
+
+  static NullableConfig? initialValue;
+}
+'''),
+        contains('DeskStringOption(optional: true)'),
+      );
+    });
+
+    test('explicit optional: false overrides nullable inference', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'Override', description: 'Override test')
+class OverrideConfig {
+  @DeskString(optional: false)
+  final String? maybeTitle;
+
+  const OverrideConfig({this.maybeTitle});
+
+  static OverrideConfig? initialValue;
+}
+'''),
+        isNot(contains('optional: true')),
+      );
+    });
+
+    // build_test wraps InvalidGenerationSourceError in a TestFailure, so
+    // throwsA(anything) is intentional — the exact type is not observable here.
+    test('non-nullable + optional: true throws', () async {
+      await expectLater(
+        _testDeskBuilder(
+          _fixture('''
+@DeskModel(title: 'Bad', description: 'Bad config')
+class BadConfig {
+  @DeskString(optional: true)
+  final String requiredTitle;
+
+  const BadConfig({required this.requiredTitle});
+
+  static BadConfig? initialValue;
+}
+'''),
+          anything,
+        ),
+        throwsA(anything),
+      );
+    });
+
+    test('infers optional from nullable Text field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableText', description: 'test')
+class NullableTextConfig {
+  @DeskText()
+  final String? maybeBody;
+
+  const NullableTextConfig({this.maybeBody});
+
+  static NullableTextConfig? initialValue;
+}
+'''),
+        contains('DeskTextOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Number field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableNum', description: 'test')
+class NullableNumConfig {
+  @DeskNumber()
+  final num? maybeAge;
+
+  const NullableNumConfig({this.maybeAge});
+
+  static NullableNumConfig? initialValue;
+}
+'''),
+        contains('DeskNumberOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Url field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableUrl', description: 'test')
+class NullableUrlConfig {
+  @DeskUrl()
+  final Uri? maybeLink;
+
+  const NullableUrlConfig({this.maybeLink});
+
+  static NullableUrlConfig? initialValue;
+}
+'''),
+        contains('DeskUrlOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Color field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableColor', description: 'test')
+class NullableColorConfig {
+  @DeskColor()
+  final String? maybeTint;
+
+  const NullableColorConfig({this.maybeTint});
+
+  static NullableColorConfig? initialValue;
+}
+'''),
+        contains('DeskColorOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Date field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableDate', description: 'test')
+class NullableDateConfig {
+  @DeskDate()
+  final DateTime? maybeDob;
+
+  const NullableDateConfig({this.maybeDob});
+
+  static NullableDateConfig? initialValue;
+}
+'''),
+        contains('DeskDateOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable DateTime field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableDt', description: 'test')
+class NullableDtConfig {
+  @DeskDateTime()
+  final DateTime? maybeAt;
+
+  const NullableDtConfig({this.maybeAt});
+
+  static NullableDtConfig? initialValue;
+}
+'''),
+        contains('DeskDateTimeOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable File field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableFile', description: 'test')
+class NullableFileConfig {
+  @DeskFile()
+  final String? maybeFile;
+
+  const NullableFileConfig({this.maybeFile});
+
+  static NullableFileConfig? initialValue;
+}
+'''),
+        contains('DeskFileOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Boolean field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableBool', description: 'test')
+class NullableBoolConfig {
+  @DeskBoolean()
+  final bool? maybeFlag;
+
+  const NullableBoolConfig({this.maybeFlag});
+
+  static NullableBoolConfig? initialValue;
+}
+'''),
+        contains('DeskBooleanOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Checkbox field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableCheck', description: 'test')
+class NullableCheckConfig {
+  @DeskCheckbox()
+  final bool? maybeChecked;
+
+  const NullableCheckConfig({this.maybeChecked});
+
+  static NullableCheckConfig? initialValue;
+}
+'''),
+        contains('DeskCheckboxOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Image field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableImage', description: 'test')
+class NullableImageConfig {
+  @DeskImage()
+  final Object? maybeImage;
+
+  const NullableImageConfig({this.maybeImage});
+
+  static NullableImageConfig? initialValue;
+}
+'''),
+        contains('DeskImageOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Geopoint field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableGeopoint', description: 'test')
+class NullableGeopointConfig {
+  @DeskGeopoint()
+  final Object? maybeGeo;
+
+  const NullableGeopointConfig({this.maybeGeo});
+
+  static NullableGeopointConfig? initialValue;
+}
+'''),
+        contains('DeskGeopointOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Dropdown field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableDropdown', description: 'test')
+class NullableDropdownConfig {
+  @DeskDropdown<String>(option: DeskDropdownSimpleOption<String>(options: []))
+  final String? maybeChoice;
+
+  const NullableDropdownConfig({this.maybeChoice});
+
+  static NullableDropdownConfig? initialValue;
+}
+'''),
+        contains('optional: true'),
+      );
+    });
+
+    test('infers optional from nullable MultiDropdown field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableMultiDropdown', description: 'test')
+class NullableMultiDropdownConfig {
+  @DeskMultiDropdown<String>(option: DeskMultiDropdownSimpleOption<String>(options: []))
+  final List<String>? maybeTags;
+
+  const NullableMultiDropdownConfig({this.maybeTags});
+
+  static NullableMultiDropdownConfig? initialValue;
+}
+'''),
+        contains('optional: true'),
+      );
+    });
+
+    test('infers optional from nullable Array field (outer)', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableArray', description: 'test')
+class NullableArrayConfig {
+  @DeskArray<String>()
+  final List<String>? maybeTags;
+
+  const NullableArrayConfig({this.maybeTags});
+
+  static NullableArrayConfig? initialValue;
+}
+'''),
+        contains('DeskArrayOption(optional: true)'),
+      );
+    });
+
+    test('infers optional from nullable Block field', () async {
+      await _testDeskBuilder(
+        _fixture('''
+@DeskModel(title: 'NullableBlock', description: 'test')
+class NullableBlockConfig {
+  @DeskBlock()
+  final Object? maybeContent;
+
+  const NullableBlockConfig({this.maybeContent});
+
+  static NullableBlockConfig? initialValue;
+}
+'''),
+        contains('DeskBlockOption(optional: true)'),
+      );
+    });
   });
 
   group('DeskFieldGenerator arrays', () {
@@ -371,7 +682,7 @@ class ArrayConfig {
 
   const ArrayConfig({required this.imageItems});
 
-  static ArrayConfig? defaultValue = const ArrayConfig(imageItems: []);
+  static ArrayConfig? initialValue = const ArrayConfig(imageItems: []);
 }
 '''),
           allOf(
@@ -396,7 +707,7 @@ class ArrayConfig {
 
   const ArrayConfig({required this.tags});
 
-  static ArrayConfig? defaultValue = const ArrayConfig(tags: []);
+  static ArrayConfig? initialValue = const ArrayConfig(tags: []);
 }
 '''),
           allOf(
@@ -422,7 +733,7 @@ class ArrayConfig {
       title: 'Tag',
       description: 'Visible tag',
       optional: true,
-      option: DeskStringOption(hidden: true),
+      option: DeskStringOption(optional: true),
     ),
     option: DeskArrayOption(horizontal: true),
   )
@@ -430,7 +741,7 @@ class ArrayConfig {
 
   const ArrayConfig({required this.tags});
 
-  static ArrayConfig? defaultValue = const ArrayConfig(tags: []);
+  static ArrayConfig? initialValue = const ArrayConfig(tags: []);
 }
 '''),
           allOf(
@@ -438,7 +749,7 @@ class ArrayConfig {
             contains("name: 'tag'"),
             contains("title: 'Tag'"),
             contains("description: 'Visible tag'"),
-            contains('option: DeskStringOption(optional: true, hidden: true)'),
+            contains('option: DeskStringOption(optional: true)'),
             contains('option: DeskArrayOption(horizontal: true)'),
           ),
         );
@@ -455,7 +766,7 @@ class ArrayConfig {
 
   const ArrayConfig({required this.scores});
 
-  static ArrayConfig? defaultValue = const ArrayConfig(scores: []);
+  static ArrayConfig? initialValue = const ArrayConfig(scores: []);
 }
 '''),
         allOf(
@@ -474,7 +785,7 @@ class ItemConfig {
 
   const ItemConfig({required this.title});
 
-  static ItemConfig? defaultValue = const ItemConfig(title: '');
+  static ItemConfig? initialValue = const ItemConfig(title: '');
 }
 
 @DeskModel(title: 'Array Config', description: 'Array config')
@@ -484,7 +795,7 @@ class ArrayConfig {
 
   const ArrayConfig({required this.items});
 
-  static ArrayConfig? defaultValue = const ArrayConfig(items: []);
+  static ArrayConfig? initialValue = const ArrayConfig(items: []);
 }
 '''),
         allOf(
@@ -511,7 +822,7 @@ class ItemConfig {
 
   const ItemConfig({required this.title, this.image});
 
-  static ItemConfig? defaultValue = const ItemConfig(title: '');
+  static ItemConfig? initialValue = const ItemConfig(title: '');
 }
 
 @DeskModel(title: 'Array Config', description: 'Array config')
@@ -526,7 +837,7 @@ class ArrayConfig {
     required this.unannotatedTopLevelField,
   });
 
-  static ArrayConfig? defaultValue = const ArrayConfig(
+  static ArrayConfig? initialValue = const ArrayConfig(
     items: [],
     unannotatedTopLevelField: '',
   );
@@ -556,7 +867,7 @@ class HeroConfig {
 
   const HeroConfig({required this.heroName});
 
-  static HeroConfig? defaultValue;
+  static HeroConfig? initialValue;
 }
 
 @DeskModel(title: 'Array Test', description: 'Array test config')
@@ -566,7 +877,7 @@ class ArrayTestConfig {
 
   const ArrayTestConfig({required this.heroes});
 
-  static ArrayTestConfig? defaultValue = const ArrayTestConfig(heroes: []);
+  static ArrayTestConfig? initialValue = const ArrayTestConfig(heroes: []);
 }
 '''),
           _containsExactCount('final heroConfigFields = [', 1),
@@ -585,7 +896,7 @@ class SampleConfig {
 
   const SampleConfig({required this.sampleName});
 
-  static SampleConfig? defaultValue;
+  static SampleConfig? initialValue;
 }
 
 @DeskModel(title: 'Parent', description: 'Parent config')
@@ -595,7 +906,7 @@ class ParentConfig {
 
   const ParentConfig({required this.samples});
 
-  static ParentConfig? defaultValue = const ParentConfig(samples: []);
+  static ParentConfig? initialValue = const ParentConfig(samples: []);
 }
 '''),
           allOf(
@@ -618,7 +929,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.name});
 
-  static AutoDetectConfig? defaultValue;
+  static AutoDetectConfig? initialValue;
 }
 '''),
         contains('DeskStringField(name: \'name\', title: \'Name\')'),
@@ -636,7 +947,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.tags});
 
-  static AutoDetectConfig? defaultValue = const AutoDetectConfig(tags: []);
+  static AutoDetectConfig? initialValue = const AutoDetectConfig(tags: []);
 }
 '''),
           allOf(
@@ -656,7 +967,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.count});
 
-  static AutoDetectConfig? defaultValue;
+  static AutoDetectConfig? initialValue;
 }
 '''),
         contains('DeskNumberField(name: \'count\', title: \'Count\')'),
@@ -672,7 +983,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.enabled});
 
-  static AutoDetectConfig? defaultValue;
+  static AutoDetectConfig? initialValue;
 }
 '''),
         contains('DeskBooleanField(name: \'enabled\', title: \'Enabled\')'),
@@ -688,7 +999,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.createdAt});
 
-  static AutoDetectConfig? defaultValue;
+  static AutoDetectConfig? initialValue;
 }
 '''),
         contains(
@@ -706,7 +1017,7 @@ class AutoDetectConfig {
 
   const AutoDetectConfig({required this.website});
 
-  static AutoDetectConfig? defaultValue;
+  static AutoDetectConfig? initialValue;
 }
 '''),
         contains('DeskUrlField(name: \'website\', title: \'Website\')'),
@@ -725,7 +1036,7 @@ class MixedConfig {
 
   const MixedConfig({required this.name, required this.description});
 
-  static MixedConfig? defaultValue;
+  static MixedConfig? initialValue;
 }
 '''),
         allOf(

@@ -50,7 +50,7 @@ class RewardsConfig extends DeskContent with RewardsConfigMappable, Serializable
     this.fineprint,
   });
 
-  static RewardsConfig defaultValue = RewardsConfig(
+  static RewardsConfig initialValue = RewardsConfig(
     programName: AuraCopy.rewardsProgram,
     tiers: const [
       LoyaltyTier(name: 'Cedar',   threshold: 0,    tierColor: Color(0xFF6B4E2E)),

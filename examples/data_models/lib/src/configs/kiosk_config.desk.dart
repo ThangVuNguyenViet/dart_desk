@@ -12,7 +12,7 @@ final kioskConfigFields = [
   DeskImageField(
     name: 'bannerImage',
     title: 'Banner Image',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
   DeskStringField(
     name: 'bannerHeadline',
@@ -72,7 +72,7 @@ final kioskConfigTypeSpec = DocumentTypeSpec<KioskConfig>(
   title: 'Kiosk screen',
   description: 'Tablet landscape in-store terminal',
   fields: kioskConfigFields,
-  defaultValue: KioskConfig.defaultValue,
+  initialValue: KioskConfig.initialValue,
 );
 
 // **************************************************************************

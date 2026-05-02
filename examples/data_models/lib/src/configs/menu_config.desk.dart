@@ -33,7 +33,11 @@ final menuConfigFields = [
     ),
     fromMap: MenuItemEntry.$fromMap,
   ),
-  DeskGeopointField(name: 'location', title: 'Location'),
+  DeskGeopointField(
+    name: 'location',
+    title: 'Location',
+    option: DeskGeopointOption(optional: true),
+  ),
   DeskArrayField<StoreHoursEntry>(
     name: 'storeHours',
     title: 'Store Hours',
@@ -55,7 +59,7 @@ final menuConfigTypeSpec = DocumentTypeSpec<MenuConfig>(
   title: 'Menu screen',
   description: 'Mobile menu browse with categories, filters, hours, location',
   fields: menuConfigFields,
-  defaultValue: MenuConfig.defaultValue,
+  initialValue: MenuConfig.initialValue,
 );
 
 // **************************************************************************

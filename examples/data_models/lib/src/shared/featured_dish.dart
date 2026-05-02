@@ -33,7 +33,7 @@ class FeaturedDish
     this.image,
   });
 
-  static FeaturedDish defaultValue = const FeaturedDish(
+  static FeaturedDish initialValue = const FeaturedDish(
     name: 'Charred Brassicas',
     price: 16,
     tag: 'New',
@@ -49,11 +49,11 @@ class FeaturedDish
 }
 
 class FeaturedDishTagOption extends DeskDropdownOption<String> {
-  const FeaturedDishTagOption({super.hidden});
+  const FeaturedDishTagOption({super.visibleWhen});
   @override
   bool get allowNull => false;
   @override
-  FutureOr<String?>? get defaultValue => 'New';
+  FutureOr<String?>? get initialValue => 'New';
   @override
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
     for (final t in featuredDishTags) DropdownOption(value: t, label: t),

@@ -24,7 +24,7 @@ final couponFields = [
   DeskImageField(
     name: 'image',
     title: 'Image',
-    option: DeskImageOption(hotspot: false),
+    option: DeskImageOption(optional: true, hotspot: false),
   ),
   DeskMultiDropdownField<String>(
     name: 'tags',
@@ -41,7 +41,7 @@ final couponTypeSpec = DocumentTypeSpec<Coupon>(
   title: 'Coupon',
   description: 'Reward redeemable by the guest',
   fields: couponFields,
-  defaultValue: Coupon.defaultValue,
+  initialValue: Coupon.initialValue,
 );
 
 // **************************************************************************

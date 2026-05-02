@@ -37,7 +37,7 @@ class _ContextAwareDropdownOption extends DeskMultiDropdownOption<String> {
   }
 
   @override
-  List<String>? get defaultValues => null;
+  List<String>? get initialValues => null;
 
   @override
   String? get placeholder => 'Select a document...';
@@ -74,7 +74,7 @@ final _testDocType = DocumentType(
   title: 'Test Type',
   description: 'Test document type',
   fields: const [],
-  builder: (_) => const SizedBox(),
+  builder: (_, _) => const SizedBox(),
 );
 
 // ---------------------------------------------------------------------------

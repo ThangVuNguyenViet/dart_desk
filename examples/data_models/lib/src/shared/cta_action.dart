@@ -22,17 +22,17 @@ class CtaAction with CtaActionMappable implements Serializable<CtaAction> {
 
   const CtaAction({required this.label, required this.style});
 
-  static CtaAction defaultValue = const CtaAction(label: 'Order now', style: 'solid');
+  static CtaAction initialValue = const CtaAction(label: 'Order now', style: 'solid');
 
   static CtaAction $fromMap(Map<String, dynamic> map) => CtaActionMapper.fromMap(map);
 }
 
 class CtaStyleDropdownOption extends DeskDropdownOption<String> {
-  const CtaStyleDropdownOption({super.hidden});
+  const CtaStyleDropdownOption({super.visibleWhen});
   @override
   bool get allowNull => false;
   @override
-  FutureOr<String?>? get defaultValue => 'solid';
+  FutureOr<String?>? get initialValue => 'solid';
   @override
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
         for (final s in ctaStyles) DropdownOption(value: s, label: s),

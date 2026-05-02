@@ -22,17 +22,17 @@ class StoreHoursEntry with StoreHoursEntryMappable implements Serializable<Store
 
   const StoreHoursEntry({required this.day, required this.openTime, required this.closeTime});
 
-  static StoreHoursEntry defaultValue = const StoreHoursEntry(day: 'Mon', openTime: '17:00', closeTime: '23:00');
+  static StoreHoursEntry initialValue = const StoreHoursEntry(day: 'Mon', openTime: '17:00', closeTime: '23:00');
 
   static StoreHoursEntry $fromMap(Map<String, dynamic> map) => StoreHoursEntryMapper.fromMap(map);
 }
 
 class DayOfWeekOption extends DeskDropdownOption<String> {
-  const DayOfWeekOption({super.hidden});
+  const DayOfWeekOption({super.visibleWhen});
   @override
   bool get allowNull => false;
   @override
-  FutureOr<String?>? get defaultValue => 'Mon';
+  FutureOr<String?>? get initialValue => 'Mon';
   @override
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
         for (final d in daysOfWeek) DropdownOption(value: d, label: d),

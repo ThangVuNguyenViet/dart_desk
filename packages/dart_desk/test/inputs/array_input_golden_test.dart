@@ -14,6 +14,13 @@ final _field = DeskArrayField<String>(
   option: const TestStringArrayOption(),
 );
 
+final _optionalField = DeskArrayField<String>(
+  name: 'tags',
+  title: 'Tags',
+  innerField: const DeskStringField(name: 'tag', title: 'Tag'),
+  option: const DeskArrayOption<String>(optional: true),
+);
+
 void main() {
   testGoldenScene('DeskArrayInput gallery', (tester) async {
     await Gallery(
@@ -40,6 +47,26 @@ void main() {
                 path: 'tags',
               ),
             ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            DeskArrayInput<String>(
+              field: _optionalField,
+              data: const DeskData(
+                value: ['flutter', 'dart'],
+                path: 'tags',
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            DeskArrayInput<String>(field: _optionalField),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )

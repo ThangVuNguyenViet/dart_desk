@@ -25,7 +25,7 @@ final ctaActionTypeSpec = DocumentTypeSpec<CtaAction>(
   title: 'Call-to-action',
   description: 'Button label + style',
   fields: ctaActionFields,
-  defaultValue: CtaAction.defaultValue,
+  initialValue: CtaAction.initialValue,
 );
 
 // **************************************************************************

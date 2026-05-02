@@ -48,6 +48,20 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskStringInput(
+              field: DeskStringField(
+                name: 'title',
+                title: 'Article Title',
+                option: DeskStringOption(optional: true),
+              ),
+              data: DeskData(value: 'My Awesome Article', path: 'title'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }

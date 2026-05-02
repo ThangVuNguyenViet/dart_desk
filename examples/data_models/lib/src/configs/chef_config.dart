@@ -48,13 +48,13 @@ class ChefConfig extends DeskContent with ChefConfigMappable, Serializable<ChefC
     required this.publishFrom,
   });
 
-  static ChefConfig defaultValue = ChefConfig(
+  static ChefConfig initialValue = ChefConfig(
     headline: AuraCopy.chefHeadline,
     chef: ChefProfile(
       name: AuraCopy.chefName,
       role: AuraCopy.chefRole,
       portrait: const ImageReference(externalUrl: AuraAssets.chefAlt),
-      bio: ChefProfile.defaultValue.bio,
+      bio: ChefProfile.initialValue.bio,
     ),
     pullQuote: AuraCopy.chefPullQuote,
     curatedDishes: const [

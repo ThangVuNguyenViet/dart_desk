@@ -10,6 +10,7 @@ export 'src/desk_data.dart';
 export 'src/config.dart';
 // Base field abstractions
 export 'src/fields/base/field.dart';
+export 'src/fields/base/desk_context.dart';
 // Complex field configurations
 export 'src/fields/complex/array_field.dart';
 export 'src/fields/complex/block_field.dart';
@@ -19,6 +20,7 @@ export 'src/fields/complex/geopoint_field.dart';
 export 'src/fields/complex/field_layout.dart';
 export 'src/fields/complex/object_field.dart';
 // Models
+export 'src/data/desk_document.dart';
 export 'src/models/image_ref.dart';
 export 'src/models/image_types.dart';
 export 'src/models/image_reference_mapper.dart';

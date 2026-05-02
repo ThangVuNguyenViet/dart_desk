@@ -7,7 +7,6 @@ import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../../data/models/desk_document.dart';
 import '../../data/models/document_list.dart';
 import '../../data/models/document_version.dart';
 import '../components/common/desk_collapse_bar.dart';
@@ -360,7 +359,7 @@ class _DeskDocumentListViewState extends State<DeskDocumentListView> {
                       final document = await viewModel.createDocument.run((
                         title: title,
                         data:
-                            viewModel.currentDocumentType.value?.defaultValue
+                            viewModel.currentDocumentType.value?.initialValue
                                 ?.toMap() ??
                             {},
                         slug: slug,

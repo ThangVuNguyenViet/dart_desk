@@ -4,6 +4,8 @@ import 'package:flutter/widget_previews.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
+
+import 'optional_field_header.dart';
 import 'optional_field_wrapper.dart';
 
 @Preview(name: 'DeskFileInput')
@@ -38,6 +40,7 @@ class _DeskFileInputState extends State<DeskFileInput> {
   String? _fileName;
   PlatformFile? _pickedFile;
   int? _fileSize;
+  String? _lastValue;
   late bool _isEnabled;
 
   @override
@@ -50,6 +53,40 @@ class _DeskFileInputState extends State<DeskFileInput> {
     _isEnabled = widget.field.option.optional
         ? widget.data?.value != null
         : true;
+    _lastValue = _fileUrl;
+  }
+
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastValue = _fileUrl;
+        _isEnabled = false;
+      } else {
+        _isEnabled = true;
+        _fileUrl = _lastValue;
+        _fileName = _lastValue?.split('/').last;
+        _pickedFile = null;
+        _fileSize = null;
+      }
+    });
+    widget.onChanged?.call(enabled ? _fileUrl : null);
+  }
+
+  @override
+  void didUpdateWidget(covariant DeskFileInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newValue = widget.data?.value?.toString();
+    if (oldWidget.data?.value?.toString() != newValue) {
+      setState(() {
+        _fileUrl = newValue;
+        _fileName = newValue?.split('/').last;
+        _pickedFile = null;
+        _fileSize = null;
+        if (widget.field.option.optional) {
+          _isEnabled = newValue != null;
+        }
+      });
+    }
   }
 
   Future<void> _selectFile() async {
@@ -213,28 +250,17 @@ class _DeskFileInputState extends State<DeskFileInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) return const SizedBox.shrink();
-
     final isOptional = widget.field.option.optional;
     final theme = ShadTheme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(widget.field.title, style: theme.textTheme.small),
-            if (isOptional) ...[
-              const Spacer(),
-              ShadCheckbox(
-                value: _isEnabled,
-                onChanged: (value) {
-                  setState(() => _isEnabled = value);
-                  if (!value) widget.onChanged?.call(null);
-                },
-              ),
-            ],
-          ],
+        OptionalFieldHeader(
+          title: widget.field.title,
+          isOptional: isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
         ),
         const SizedBox(height: 8),
         OptionalFieldWrapper(

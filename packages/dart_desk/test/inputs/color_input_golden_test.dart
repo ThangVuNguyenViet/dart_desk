@@ -45,6 +45,19 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskColorInput(
+              field: DeskColorField(
+                name: 'accent_color',
+                title: 'Accent Color (optional)',
+                option: DeskColorOption(optional: true),
+              ),
+              data: DeskData(value: '#E53E3E', path: 'accent_color'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }

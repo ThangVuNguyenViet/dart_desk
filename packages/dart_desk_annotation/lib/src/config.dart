@@ -17,18 +17,23 @@ class DocumentType<T extends Serializable<dynamic>> {
   /// List of fields for this document type
   final List<DeskField> fields;
 
-  /// Required builder function to create a widget from the config data
-  final Widget Function(Map<String, dynamic> data) builder;
+  /// Required builder function to create a widget from the config data.
+  ///
+  /// Receives a [BuildContext] so builders can read the [DeskContext]
+  /// (e.g. to look up other documents for default-merging) without needing
+  /// a [Builder] wrapper at every call site.
+  final Widget Function(BuildContext context, Map<String, dynamic> data)
+  builder;
 
   /// Function to create a default instance of T
-  final T? defaultValue;
+  final T? initialValue;
   const DocumentType({
     required this.name,
     required this.title,
     required this.description,
     required this.fields,
     required this.builder,
-    this.defaultValue,
+    this.initialValue,
   });
 }
 
@@ -41,7 +46,7 @@ class DocumentType<T extends Serializable<dynamic>> {
 /// Example:
 /// ```dart
 /// final myDocumentType = myTypeSpec.build(
-///   builder: (data) => MyScreen(config: MyConfigMapper.fromMap(data)),
+///   builder: (context, data) => MyScreen(config: MyConfigMapper.fromMap(data)),
 /// );
 /// ```
 class DocumentTypeSpec<T extends Serializable<dynamic>> {
@@ -58,14 +63,14 @@ class DocumentTypeSpec<T extends Serializable<dynamic>> {
   final List<DeskField> fields;
 
   /// Optional default instance of T
-  final T? defaultValue;
+  final T? initialValue;
 
   const DocumentTypeSpec({
     required this.name,
     required this.title,
     required this.description,
     required this.fields,
-    this.defaultValue,
+    this.initialValue,
   });
 
   /// Produces a full [DocumentType] by supplying a preview [builder].
@@ -73,7 +78,8 @@ class DocumentTypeSpec<T extends Serializable<dynamic>> {
   /// The [builder] receives the raw CMS data map and must return a Widget.
   /// This is required — it is a compile error to call [build] without it.
   DocumentType<T> build({
-    required Widget Function(Map<String, dynamic> data) builder,
+    required Widget Function(BuildContext context, Map<String, dynamic> data)
+    builder,
   }) {
     return DocumentType<T>(
       name: name,
@@ -81,7 +87,7 @@ class DocumentTypeSpec<T extends Serializable<dynamic>> {
       description: description,
       fields: fields,
       builder: builder,
-      defaultValue: defaultValue,
+      initialValue: initialValue,
     );
   }
 }

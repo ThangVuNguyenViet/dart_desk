@@ -26,7 +26,7 @@ class _PreviewPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final edited = GetIt.I<DeskDocumentViewModel>().editedData.watch(context);
-    return docType.builder(edited);
+    return docType.builder(context, edited);
   }
 }
 
@@ -530,7 +530,8 @@ void main() {
       await tester.tap(find.byKey(const ValueKey('clear_document_button')));
       await tester.pump();
 
-      expect(docVM.editedData.value.isEmpty, isTrue);
+      expect(docVM.editedData.value.isNotEmpty, isTrue);
+      expect(docVM.editedData.value.values.every((v) => v == null), isTrue);
       expect(docVM.isDirty.value, isTrue);
     });
   });

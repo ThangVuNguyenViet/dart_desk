@@ -25,8 +25,8 @@ void main() {
       home: Scaffold(
         body: Center(
           child: RewardsScreen(
-            config: RewardsConfig.defaultValue,
-            theme: BrandTheme.defaultValue,
+            config: RewardsConfig.initialValue,
+            theme: BrandTheme.initialValue,
           ),
         ),
       ),

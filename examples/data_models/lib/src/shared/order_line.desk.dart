@@ -29,7 +29,7 @@ final orderLineTypeSpec = DocumentTypeSpec<OrderLine>(
   title: 'Order line',
   description: 'Single line in the kiosk order sidebar',
   fields: orderLineFields,
-  defaultValue: OrderLine.defaultValue,
+  initialValue: OrderLine.initialValue,
 );
 
 // **************************************************************************

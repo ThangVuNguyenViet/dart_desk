@@ -43,10 +43,11 @@ class MenuItemEntryMapper extends ClassMapperBase<MenuItemEntry> {
     'tags',
     _$tags,
   );
-  static bool _$isAvailable(MenuItemEntry v) => v.isAvailable;
+  static bool? _$isAvailable(MenuItemEntry v) => v.isAvailable;
   static const Field<MenuItemEntry, bool> _f$isAvailable = Field(
     'isAvailable',
     _$isAvailable,
+    opt: true,
   );
 
   @override
@@ -166,7 +167,7 @@ class _MenuItemEntryCopyWithImpl<$R, $Out>
     String? shortDescription,
     Object? image = $none,
     List<String>? tags,
-    bool? isAvailable,
+    Object? isAvailable = $none,
   }) => $apply(
     FieldCopyWithData({
       if (name != null) #name: name,
@@ -174,7 +175,7 @@ class _MenuItemEntryCopyWithImpl<$R, $Out>
       if (shortDescription != null) #shortDescription: shortDescription,
       if (image != $none) #image: image,
       if (tags != null) #tags: tags,
-      if (isAvailable != null) #isAvailable: isAvailable,
+      if (isAvailable != $none) #isAvailable: isAvailable,
     }),
   );
   @override

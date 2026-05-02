@@ -1,7 +1,7 @@
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../../data/desk_data_source.dart';
-import '../../../data/models/desk_document.dart';
 import '../../../extensions/awaitable_future_signal.dart';
 import '../signals/mutation_signal.dart';
 import 'desk_view_model.dart';
@@ -68,7 +68,7 @@ class DeskDocumentViewModel {
         final docType = deskVM.currentDocumentType.value;
         final docId =
             documentId.value; // tracked — re-run when document changes
-        final defaults = docType?.defaultValue?.toMap() ?? {};
+        final defaults = docType?.initialValue?.toMap() ?? {};
         if (docId == null) {
           // New-document form: always seed current type's defaults, even if
           // editedData already has stale data from a previous type.

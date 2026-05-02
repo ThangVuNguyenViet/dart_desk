@@ -38,7 +38,7 @@ final storeCalloutTypeSpec = DocumentTypeSpec<StoreCallout>(
   title: 'Store callout',
   description: 'Venue card on the home screen',
   fields: storeCalloutFields,
-  defaultValue: StoreCallout.defaultValue,
+  initialValue: StoreCallout.initialValue,
 );
 
 // **************************************************************************

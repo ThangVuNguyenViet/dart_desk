@@ -1,11 +1,13 @@
+import 'desk_context.dart';
+
 /// Base condition class for conditional field visibility.
 /// Subclass and override [evaluate] to create custom conditions.
 /// All subclasses must be const-constructible.
 abstract class DeskCondition {
   const DeskCondition();
 
-  /// Returns true if the field should be visible given the current [data].
-  bool evaluate(Map<String, dynamic> data);
+  /// Returns true if the field should be visible given the current [ctx].
+  bool evaluate(DeskContext ctx);
 }
 
 /// Shows the field when [field] equals [value].
@@ -15,7 +17,8 @@ class FieldEquals extends DeskCondition {
   const FieldEquals(this.field, this.value);
 
   @override
-  bool evaluate(Map<String, dynamic> data) => data[field] == value;
+  bool evaluate(DeskContext ctx) =>
+      ctx.document?.activeVersionData?[field] == value;
 }
 
 /// Shows the field when [field] does not equal [value].
@@ -25,7 +28,8 @@ class FieldNotEquals extends DeskCondition {
   const FieldNotEquals(this.field, this.value);
 
   @override
-  bool evaluate(Map<String, dynamic> data) => data[field] != value;
+  bool evaluate(DeskContext ctx) =>
+      ctx.document?.activeVersionData?[field] != value;
 }
 
 /// Shows the field when [field] is not null.
@@ -34,7 +38,8 @@ class FieldNotNull extends DeskCondition {
   const FieldNotNull(this.field);
 
   @override
-  bool evaluate(Map<String, dynamic> data) => data[field] != null;
+  bool evaluate(DeskContext ctx) =>
+      ctx.document?.activeVersionData?[field] != null;
 }
 
 /// Shows the field when [field] is null.
@@ -43,7 +48,8 @@ class FieldIsNull extends DeskCondition {
   const FieldIsNull(this.field);
 
   @override
-  bool evaluate(Map<String, dynamic> data) => data[field] == null;
+  bool evaluate(DeskContext ctx) =>
+      ctx.document?.activeVersionData?[field] == null;
 }
 
 /// Shows the field when all [conditions] are true.
@@ -52,8 +58,8 @@ class AllConditions extends DeskCondition {
   const AllConditions(this.conditions);
 
   @override
-  bool evaluate(Map<String, dynamic> data) =>
-      conditions.every((c) => c.evaluate(data));
+  bool evaluate(DeskContext ctx) =>
+      conditions.every((c) => c.evaluate(ctx));
 }
 
 /// Shows the field when any of [conditions] is true.
@@ -62,21 +68,20 @@ class AnyCondition extends DeskCondition {
   const AnyCondition(this.conditions);
 
   @override
-  bool evaluate(Map<String, dynamic> data) =>
-      conditions.any((c) => c.evaluate(data));
+  bool evaluate(DeskContext ctx) =>
+      conditions.any((c) => c.evaluate(ctx));
 }
 
 abstract class DeskOption {
-  const DeskOption({this.hidden = false, this.optional = false, this.condition});
-
-  final bool hidden;
+  const DeskOption({this.optional = false, this.visibleWhen});
 
   /// Whether the field is optional (can be null/unset).
   final bool optional;
 
-  /// Condition that determines field visibility based on document data.
-  /// When null, the field is always visible (unless [hidden] is true).
-  final DeskCondition? condition;
+  /// Condition that determines field visibility based on the editor context.
+  /// When null, the field is always visible. When set, the field is rendered
+  /// only if [visibleWhen.evaluate(ctx)] returns true.
+  final DeskCondition? visibleWhen;
 }
 
 abstract class DeskField {

@@ -23,7 +23,7 @@ final menuItemEntryFields = [
   DeskImageField(
     name: 'image',
     title: 'Image',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
   DeskMultiDropdownField<String>(
     name: 'tags',
@@ -34,7 +34,7 @@ final menuItemEntryFields = [
   DeskCheckboxField(
     name: 'isAvailable',
     title: 'Is Available',
-    option: DeskCheckboxOption(label: 'Available'),
+    option: DeskCheckboxOption(optional: true, label: 'Available'),
   ),
 ];
 
@@ -45,7 +45,7 @@ final menuItemEntryTypeSpec = DocumentTypeSpec<MenuItemEntry>(
   title: 'Menu item',
   description: 'Row in the menu browse list',
   fields: menuItemEntryFields,
-  defaultValue: MenuItemEntry.defaultValue,
+  initialValue: MenuItemEntry.initialValue,
 );
 
 // **************************************************************************
@@ -72,5 +72,5 @@ class MenuItemEntryDeskModel {
 
   final DeskData<List<String>> tags;
 
-  final DeskData<bool> isAvailable;
+  final DeskData<bool?> isAvailable;
 }

@@ -35,6 +35,18 @@ class ChefProfileMapper extends ClassMapperBase<ChefProfile> {
   );
   static String _$bio(ChefProfile v) => v.bio;
   static const Field<ChefProfile, String> _f$bio = Field('bio', _$bio);
+  static String? _$subtitle(ChefProfile v) => v.subtitle;
+  static const Field<ChefProfile, String> _f$subtitle = Field(
+    'subtitle',
+    _$subtitle,
+    opt: true,
+  );
+  static DateTime? _$awardsReceivedAt(ChefProfile v) => v.awardsReceivedAt;
+  static const Field<ChefProfile, DateTime> _f$awardsReceivedAt = Field(
+    'awardsReceivedAt',
+    _$awardsReceivedAt,
+    opt: true,
+  );
   static String? _$cv(ChefProfile v) => v.cv;
   static const Field<ChefProfile, String> _f$cv = Field('cv', _$cv, opt: true);
 
@@ -44,6 +56,8 @@ class ChefProfileMapper extends ClassMapperBase<ChefProfile> {
     #role: _f$role,
     #portrait: _f$portrait,
     #bio: _f$bio,
+    #subtitle: _f$subtitle,
+    #awardsReceivedAt: _f$awardsReceivedAt,
     #cv: _f$cv,
   };
 
@@ -53,6 +67,8 @@ class ChefProfileMapper extends ClassMapperBase<ChefProfile> {
       role: data.dec(_f$role),
       portrait: data.dec(_f$portrait),
       bio: data.dec(_f$bio),
+      subtitle: data.dec(_f$subtitle),
+      awardsReceivedAt: data.dec(_f$awardsReceivedAt),
       cv: data.dec(_f$cv),
     );
   }
@@ -122,6 +138,8 @@ abstract class ChefProfileCopyWith<$R, $In extends ChefProfile, $Out>
     String? role,
     ImageReference? portrait,
     String? bio,
+    String? subtitle,
+    DateTime? awardsReceivedAt,
     String? cv,
   });
   ChefProfileCopyWith<$R2, $In, $Out2> $chain<$R2, $Out2>(Then<$Out2, $R2> t);
@@ -141,6 +159,8 @@ class _ChefProfileCopyWithImpl<$R, $Out>
     String? role,
     Object? portrait = $none,
     String? bio,
+    Object? subtitle = $none,
+    Object? awardsReceivedAt = $none,
     Object? cv = $none,
   }) => $apply(
     FieldCopyWithData({
@@ -148,6 +168,8 @@ class _ChefProfileCopyWithImpl<$R, $Out>
       if (role != null) #role: role,
       if (portrait != $none) #portrait: portrait,
       if (bio != null) #bio: bio,
+      if (subtitle != $none) #subtitle: subtitle,
+      if (awardsReceivedAt != $none) #awardsReceivedAt: awardsReceivedAt,
       if (cv != $none) #cv: cv,
     }),
   );
@@ -157,6 +179,8 @@ class _ChefProfileCopyWithImpl<$R, $Out>
     role: data.get(#role, or: $value.role),
     portrait: data.get(#portrait, or: $value.portrait),
     bio: data.get(#bio, or: $value.bio),
+    subtitle: data.get(#subtitle, or: $value.subtitle),
+    awardsReceivedAt: data.get(#awardsReceivedAt, or: $value.awardsReceivedAt),
     cv: data.get(#cv, or: $value.cv),
   );
 

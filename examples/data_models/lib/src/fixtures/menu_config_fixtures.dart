@@ -2,7 +2,7 @@ import '../configs/menu_config.dart';
 
 class MenuConfigFixtures {
   /// The demo-quality fixture used by showcase apps and happy-path tests.
-  static MenuConfig showcase() => MenuConfig.defaultValue;
+  static MenuConfig showcase() => MenuConfig.initialValue;
 
   /// Required fields at minimum, optionals null/empty.
   static MenuConfig empty() => const MenuConfig(

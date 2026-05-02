@@ -22,20 +22,14 @@ class DocumentPreview extends StatelessWidget {
     final documentViewModel = GetIt.I<DeskDocumentViewModel>();
     final edited = documentViewModel.editedData.watch(context);
 
-    Map<String, dynamic> data;
-    if (edited.isNotEmpty) {
-      data = edited;
-    } else {
+    Map<String, dynamic> data = edited;
+    if (data.isEmpty) {
       final versionId = viewModel.selectedVersionId.value;
-      final defaultData = docType.defaultValue?.toMap() ?? {};
-      data = defaultData;
-
       if (versionId != null) {
         final versionState = viewModel.documentDataContainer(versionId).value;
-        data = versionState.map<Map<String, dynamic>>(
-          loading: () => defaultData,
-          error: (_, _) => defaultData,
-          data: (version) => version?.data ?? defaultData,
+        data = versionState.maybeMap<Map<String, dynamic>>(
+          data: (v) => v?.data ?? const {},
+          orElse: () => const {},
         );
       }
     }
@@ -63,7 +57,9 @@ class DocumentPreview extends StatelessWidget {
                 borderRadius: BorderRadius.circular(DeskBorderRadius.lg),
               ),
               clipBehavior: Clip.antiAlias,
-              child: docType.builder(data),
+              child: Builder(
+                builder: (context) => docType.builder(context, data),
+              ),
             ),
           ),
         ),

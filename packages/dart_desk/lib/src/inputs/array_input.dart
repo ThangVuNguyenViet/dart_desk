@@ -5,6 +5,8 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../studio/components/forms/desk_form.dart';
 import 'edit_styles/edit_styles.dart';
+import 'optional_field_header.dart';
+import 'optional_field_wrapper.dart';
 
 class DeskArrayInput<T> extends StatefulWidget {
   final DeskArrayField<T> field;
@@ -28,17 +30,53 @@ class _DeskArrayInputState<T> extends State<DeskArrayInput<T>> {
   late List<T> _items;
   int? _editingIndex; // -1 for adding new, null for none, >= 0 for editing
   dynamic _editingValue;
+  late bool _isEnabled;
+  List<T>? _lastValue;
+
+  bool get _isOptional => widget.field.option?.optional ?? false;
 
   @override
   void initState() {
     super.initState();
+    _items = _parseItems(widget.data?.value);
+    _isEnabled = _isOptional ? widget.data?.value != null : true;
+    _lastValue = _isEnabled ? List<T>.from(_items) : null;
+  }
+
+  List<T> _parseItems(Object? raw) {
     final fromMap = widget.field.fromMap;
-    _items =
-        (widget.data?.value as List?)?.map<T>((e) {
+    return (raw as List?)?.map<T>((e) {
           if (e is T) return e;
           return fromMap!(Map<String, dynamic>.from(e as Map));
         }).toList() ??
         [];
+  }
+
+  @override
+  void didUpdateWidget(covariant DeskArrayInput<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.data?.value != widget.data?.value) {
+      _items = _parseItems(widget.data?.value);
+      if (_isOptional) {
+        setState(() => _isEnabled = widget.data?.value != null);
+      }
+    }
+  }
+
+  void _handleToggle(bool enabled) {
+    setState(() {
+      if (!enabled) {
+        _lastValue = List<T>.from(_items);
+        _isEnabled = false;
+        _items = [];
+        _editingIndex = null;
+        _editingValue = null;
+      } else {
+        _isEnabled = true;
+        _items = _lastValue != null ? List<T>.from(_lastValue!) : <T>[];
+      }
+    });
+    widget.onChanged?.call(enabled ? List<T>.from(_items) : null);
   }
 
   void _addItem() {
@@ -82,6 +120,7 @@ class _DeskArrayInputState<T> extends State<DeskArrayInput<T>> {
       _editingIndex = null;
       _editingValue = null;
     });
+    _lastValue = List<T>.from(_items);
     widget.onChanged?.call(List<T>.from(_items));
   }
 
@@ -96,6 +135,7 @@ class _DeskArrayInputState<T> extends State<DeskArrayInput<T>> {
     setState(() {
       _items.removeAt(index);
     });
+    _lastValue = List<T>.from(_items);
     widget.onChanged?.call(List<T>.from(_items));
   }
 
@@ -105,93 +145,95 @@ class _DeskArrayInputState<T> extends State<DeskArrayInput<T>> {
       final item = _items.removeAt(oldIndex);
       _items.insert(newIndex, item);
     });
+    _lastValue = List<T>.from(_items);
     widget.onChanged?.call(List<T>.from(_items));
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option?.hidden ?? false) {
-      return const SizedBox.shrink();
-    }
-
     final theme = ShadTheme.of(context);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ShadCard(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.field.title,
-                    style: theme.textTheme.large.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Opacity(
-                    opacity: _editingIndex == null ? 1.0 : 0.4,
-                    child: IgnorePointer(
-                      ignoring: _editingIndex != null,
-                      child: ShadButton(
-                        size: ShadButtonSize.sm,
-                        onPressed: _addItem,
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            FaIcon(FontAwesomeIcons.plus, size: 12),
-                            SizedBox(width: 4),
-                            Text('Add'),
-                          ],
+        OptionalFieldHeader(
+          title: widget.field.title,
+          isOptional: _isOptional,
+          isEnabled: _isEnabled,
+          onToggle: _handleToggle,
+        ),
+        const SizedBox(height: 8),
+        OptionalFieldWrapper(
+          isEnabled: !_isOptional || _isEnabled,
+          child: ShadCard(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Opacity(
+                      opacity: _editingIndex == null ? 1.0 : 0.4,
+                      child: IgnorePointer(
+                        ignoring: _editingIndex != null,
+                        child: ShadButton(
+                          size: ShadButtonSize.sm,
+                          onPressed: _addItem,
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              FaIcon(FontAwesomeIcons.plus, size: 12),
+                              SizedBox(width: 4),
+                              Text('Add'),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              // Show empty state or list
-              if (_items.isEmpty && _editingIndex != -1)
-                Center(
-                  child: Text(
-                    'No items. Click "Add" to create one.',
-                    style: theme.textTheme.small.copyWith(
-                      color: theme.colorScheme.mutedForeground,
-                    ),
-                  ),
-                )
-              else if (_items.isNotEmpty)
-                ReorderableListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _items.length,
-                  onReorder: _onReorder,
-                  buildDefaultDragHandles: false,
-                  itemBuilder: (context, index) {
-                    final isEditing = _editingIndex == index;
-
-                    return Padding(
-                      key: ValueKey('item_$index'),
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: isEditing && widget.editStyle is InlineEditStyles
-                          ? _buildEditorWithActions(
-                              context,
-                              theme,
-                              isNew: false,
-                            )
-                          : _buildItemRow(context, theme, index),
-                    );
-                  },
+                  ],
                 ),
+                const SizedBox(height: 16),
+                // Show empty state or list
+                if (_items.isEmpty && _editingIndex != -1)
+                  Center(
+                    child: Text(
+                      'No items. Click "Add" to create one.',
+                      style: theme.textTheme.small.copyWith(
+                        color: theme.colorScheme.mutedForeground,
+                      ),
+                    ),
+                  )
+                else if (_items.isNotEmpty)
+                  ReorderableListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _items.length,
+                    onReorder: _onReorder,
+                    buildDefaultDragHandles: false,
+                    itemBuilder: (context, index) {
+                      final isEditing = _editingIndex == index;
 
-              // Inline editor for adding new item
-              SizedBox(height: 8),
-              if (widget.editStyle is InlineEditStyles && _editingIndex == -1)
-                _buildEditorWithActions(context, theme, isNew: true),
-            ],
+                      return Padding(
+                        key: ValueKey('item_$index'),
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: isEditing && widget.editStyle is InlineEditStyles
+                            ? _buildEditorWithActions(
+                                context,
+                                theme,
+                                isNew: false,
+                              )
+                            : _buildItemRow(context, theme, index),
+                      );
+                    },
+                  ),
+
+                // Inline editor for adding new item
+                SizedBox(height: 8),
+                if (widget.editStyle is InlineEditStyles && _editingIndex == -1)
+                  _buildEditorWithActions(context, theme, isNew: true),
+              ],
+            ),
           ),
         ),
       ],

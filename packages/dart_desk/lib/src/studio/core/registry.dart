@@ -80,7 +80,6 @@ class DeskRatingOption extends DeskOption {
   const DeskRatingOption({
     this.maxRating = 5,
     this.icon = FontAwesomeIcons.solidStar,
-    super.hidden,
   });
 }
 
@@ -112,10 +111,6 @@ class _DeskRatingInputState extends State<DeskRatingInput> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.field.option.hidden) {
-      return const SizedBox.shrink();
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

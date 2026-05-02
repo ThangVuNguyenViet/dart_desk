@@ -27,7 +27,7 @@ class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemE
   final List<String> tags;
 
   @DeskCheckbox(description: 'Available', option: DeskCheckboxOption(label: 'Available'))
-  final bool isAvailable;
+  final bool? isAvailable;
 
   const MenuItemEntry({
     required this.name,
@@ -35,10 +35,10 @@ class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemE
     required this.shortDescription,
     this.image,
     required this.tags,
-    required this.isAvailable,
+    this.isAvailable,
   });
 
-  static MenuItemEntry defaultValue = const MenuItemEntry(
+  static MenuItemEntry initialValue = const MenuItemEntry(
     name: 'Orecchiette \'Nduja',
     price: 24,
     shortDescription: 'House-made orecchiette, spicy \'nduja, pecorino.',
@@ -50,9 +50,9 @@ class MenuItemEntry with MenuItemEntryMappable implements Serializable<MenuItemE
 }
 
 class MenuItemTagsOption extends DeskMultiDropdownOption<String> {
-  const MenuItemTagsOption({super.hidden});
+  const MenuItemTagsOption({super.visibleWhen});
   @override
-  List<String>? get defaultValues => const [];
+  List<String>? get initialValues => const [];
   @override
   int? get maxSelected => null;
   @override

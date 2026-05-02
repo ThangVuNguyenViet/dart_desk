@@ -45,6 +45,47 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
+        .itemFromBuilder(
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskMultiDropdownInput<String>(
+              field: DeskMultiDropdownField<String>(
+                name: 'tags',
+                title: 'Tags',
+                option: DeskMultiDropdownSimpleOption(
+                  options: [
+                    DropdownOption(value: 'flutter', label: 'Flutter'),
+                    DropdownOption(value: 'dart', label: 'Dart'),
+                  ],
+                  placeholder: 'Select tags',
+                  optional: true,
+                ),
+              ),
+              data: DeskData(value: ['flutter'], path: 'tags'),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
+          description: 'optional / disabled',
+          builder: (_) => buildInputApp(
+            const DeskMultiDropdownInput<String>(
+              field: DeskMultiDropdownField<String>(
+                name: 'tags',
+                title: 'Tags',
+                option: DeskMultiDropdownSimpleOption(
+                  options: [
+                    DropdownOption(value: 'flutter', label: 'Flutter'),
+                    DropdownOption(value: 'dart', label: 'Dart'),
+                  ],
+                  placeholder: 'Select tags',
+                  optional: true,
+                ),
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
         .run(tester);
   });
 }

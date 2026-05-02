@@ -43,7 +43,7 @@ class MenuConfig extends DeskContent with MenuConfigMappable, Serializable<MenuC
     required this.storeHours,
   });
 
-  static MenuConfig defaultValue = const MenuConfig(
+  static MenuConfig initialValue = const MenuConfig(
     categories: ['Starters', 'Mains', 'Desserts', 'Drinks'],
     filterTags: ['Vegan', 'Gluten-free', "Chef's Pick"],
     items: [
@@ -67,9 +67,9 @@ class MenuConfig extends DeskContent with MenuConfigMappable, Serializable<MenuC
 }
 
 class MenuCategoriesOption extends DeskMultiDropdownOption<String> {
-  const MenuCategoriesOption({super.hidden});
+  const MenuCategoriesOption({super.visibleWhen});
   @override
-  List<String>? get defaultValues => const [];
+  List<String>? get initialValues => const [];
   @override
   int? get maxSelected => null;
   @override
@@ -83,9 +83,9 @@ class MenuCategoriesOption extends DeskMultiDropdownOption<String> {
 }
 
 class MenuFilterTagsOption extends DeskMultiDropdownOption<String> {
-  const MenuFilterTagsOption({super.hidden});
+  const MenuFilterTagsOption({super.visibleWhen});
   @override
-  List<String>? get defaultValues => const [];
+  List<String>? get initialValues => const [];
   @override
   int? get maxSelected => null;
   @override

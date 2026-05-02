@@ -6,6 +6,12 @@ import 'package:shadcn_ui/shadcn_ui.dart';
 
 import '../helpers/input_test_helpers.dart';
 
+const _optionalField = DeskTextField(
+  name: 'notes',
+  title: 'Notes',
+  option: DeskTextOption(rows: 3, optional: true),
+);
+
 void main() {
   final field = DeskTextField(
     name: 'body',
@@ -62,18 +68,53 @@ void main() {
       expect(find.text('Deprecated: Use new field instead'), findsOneWidget);
     });
 
-    testWidgets('hidden field renders nothing', (tester) async {
-      final hiddenField = DeskTextField(
-        name: 'hidden',
-        title: 'Hidden',
-        option: DeskTextOption(rows: 1, hidden: true),
+    testWidgets('optional toggle off then on restores last value', (
+      tester,
+    ) async {
+      String? captured;
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskTextInput(
+            field: _optionalField,
+            data: const DeskData(value: 'Hello', path: 'notes'),
+            onChanged: (v) => captured = v,
+          ),
+        ),
       );
-
-      await tester.pumpWidget(buildInputApp(DeskTextInput(field: hiddenField)));
       await tester.pumpAndSettle();
 
-      expect(find.byType(SizedBox), findsWidgets);
-      expect(find.byType(ShadInputFormField), findsNothing);
+      // Toggle off.
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+      expect(captured, isNull);
+
+      // Toggle on.
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+      expect(captured, equals('Hello'));
+    });
+
+    testWidgets('external value flip to null does not fire onChanged', (
+      tester,
+    ) async {
+      var fireCount = 0;
+      Widget mk(String? value) => buildInputApp(
+        DeskTextInput(
+          field: _optionalField,
+          data: value == null ? null : DeskData(value: value, path: 'notes'),
+          onChanged: (_) => fireCount++,
+        ),
+      );
+
+      await tester.pumpWidget(mk('Hello'));
+      await tester.pumpAndSettle();
+      fireCount = 0;
+      await tester.pumpWidget(mk(null));
+      await tester.pumpAndSettle();
+      expect(fireCount, 0);
+      // Header reflects new state.
+      final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
+      expect(cb.value, isFalse);
     });
   });
 }

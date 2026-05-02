@@ -12,6 +12,15 @@ void main() {
     option: DeskCheckboxOption(label: 'Enable this feature'),
   );
 
+  const optionalField = DeskCheckboxField(
+    name: 'enable',
+    title: 'Enable',
+    option: DeskCheckboxOption(
+      label: 'Enable this feature',
+      optional: true,
+    ),
+  );
+
   group('DeskCheckboxInput', () {
     testWidgets('renders label text', (tester) async {
       await tester.pumpWidget(buildInputApp(DeskCheckboxInput(field: field)));
@@ -60,19 +69,146 @@ void main() {
       expect(received, isTrue);
     });
 
-    testWidgets('hidden field renders nothing', (tester) async {
-      const hiddenField = DeskCheckboxField(
-        name: 'hidden',
-        title: 'Hidden',
-        option: DeskCheckboxOption(hidden: true),
-      );
+    // optional: false — two-state only, never null
+    testWidgets('optional:false — false→true→false, never null', (tester) async {
+      final values = <bool?>[];
 
       await tester.pumpWidget(
-        buildInputApp(DeskCheckboxInput(field: hiddenField)),
+        buildInputApp(
+          DeskCheckboxInput(
+            field: field,
+            data: const DeskData(value: false, path: 'enable'),
+            onChanged: values.add,
+          ),
+        ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(ShadCheckbox), findsNothing);
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+      expect(values.last, isTrue);
+
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+      expect(values.last, isFalse);
+
+      expect(values, everyElement(isNotNull));
+    });
+
+    // optional: true — tri-state cycle null → false → true → null
+    testWidgets('optional:true — null→false on tap', (tester) async {
+      bool? received;
+
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskCheckboxInput(
+            field: optionalField,
+            data: null,
+            onChanged: (v) => received = v,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+
+      expect(received, isFalse);
+    });
+
+    testWidgets('optional:true — false→true on tap', (tester) async {
+      bool? received;
+
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskCheckboxInput(
+            field: optionalField,
+            data: const DeskData(value: false, path: 'enable'),
+            onChanged: (v) => received = v,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+
+      expect(received, isTrue);
+    });
+
+    testWidgets('optional:true — true→null on tap', (tester) async {
+      bool? received = false; // sentinel
+
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskCheckboxInput(
+            field: optionalField,
+            data: const DeskData(value: true, path: 'enable'),
+            onChanged: (v) => received = v,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(ShadCheckbox));
+      await tester.pumpAndSettle();
+
+      expect(received, isNull);
+    });
+
+    testWidgets('optional:true — external value updates do not fire onChanged',
+        (tester) async {
+      var callCount = 0;
+
+      // Start with null
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskCheckboxInput(
+            field: optionalField,
+            data: null,
+            onChanged: (_) => callCount++,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // External update to false
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskCheckboxInput(
+            field: optionalField,
+            data: const DeskData(value: false, path: 'enable'),
+            onChanged: (_) => callCount++,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // External update to true
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskCheckboxInput(
+            field: optionalField,
+            data: const DeskData(value: true, path: 'enable'),
+            onChanged: (_) => callCount++,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // External update back to null
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskCheckboxInput(
+            field: optionalField,
+            data: null,
+            onChanged: (_) => callCount++,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(callCount, 0);
     });
   });
 }

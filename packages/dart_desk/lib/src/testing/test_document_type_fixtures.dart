@@ -172,7 +172,7 @@ final allFieldsDocumentType = DocumentType(
   builder: _testAllFieldsBuilder,
 );
 
-Widget _testAllFieldsBuilder(Map<String, dynamic> data) {
+Widget _testAllFieldsBuilder(BuildContext context, Map<String, dynamic> data) {
   return Builder(
     builder: (context) {
       // Resolve selected document titles from the context-aware multi-dropdown
@@ -262,7 +262,7 @@ class TestDocumentRefDropdownOption extends DeskMultiDropdownOption<String> {
   }
 
   @override
-  List<String>? get defaultValues => null;
+  List<String>? get initialValues => null;
 
   @override
   String? get placeholder => 'Select documents...';

@@ -14,9 +14,19 @@ final chefProfileFields = [
   DeskImageField(
     name: 'portrait',
     title: 'Portrait',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
   DeskTextField(name: 'bio', title: 'Bio', option: DeskTextOption()),
+  DeskStringField(
+    name: 'subtitle',
+    title: 'Subtitle',
+    option: DeskStringOption(optional: true),
+  ),
+  DeskDateTimeField(
+    name: 'awardsReceivedAt',
+    title: 'Awards Received At',
+    option: DeskDateTimeOption(optional: true),
+  ),
   DeskFileField(
     name: 'cv',
     title: 'Cv',
@@ -31,7 +41,7 @@ final chefProfileTypeSpec = DocumentTypeSpec<ChefProfile>(
   title: 'Chef profile',
   description: 'Head chef bio block',
   fields: chefProfileFields,
-  defaultValue: ChefProfile.defaultValue,
+  initialValue: ChefProfile.initialValue,
 );
 
 // **************************************************************************
@@ -44,6 +54,8 @@ class ChefProfileDeskModel {
     required this.role,
     required this.portrait,
     required this.bio,
+    required this.subtitle,
+    required this.awardsReceivedAt,
     required this.cv,
   });
 
@@ -54,6 +66,10 @@ class ChefProfileDeskModel {
   final DeskData<ImageReference?> portrait;
 
   final DeskData<String> bio;
+
+  final DeskData<String?> subtitle;
+
+  final DeskData<DateTime?> awardsReceivedAt;
 
   final DeskData<String?> cv;
 }

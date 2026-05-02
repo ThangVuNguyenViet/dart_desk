@@ -18,7 +18,7 @@ final kioskProductFields = [
   DeskImageField(
     name: 'image',
     title: 'Image',
-    option: DeskImageOption(hotspot: true),
+    option: DeskImageOption(optional: true, hotspot: true),
   ),
   DeskDropdownField<String>(
     name: 'category',
@@ -35,7 +35,7 @@ final kioskProductTypeSpec = DocumentTypeSpec<KioskProduct>(
   title: 'Kiosk product',
   description: 'Tile in the kiosk grid',
   fields: kioskProductFields,
-  defaultValue: KioskProduct.defaultValue,
+  initialValue: KioskProduct.initialValue,
 );
 
 // **************************************************************************
