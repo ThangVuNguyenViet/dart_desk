@@ -213,16 +213,6 @@ abstract class DataSource {
     String? sessionId,
   });
 
-  /// Publishes a document version, making it the current published version.
-  ///
-  /// [versionId] - The ID of the version to publish
-  ///
-  /// Returns the updated [DocumentVersion] with published status.
-  ///
-  /// Throws [DeskDataSourceException] if the operation fails.
-  /// Throws [DeskAuthenticationException] if authentication is required.
-  Future<DocumentVersion?> publishDocumentVersion(String versionId);
-
   /// Atomically publishes the document's current draft as a new version.
   ///
   /// The server snapshots the current CRDT HLC, creates a new version row

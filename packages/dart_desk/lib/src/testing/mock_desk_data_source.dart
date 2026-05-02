@@ -556,11 +556,6 @@ class MockDataSource implements DataSource {
   }
 
   @override
-  Future<DocumentVersion?> publishDocumentVersion(String versionId) async {
-    return _updateVersionStatus(versionId, DocumentVersionStatus.published);
-  }
-
-  @override
   Future<DocumentVersion?> archiveDocumentVersion(String versionId) async {
     return _updateVersionStatus(versionId, DocumentVersionStatus.archived);
   }
@@ -592,7 +587,10 @@ class MockDataSource implements DataSource {
     // getDocumentVersionData returns the published snapshot correctly.
     _versionData[version.id!] = Map<String, dynamic>.from(currentData);
 
-    final published = await publishDocumentVersion(version.id!);
+    final published = _updateVersionStatus(
+      version.id!,
+      DocumentVersionStatus.published,
+    );
 
     // Freeze the public-read snapshot (mirrors published_documents table).
     // This is intentionally a separate copy: future draft edits via

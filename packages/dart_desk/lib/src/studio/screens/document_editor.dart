@@ -6,7 +6,6 @@ import 'package:get_it/get_it.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
-import '../../data/models/document_version.dart';
 import '../components/common/desk_button.dart';
 import '../components/forms/desk_form.dart';
 import '../core/view_models/desk_document_view_model.dart';
@@ -139,42 +138,6 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     GetIt.I<DeskDocumentViewModel>().isDirty.value = true;
   }
 
-  Future<void> _discardDocument() async {
-    try {
-      final viewModel = GetIt.I<DeskViewModel>();
-      final versionId = viewModel.selectedVersionId.value;
-
-      final documentViewModel = GetIt.I<DeskDocumentViewModel>();
-      if (versionId != null) {
-        // Reset to original version data
-        final versionState = viewModel.documentDataContainer(versionId).value;
-        if (versionState is AsyncData<DocumentVersion?> &&
-            versionState.value?.data != null) {
-          editedData.value = Map<String, dynamic>.from(
-            versionState.value!.data!,
-          );
-        }
-      } else {
-        // Reset to default values
-        final docType = viewModel.currentDocumentType.value;
-        editedData.value = docType?.initialValue?.toMap() ?? {};
-      }
-      documentViewModel.isDirty.value = false;
-
-      if (mounted) {
-        ShadToaster.of(
-          context,
-        ).show(const ShadToast(description: Text('Changes discarded')));
-      }
-    } catch (e) {
-      if (mounted) {
-        ShadToaster.of(
-          context,
-        ).show(ShadToast(description: Text('Failed to discard: $e')));
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final viewModel = GetIt.I<DeskViewModel>();
@@ -239,8 +202,6 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     required bool hasChanges,
   }) {
     editedData.watch(context);
-    final hasUnsavedChanges =
-        GetIt.I<DeskDocumentViewModel>().isDirty.watch(context);
 
     final theme = ShadTheme.of(context);
 
@@ -278,21 +239,38 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
                 variant: ShadButtonVariant.outline,
                 onPressed: isAnyBusy ? null : _clearDocument,
               ),
-              if (hasUnsavedChanges) ...[
+              if (hasChanges)
                 DeskButton(
-                  key: const ValueKey('discard_document_button'),
-                  text: 'Discard',
-                  variant: ShadButtonVariant.outline,
-                  onPressed: isAnyBusy ? null : _discardDocument,
+                  key: const ValueKey('publish_document_button'),
+                  text: 'Publish',
+                  loading: isPublishing,
+                  onPressed: isAnyBusy ? null : _publishDocument,
+                )
+              else
+                Padding(
+                  key: const ValueKey('published_badge'),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        LucideIcons.check,
+                        size: 14,
+                        color: theme.colorScheme.mutedForeground,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Published',
+                        style: theme.textTheme.small.copyWith(
+                          color: theme.colorScheme.mutedForeground,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-              DeskButton(
-                key: const ValueKey('publish_document_button'),
-                text: hasChanges ? 'Publish' : 'Published',
-                loading: isPublishing,
-                onPressed:
-                    (isAnyBusy || !hasChanges) ? null : _publishDocument,
-              ),
             ],
           ),
         ),

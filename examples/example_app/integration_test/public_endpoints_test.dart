@@ -32,8 +32,7 @@ void main() {
           title,
           BrandThemeFixtures.showcase().toMap(),
         );
-        final versions = await studio.getDocumentVersions(doc.id!);
-        await studio.publishDocumentVersion(versions.versions.first.id!);
+        await studio.publishCurrentVersion(doc.id!);
         await studio.setDefaultDocument('brandTheme', doc.id!);
 
         await pumpExampleApp(tester);
@@ -60,22 +59,15 @@ void main() {
           title,
           BrandThemeFixtures.showcase().toMap(),
         );
-        final v1List = await studio.getDocumentVersions(doc.id!);
-        await studio.publishDocumentVersion(v1List.versions.first.id!);
+        await studio.publishCurrentVersion(doc.id!);
         await studio.setDefaultDocument('brandTheme', doc.id!);
 
-        // Second version: tweak the brand name and publish. Mirrors the
-        // studio's `publishDocumentData` flow — update data, create draft,
-        // promote to published.
+        // Second publish: tweak the brand name and publish.
         await studio.updateDocumentData(
           doc.id!,
           BrandThemeFixtures.showcase().copyWith(name: 'Updated Aura').toMap(),
         );
-        final v2 = await studio.createDocumentVersion(
-          doc.id!,
-          changeLog: 'Rename brand',
-        );
-        await studio.publishDocumentVersion(v2.id!);
+        await studio.publishCurrentVersion(doc.id!);
 
         final read = await reader.getDefaultContent('brandTheme');
         final theme = BrandThemeMapper.fromMap(read.data);
@@ -97,8 +89,7 @@ void main() {
           BrandThemeFixtures.showcase().copyWith(name: 'Slug Theme').toMap(),
           slug: slug,
         );
-        final versions = await studio.getDocumentVersions(doc.id!);
-        await studio.publishDocumentVersion(versions.versions.first.id!);
+        await studio.publishCurrentVersion(doc.id!);
 
         final read = await reader.getContentBySlug('brandTheme', slug);
         final theme = BrandThemeMapper.fromMap(read.data);

@@ -311,24 +311,6 @@ class CloudDataSource implements DataSource {
   }
 
   @override
-  Future<DocumentVersion?> publishDocumentVersion(String versionId) async {
-    try {
-      final response = await _client.document.publishDocumentVersion(
-        UuidValue.fromString(versionId),
-      );
-      if (response == null) return null;
-      return _toDocumentVersion(response);
-    } on serverpod.ServerpodClientException catch (e, st) {
-      if (e.statusCode == 401) {
-        throw const DeskAuthenticationException();
-      }
-      _throw('Failed to publish document version', e, st);
-    } catch (e, st) {
-      _throw('Failed to publish document version', e, st);
-    }
-  }
-
-  @override
   Future<DocumentVersion?> archiveDocumentVersion(String versionId) async {
     try {
       final response = await _client.document.archiveDocumentVersion(
