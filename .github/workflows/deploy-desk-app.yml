@@ -29,7 +29,7 @@ jobs:
         working-directory: examples/desk_app
 
       - name: install dart_desk_cli
-        run: dart pub global activate dart_desk_cli
+        run: dart pub global activate --source git https://github.com/ThangVuNguyenViet/dart_desk_cli --git-ref main
 
       - name: deploy
         run: |
