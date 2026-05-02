@@ -8,11 +8,6 @@ import 'package:signals/signals.dart';
 /// [DartDeskDebug.debugShowClientLog] is on.
 final Logger clientLogger = _makeLogger('dart_desk.client', Level.SEVERE);
 
-/// Logger for auth-flow errors (sign-in, session, password reset). Defaults
-/// to [Level.SEVERE] so errors surfaced in the auth UI are always visible
-/// in the console.
-final Logger authLogger = _makeLogger('dart_desk.auth', Level.SEVERE);
-
 /// Logger for signal/effect updates. Records only flow when
 /// [DartDeskDebug.debugShowSignalLogs] is on, which installs a
 /// [SignalsObserver] that emits through this logger.
