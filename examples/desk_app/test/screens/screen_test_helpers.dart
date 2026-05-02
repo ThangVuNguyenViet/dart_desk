@@ -121,9 +121,7 @@ Future<String> seedChefWithVersions(MockDataSource source) async {
     "Marco's Choice",
     ChefConfigFixtures.showcase().toMap(),
   );
-  await source.publishDocumentVersion(
-    (await source.getDocumentVersions(doc.id!)).versions.first.id!,
-  );
+  await source.publishCurrentVersion(doc.id!);
   await source.createDocumentVersion(
     doc.id!,
     status: 'draft',

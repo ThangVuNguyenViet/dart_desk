@@ -148,10 +148,6 @@ class _FakeDataSource implements DataSource {
       throw UnimplementedError();
 
   @override
-  Future<DocumentVersion?> publishDocumentVersion(String versionId) async =>
-      throw UnimplementedError();
-
-  @override
   Future<DocumentVersion> publishCurrentVersion(String documentId) async =>
       throw UnimplementedError();
 

@@ -158,14 +158,13 @@ class DeskViewModel {
 
         selectedDocumentId.value = document.id;
 
+        if (args.publish) {
+          await dataSource.publishCurrentVersion(document.id!);
+        }
+
         final versions = await dataSource.getDocumentVersions(document.id!);
         if (versions.versions.isNotEmpty) {
-          final versionId = versions.versions.first.id!;
-          selectedVersionId.value = versionId;
-
-          if (args.publish) {
-            await dataSource.publishDocumentVersion(versionId);
-          }
+          selectedVersionId.value = versions.versions.first.id!;
         }
 
         documentsContainer(
@@ -313,20 +312,6 @@ class DeskViewModel {
   // ============================================================
   // Version Status Operations
   // ============================================================
-
-  late final publishVersion = mutationSignal<DocumentVersion?, String>((
-    versionId,
-  ) async {
-    final result = await dataSource.publishDocumentVersion(versionId);
-
-    final docId = selectedDocumentId.value;
-    if (docId != null) {
-      versionsContainer(docId).awaitableReload();
-    }
-    documentDataContainer(versionId).awaitableReload();
-
-    return result;
-  }, debugLabel: 'publishVersion');
 
   late final archiveVersion = mutationSignal<DocumentVersion?, String>((
     versionId,
