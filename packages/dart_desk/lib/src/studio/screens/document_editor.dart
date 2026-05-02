@@ -32,6 +32,25 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
   Timer? _autosaveTimer;
   final List<EffectCleanup> _effectCleanups = [];
 
+  /// Tracks the document id and data snapshot for any pending autosave so that
+  /// we can flush to the correct document when the selection changes.
+  String? _pendingFlushDocId;
+  Map<String, dynamic>? _pendingFlushData;
+
+  void _flushPendingAutosave() {
+    final flushDocId = _pendingFlushDocId;
+    final flushData = _pendingFlushData;
+    if (flushDocId == null || flushData == null) return;
+    _pendingFlushDocId = null;
+    _pendingFlushData = null;
+    final documentVM = GetIt.I<DeskDocumentViewModel>();
+    // Fire-and-forget — the status pill reflects any resulting error state.
+    documentVM.updateData.run((
+      documentId: flushDocId,
+      updates: Map<String, dynamic>.from(flushData),
+    ));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -44,8 +63,22 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
 
         if (docId == null || !dirty) return;
 
+        // If the document has switched and there are pending edits for the
+        // previous document, flush them synchronously before starting a new
+        // autosave cycle for the current document.
+        if (_pendingFlushDocId != null && _pendingFlushDocId != docId) {
+          _autosaveTimer?.cancel();
+          _autosaveTimer = null;
+          _flushPendingAutosave();
+        }
+
+        _pendingFlushDocId = docId;
+        _pendingFlushData = Map<String, dynamic>.from(data);
+
         _autosaveTimer?.cancel();
         _autosaveTimer = Timer(const Duration(seconds: 1), () async {
+          _pendingFlushDocId = null;
+          _pendingFlushData = null;
           try {
             await documentVM.updateData.run((
               documentId: docId,
@@ -53,7 +86,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
             ));
             documentVM.isDirty.value = false;
           } catch (_) {
-            // Status pill (Task 14) reflects error state.
+            // Status pill reflects error state.
           }
         });
       }),
@@ -62,7 +95,13 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
 
   @override
   void dispose() {
-    _autosaveTimer?.cancel();
+    if (_autosaveTimer?.isActive == true) {
+      _autosaveTimer!.cancel();
+      _autosaveTimer = null;
+      _flushPendingAutosave();
+    } else {
+      _autosaveTimer?.cancel();
+    }
     for (final cleanup in _effectCleanups) {
       cleanup();
     }
