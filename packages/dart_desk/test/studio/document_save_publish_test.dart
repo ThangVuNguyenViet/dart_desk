@@ -109,126 +109,34 @@ void main() {
   // which caused the editor to fall back to stale version snapshot data and
   // made focused text fields revert to old values.
   // After the fix: only `isDirty` is cleared; `editedData` keeps its values.
+  //
+  // The Save button has been removed (Task 13: debounced autosave).
+  // TODO(Task 16): rewrite save-button tests for autosave path (advance fake
+  // time, assert dataSource.updateDocumentData was called).
   // =========================================================================
 
   group('Bug 1: editedData retained after save', () {
-    testWidgets('editedData keeps its value after Save completes', (
-      tester,
-    ) async {
-      final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
-      final doc = docs.documents.first;
+    // TODO(Task 16): rewrite for autosave — Save button removed in Task 13.
+    // testWidgets('editedData keeps its value after Save completes', ...);
 
-      await tester.pumpWidget(
-        _buildEditorApp(
-          dataSource: dataSource,
-          docType: allFieldsDocumentType,
-          onBuilt: (context) {
-            final docVM = GetIt.I<DeskDocumentViewModel>();
-            // Seed editedData first so the defaults effect won't overwrite it.
-            docVM.editedData.value = {'string_field': 'user edited value'};
-            docVM.documentId.value = doc.id!;
-            docVM.isDirty.value = true;
-          },
-        ),
-      );
-      await tester.pump();
+    // TODO(Task 16): rewrite for autosave — Save button removed in Task 13.
+    // testWidgets('isDirty is false after Save completes', ...);
 
-      // Save button is visible because isDirty = true.
-      expect(find.byKey(const ValueKey('save_document_button')), findsOneWidget);
-
-      await tester.tap(find.byKey(const ValueKey('save_document_button')));
-      await tester.pumpAndSettle();
-
-      final docVM = GetIt.I<DeskDocumentViewModel>();
-
-      // editedData must NOT be cleared — the editor should keep showing the
-      // saved value rather than reverting to defaults or an empty state.
-      expect(
-        docVM.editedData.value,
-        isNotEmpty,
-        reason: 'editedData must not be cleared after save',
-      );
-      expect(
-        docVM.editedData['string_field'],
-        'user edited value',
-        reason: 'editedData must retain the value that was saved',
-      );
-    });
-
-    testWidgets('isDirty is false after Save completes', (tester) async {
-      final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
-      final doc = docs.documents.first;
-
-      await tester.pumpWidget(
-        _buildEditorApp(
-          dataSource: dataSource,
-          docType: allFieldsDocumentType,
-          onBuilt: (context) {
-            final docVM = GetIt.I<DeskDocumentViewModel>();
-            docVM.editedData.value = {'string_field': 'some change'};
-            docVM.documentId.value = doc.id!;
-            docVM.isDirty.value = true;
-          },
-        ),
-      );
-      await tester.pump();
-
-      await tester.tap(find.byKey(const ValueKey('save_document_button')));
-      await tester.pumpAndSettle();
-
-      expect(
-        GetIt.I<DeskDocumentViewModel>().isDirty.value,
-        isFalse,
-        reason: 'isDirty must be cleared after a successful save',
-      );
-    });
-
-    testWidgets('Discard hidden + Save disabled after Save (isDirty = false)', (
-      tester,
-    ) async {
-      final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
-      final doc = docs.documents.first;
-
-      await tester.pumpWidget(
-        _buildEditorApp(
-          dataSource: dataSource,
-          docType: allFieldsDocumentType,
-          onBuilt: (context) {
-            final docVM = GetIt.I<DeskDocumentViewModel>();
-            docVM.editedData.value = {'string_field': 'change'};
-            docVM.documentId.value = doc.id!;
-            docVM.isDirty.value = true;
-          },
-        ),
-      );
-      await tester.pump();
-
-      expect(find.byKey(const ValueKey('discard_document_button')), findsOneWidget);
-
-      await tester.tap(find.byKey(const ValueKey('save_document_button')));
-      await tester.pumpAndSettle();
-
-      // Discard goes away; Save stays visible but disabled.
-      expect(
-        find.byKey(const ValueKey('discard_document_button')),
-        findsNothing,
-        reason: 'Discard must be hidden when isDirty is false',
-      );
-      final saveBtn = tester.widget<DeskButton>(
-        find.byKey(const ValueKey('save_document_button')),
-      );
-      expect(
-        saveBtn.onPressed,
-        isNull,
-        reason: 'Save must be disabled when isDirty is false',
-      );
-    });
+    // TODO(Task 16): rewrite for autosave — Save button removed in Task 13.
+    // testWidgets('Discard hidden + Save disabled after Save (isDirty = false)', ...);
 
     testWidgets('editedData keeps its value after Publish completes', (
       tester,
     ) async {
       final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
       final doc = docs.documents.first;
+
+      // Pre-update the document data so MockDataSource sets crdtHlc, making
+      // hasUnpublishedChanges = true and enabling the Publish button.
+      await dataSource.updateDocumentData(
+        doc.id!,
+        {'string_field': 'publish value'},
+      );
 
       await tester.pumpWidget(
         _buildEditorApp(
@@ -239,10 +147,13 @@ void main() {
             docVM.editedData.value = {'string_field': 'publish value'};
             docVM.documentId.value = doc.id!;
             docVM.isDirty.value = true;
+            // selectedDocumentId drives hasUnpublishedChanges on DeskViewModel.
+            GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
           },
         ),
       );
-      await tester.pump();
+      // Let the selectedDocumentContainer async load settle.
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byKey(const ValueKey('publish_document_button')));
       await tester.pumpAndSettle();
@@ -264,63 +175,29 @@ void main() {
   // both Save and Publish. Its `isLoading` state was applied to BOTH buttons,
   // so clicking Save made the Publish button show a spinner too.
   //
-  // After the redesign: Save uses `DeskDocumentViewModel.updateData` and
-  // Publish uses `DeskViewModel.publishCurrentDraft`. Each operation drives
-  // a separate loading signal. The shared `updateData` step (which runs during
-  // both Save and Publish) means both buttons may show loading during the
-  // data-save phase of Publish — this is intentional and correct behavior
-  // (the UI should not allow concurrent mutations).
+  // After the redesign (Task 13): the Save button is removed; autosave handles
+  // data persistence. Publish uses `DeskViewModel.publishCurrentDraft` and
+  // flushes pending autosave before publishing.
+  //
+  // TODO(Task 16): rewrite loading-state tests for autosave path.
   // =========================================================================
 
   group('Bug 2: Save and Publish loading are independent', () {
-    testWidgets('Save shows spinner only on Save button', (tester) async {
-      final hangingDataSource = _HangingDataSource();
-      final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
-      final doc = docs.documents.first;
-
-      await tester.pumpWidget(
-        _buildEditorApp(
-          dataSource: hangingDataSource,
-          docType: allFieldsDocumentType,
-          onBuilt: (context) {
-            final docVM = GetIt.I<DeskDocumentViewModel>();
-            docVM.editedData.value = {'string_field': 'check loading'};
-            docVM.documentId.value = doc.id!;
-            docVM.isDirty.value = true;
-          },
-        ),
-      );
-      await tester.pump();
-
-      // Tap Save — updateDocumentData will hang, so loading stays true.
-      await tester.tap(find.byKey(const ValueKey('save_document_button')));
-      await tester.pump(); // process tap + start async; don't settle
-
-      final saveBtn = tester.widget<DeskButton>(
-        find.byKey(const ValueKey('save_document_button')),
-      );
-      final publishBtn = tester.widget<DeskButton>(
-        find.byKey(const ValueKey('publish_document_button')),
-      );
-
-      expect(
-        saveBtn.loading,
-        isTrue,
-        reason: 'Save button must show loading while save is in progress',
-      );
-      expect(
-        publishBtn.loading,
-        isFalse,
-        reason: 'Publish button must NOT show loading during a pure save operation',
-      );
-    });
+    // TODO(Task 16): rewrite for autosave — Save button removed in Task 13.
+    // testWidgets('Save shows spinner only on Save button', ...);
 
     testWidgets(
-        'Publish shows spinner on Save button (shared updateData step) but NOT after updateData completes without publish starting',
+        'Publish button is disabled while the flush-save step is in progress',
         (tester) async {
-      final hangingDataSource = _HangingDataSource();
-      final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
+      // Seed and pre-stamp crdtHlc on the hanging data source so
+      // hasUnpublishedChanges is true before the widget mounts.
+      // We use forceSetCrdtHlc to avoid calling updateDocumentData (which hangs).
+      final hangingDataSource = _HangingDataSource()..seedDefaults();
+      final docs = await hangingDataSource.getDocuments(
+        allFieldsDocumentType.name,
+      );
       final doc = docs.documents.first;
+      hangingDataSource.forceSetCrdtHlc(doc.id!, '9999999999999999');
 
       await tester.pumpWidget(
         _buildEditorApp(
@@ -331,30 +208,28 @@ void main() {
             docVM.editedData.value = {'string_field': 'check loading'};
             docVM.documentId.value = doc.id!;
             docVM.isDirty.value = true;
+            GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
           },
         ),
       );
-      await tester.pump();
+      // Let selectedDocumentContainer load so hasUnpublishedChanges resolves.
+      await tester.pumpAndSettle();
 
-      // Tap Publish — updateDocumentData will hang (it's a shared first step).
+      // Tap Publish — updateDocumentData will hang (it's the flush-save step).
       await tester.tap(find.byKey(const ValueKey('publish_document_button')));
       await tester.pump();
 
-      final saveBtn = tester.widget<DeskButton>(
-        find.byKey(const ValueKey('save_document_button')),
-      );
       final publishBtn = tester.widget<DeskButton>(
         find.byKey(const ValueKey('publish_document_button')),
       );
 
-      // During publish: updateData runs first (shared with save path).
-      // Both buttons are in "any busy" state — neither is independently
-      // clickable. The save button shows loading (updateData.isLoading = true).
-      // The publish button also shows loading (isAnyBusy = true includes it).
+      // During the flush-save step: updateData.isLoading = true → isAnyBusy = true
+      // → Publish button onPressed is null (disabled). The spinner shows once
+      // publishCurrentDraft itself starts (after updateData completes).
       expect(
-        saveBtn.loading || publishBtn.loading,
-        isTrue,
-        reason: 'At least one button must show loading while publish is in progress',
+        publishBtn.onPressed,
+        isNull,
+        reason: 'Publish button must be disabled while its flush-save step is in progress',
       );
     });
   });

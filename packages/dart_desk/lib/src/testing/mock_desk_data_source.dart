@@ -290,6 +290,16 @@ class MockDataSource implements DataSource {
     );
   }
 
+  /// Test helper: forcibly sets crdtHlc on a document without going through
+  /// the full updateDocumentData path. Useful when that method is overridden
+  /// in a subclass (e.g. _HangingDataSource) to simulate in-flight requests.
+  void forceSetCrdtHlc(String documentId, String hlc) {
+    final doc = _documents[documentId];
+    if (doc != null) {
+      _documents[documentId] = doc.copyWith(crdtHlc: hlc);
+    }
+  }
+
   @override
   Future<DeskDocument?> getDocument(String documentId) async {
     return _documents[documentId];
@@ -513,9 +523,12 @@ class MockDataSource implements DataSource {
     final doc = _documents[documentId]!;
     final updatedData = Map<String, dynamic>.from(doc.activeVersionData ?? {});
     updatedData.addAll(updates);
+    // Advance crdtHlc so hasUnpublishedChanges can detect unsaved changes.
+    final hlc = DateTime.now().microsecondsSinceEpoch.toString();
     _documents[documentId] = doc.copyWith(
       activeVersionData: updatedData,
       updatedAt: DateTime.now(),
+      crdtHlc: hlc,
     );
 
     return _documents[documentId]!;
@@ -548,6 +561,15 @@ class MockDataSource implements DataSource {
     // Create a new version snapshot and immediately publish it.
     final version = await createDocumentVersion(documentId);
     final published = await publishDocumentVersion(version.id!);
+    // Stamp snapshotHlc so hasUnpublishedChanges can detect the publish boundary.
+    final doc = _documents[documentId];
+    final hlc = doc?.crdtHlc ?? DateTime.now().microsecondsSinceEpoch.toString();
+    for (final docVersions in _versions.values) {
+      if (docVersions.containsKey(published!.id)) {
+        docVersions[published.id!] = published.copyWith(snapshotHlc: hlc);
+        return docVersions[published.id!]!;
+      }
+    }
     return published!;
   }
 

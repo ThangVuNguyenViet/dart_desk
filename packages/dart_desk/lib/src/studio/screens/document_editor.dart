@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -27,54 +29,71 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
   MapSignal<String, dynamic> get editedData =>
       GetIt.I<DeskDocumentViewModel>().editedData;
 
-  Future<void> _performSave({required bool publish}) async {
-    final viewModel = GetIt.I<DeskViewModel>();
-    try {
-      final documentViewModel = GetIt.I<DeskDocumentViewModel>();
-      final docId = documentViewModel.documentId.value;
-      if (docId == null) return;
+  Timer? _autosaveTimer;
+  final List<EffectCleanup> _effectCleanups = [];
 
-      final dataToSave = editedData.value;
+  @override
+  void initState() {
+    super.initState();
+    _effectCleanups.add(
+      effect(() {
+        final documentVM = GetIt.I<DeskDocumentViewModel>();
+        final docId = documentVM.documentId.value;
+        final dirty = documentVM.isDirty.value;
+        final data = documentVM.editedData.value; // tracked
 
-      if (publish) {
-        // Save the current data first, then atomically publish.
-        await documentViewModel.updateData.run((
-          documentId: docId,
-          updates: dataToSave,
-        ));
-        await viewModel.publishCurrentDraft.run(docId);
-      } else {
-        await documentViewModel.updateData.run((
-          documentId: docId,
-          updates: dataToSave,
-        ));
-      }
-      documentViewModel.isDirty.value = false;
+        if (docId == null || !dirty) return;
 
-      if (mounted) {
-        ShadToaster.of(context).show(
-          ShadToast(
-            description: Text(
-              publish
-                  ? 'Document published successfully'
-                  : 'Document saved successfully',
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ShadToaster.of(context).show(
-          ShadToast(
-            description: Text('Failed to ${publish ? 'publish' : 'save'}: $e'),
-          ),
-        );
-      }
-    }
+        _autosaveTimer?.cancel();
+        _autosaveTimer = Timer(const Duration(seconds: 1), () async {
+          try {
+            await documentVM.updateData.run((
+              documentId: docId,
+              updates: Map<String, dynamic>.from(data),
+            ));
+            documentVM.isDirty.value = false;
+          } catch (_) {
+            // Status pill (Task 14) reflects error state.
+          }
+        });
+      }),
+    );
   }
 
-  Future<void> _saveDocument() => _performSave(publish: false);
-  Future<void> _publishDocument() => _performSave(publish: true);
+  @override
+  void dispose() {
+    _autosaveTimer?.cancel();
+    for (final cleanup in _effectCleanups) {
+      cleanup();
+    }
+    super.dispose();
+  }
+
+  Future<void> _publishDocument() async {
+    final viewModel = GetIt.I<DeskViewModel>();
+    final documentVM = GetIt.I<DeskDocumentViewModel>();
+    final docId = documentVM.documentId.value;
+    if (docId == null) return;
+    try {
+      // Flush any pending autosave first.
+      _autosaveTimer?.cancel();
+      await documentVM.updateData.run((
+        documentId: docId,
+        updates: Map<String, dynamic>.from(documentVM.editedData.value),
+      ));
+      documentVM.isDirty.value = false;
+      await viewModel.publishCurrentDraft.run(docId);
+      if (!mounted) return;
+      ShadToaster.of(context).show(const ShadToast(
+        description: Text('Document published successfully'),
+      ));
+    } catch (e) {
+      if (!mounted) return;
+      ShadToaster.of(context).show(ShadToast(
+        description: Text('Failed to publish: $e'),
+      ));
+    }
+  }
 
   void _clearDocument() {
     editedData.value = {for (final f in widget.fields) f.name: null};
@@ -130,6 +149,8 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     final isPublishing = publishStatus.isLoading || createStatus.isLoading;
     final isAnyBusy = isSaving || isPublishing;
 
+    final hasChanges = viewModel.hasUnpublishedChanges.watch(context);
+
     final versionId = viewModel.selectedVersionId.watch(context);
     final versionState = versionId != null
         ? viewModel.documentDataContainer(versionId).watch(context)
@@ -140,20 +161,20 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     if (versionState == null) {
       return _buildEditor(
         edited,
-        isSaving: isSaving,
         isPublishing: isPublishing,
         isAnyBusy: isAnyBusy,
         isVersionLoading: false,
+        hasChanges: hasChanges,
       );
     }
 
     return versionState.map<Widget>(
       loading: () => _buildEditor(
         edited,
-        isSaving: isSaving,
         isPublishing: isPublishing,
         isAnyBusy: isAnyBusy,
         isVersionLoading: true,
+        hasChanges: hasChanges,
       ),
       error: (error, stackTrace) =>
           Center(child: Text('Error loading document: $error')),
@@ -162,10 +183,10 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
         final displayData = edited.isEmpty ? versionDataMap : edited;
         return _buildEditor(
           displayData,
-          isSaving: isSaving,
           isPublishing: isPublishing,
           isAnyBusy: isAnyBusy,
           isVersionLoading: false,
+          hasChanges: hasChanges,
         );
       },
     );
@@ -173,10 +194,10 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
 
   Widget _buildEditor(
     Map<String, dynamic> documentData, {
-    required bool isSaving,
     required bool isPublishing,
     required bool isAnyBusy,
     required bool isVersionLoading,
+    required bool hasChanges,
   }) {
     editedData.watch(context);
     final hasUnsavedChanges =
@@ -227,16 +248,11 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
                 ),
               ],
               DeskButton(
-                key: const ValueKey('save_document_button'),
-                text: 'Save',
-                loading: isSaving,
-                onPressed: (isAnyBusy || !hasUnsavedChanges) ? null : _saveDocument,
-              ),
-              DeskButton(
                 key: const ValueKey('publish_document_button'),
-                text: 'Publish',
+                text: hasChanges ? 'Publish' : 'Published',
                 loading: isPublishing,
-                onPressed: isAnyBusy ? null : _publishDocument,
+                onPressed:
+                    (isAnyBusy || !hasChanges) ? null : _publishDocument,
               ),
             ],
           ),
