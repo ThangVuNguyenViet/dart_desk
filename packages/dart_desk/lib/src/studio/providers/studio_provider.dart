@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../../dart_desk.dart';
 import '../../../studio.dart';
 import '../core/view_models/desk_document_view_model.dart';
+import '../internal/get_it_desk_context.dart';
 
 class StudioProvider extends StatefulWidget {
   const StudioProvider({
@@ -22,6 +23,8 @@ class StudioProvider extends StatefulWidget {
 }
 
 class _StudioProviderState extends State<StudioProvider> {
+  late final GetItDeskContext _deskContext;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +36,7 @@ class _StudioProviderState extends State<StudioProvider> {
     GetIt.I.registerSingleton<DeskDocumentViewModel>(docVM);
     GetIt.I.registerSingleton<DeskViewModel>(deskVM);
     docVM.listenTo(deskVM);
+    _deskContext = GetItDeskContext();
   }
 
   @override
@@ -46,5 +50,6 @@ class _StudioProviderState extends State<StudioProvider> {
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) =>
+      DeskContextScope(context: _deskContext, child: widget.child);
 }

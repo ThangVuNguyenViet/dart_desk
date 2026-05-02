@@ -1,6 +1,7 @@
 import 'package:dart_desk/src/extensions/awaitable_future_signal.dart';
 import 'package:dart_desk/src/studio/components/forms/desk_form.dart';
 import 'package:dart_desk/src/studio/core/view_models/desk_document_view_model.dart';
+import 'package:dart_desk/src/studio/internal/get_it_desk_context.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,7 +17,7 @@ class _HideOnDefault extends DeskCondition {
   const _HideOnDefault();
 
   @override
-  bool evaluate(DeskConditionContext ctx) => ctx.document?.isDefault != true;
+  bool evaluate(DeskContext ctx) => ctx.document?.isDefault != true;
 }
 
 /// Fake view model that returns a fixed [DeskDocument] from [selectedDocument].
@@ -35,7 +36,7 @@ class _FakeViewModel implements DeskDocumentViewModel {
 }
 
 /// Registers a fake [DeskDocumentViewModel] for [doc] in GetIt and waits for
-/// [selectedDocument] to resolve so [GetItConditionContext.document] is
+/// [selectedDocument] to resolve so [GetItDeskContext.document] is
 /// populated before the widget tree is pumped.
 Future<void> _registerVm(DeskDocument? doc) async {
   if (GetIt.I.isRegistered<DeskDocumentViewModel>()) {
@@ -79,9 +80,12 @@ void main() {
     await tester.pumpWidget(
       ShadApp(
         home: Scaffold(
-          body: DeskForm(
-            data: const {},
-            fields: [_gatedField()],
+          body: DeskContextScope(
+            context: GetItDeskContext(),
+            child: DeskForm(
+              data: const {},
+              fields: [_gatedField()],
+            ),
           ),
         ),
       ),
@@ -106,9 +110,12 @@ void main() {
     await tester.pumpWidget(
       ShadApp(
         home: Scaffold(
-          body: DeskForm(
-            data: const {},
-            fields: [_gatedField()],
+          body: DeskContextScope(
+            context: GetItDeskContext(),
+            child: DeskForm(
+              data: const {},
+              fields: [_gatedField()],
+            ),
           ),
         ),
       ),

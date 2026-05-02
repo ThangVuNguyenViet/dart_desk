@@ -7,57 +7,51 @@ import 'package:example_app/screens/menu_screen.dart';
 import 'package:example_app/screens/rewards_screen.dart';
 
 final brandThemeDocumentType = brandThemeTypeSpec.build(
-  builder: (data) {
-    final merged = {...BrandTheme.initialValue.toMap(), ...data};
-    return BrandThemeScreen(config: BrandThemeMapper.fromMap(merged));
+  builder: (context, data) {
+    return BrandThemeScreen(config: BrandThemeMapper.fromMap(data));
   },
 );
 
 final homeDocumentType = homeConfigTypeSpec.build(
-  builder: (data) {
-    final merged = {...HomeConfig.initialValue.toMap(), ...data};
+  builder: (context, data) {
     return HomeScreen(
-      config: HomeConfigMapper.fromMap(merged),
+      config: HomeConfigMapper.fromMap(data),
       theme: BrandTheme.initialValue,
     );
   },
 );
 
 final kioskDocumentType = kioskConfigTypeSpec.build(
-  builder: (data) {
-    final merged = {...KioskConfig.initialValue.toMap(), ...data};
+  builder: (context, data) {
     return KioskScreen(
-      config: KioskConfigMapper.fromMap(merged),
+      config: KioskConfigMapper.fromMap(data),
       theme: BrandTheme.initialValue,
     );
   },
 );
 
 final chefDocumentType = chefConfigTypeSpec.build(
-  builder: (data) {
-    final merged = {...ChefConfig.initialValue.toMap(), ...data};
+  builder: (context, data) {
     return ChefScreen(
-      config: ChefConfigMapper.fromMap(merged),
+      config: ChefConfigMapper.fromMap(data),
       theme: BrandTheme.initialValue,
     );
   },
 );
 
 final menuDocumentType = menuConfigTypeSpec.build(
-  builder: (data) {
-    final merged = {...MenuConfig.initialValue.toMap(), ...data};
+  builder: (context, data) {
     return MenuScreen(
-      config: MenuConfigMapper.fromMap(merged),
+      config: MenuConfigMapper.fromMap(data),
       theme: BrandTheme.initialValue,
     );
   },
 );
 
 final rewardsDocumentType = rewardsConfigTypeSpec.build(
-  builder: (data) {
-    final merged = {...RewardsConfig.initialValue.toMap(), ...data};
+  builder: (context, data) {
     return RewardsScreen(
-      config: RewardsConfigMapper.fromMap(merged),
+      config: RewardsConfigMapper.fromMap(data),
       theme: BrandTheme.initialValue,
     );
   },

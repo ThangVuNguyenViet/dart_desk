@@ -54,7 +54,7 @@ final blogPostType = DocumentType<BlogPost>(
       option: DeskImageOption(hotspot: true),
     ),
   ],
-  builder: (data) => Text(data['title'] as String? ?? 'Untitled'),
+  builder: (context, data) => Text(data['title'] as String? ?? 'Untitled'),
   initialValue: const BlogPost(title: 'New Post', body: ''),
 );
 
