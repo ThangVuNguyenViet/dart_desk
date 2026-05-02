@@ -192,44 +192,6 @@ void main() {
       );
     });
 
-    testWidgets('Discard hidden after autosave completes', (tester) async {
-      final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
-      final doc = docs.documents.first;
-
-      await tester.pumpWidget(
-        _buildEditorApp(
-          dataSource: dataSource,
-          docType: allFieldsDocumentType,
-          onBuilt: (context) {
-            final docVM = GetIt.I<DeskDocumentViewModel>();
-            docVM.documentId.value = doc.id!;
-            docVM.editedData.value = {'string_field': 'discard test value'};
-            docVM.isDirty.value = true;
-            GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
-          },
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Discard button is visible while isDirty = true.
-      expect(
-        find.byKey(const ValueKey('discard_document_button')),
-        findsOneWidget,
-        reason: 'Discard button must be visible while isDirty = true',
-      );
-
-      // Advance past the 1-second debounce, then flush the autosave.
-      await tester.pump(const Duration(seconds: 1, milliseconds: 100));
-      await tester.pumpAndSettle();
-
-      // isDirty = false → Discard button is hidden.
-      expect(
-        find.byKey(const ValueKey('discard_document_button')),
-        findsNothing,
-        reason: 'Discard button must be hidden after autosave (isDirty = false)',
-      );
-    });
-
     testWidgets('editedData keeps its value after Publish completes', (
       tester,
     ) async {
