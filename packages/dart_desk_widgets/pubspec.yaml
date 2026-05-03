@@ -1,6 +1,6 @@
 name: dart_desk_widgets
 description: Runtime Flutter widgets for rendering Dart Desk content — hotspot/crop-aware image framing and related primitives.
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/ThangVuNguyenViet/dart_desk
 repository: https://github.com/ThangVuNguyenViet/dart_desk
 issue_tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues
