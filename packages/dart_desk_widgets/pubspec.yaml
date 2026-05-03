@@ -6,8 +6,10 @@ repository: https://github.com/ThangVuNguyenViet/dart_desk
 issue_tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: ^3.10.1
   flutter: ">=3.0.0"
+
+resolution: workspace
 
 dependencies:
   flutter:
@@ -17,4 +19,4 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
+  flutter_lints: ^6.0.0
