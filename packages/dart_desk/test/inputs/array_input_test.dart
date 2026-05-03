@@ -314,6 +314,8 @@ void main() {
       testWidgets('save emits a new list reference, not the internal list', (
         tester,
       ) async {
+        // Live-preview mode: keystrokes also fire onChanged, so we look at
+        // the emissions that happen at Save time rather than counting total.
         final received = <List?>[];
 
         await tester.pumpWidget(
@@ -343,12 +345,14 @@ void main() {
         await tester.tap(find.text('Save'));
         await tester.pumpAndSettle();
 
-        expect(received.length, 2);
-        // Each call must emit a distinct list instance
-        expect(identical(received[0], received[1]), isFalse);
-        // The first emission must not have been mutated by the second add
-        expect(received[0], ['A', 'B']);
-        expect(received[1], ['A', 'B', 'C']);
+        // Find the two emissions whose contents match the post-save states.
+        final saveB =
+            received.lastWhere((v) => v != null && v.length == 2 && v[1] == 'B');
+        final saveC = received.last;
+        expect(saveB, ['A', 'B']);
+        expect(saveC, ['A', 'B', 'C']);
+        // Distinct list instances; earlier snapshot not retroactively mutated.
+        expect(identical(saveB, saveC), isFalse);
       });
 
       testWidgets('delete emits a new list reference', (tester) async {
@@ -440,12 +444,128 @@ void main() {
           await tester.tap(find.byIcon(FontAwesomeIcons.trash).first);
           await tester.pumpAndSettle();
 
-          expect(received.length, 2);
-          // First snapshot must not have been mutated retroactively
-          expect(received[0], ['A', 'B']);
-          expect(received[1], ['B']);
+          // After Save we expect ['A','B']; after delete-of-A we expect ['B'].
+          // Live-preview streams more emissions; pick the relevant ones.
+          final saveAB = received.lastWhere(
+            (v) => v != null && v.length == 2 && v[0] == 'A' && v[1] == 'B',
+          );
+          expect(saveAB, ['A', 'B']);
+          expect(received.last, ['B']);
         },
       );
+    });
+
+    group('live preview', () {
+      testWidgets('typing on a new item streams onChanged with merged list', (
+        tester,
+      ) async {
+        final received = <List?>[];
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskArrayInput(
+              field: field,
+              data: DeskData(value: List<String>.from(['A']), path: 'tags'),
+              onChanged: received.add,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Add'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(ShadInputFormField).last, 'hi');
+        await tester.pump();
+
+        // Before Save, the parent should already have seen ['A','hi'].
+        expect(received.last, ['A', 'hi']);
+      });
+
+      testWidgets('typing on an existing item streams onChanged in place', (
+        tester,
+      ) async {
+        final received = <List?>[];
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskArrayInput(
+              field: field,
+              data: DeskData(
+                value: List<String>.from(['old', 'other']),
+                path: 'tags',
+              ),
+              onChanged: received.add,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Edit first item
+        await tester.tap(find.byIcon(FontAwesomeIcons.pen).first);
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(ShadInputFormField).last, 'new');
+        await tester.pump();
+
+        // Before Save, parent sees the edited list.
+        expect(received.last, ['new', 'other']);
+      });
+
+      testWidgets('cancel on new item reverts preview (does not append)', (
+        tester,
+      ) async {
+        final received = <List?>[];
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskArrayInput(
+              field: field,
+              data: DeskData(value: List<String>.from(['A']), path: 'tags'),
+              onChanged: received.add,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Add'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(ShadInputFormField).last, 'draft');
+        await tester.pump();
+        // Sanity: streamed during typing
+        expect(received.last, ['A', 'draft']);
+
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+
+        // Final emission reverts the preview to committed state.
+        expect(received.last, ['A']);
+      });
+
+      testWidgets('cancel on existing item reverts preview to original', (
+        tester,
+      ) async {
+        final received = <List?>[];
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskArrayInput(
+              field: field,
+              data: DeskData(
+                value: List<String>.from(['original']),
+                path: 'tags',
+              ),
+              onChanged: received.add,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byIcon(FontAwesomeIcons.pen).first);
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(ShadInputFormField).last, 'mutated');
+        await tester.pump();
+        expect(received.last, ['mutated']);
+
+        await tester.tap(find.text('Cancel'));
+        await tester.pumpAndSettle();
+
+        expect(received.last, ['original']);
+      });
     });
   });
 }
