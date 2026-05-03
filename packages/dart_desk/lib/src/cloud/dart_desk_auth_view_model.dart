@@ -162,9 +162,13 @@ class DartDeskAuthViewModel {
   }
 
   void _onAuthChanged() {
-    _authInfo.value = sessionManager.authInfoListenable.value;
-    // Dependency change → currentUser auto-reloads as AsyncDataReloading,
-    // keeping any prior value visible until the new fetch resolves.
+    final next = sessionManager.authInfoListenable.value;
+    final prev = _authInfo.value;
+    // Silent token refresh: same identity, just a rotated access/refresh
+    // token. Skip the signal write — otherwise currentUser flashes through
+    // AsyncDataReloading and the UI tears down briefly.
+    if (prev?.authUserId == next?.authUserId) return;
+    _authInfo.value = next;
   }
 
   Future<void> signInWithEmail({

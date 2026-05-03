@@ -130,6 +130,81 @@ void main() {
     vm.dispose();
   });
 
+  test(
+    'silent token refresh (same authUserId) does not refetch currentUser',
+    () async {
+      when(() => session.isAuthenticated).thenReturn(true);
+      final user = User(email: 't@example.com');
+      var callCount = 0;
+      when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async {
+        callCount++;
+        return user;
+      });
+
+      final userId = UuidValue.fromString(
+        '00000000-0000-4000-8000-000000000001',
+      );
+      final first = _MockAuthSuccess();
+      when(() => first.authUserId).thenReturn(userId);
+      authNotifier.value = first;
+
+      final vm = build();
+      vm.currentUser.value;
+      await vm.start();
+      await settle();
+      expect(callCount, 1);
+
+      // Simulate a silent token refresh: SessionManager emits a new
+      // AuthSuccess instance with the same authUserId (rotated tokens).
+      final refreshed = _MockAuthSuccess();
+      when(() => refreshed.authUserId).thenReturn(userId);
+      authNotifier.value = refreshed;
+      await settle();
+
+      expect(callCount, 1, reason: 'silent refresh should not refetch user');
+      expect((vm.currentUser.value as AsyncData<User?>).value, user);
+
+      vm.dispose();
+    },
+  );
+
+  test(
+    'identity change (different authUserId) triggers refetch',
+    () async {
+      when(() => session.isAuthenticated).thenReturn(true);
+      final userA = User(email: 'a@example.com');
+      final userB = User(email: 'b@example.com');
+      var callCount = 0;
+      when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async {
+        callCount++;
+        return callCount == 1 ? userA : userB;
+      });
+
+      final idA = UuidValue.fromString('00000000-0000-4000-8000-00000000000a');
+      final idB = UuidValue.fromString('00000000-0000-4000-8000-00000000000b');
+      final first = _MockAuthSuccess();
+      when(() => first.authUserId).thenReturn(idA);
+      authNotifier.value = first;
+
+      final vm = build();
+      vm.currentUser.value;
+      await vm.start();
+      await settle();
+      expect((vm.currentUser.value as AsyncData<User?>).value, userA);
+
+      // Account switch: different authUserId.
+      final second = _MockAuthSuccess();
+      when(() => second.authUserId).thenReturn(idB);
+      authNotifier.value = second;
+      await settle();
+
+      expect(callCount, 2);
+      expect((vm.currentUser.value as AsyncData<User?>).value, userB);
+
+      vm.dispose();
+    },
+  );
+
   test('auth listener flipping to authenticated triggers reload', () async {
     var authed = false;
     when(() => session.isAuthenticated).thenAnswer((_) => authed);
@@ -145,7 +220,11 @@ void main() {
     // Simulate successful sign-in completing: isAuthenticated flips true and
     // the listenable fires with a fresh AuthSuccess.
     authed = true;
-    authNotifier.value = _MockAuthSuccess();
+    final auth = _MockAuthSuccess();
+    when(() => auth.authUserId).thenReturn(
+      UuidValue.fromString('00000000-0000-4000-8000-000000000099'),
+    );
+    authNotifier.value = auth;
     await settle();
 
     expect((vm.currentUser.value as AsyncData<User?>).value, user);
