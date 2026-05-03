@@ -37,6 +37,8 @@ class DeskFrame extends StatelessWidget {
           crop: ref.crop ?? FramingDefaults.defaultCrop,
           hotspot: ref.hotspot ?? FramingDefaults.defaultHotspot,
           fit: fit,
+          scale: ref.scale,
+          offset: ref.offset,
         );
 
         return ClipRect(

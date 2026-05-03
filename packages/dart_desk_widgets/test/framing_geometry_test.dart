@@ -54,4 +54,104 @@ void main() {
       expect(geom.childRect, const Rect.fromLTWH(-50, -50, 200, 200));
     });
   });
+
+  group('FramingMath scale + offset', () {
+    test('identity transform produces same result as absent transform', () {
+      final base = FramingMath.frameGeometry(
+        boxSize: const Size(200, 200),
+        sourceSize: const Size(800, 400),
+        crop: FramingDefaults.defaultCrop,
+        hotspot: FramingDefaults.defaultHotspot,
+        fit: BoxFit.cover,
+      );
+      final identity = FramingMath.frameGeometry(
+        boxSize: const Size(200, 200),
+        sourceSize: const Size(800, 400),
+        crop: FramingDefaults.defaultCrop,
+        hotspot: FramingDefaults.defaultHotspot,
+        fit: BoxFit.cover,
+        scale: 1.0,
+        offset: Offset.zero,
+      );
+      expect(identity.childRect, base.childRect);
+    });
+
+    test('scale 0.5 halves the rendered child size', () {
+      final base = FramingMath.frameGeometry(
+        boxSize: const Size(200, 200),
+        sourceSize: const Size(800, 400),
+        crop: FramingDefaults.defaultCrop,
+        hotspot: FramingDefaults.defaultHotspot,
+        fit: BoxFit.cover,
+      );
+      final scaled = FramingMath.frameGeometry(
+        boxSize: const Size(200, 200),
+        sourceSize: const Size(800, 400),
+        crop: FramingDefaults.defaultCrop,
+        hotspot: FramingDefaults.defaultHotspot,
+        fit: BoxFit.cover,
+        scale: 0.5,
+      );
+      expect(scaled.childRect.width, closeTo(base.childRect.width * 0.5, 0.01));
+      expect(scaled.childRect.height, closeTo(base.childRect.height * 0.5, 0.01));
+    });
+
+    test('offset(0.1, 0) shifts child rect right by 10% of box width', () {
+      final base = FramingMath.frameGeometry(
+        boxSize: const Size(200, 200),
+        sourceSize: const Size(800, 400),
+        crop: FramingDefaults.defaultCrop,
+        hotspot: FramingDefaults.defaultHotspot,
+        fit: BoxFit.cover,
+      );
+      final shifted = FramingMath.frameGeometry(
+        boxSize: const Size(200, 200),
+        sourceSize: const Size(800, 400),
+        crop: FramingDefaults.defaultCrop,
+        hotspot: FramingDefaults.defaultHotspot,
+        fit: BoxFit.cover,
+        offset: const Offset(0.1, 0),
+      );
+      expect(shifted.childRect.left - base.childRect.left, closeTo(20.0, 0.01));
+    });
+
+    test('non-identity transform skips cover-clamp (allows exposed edges)', () {
+      final clamped = FramingMath.frameGeometry(
+        boxSize: const Size(200, 200),
+        sourceSize: const Size(800, 400),
+        crop: FramingDefaults.defaultCrop,
+        hotspot: const Hotspot(x: 0.99, y: 0.5, width: 0.1, height: 0.1),
+        fit: BoxFit.cover,
+      );
+      final unclamped = FramingMath.frameGeometry(
+        boxSize: const Size(200, 200),
+        sourceSize: const Size(800, 400),
+        crop: FramingDefaults.defaultCrop,
+        hotspot: const Hotspot(x: 0.99, y: 0.5, width: 0.1, height: 0.1),
+        fit: BoxFit.cover,
+        scale: 0.9,
+      );
+      expect(unclamped.childRect.left, lessThan(clamped.childRect.left));
+    });
+
+    test('scale clamps to [0.1, 10]', () {
+      final tooSmall = FramingMath.frameGeometry(
+        boxSize: const Size(200, 200),
+        sourceSize: const Size(800, 400),
+        crop: FramingDefaults.defaultCrop,
+        hotspot: FramingDefaults.defaultHotspot,
+        fit: BoxFit.cover,
+        scale: 0.0001,
+      );
+      final atMin = FramingMath.frameGeometry(
+        boxSize: const Size(200, 200),
+        sourceSize: const Size(800, 400),
+        crop: FramingDefaults.defaultCrop,
+        hotspot: FramingDefaults.defaultHotspot,
+        fit: BoxFit.cover,
+        scale: 0.1,
+      );
+      expect(tooSmall.childRect.width, closeTo(atMin.childRect.width, 0.01));
+    });
+  });
 }

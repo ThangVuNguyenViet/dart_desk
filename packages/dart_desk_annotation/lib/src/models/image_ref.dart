@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'image_types.dart';
 
 /// Unified image reference for dart_desk.
@@ -22,6 +24,18 @@ class ImageReference {
   final CropRect? crop;
   final String? altText;
 
+  /// Multiplier on the BoxFit-derived auto-scale. null or 1.0 = identity.
+  /// Range clamps to [0.1, 10] on render.
+  final double? scale;
+
+  /// Translation in box-relative fractions. null or Offset.zero = identity.
+  /// Range clamps to [-2.0, 2.0] per axis on render.
+  final Offset? offset;
+
+  // TODO(transform-d): rotation (degrees, pivot = hotspot)
+  // TODO(transform-d): skewX, skewY (radians)
+  // TODO(transform-d): flipX, flipY (booleans)
+
   const ImageReference({
     this.assetId,
     this.externalUrl,
@@ -33,6 +47,8 @@ class ImageReference {
     this.hotspot,
     this.crop,
     this.altText,
+    this.scale,
+    this.offset,
   });
 
   factory ImageReference.fromMap(Map<String, dynamic> map) => ImageReference(
@@ -50,6 +66,13 @@ class ImageReference {
         ? CropRect.fromJson(map['crop'] as Map<String, dynamic>)
         : null,
     altText: map['altText'] as String?,
+    scale: (map['scale'] as num?)?.toDouble(),
+    offset: map['offset'] != null
+        ? Offset(
+            (map['offset']['dx'] as num).toDouble(),
+            (map['offset']['dy'] as num).toDouble(),
+          )
+        : null,
   );
 
   Map<String, dynamic> toMap() => {
@@ -60,6 +83,8 @@ class ImageReference {
     if (hotspot != null) 'hotspot': hotspot!.toJson(),
     if (crop != null) 'crop': crop!.toJson(),
     if (altText != null) 'altText': altText,
+    if (scale != null) 'scale': scale,
+    if (offset != null) 'offset': {'dx': offset!.dx, 'dy': offset!.dy},
   };
 
   static bool isImageReference(Map<String, dynamic> map) =>
@@ -81,28 +106,40 @@ class ImageReference {
     return null;
   }
 
+  static const Object _unset = Object();
+
+  /// Every parameter accepts an explicit `null` to clear the field — passing
+  /// `null` clears, omitting preserves. The `_unset` sentinel distinguishes
+  /// "caller omitted" from "caller wants null."
   ImageReference copyWith({
-    String? assetId,
-    String? externalUrl,
-    String? publicUrl,
-    int? width,
-    int? height,
-    String? blurHash,
-    String? lqip,
-    Hotspot? hotspot,
-    CropRect? crop,
-    String? altText,
+    Object? assetId = _unset,
+    Object? externalUrl = _unset,
+    Object? publicUrl = _unset,
+    Object? width = _unset,
+    Object? height = _unset,
+    Object? blurHash = _unset,
+    Object? lqip = _unset,
+    Object? hotspot = _unset,
+    Object? crop = _unset,
+    Object? altText = _unset,
+    Object? scale = _unset,
+    Object? offset = _unset,
   }) => ImageReference(
-    assetId: assetId ?? this.assetId,
-    externalUrl: externalUrl ?? this.externalUrl,
-    publicUrl: publicUrl ?? this.publicUrl,
-    width: width ?? this.width,
-    height: height ?? this.height,
-    blurHash: blurHash ?? this.blurHash,
-    lqip: lqip ?? this.lqip,
-    hotspot: hotspot ?? this.hotspot,
-    crop: crop ?? this.crop,
-    altText: altText ?? this.altText,
+    assetId: identical(assetId, _unset) ? this.assetId : assetId as String?,
+    externalUrl:
+        identical(externalUrl, _unset) ? this.externalUrl : externalUrl as String?,
+    publicUrl:
+        identical(publicUrl, _unset) ? this.publicUrl : publicUrl as String?,
+    width: identical(width, _unset) ? this.width : width as int?,
+    height: identical(height, _unset) ? this.height : height as int?,
+    blurHash:
+        identical(blurHash, _unset) ? this.blurHash : blurHash as String?,
+    lqip: identical(lqip, _unset) ? this.lqip : lqip as String?,
+    hotspot: identical(hotspot, _unset) ? this.hotspot : hotspot as Hotspot?,
+    crop: identical(crop, _unset) ? this.crop : crop as CropRect?,
+    altText: identical(altText, _unset) ? this.altText : altText as String?,
+    scale: identical(scale, _unset) ? this.scale : scale as double?,
+    offset: identical(offset, _unset) ? this.offset : offset as Offset?,
   );
 
   @override
@@ -115,11 +152,13 @@ class ImageReference {
           publicUrl == other.publicUrl &&
           hotspot == other.hotspot &&
           crop == other.crop &&
-          altText == other.altText;
+          altText == other.altText &&
+          scale == other.scale &&
+          offset == other.offset;
 
   @override
   int get hashCode =>
-      Object.hash(assetId, externalUrl, publicUrl, hotspot, crop, altText);
+      Object.hash(assetId, externalUrl, publicUrl, hotspot, crop, altText, scale, offset);
 
   @override
   String toString() =>

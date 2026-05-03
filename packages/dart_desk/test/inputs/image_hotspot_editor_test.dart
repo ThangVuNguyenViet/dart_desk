@@ -61,8 +61,33 @@ void main() {
       expect(callCount, 0);
     });
 
+    testWidgets('transform mode segment is selectable', (tester) async {
+      FramingMode? lastMode;
+
+      await tester.pumpWidget(
+        buildInputApp(
+          ImageHotspotEditor(
+            imageUrl: 'https://test.example.com/image.png',
+            onModeChanged: (value) => lastMode = value,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const ValueKey('framing_mode_transform')),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const ValueKey('framing_mode_transform')));
+      await tester.pump();
+
+      expect(lastMode, FramingMode.transform);
+    });
+
     testWidgets('reset focus preserves crop', (tester) async {
-      late ({Hotspot? hotspot, CropRect? crop}) result;
+      late ({Hotspot? hotspot, CropRect? crop, double? scale, Offset? offset})
+      result;
 
       await tester.pumpWidget(
         buildInputApp(
@@ -103,6 +128,27 @@ void main() {
       expect(result.hotspot!.y, FramingDefaults.defaultHotspot.y);
       expect(result.hotspot!.width, FramingDefaults.defaultHotspot.width);
       expect(result.hotspot!.height, FramingDefaults.defaultHotspot.height);
+    });
+
+    testWidgets('onLiveChange fires when mode changes', (tester) async {
+      int liveCount = 0;
+
+      await tester.pumpWidget(
+        buildInputApp(
+          ImageHotspotEditor(
+            imageUrl: 'https://test.example.com/image.png',
+            onLiveChange: (_) => liveCount++,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final initialCount = liveCount;
+      await tester.tap(find.byKey(const ValueKey('framing_mode_crop')));
+      await tester.pump();
+
+      expect(liveCount, greaterThan(initialCount));
     });
 
     testWidgets('calls onModeChanged when switching modes', (tester) async {

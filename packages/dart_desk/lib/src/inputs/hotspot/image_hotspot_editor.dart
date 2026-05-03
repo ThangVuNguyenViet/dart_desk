@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
@@ -14,8 +15,18 @@ class ImageHotspotEditor extends StatefulWidget {
   final Hotspot? initialHotspot;
   final CropRect? initialCrop;
   final FramingMode initialMode;
+  final double? initialScale;
+  final Offset? initialOffset;
   final ValueChanged<FramingMode>? onModeChanged;
-  final ValueChanged<({Hotspot? hotspot, CropRect? crop})> onChanged;
+  final ValueChanged<
+    ({Hotspot? hotspot, CropRect? crop, double? scale, Offset? offset})
+  >
+  onChanged;
+  final ValueChanged<
+    ({Hotspot? hotspot, CropRect? crop, double? scale, Offset? offset})
+  >?
+  onLiveChange;
+  final VoidCallback? onCancel;
 
   const ImageHotspotEditor({
     super.key,
@@ -23,8 +34,12 @@ class ImageHotspotEditor extends StatefulWidget {
     this.initialHotspot,
     this.initialCrop,
     this.initialMode = FramingMode.focus,
+    this.initialScale,
+    this.initialOffset,
     this.onModeChanged,
     required this.onChanged,
+    this.onLiveChange,
+    this.onCancel,
   });
 
   @override
@@ -38,9 +53,21 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
       crop: widget.initialCrop,
       hotspot: widget.initialHotspot,
       mode: widget.initialMode,
+      scale: widget.initialScale,
+      offset: widget.initialOffset,
     ),
   );
   late final _loadFailed = createSignal<bool>(false);
+
+  late final _liveEffect = createEffect(() {
+    final d = _draft.value;
+    widget.onLiveChange?.call((
+      hotspot: d.hotspot,
+      crop: d.crop,
+      scale: d.scale,
+      offset: d.offset,
+    ));
+  });
 
   // Track which element is being dragged
   String? _dragTarget;
@@ -51,6 +78,7 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
   @override
   void initState() {
     super.initState();
+    _liveEffect; // registers the effect; auto-disposed by SignalsMixin
     _loadImageDimensions();
   }
 
@@ -121,54 +149,122 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                         return MouseRegion(
                           cursor: draft.mode == FramingMode.preview
                               ? SystemMouseCursors.basic
+                              : draft.mode == FramingMode.transform
+                              ? SystemMouseCursors.move
                               : SystemMouseCursors.grab,
-                          child: GestureDetector(
-                            onPanStart: draft.mode == FramingMode.preview
-                                ? null
-                                : (details) =>
-                                      _onPanStart(details, constraints.biggest),
-                            onPanUpdate: draft.mode == FramingMode.preview
-                                ? null
-                                : (details) => _onPanUpdate(
-                                    details,
-                                    constraints.biggest,
-                                  ),
-                            onPanEnd: (_) => _dragTarget = null,
-                            child: Stack(
-                              children: [
-                                Positioned.fill(
-                                  child: Image.network(
-                                    widget.imageUrl,
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) {
-                                            if (mounted) {
-                                              _loadFailed.value = true;
-                                            }
-                                          });
-                                      return const SizedBox.shrink();
-                                    },
-                                  ),
-                                ),
-                                if (draft.mode != FramingMode.focus)
-                                  Positioned.fill(
-                                    child: CustomPaint(
-                                      painter: CropOverlayPainter(
-                                        crop: draft.crop,
-                                        imageSize: constraints.biggest,
+                          child: Listener(
+                            onPointerSignal: draft.mode == FramingMode.transform
+                                ? (event) {
+                                    if (event is PointerScrollEvent) {
+                                      final cur = _draft.value.scale ?? 1.0;
+                                      final next =
+                                          (cur *
+                                                  (1.0 -
+                                                      event.scrollDelta.dy *
+                                                          0.001))
+                                              .clamp(0.1, 10.0);
+                                      _draft.value = _draft.value.copyWith(
+                                        scale: next.toDouble(),
+                                      );
+                                    }
+                                  }
+                                : null,
+                            child: GestureDetector(
+                              onPanStart: draft.mode == FramingMode.preview
+                                  ? null
+                                  : (details) => _onPanStart(
+                                      details,
+                                      constraints.biggest,
+                                    ),
+                              onPanUpdate: draft.mode == FramingMode.preview
+                                  ? null
+                                  : (details) => _onPanUpdate(
+                                      details,
+                                      constraints.biggest,
+                                    ),
+                              onPanEnd: (_) => _dragTarget = null,
+                              child: Stack(
+                                children: [
+                                  if (draft.mode == FramingMode.transform)
+                                    Positioned.fill(
+                                      child: CustomPaint(
+                                        painter: _CheckerboardPainter(),
                                       ),
                                     ),
-                                  ),
-                                if (draft.mode != FramingMode.crop)
                                   Positioned.fill(
-                                    child: CustomPaint(
-                                      painter: HotspotPainter(
-                                        hotspot: draft.hotspot,
+                                    child: draft.mode == FramingMode.transform
+                                        ? Transform.translate(
+                                            offset: Offset(
+                                              (draft.offset?.dx ?? 0) *
+                                                  constraints.biggest.width,
+                                              (draft.offset?.dy ?? 0) *
+                                                  constraints.biggest.height,
+                                            ),
+                                            child: Transform.scale(
+                                              scale: draft.scale ?? 1.0,
+                                              child: Image.network(
+                                                widget.imageUrl,
+                                                fit: BoxFit.contain,
+                                                errorBuilder:
+                                                    (
+                                                      context,
+                                                      error,
+                                                      stackTrace,
+                                                    ) {
+                                                      WidgetsBinding.instance
+                                                          .addPostFrameCallback(
+                                                            (_) {
+                                                              if (mounted) {
+                                                                _loadFailed
+                                                                        .value =
+                                                                    true;
+                                                              }
+                                                            },
+                                                          );
+                                                      return const SizedBox.shrink();
+                                                    },
+                                              ),
+                                            ),
+                                          )
+                                        : Image.network(
+                                            widget.imageUrl,
+                                            fit: BoxFit.contain,
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                                  WidgetsBinding.instance
+                                                      .addPostFrameCallback((
+                                                        _,
+                                                      ) {
+                                                        if (mounted) {
+                                                          _loadFailed.value =
+                                                              true;
+                                                        }
+                                                      });
+                                                  return const SizedBox.shrink();
+                                                },
+                                          ),
+                                  ),
+                                  if (draft.mode != FramingMode.focus &&
+                                      draft.mode != FramingMode.transform)
+                                    Positioned.fill(
+                                      child: CustomPaint(
+                                        painter: CropOverlayPainter(
+                                          crop: draft.crop,
+                                          imageSize: constraints.biggest,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                              ],
+                                  if (draft.mode != FramingMode.crop &&
+                                      draft.mode != FramingMode.transform)
+                                    Positioned.fill(
+                                      child: CustomPaint(
+                                        painter: HotspotPainter(
+                                          hotspot: draft.hotspot,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         );
@@ -216,6 +312,12 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                     child: const Text('Reset crop'),
                   ),
                   ShadButton.ghost(
+                    key: const ValueKey('reset_transform_button'),
+                    onPressed: () => _draft.value = draft.resetTransform(),
+                    size: ShadButtonSize.sm,
+                    child: const Text('Reset transform'),
+                  ),
+                  ShadButton.ghost(
                     key: const ValueKey('reset_all_button'),
                     onPressed: () => _draft.value = draft.resetAll(),
                     size: ShadButtonSize.sm,
@@ -229,7 +331,10 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                 children: [
                   ShadButton.outline(
                     key: const ValueKey('cancel_button'),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () {
+                      widget.onCancel?.call();
+                      Navigator.of(context).pop();
+                    },
                     size: ShadButtonSize.sm,
                     child: const Text('Cancel'),
                   ),
@@ -254,6 +359,11 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
     final draft = _draft.value;
     final h = draft.hotspot;
     final c = draft.crop;
+
+    if (draft.mode == FramingMode.transform) {
+      _dragTarget = 'transform';
+      return;
+    }
 
     if (draft.mode == FramingMode.focus) {
       final center = Offset(h.x * size.width, h.y * size.height);
@@ -316,6 +426,16 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
     final pos = details.localPosition;
     final draft = _draft.value;
     switch (_dragTarget) {
+      case 'transform':
+        final cur = draft.offset ?? Offset.zero;
+        final next = Offset(
+          cur.dx + details.delta.dx / size.width,
+          cur.dy + details.delta.dy / size.height,
+        );
+        _draft.value = draft.copyWith(
+          offset: Offset(next.dx.clamp(-2.0, 2.0), next.dy.clamp(-2.0, 2.0)),
+        );
+        break;
       case 'hotspot':
         _draft.value = draft.copyWith(
           hotspot: draft.hotspot.copyWith(
@@ -423,8 +543,33 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
 
   void _apply() {
     final draft = _draft.value;
-    widget.onChanged((hotspot: draft.hotspot, crop: draft.crop));
+    widget.onChanged((
+      hotspot: draft.hotspot,
+      crop: draft.crop,
+      scale: draft.scale,
+      offset: draft.offset,
+    ));
   }
+}
+
+class _CheckerboardPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    const tile = 8.0;
+    canvas.drawRect(
+      Offset.zero & size,
+      Paint()..color = const Color(0xFFF2F2F2),
+    );
+    final dark = Paint()..color = const Color(0xFFE2E2E2);
+    for (double y = 0; y < size.height; y += tile) {
+      for (double x = ((y ~/ tile) % 2) * tile; x < size.width; x += tile * 2) {
+        canvas.drawRect(Rect.fromLTWH(x, y, tile, tile), dark);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _ErrorState extends StatelessWidget {

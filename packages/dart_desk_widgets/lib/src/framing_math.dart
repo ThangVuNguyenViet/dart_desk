@@ -52,6 +52,8 @@ class FramingMath {
     required CropRect crop,
     required Hotspot hotspot,
     required BoxFit fit,
+    double? scale,
+    Offset? offset,
   }) {
     final visibleW = sourceSize.width * (1.0 - crop.left - crop.right);
     final visibleH = sourceSize.height * (1.0 - crop.top - crop.bottom);
@@ -64,24 +66,27 @@ class FramingMath {
       );
     }
 
-    final double scale;
+    final double baseScale;
     switch (fit) {
       case BoxFit.cover:
-        scale = (boxSize.width / visibleW) > (boxSize.height / visibleH)
+        baseScale = (boxSize.width / visibleW) > (boxSize.height / visibleH)
             ? boxSize.width / visibleW
             : boxSize.height / visibleH;
         break;
       case BoxFit.contain:
-        scale = (boxSize.width / visibleW) < (boxSize.height / visibleH)
+        baseScale = (boxSize.width / visibleW) < (boxSize.height / visibleH)
             ? boxSize.width / visibleW
             : boxSize.height / visibleH;
         break;
       default:
-        scale = boxSize.width / visibleW;
+        baseScale = boxSize.width / visibleW;
     }
 
-    final childW = sourceSize.width * scale;
-    final childH = sourceSize.height * scale;
+    final userScale = (scale ?? 1.0).clamp(0.1, 10.0).toDouble();
+    final effectiveScale = baseScale * userScale;
+
+    final childW = sourceSize.width * effectiveScale;
+    final childH = sourceSize.height * effectiveScale;
 
     final clamped = clampHotspotToCrop(hotspot, crop);
     final hotspotX = clamped.x * childW;
@@ -95,7 +100,10 @@ class FramingMath {
     final cropRightPx = crop.right * childW;
     final cropBottomPx = crop.bottom * childH;
 
-    if (fit == BoxFit.cover) {
+    final isIdentity = userScale == 1.0 &&
+        (offset == null || offset == Offset.zero);
+
+    if (isIdentity && fit == BoxFit.cover) {
       final maxLeft = -cropLeftPx;
       final minLeft = boxSize.width + cropRightPx - childW;
       if (minLeft >= maxLeft) {
@@ -111,13 +119,20 @@ class FramingMath {
       } else {
         top = top.clamp(minTop, maxTop).toDouble();
       }
-    } else if (fit == BoxFit.contain) {
+    } else if (isIdentity && fit == BoxFit.contain) {
       left =
           (boxSize.width - (childW - cropLeftPx - cropRightPx)) / 2 -
               cropLeftPx;
       top =
           (boxSize.height - (childH - cropTopPx - cropBottomPx)) / 2 -
               cropTopPx;
+    }
+
+    if (offset != null) {
+      final dx = offset.dx.clamp(-2.0, 2.0).toDouble();
+      final dy = offset.dy.clamp(-2.0, 2.0).toDouble();
+      left += dx * boxSize.width;
+      top += dy * boxSize.height;
     }
 
     return FrameGeometry(

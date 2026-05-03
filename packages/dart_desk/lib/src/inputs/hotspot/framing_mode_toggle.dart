@@ -41,6 +41,13 @@ class FramingModeToggle extends StatelessWidget {
             onPressed: () => onChanged(FramingMode.focus),
           ),
           _SegmentButton(
+            key: const ValueKey('framing_mode_transform'),
+            icon: LucideIcons.move,
+            label: 'Transform',
+            selected: mode == FramingMode.transform,
+            onPressed: () => onChanged(FramingMode.transform),
+          ),
+          _SegmentButton(
             key: const ValueKey('framing_mode_preview'),
             icon: LucideIcons.eye,
             label: 'Preview',
