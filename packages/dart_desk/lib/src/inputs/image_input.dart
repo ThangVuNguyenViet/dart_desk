@@ -13,11 +13,11 @@ import '../../studio.dart';
 import '../data/desk_data_source.dart';
 import '../data/models/image_types.dart';
 import 'hotspot/framing_status.dart';
-
-final _log = Logger('dart_desk.inputs.imageInput');
 import 'image_input_view_model.dart';
 import 'optional_field_header.dart';
 import 'optional_field_wrapper.dart';
+
+final _log = Logger('dart_desk.inputs.imageInput');
 
 class DeskImageInput extends StatefulWidget {
   final DeskImageField field;
