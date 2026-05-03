@@ -1,12 +1,14 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 
 import 'package:dart_desk_client/dart_desk_client.dart' as serverpod;
 
 import '../data/data.dart';
 import '../data/models/public_desk_document.dart';
 import '../data/public_content_source.dart';
+
+final _log = Logger('dart_desk.cloud.publicContentSource');
 
 /// Cloud implementation of [PublicContentSource] backed by the Serverpod
 /// `publicContent` endpoint.
@@ -28,8 +30,7 @@ class CloudPublicContentSource implements PublicContentSource {
   /// Logs the error with stack trace and throws a [DeskDataSourceException].
   Never _throw(String message, Object error, [StackTrace? stack]) {
     final st = stack ?? StackTrace.current;
-    debugPrint('[CloudPublicContentSource] $message: $error');
-    debugPrintStack(stackTrace: st, label: 'CloudPublicContentSource');
+    _log.severe(message, error, st);
     throw DeskDataSourceException(message, error);
   }
 

@@ -1,11 +1,14 @@
 import 'package:dart_desk_client/dart_desk_client.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:logging/logging.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 
 import 'dart_desk_auth_view_model.dart';
+
+final _log = Logger('dart_desk.cloud.auth');
 
 /// A widget that provides authentication guard functionality using Serverpod's
 /// IDP authentication system with Google Sign-In and email/password support.
@@ -564,7 +567,7 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
                               // _onAuthChanged will pick up the new session.
                             },
                             onError: (error) {
-                              debugPrint('Google Sign-In error: $error');
+                              _log.severe('Google Sign-In error', error);
                               _authVM.reportError(
                                 'Google Sign-In failed. Please try again.',
                               );

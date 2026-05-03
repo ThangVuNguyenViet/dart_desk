@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:logging/logging.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
@@ -13,6 +13,8 @@ import '../../studio.dart';
 import '../data/desk_data_source.dart';
 import '../data/models/image_types.dart';
 import 'hotspot/framing_status.dart';
+
+final _log = Logger('dart_desk.inputs.imageInput');
 import 'image_input_view_model.dart';
 import 'optional_field_header.dart';
 import 'optional_field_wrapper.dart';
@@ -193,7 +195,7 @@ class _DeskImageInputState extends State<DeskImageInput>
       if (bytes == null) return;
       await _runUpload(file.name, bytes);
     } catch (e) {
-      log('Error occurred while picking file: $e');
+      _log.severe('Error occurred while picking file', e);
     }
   }
 
@@ -226,20 +228,20 @@ class _DeskImageInputState extends State<DeskImageInput>
           final name = file.fileName ?? 'dropped_file';
           final ext = name.split('.').last.toLowerCase();
           if (!_allowedExtensions.contains(ext)) {
-            log(
-              'ImageInput: rejected drop — .$ext not in $_allowedExtensions',
+            _log.info(
+              'rejected drop — .$ext not in $_allowedExtensions',
             );
             completer.complete();
             return;
           }
           await _runUpload(name, bytes);
         } catch (e) {
-          log('ImageInput: failed to read dropped file: $e');
+          _log.severe('failed to read dropped file', e);
         }
         completer.complete();
       },
       onError: (error) {
-        log('ImageInput: drop error: $error');
+        _log.severe('drop error', error);
         completer.complete();
       },
     );
@@ -509,7 +511,8 @@ class _DeskImageInputState extends State<DeskImageInput>
   }
 
   Widget _buildLocalBytesPreview(ShadThemeData theme) {
-    final bytes = _viewModel.pickedBytes.watch(context);
+    _viewModel.pickedBytesVersion.watch(context);
+    final bytes = _viewModel.pickedBytes;
     if (bytes == null) {
       return Container(color: theme.colorScheme.muted);
     }
