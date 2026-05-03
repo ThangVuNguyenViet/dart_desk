@@ -1,10 +1,13 @@
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:logging/logging.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../../data/desk_data_source.dart';
 import '../../../extensions/awaitable_future_signal.dart';
 import '../signals/mutation_signal.dart';
 import 'desk_view_model.dart';
+
+final _log = Logger('dart_desk.studio.deskDocument');
 
 /// ViewModel for managing a single document's state.
 ///
@@ -107,9 +110,8 @@ class DeskDocumentViewModel {
         // path (editedData.isNotEmpty) prevents the loading→form transition.
         deskVM.selectedVersionId.value = versionId;
       }
-    } catch (e) {
-      // ignore: avoid_print
-      print('[autoLoad] docId=$docId ERROR: $e');
+    } catch (e, st) {
+      _log.severe('autoLoad docId=$docId failed', e, st);
     }
   }
 

@@ -1,6 +1,6 @@
-import 'dart:developer';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/services.dart';
+import 'package:logging/logging.dart';
 import 'package:signals/signals.dart';
 
 import '../data/desk_data_source.dart';
@@ -8,6 +8,8 @@ import '../data/models/image_reference.dart';
 import '../data/models/media_asset.dart';
 import '../studio/core/signals/mutation_signal.dart';
 import 'hotspot/framing_controller.dart';
+
+final _log = Logger('dart_desk.inputs.imageInput');
 
 /// Owns the reactive state for [DeskImageInput].
 ///
@@ -37,10 +39,26 @@ class ImageInputViewModel {
   );
 
   /// Raw bytes of the in-flight upload, used for local preview.
-  late final pickedBytes = Signal<Uint8List?>(
-    null,
-    debugLabel: '$fieldName.pickedBytes',
+  ///
+  /// Stored off-signal: a multi-MB Uint8List flowing through a Signal gets
+  /// stringified by the signals observer/DevTools on every change, which
+  /// dumps the entire byte array to the log and can crash the app.
+  /// [pickedBytesVersion] is the reactive trigger; consumers `watch` it then
+  /// read [pickedBytes] off the plain field.
+  Uint8List? _pickedBytes;
+  Uint8List? get pickedBytes => _pickedBytes;
+
+  /// Bumps on every [_pickedBytes] change so widgets can rebuild without the
+  /// bytes themselves traversing the signals graph.
+  late final pickedBytesVersion = Signal<int>(
+    0,
+    debugLabel: '$fieldName.pickedBytesVersion',
   );
+
+  void _setPickedBytes(Uint8List? bytes) {
+    _pickedBytes = bytes;
+    pickedBytesVersion.value = pickedBytesVersion.value + 1;
+  }
 
   late final isDragOver = Signal<bool>(
     false,
@@ -58,7 +76,7 @@ class ImageInputViewModel {
       mutationSignal<MediaAsset, ({String fileName, Uint8List bytes})>((
         args,
       ) async {
-        pickedBytes.value = args.bytes;
+        _setPickedBytes(args.bytes);
         try {
           final newAsset = await dataSource.uploadImage(
             args.fileName,
@@ -69,7 +87,7 @@ class ImageInputViewModel {
           externalUrl.value = null;
           return newAsset;
         } finally {
-          pickedBytes.value = null;
+          _setPickedBytes(null);
         }
       }, debugLabel: '$fieldName.upload');
 
@@ -91,7 +109,7 @@ class ImageInputViewModel {
     try {
       final loadedAsset = await dataSource.getMediaAsset(assetId);
       if (loadedAsset == null) {
-        log('ImageInput: getMediaAsset($assetId) returned null');
+        _log.warning('getMediaAsset($assetId) returned null');
         return;
       }
       final hotspot = value['hotspot'] != null
@@ -108,8 +126,8 @@ class ImageInputViewModel {
         crop: crop,
         altText: altText,
       );
-    } catch (e) {
-      log('ImageInput: getMediaAsset($assetId) threw: $e');
+    } catch (e, st) {
+      _log.severe('getMediaAsset($assetId) threw', e, st);
     }
   }
 
@@ -141,7 +159,7 @@ class ImageInputViewModel {
     imageRef.value = null;
     asset.value = null;
     externalUrl.value = null;
-    pickedBytes.value = null;
+    _setPickedBytes(null);
     upload.reset();
   }
 
@@ -154,7 +172,7 @@ class ImageInputViewModel {
     imageRef.dispose();
     asset.dispose();
     externalUrl.dispose();
-    pickedBytes.dispose();
+    pickedBytesVersion.dispose();
     isDragOver.dispose();
     lastFramingMode.dispose();
     upload.dispose();

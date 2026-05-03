@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:dart_desk_client/dart_desk_client.dart' as serverpod;
 
 import '../data/data.dart';
+
+final _log = Logger('dart_desk.cloud.dataSource');
 
 /// Cloud data source implementation using the Serverpod dart_desk_client.
 ///
@@ -46,8 +49,7 @@ class CloudDataSource implements DataSource {
   /// Logs the error with stack trace and throws a [DeskDataSourceException].
   Never _throw(String message, Object error, [StackTrace? stack]) {
     final st = stack ?? StackTrace.current;
-    debugPrint('[CloudDataSource] $message: $error');
-    debugPrintStack(stackTrace: st, label: 'CloudDataSource');
+    _log.severe(message, error, st);
     throw DeskDataSourceException(message, error);
   }
 

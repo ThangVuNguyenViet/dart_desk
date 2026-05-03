@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:signals/signals.dart';
@@ -36,7 +38,6 @@ class DartDeskDebug {
 
   static bool _debugShowSignalLogs = false;
   static bool _debugShowClientLog = false;
-  static SignalsObserver? _previousObserver;
 
   /// Set to `true` before importing/using Dart Desk to skip installing the
   /// default `debugPrint` root listener. Useful when the consumer has
@@ -53,12 +54,10 @@ class DartDeskDebug {
     _debugShowSignalLogs = value;
     if (value) {
       signalsLogger.level = Level.ALL;
-      _previousObserver = SignalsObserver.instance;
       SignalsObserver.instance = _LoggerSignalsObserver();
     } else {
       signalsLogger.level = Level.OFF;
-      SignalsObserver.instance = _previousObserver;
-      _previousObserver = null;
+      SignalsObserver.instance = null;
     }
   }
 
@@ -82,16 +81,23 @@ void _bootstrapLogging() {
   if (_loggingBootstrapped) return;
   _loggingBootstrapped = true;
   hierarchicalLoggingEnabled = true;
+  // Suppress the signals package's default observer (DevTools/logging) so the
+  // only signal logs come through [DartDeskDebug.debugShowSignalLogs].
+  SignalsObserver.instance = null;
   if (DartDeskDebug.suppressDefaultPrinter) return;
+  // Release builds are silent — no sink. Consumers can attach their own
+  // listener (e.g. to ship severe records to a backend) if they want.
+  if (!kDebugMode) return;
   Logger.root.onRecord.listen((record) {
-    final buf = StringBuffer(
-      '[${record.loggerName}] ${record.level.name}: ${record.message}',
+    developer.log(
+      record.message,
+      time: record.time,
+      sequenceNumber: record.sequenceNumber,
+      level: record.level.value,
+      name: record.loggerName,
+      error: record.error,
+      stackTrace: record.stackTrace,
     );
-    if (record.error != null) buf.write(' :: ${record.error}');
-    debugPrint(buf.toString());
-    if (record.stackTrace != null) {
-      debugPrint(record.stackTrace.toString());
-    }
   });
 }
 
