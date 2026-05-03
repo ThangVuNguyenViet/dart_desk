@@ -16,10 +16,10 @@ Future<void> main() async {
     'SERVER_URL',
     defaultValue: _defaultServerUrl,
   );
-  const apiKey = String.fromEnvironment(
-    'API_KEY',
-    defaultValue: 'desk_w_rjjQNv3VTxL9KYijSnpc0LYVv0I5b0bLt5RR60P1mE0',
-  );
+  const apiKey = String.fromEnvironment('API_KEY');
+  if (apiKey.isEmpty) {
+    throw StateError('API_KEY must be provided via --dart-define=API_KEY=…');
+  }
   runApp(
     DartDeskApp(
       serverUrl: serverUrl,
