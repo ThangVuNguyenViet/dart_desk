@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -69,7 +70,7 @@ class _DeskImageInputState extends State<DeskImageInput>
     super.didUpdateWidget(oldWidget);
     // When the data prop changes, re-initialize from the new data.
     // Handles initial empty render → loaded data, and document switches.
-    if (oldWidget.data != widget.data) {
+    if (!_dataValueEquals(oldWidget.data?.value, widget.data?.value)) {
       _viewModel.resetForNewData();
       _viewModel.initFromData(widget.data?.value);
       if (_isOptional) {
@@ -104,6 +105,10 @@ class _DeskImageInputState extends State<DeskImageInput>
     _viewModel.dispose();
     super.dispose();
   }
+
+  static const _deepEquality = DeepCollectionEquality();
+  static bool _dataValueEquals(Object? a, Object? b) =>
+      _deepEquality.equals(a, b);
 
   List<String> get _allowedExtensions {
     final types = widget.field.option?.acceptedTypes;
