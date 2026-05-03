@@ -1686,7 +1686,7 @@ packages:
     source: hosted
     version: "0.9.1"
   super_editor:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: super_editor
       sha256: e85d457603be37b16072802c505c166a0e69fcab7890ec6e2534114c4f644e2a
