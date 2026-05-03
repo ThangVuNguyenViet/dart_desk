@@ -35,23 +35,19 @@ class PublishedEvent extends HistoryEvent {
   String? get authorUserId => version.createdByUserId;
 }
 
-// TODO(version-history-edits): emit EditedEvent bursts once the backend
-// exposes raw CRDT ops over an endpoint. Today's data source only returns
-// DocumentVersions, so the timeline shows publish events only.
-class EditedEvent extends HistoryEvent {
-  final DateTime burstStart;
-  final DateTime burstEnd;
-  @override
-  final String? authorUserId;
+/// An autosave-draft event — emitted for any [DocumentVersionStatus.draft]
+/// version. Created by the backend's bucketed autosave (see spec
+/// 2026-05-03-version-history-autosaved-drafts-design.md).
+class DraftEvent extends HistoryEvent {
+  final DocumentVersion version;
 
-  EditedEvent({
-    required this.burstStart,
-    required this.burstEnd,
-    this.authorUserId,
-  });
+  DraftEvent(this.version);
 
   @override
-  DateTime get timestamp => burstEnd;
+  DateTime get timestamp => version.createdAt ?? DateTime.now();
+
+  @override
+  String? get authorUserId => version.createdByUserId;
 }
 
 // ---------------------------------------------------------------------------
@@ -150,13 +146,20 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
     );
   }
 
-  /// Builds the list of [PublishedEvent]s from [data], sorted newest first.
-  List<PublishedEvent> _buildEvents(DocumentVersionList data) {
-    return data.versions
-        .where((v) => v.isPublished && v.publishedAt != null)
-        .map((v) => PublishedEvent(v))
-        .toList()
-      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+  /// Builds the timeline events from [data], sorted newest first.
+  /// Includes both published versions ([PublishedEvent]) and autosaved drafts
+  /// ([DraftEvent]). Archived/scheduled versions are skipped for now.
+  List<HistoryEvent> _buildEvents(DocumentVersionList data) {
+    final events = <HistoryEvent>[];
+    for (final v in data.versions) {
+      if (v.isPublished && v.publishedAt != null) {
+        events.add(PublishedEvent(v));
+      } else if (v.isDraft && v.createdAt != null) {
+        events.add(DraftEvent(v));
+      }
+    }
+    events.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    return events;
   }
 
   /// Builds the dropdown trigger button.
@@ -270,7 +273,7 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
     BuildContext context,
     ShadThemeData theme,
     DocumentVersionList data,
-    List<PublishedEvent> events,
+    List<HistoryEvent> events,
     String? docId,
   ) {
     if (events.isEmpty) {
@@ -321,11 +324,15 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
               ),
               itemBuilder: (context, index) {
                 final event = events[index];
+                final version = switch (event) {
+                  PublishedEvent(:final version) => version,
+                  DraftEvent(:final version) => version,
+                };
                 return _TimelineEventRow(
-                  key: ValueKey('timeline_event_${event.version.id}'),
+                  key: ValueKey('timeline_event_${version.id}'),
                   event: event,
                   onViewVersion: () {
-                    if (event.version.id != null && docId != null) {
+                    if (version.id != null && docId != null) {
                       final docTypeSlug =
                           widget.viewModel.currentDocumentTypeSlug.value;
                       final documentId =
@@ -335,14 +342,14 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
                           DocumentScreenRoute(
                             documentTypeSlug: docTypeSlug,
                             documentId: documentId,
-                            versionId: event.version.id.toString(),
+                            versionId: version.id.toString(),
                           ),
                         );
                       }
                       _popoverController.toggle();
                     }
                   },
-                  onRestore: docId != null && event.version.id != null
+                  onRestore: docId != null && version.id != null
                       ? () => _restoreVersion(context, docId, event)
                       : null,
                 );
@@ -357,21 +364,25 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
   Future<void> _restoreVersion(
     BuildContext context,
     String docId,
-    PublishedEvent event,
+    HistoryEvent event,
   ) async {
+    final version = switch (event) {
+      PublishedEvent(:final version) => version,
+      DraftEvent(:final version) => version,
+    };
     final toaster = ShadToaster.of(context);
     _popoverController.hide();
 
     try {
       await widget.viewModel.restoreVersion.run((
         documentId: docId,
-        versionId: event.version.id!,
+        versionId: version.id!,
       ));
       if (mounted) {
         toaster.show(
           ShadToast(
             description: Text(
-              'Restored to version ${event.version.versionNumber} — '
+              'Restored to version ${version.versionNumber} — '
               'review and Publish to make it live',
             ),
           ),
@@ -416,7 +427,7 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
           ),
           const SizedBox(height: 16),
           Text(
-            'No published versions yet',
+            'No history yet',
             style: theme.textTheme.small.copyWith(
               fontWeight: FontWeight.w600,
               color: theme.colorScheme.foreground,
@@ -424,7 +435,7 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Publish a version to start tracking history.',
+            'Your edits will appear here as you work.',
             style: theme.textTheme.muted.copyWith(fontSize: 12),
             textAlign: TextAlign.center,
           ),
@@ -440,7 +451,7 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
 
 /// A single row in the event-style timeline.
 class _TimelineEventRow extends StatefulWidget {
-  final PublishedEvent event;
+  final HistoryEvent event;
   final VoidCallback? onViewVersion;
   final VoidCallback? onRestore;
 
@@ -461,7 +472,25 @@ class _TimelineEventRowState extends State<_TimelineEventRow> {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final version = widget.event.version;
+    final event = widget.event;
+    final (label, iconBg, iconFg, icon) = switch (event) {
+      PublishedEvent() => (
+          'Published',
+          const Color(0xFFD1FAE5), // Green-100
+          const Color(0xFF065F46), // Green-900
+          FontAwesomeIcons.arrowUpFromBracket,
+        ),
+      DraftEvent() => (
+          'Auto-saved',
+          const Color(0xFFFEF3C7), // Yellow-100 (matches _StatusBadge draft)
+          const Color(0xFF92400E), // Yellow-900
+          FontAwesomeIcons.floppyDisk,
+        ),
+    };
+    final version = switch (event) {
+      PublishedEvent(:final version) => version,
+      DraftEvent(:final version) => version,
+    };
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -478,19 +507,19 @@ class _TimelineEventRowState extends State<_TimelineEventRow> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Publish icon
+              // Event icon
               Container(
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFD1FAE5), // Green-100
+                  color: iconBg,
                   shape: BoxShape.circle,
                 ),
-                child: const Center(
+                child: Center(
                   child: FaIcon(
-                    FontAwesomeIcons.arrowUpFromBracket,
+                    icon,
                     size: 14,
-                    color: Color(0xFF065F46), // Green-900
+                    color: iconFg,
                   ),
                 ),
               ),
@@ -504,7 +533,7 @@ class _TimelineEventRowState extends State<_TimelineEventRow> {
                     Row(
                       children: [
                         Text(
-                          'Published',
+                          label,
                           style: theme.textTheme.small.copyWith(
                             fontWeight: FontWeight.w600,
                             color: theme.colorScheme.foreground,
