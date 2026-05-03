@@ -3,28 +3,50 @@ name: test
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'packages/**'
+      - 'examples/**'
+      - 'pubspec.yaml'
+      - '.github/workflows/test.yml'
   push:
     branches: [main]
+    paths:
+      - 'packages/**'
+      - 'examples/**'
+      - 'pubspec.yaml'
+      - '.github/workflows/test.yml'
   workflow_dispatch:
 
+# Cancel superseded runs on the same ref.
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
 jobs:
-  test:
-    # Free 4-core ARM runner for public repos. Faster than x86 and doesn't
-    # require the "Larger runners" settings toggle.
+  setup:
+    name: workspace pub get
     runs-on: ubuntu-22.04-arm
-    # Pin to the same Flutter image local devs use for `make goldens`.
-    # Linux runners + matching freetype/fontconfig keep golden pixels stable.
     container:
       image: ghcr.io/cirruslabs/flutter:3.41.6
-
+    outputs:
+      cache-key: ${{ steps.key.outputs.value }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: compute cache key
+        id: key
+        run: echo "value=pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock', '**/pubspec.yaml') }}" >> "$GITHUB_OUTPUT"
 
       - name: cache pub + dart_tool
         uses: actions/cache@v4
         with:
           path: |
             /root/.pub-cache
+            .dart_tool
             packages/dart_desk/.dart_tool
             packages/dart_desk_annotation/.dart_tool
             packages/dart_desk_widgets/.dart_tool
@@ -32,35 +54,132 @@ jobs:
             examples/data_models/.dart_tool
             examples/desk_app/.dart_tool
             examples/example_app/.dart_tool
-          key: pub-${{ runner.os }}-${{ hashFiles('**/pubspec.lock') }}
+          key: ${{ steps.key.outputs.value }}
           restore-keys: |
             pub-${{ runner.os }}-
 
-      - name: flutter pub get
+      - name: workspace pub get
         run: flutter --suppress-analytics pub get
-        working-directory: packages/dart_desk
 
-      - name: analyze
-        run: flutter analyze packages/dart_desk examples/data_models examples/desk_app examples/example_app
+  analyze:
+    needs: setup
+    runs-on: ubuntu-22.04-arm
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.41.6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            /root/.pub-cache
+            .dart_tool
+            packages/dart_desk/.dart_tool
+            packages/dart_desk_annotation/.dart_tool
+            packages/dart_desk_widgets/.dart_tool
+            packages/dart_desk_generator/.dart_tool
+            examples/data_models/.dart_tool
+            examples/desk_app/.dart_tool
+            examples/example_app/.dart_tool
+          key: ${{ needs.setup.outputs.cache-key }}
+      - run: flutter --suppress-analytics pub get
+      - run: flutter analyze packages/dart_desk examples/data_models examples/desk_app examples/example_app
 
-      - name: data_models — fixture round-trips
-        run: flutter test --concurrency=4
+  data_models:
+    needs: setup
+    runs-on: ubuntu-22.04-arm
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.41.6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            /root/.pub-cache
+            .dart_tool
+            packages/dart_desk/.dart_tool
+            packages/dart_desk_annotation/.dart_tool
+            packages/dart_desk_widgets/.dart_tool
+            packages/dart_desk_generator/.dart_tool
+            examples/data_models/.dart_tool
+            examples/desk_app/.dart_tool
+            examples/example_app/.dart_tool
+          key: ${{ needs.setup.outputs.cache-key }}
+      - run: flutter --suppress-analytics pub get
+      - run: flutter test --concurrency=4
         working-directory: examples/data_models
 
-      - name: dart_desk — widget + golden tests
-        run: flutter test --concurrency=4
+  dart_desk:
+    needs: setup
+    runs-on: ubuntu-22.04-arm
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.41.6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            /root/.pub-cache
+            .dart_tool
+            packages/dart_desk/.dart_tool
+            packages/dart_desk_annotation/.dart_tool
+            packages/dart_desk_widgets/.dart_tool
+            packages/dart_desk_generator/.dart_tool
+            examples/data_models/.dart_tool
+            examples/desk_app/.dart_tool
+            examples/example_app/.dart_tool
+          key: ${{ needs.setup.outputs.cache-key }}
+      - run: flutter --suppress-analytics pub get
+      - run: flutter test --concurrency=4
         working-directory: packages/dart_desk
-
-      - name: desk_app — screen goldens
-        run: flutter test --concurrency=4 test/screens/
-        working-directory: examples/desk_app
-
-      - name: upload golden failures
-        if: failure()
+      - if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: golden-failures
+          name: golden-failures-dart_desk
+          path: packages/dart_desk/test/**/failures/**
+          if-no-files-found: ignore
+
+  test:
+    name: test
+    needs: [analyze, data_models, dart_desk, desk_app]
+    runs-on: ubuntu-22.04-arm
+    if: always()
+    steps:
+      - name: gate
+        run: |
+          if [[ "${{ needs.analyze.result }}" != "success" ||
+                "${{ needs.data_models.result }}" != "success" ||
+                "${{ needs.dart_desk.result }}" != "success" ||
+                "${{ needs.desk_app.result }}" != "success" ]]; then
+            echo "One or more upstream jobs failed."
+            exit 1
+          fi
+
+  desk_app:
+    needs: setup
+    runs-on: ubuntu-22.04-arm
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.41.6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
           path: |
-            packages/dart_desk/test/**/failures/**
-            examples/desk_app/test/**/failures/**
+            /root/.pub-cache
+            .dart_tool
+            packages/dart_desk/.dart_tool
+            packages/dart_desk_annotation/.dart_tool
+            packages/dart_desk_widgets/.dart_tool
+            packages/dart_desk_generator/.dart_tool
+            examples/data_models/.dart_tool
+            examples/desk_app/.dart_tool
+            examples/example_app/.dart_tool
+          key: ${{ needs.setup.outputs.cache-key }}
+      - run: flutter --suppress-analytics pub get
+      - run: flutter test --concurrency=4 test/screens/
+        working-directory: examples/desk_app
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-failures-desk_app
+          path: examples/desk_app/test/**/failures/**
           if-no-files-found: ignore
