@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Regenerate desk_app screen goldens inside a Linux Docker container so local
-# pixels match CI pixels. CI is pinned to Linux; macOS/Windows render fonts
-# slightly differently and committing Mac-captured PNGs creates CI diffs.
+# Regenerate desk_app screen goldens inside a Linux/arm64 Docker container so
+# local pixels match CI pixels. CI runs on ubuntu-22.04-arm; macOS and x86
+# Linux render fonts/Skia slightly differently. Pinning --platform linux/arm64
+# guarantees the same rasterization regardless of host arch.
 #
 # Usage:
 #   ./scripts/regenerate-goldens.sh                  # all goldens
@@ -32,6 +33,7 @@ echo "  (workspace: ${WORKSPACE_ROOT})"
 echo "  (package:   ${PACKAGE_REL})"
 
 docker run --rm -t \
+  --platform linux/arm64 \
   -v "${WORKSPACE_ROOT}:/workspace" \
   -w "/workspace/${PACKAGE_REL}" \
   -e CI=1 \
