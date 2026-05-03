@@ -24,6 +24,8 @@ dependencies:
   shadcn_ui: ^0.52.1
 
 dependency_overrides:
+  # super_editor 0.3.0-dev.50 wants super_keyboard ^0.3.0; flutter_test_goldens
+  # wants ^0.4.0. 0.4.0 works at runtime, so force-resolve here.
   super_keyboard: 0.4.0
   # Workspace must pin a single dart_desk_client source. example_app
   # uses git, dart_desk uses hosted ^0.2.0 — without an override the
