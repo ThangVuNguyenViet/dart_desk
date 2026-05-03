@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui' show Offset;
 
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:dart_desk_widgets/dart_desk_widgets.dart';
