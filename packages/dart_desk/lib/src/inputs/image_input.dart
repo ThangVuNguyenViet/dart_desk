@@ -262,10 +262,12 @@ class _DeskImageInputState extends State<DeskImageInput>
     final ref = _viewModel.imageRef.value;
     if (ref == null) return;
 
-    showShadDialog(
+    showShadSheet(
       context: context,
-      builder: (context) => ShadDialog(
-        constraints: const BoxConstraints(maxWidth: 640),
+      side: ShadSheetSide.right,
+      builder: (context) => ShadSheet(
+        constraints: const BoxConstraints(maxWidth: 560),
+        title: const Text('Edit Framing'),
         child: ImageHotspotEditor(
           imageUrl: ref.publicUrl!,
           initialHotspot: ref.hotspot,
