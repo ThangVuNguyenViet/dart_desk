@@ -1,0 +1,3 @@
+dependency_overrides:
+  dart_desk_widgets:
+    path: ../dart_desk_widgets

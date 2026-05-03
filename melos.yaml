@@ -3,6 +3,7 @@ packages:
   - packages/dart_desk
   - packages/dart_desk_annotation
   - packages/dart_desk_generator
+  - packages/dart_desk_widgets
   - examples/*
 command:
   version:
@@ -26,6 +27,7 @@ scripts:
         - dart_desk
         - dart_desk_annotation
         - dart_desk_generator
+        - dart_desk_widgets
   test:
     run: flutter test
     packageFilters:
