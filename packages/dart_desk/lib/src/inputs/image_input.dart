@@ -181,7 +181,9 @@ class _DeskImageInputState extends State<DeskImageInput>
     if (types.every((t) => t == DeskMediaType.video)) {
       return MediaTypeFilter.video;
     }
-    if (types.every((t) => t == DeskMediaType.image || t == DeskMediaType.svg)) {
+    if (types.every(
+      (t) => t == DeskMediaType.image || t == DeskMediaType.svg,
+    )) {
       return MediaTypeFilter.image;
     }
     return MediaTypeFilter.all;
@@ -233,9 +235,7 @@ class _DeskImageInputState extends State<DeskImageInput>
           final name = file.fileName ?? 'dropped_file';
           final ext = name.split('.').last.toLowerCase();
           if (!_allowedExtensions.contains(ext)) {
-            _log.info(
-              'rejected drop — .$ext not in $_allowedExtensions',
-            );
+            _log.info('rejected drop — .$ext not in $_allowedExtensions');
             completer.complete();
             return;
           }
@@ -273,11 +273,15 @@ class _DeskImageInputState extends State<DeskImageInput>
           initialHotspot: ref.hotspot,
           initialCrop: ref.crop,
           initialMode: _viewModel.lastFramingMode.value,
+          initialScale: ref.scale,
+          initialOffset: ref.offset,
           onModeChanged: (mode) => _viewModel.lastFramingMode.value = mode,
           onChanged: (result) {
             final updated = ref.copyWith(
               hotspot: result.hotspot,
               crop: result.crop,
+              scale: result.scale,
+              offset: result.offset,
             );
             _viewModel.updateImageRef(updated);
             widget.onChanged?.call(updated.toMap());
@@ -529,7 +533,6 @@ class _DeskImageInputState extends State<DeskImageInput>
   @override
   Widget build(BuildContext context) {
     super.build(context); // required by AutomaticKeepAliveClientMixin
-
 
     final theme = ShadTheme.of(context);
     final ref = _viewModel.imageRef.watch(context);

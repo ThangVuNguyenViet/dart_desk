@@ -61,8 +61,33 @@ void main() {
       expect(callCount, 0);
     });
 
+    testWidgets('transform mode segment is selectable', (tester) async {
+      FramingMode? lastMode;
+
+      await tester.pumpWidget(
+        buildInputApp(
+          ImageHotspotEditor(
+            imageUrl: 'https://test.example.com/image.png',
+            onModeChanged: (value) => lastMode = value,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const ValueKey('framing_mode_transform')),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const ValueKey('framing_mode_transform')));
+      await tester.pump();
+
+      expect(lastMode, FramingMode.transform);
+    });
+
     testWidgets('reset focus preserves crop', (tester) async {
-      late ({Hotspot? hotspot, CropRect? crop}) result;
+      late ({Hotspot? hotspot, CropRect? crop, double? scale, Offset? offset})
+      result;
 
       await tester.pumpWidget(
         buildInputApp(
