@@ -22,6 +22,11 @@ class ImageHotspotEditor extends StatefulWidget {
     ({Hotspot? hotspot, CropRect? crop, double? scale, Offset? offset})
   >
   onChanged;
+  final ValueChanged<
+    ({Hotspot? hotspot, CropRect? crop, double? scale, Offset? offset})
+  >?
+  onLiveChange;
+  final VoidCallback? onCancel;
 
   const ImageHotspotEditor({
     super.key,
@@ -33,6 +38,8 @@ class ImageHotspotEditor extends StatefulWidget {
     this.initialOffset,
     this.onModeChanged,
     required this.onChanged,
+    this.onLiveChange,
+    this.onCancel,
   });
 
   @override
@@ -52,6 +59,16 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
   );
   late final _loadFailed = createSignal<bool>(false);
 
+  late final _liveEffect = createEffect(() {
+    final d = _draft.value;
+    widget.onLiveChange?.call((
+      hotspot: d.hotspot,
+      crop: d.crop,
+      scale: d.scale,
+      offset: d.offset,
+    ));
+  });
+
   // Track which element is being dragged
   String? _dragTarget;
 
@@ -61,6 +78,7 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
   @override
   void initState() {
     super.initState();
+    _liveEffect; // registers the effect; auto-disposed by SignalsMixin
     _loadImageDimensions();
   }
 
@@ -313,7 +331,10 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                 children: [
                   ShadButton.outline(
                     key: const ValueKey('cancel_button'),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () {
+                      widget.onCancel?.call();
+                      Navigator.of(context).pop();
+                    },
                     size: ShadButtonSize.sm,
                     child: const Text('Cancel'),
                   ),

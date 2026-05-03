@@ -130,6 +130,27 @@ void main() {
       expect(result.hotspot!.height, FramingDefaults.defaultHotspot.height);
     });
 
+    testWidgets('onLiveChange fires when mode changes', (tester) async {
+      int liveCount = 0;
+
+      await tester.pumpWidget(
+        buildInputApp(
+          ImageHotspotEditor(
+            imageUrl: 'https://test.example.com/image.png',
+            onLiveChange: (_) => liveCount++,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final initialCount = liveCount;
+      await tester.tap(find.byKey(const ValueKey('framing_mode_crop')));
+      await tester.pump();
+
+      expect(liveCount, greaterThan(initialCount));
+    });
+
     testWidgets('calls onModeChanged when switching modes', (tester) async {
       FramingMode? mode;
 

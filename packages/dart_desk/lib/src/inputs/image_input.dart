@@ -262,6 +262,8 @@ class _DeskImageInputState extends State<DeskImageInput>
     final ref = _viewModel.imageRef.value;
     if (ref == null) return;
 
+    final originalRef = ref;
+
     showShadSheet(
       context: context,
       side: ShadSheetSide.right,
@@ -276,8 +278,21 @@ class _DeskImageInputState extends State<DeskImageInput>
           initialScale: ref.scale,
           initialOffset: ref.offset,
           onModeChanged: (mode) => _viewModel.lastFramingMode.value = mode,
+          onLiveChange: (delta) {
+            // Live preview only — do not persist to document.
+            _viewModel.updateImageRef(originalRef.copyWith(
+              hotspot: delta.hotspot,
+              crop: delta.crop,
+              scale: delta.scale,
+              offset: delta.offset,
+            ));
+          },
+          onCancel: () {
+            // Revert preview to whatever the document holds.
+            _viewModel.updateImageRef(originalRef);
+          },
           onChanged: (result) {
-            final updated = ref.copyWith(
+            final updated = originalRef.copyWith(
               hotspot: result.hotspot,
               crop: result.crop,
               scale: result.scale,
