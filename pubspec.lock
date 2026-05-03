@@ -137,6 +137,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.1"
+  build_test:
+    dependency: transitive
+    description:
+      name: build_test
+      sha256: eebbfbb42b495e5d1618619ebea3310b3fde18ebe093285da4f4a2ce4ef8247d
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.5.12"
   built_collection:
     dependency: transitive
     description:
@@ -281,6 +289,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  csslib:
+    dependency: transitive
+    description:
+      name: csslib
+      sha256: "09bad715f418841f976c77db72d5398dc1253c21fb9c0c7f0b0b985860b2d58e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   cupertino_icons:
     dependency: transitive
     description:
@@ -289,13 +305,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
-  dart_desk_annotation:
-    dependency: "direct overridden"
-    description:
-      path: "packages/dart_desk_annotation"
-      relative: true
-    source: path
-    version: "0.2.0"
   dart_desk_client:
     dependency: "direct overridden"
     description:
@@ -305,13 +314,6 @@ packages:
       url: "https://github.com/ThangVuNguyenViet/dart_desk_be.git"
     source: git
     version: "0.2.1"
-  dart_desk_generator:
-    dependency: "direct overridden"
-    description:
-      path: "packages/dart_desk_generator"
-      relative: true
-    source: path
-    version: "0.2.0"
   dart_mappable:
     dependency: transitive
     description:
@@ -677,10 +679,10 @@ packages:
     dependency: transitive
     description:
       name: follow_the_leader
-      sha256: "2e4c4ebe6b3f1942b2385904b118ba8ba117fae0b30c8c453be0b64a271dd07a"
+      sha256: "5cc5676008b786e8a34725874c750489c778431d2f9c423f0cc3c18527535236"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.2"
+    version: "0.5.3"
   font_awesome_flutter:
     dependency: transitive
     description:
@@ -814,6 +816,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.3.0"
+  html:
+    dependency: transitive
+    description:
+      name: html
+      sha256: "6d1264f2dffa1b1101c25a91dff0dc2daee4c18e87cd8538729773c073dbf602"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.6"
   http:
     dependency: transitive
     description:
@@ -1676,7 +1686,7 @@ packages:
     source: hosted
     version: "0.9.1"
   super_editor:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: super_editor
       sha256: e85d457603be37b16072802c505c166a0e69fcab7890ec6e2534114c4f644e2a
