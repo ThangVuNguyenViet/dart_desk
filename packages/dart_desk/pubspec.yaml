@@ -1,6 +1,6 @@
 name: dart_desk
 description: "CMS studio interface with inputs, validators, and runtime components for Dart Desk applications"
-version: 0.3.0
+version: 0.2.0
 homepage: https://github.com/ThangVuNguyenViet/dart_desk
 repository: https://github.com/ThangVuNguyenViet/dart_desk
 issue_tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues
@@ -15,8 +15,8 @@ environment:
 
 dependencies:
   dart_desk_client: ^0.2.0
-  dart_desk_annotation: ^0.3.0
-  dart_desk_widgets: ^0.0.2
+  dart_desk_annotation: ^0.2.0
+  dart_desk_widgets: ^0.0.1
   flutter:
     sdk: flutter
   shadcn_ui: ^0.52.1
