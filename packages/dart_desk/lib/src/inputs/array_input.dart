@@ -101,16 +101,39 @@ class _DeskArrayInputState<T> extends State<DeskArrayInput<T>> {
     }
   }
 
+  /// Coerce [_editingValue] to T, returning null if it's not yet convertible
+  /// (e.g. a partial map missing required fields for fromMap).
+  T? _coerceEditingValue() {
+    final raw = _editingValue;
+    if (raw == null) return null;
+    if (raw is T) return raw;
+    final fromMap = widget.field.fromMap;
+    if (fromMap == null) return null;
+    try {
+      return fromMap(Map<String, dynamic>.from(raw as Map));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Build the list as it should appear in the live preview, merging the
+  /// in-progress edit (if any) into [_items] without mutating it.
+  List _liveList() {
+    if (_editingIndex == null) return List<T>.from(_items);
+    final out = List<dynamic>.from(_items);
+    final buffer = _editingValue;
+    if (_editingIndex == -1) {
+      if (buffer != null) out.add(buffer);
+    } else if (_editingIndex! >= 0 && _editingIndex! < _items.length) {
+      out[_editingIndex!] = buffer ?? _items[_editingIndex!];
+    }
+    return out;
+  }
+
   void _saveItem() {
     setState(() {
-      if (_editingValue != null) {
-        final fromMap = widget.field.fromMap;
-        final T typed;
-        if (_editingValue is T) {
-          typed = _editingValue as T;
-        } else {
-          typed = fromMap!(Map<String, dynamic>.from(_editingValue as Map));
-        }
+      final typed = _coerceEditingValue();
+      if (typed != null) {
         if (_editingIndex == -1) {
           _items.add(typed);
         } else if (_editingIndex != null && _editingIndex! >= 0) {
@@ -125,10 +148,16 @@ class _DeskArrayInputState<T> extends State<DeskArrayInput<T>> {
   }
 
   void _cancelEditing() {
+    final wasEditing = _editingIndex != null;
     setState(() {
       _editingIndex = null;
       _editingValue = null;
     });
+    // Revert preview: re-emit the committed _items, undoing any in-progress
+    // streamed edits the parent received during this edit session.
+    if (wasEditing) {
+      widget.onChanged?.call(List<T>.from(_items));
+    }
   }
 
   void _removeItem(int index) {
@@ -295,6 +324,10 @@ class _DeskArrayInputState<T> extends State<DeskArrayInput<T>> {
           setState(() {
             _editingValue = newValue;
           });
+          // Stream the in-progress edit to the parent so the preview can
+          // reflect it live. _items remains the committed source of truth
+          // until Save flushes the buffer.
+          widget.onChanged?.call(_liveList());
         },
       );
     }
