@@ -14,12 +14,12 @@ Future<Widget> buildDeskApp({
   return DartDeskApp.withDataSource(
     dataSource: dataSource,
     onSignOut: onSignOut,
-    config: config ?? _config,
+    config: config ?? deskAppConfig,
     theme: theme,
   );
 }
 
-final _config = DartDeskConfig(
+final deskAppConfig = DartDeskConfig(
   documentTypes: [
     homeDocumentType,
     kioskDocumentType,
