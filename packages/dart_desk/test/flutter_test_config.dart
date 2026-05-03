@@ -23,11 +23,11 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   await _loadAuraFonts(Directory('lib/fonts'));
   await _loadShadcnGeist(packageRoot: Directory.current);
-  // Real fonts get sub-pixel rasterization drift between Apple Silicon's
-  // amd64 emulation (where local devs regenerate goldens) and CI's native
-  // x86 — order-of-magnitude single-pixel differences. Allow a tiny
-  // per-pixel tolerance so that doesn't fail; real layout changes still
-  // produce diffs orders of magnitude larger.
+  // Goldens are generated on linux/arm64 (cirruslabs/flutter Docker, pinned
+  // via scripts/regenerate-goldens.sh) and CI runs the same container on
+  // ubuntu-22.04-arm. A tiny per-pixel tolerance absorbs sub-pixel jitter
+  // without masking real layout changes (which produce diffs an order of
+  // magnitude larger).
   final defaultComparator = goldenFileComparator as LocalFileComparator;
   goldenFileComparator = _TolerantComparator(
     defaultComparator.basedir.resolve('flutter_test_config.dart'),
@@ -38,10 +38,10 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
 class _TolerantComparator extends LocalFileComparator {
   _TolerantComparator(super.testFile);
 
-  /// 2.5% — covers ARM↔x86 Skia rasterization drift (observed up to 2.4%
-  /// on image_hotspot_editor goldens). Real layout/style changes produce
+  /// 0.1% — goldens are pinned to linux/arm64 in both regeneration and CI,
+  /// so only sub-pixel jitter remains. Real layout/style changes produce
   /// diffs an order of magnitude larger.
-  static const double _kPixelTolerance = 0.025;
+  static const double _kPixelTolerance = 0.001;
 
   @override
   Future<bool> compare(Uint8List imageBytes, Uri golden) async {

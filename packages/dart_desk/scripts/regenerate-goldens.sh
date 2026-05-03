@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Regenerate dart_desk goldens inside a Linux Docker container so local pixels
-# match CI pixels. CI is pinned to Linux and macOS/Windows render fonts
-# slightly differently; running --update-goldens on a Mac and committing the
-# results produces a CI diff every time.
+# Regenerate dart_desk goldens inside a Linux/arm64 Docker container so local
+# pixels match CI pixels. CI runs on ubuntu-22.04-arm; macOS and x86 Linux
+# render fonts/Skia slightly differently. Pinning --platform linux/arm64
+# guarantees the same rasterization regardless of host arch.
 #
 # Usage:
 #   ./scripts/regenerate-goldens.sh                 # all goldens
@@ -33,6 +33,7 @@ echo "  (workspace: ${WORKSPACE_ROOT})"
 echo "  (package:   ${PACKAGE_REL})"
 
 docker run --rm -t \
+  --platform linux/arm64 \
   -v "${WORKSPACE_ROOT}:/workspace" \
   -w "/workspace/${PACKAGE_REL}" \
   -e CI=1 \
