@@ -43,6 +43,37 @@ void main() {
       expect(b.offset, const Offset(0.2, 0));
     });
 
+    test('copyWith(scale: null) clears scale', () {
+      const a = ImageReference(
+        publicUrl: 'fake://x',
+        scale: 1.5,
+        offset: Offset(0.2, 0),
+      );
+      final b = a.copyWith(scale: null);
+      expect(b.scale, isNull);
+      expect(b.offset, const Offset(0.2, 0));
+    });
+
+    test('copyWith(offset: null) clears offset', () {
+      const a = ImageReference(
+        publicUrl: 'fake://x',
+        scale: 1.5,
+        offset: Offset(0.2, 0),
+      );
+      final b = a.copyWith(offset: null);
+      expect(b.offset, isNull);
+      expect(b.scale, 1.5);
+    });
+
+    test('copyWith(hotspot: null) clears hotspot', () {
+      const a = ImageReference(
+        publicUrl: 'fake://x',
+        hotspot: Hotspot(x: 0.3, y: 0.3, width: 0.2, height: 0.2),
+      );
+      final b = a.copyWith(hotspot: null);
+      expect(b.hotspot, isNull);
+    });
+
     test('equality includes scale + offset', () {
       const a = ImageReference(publicUrl: 'x', scale: 1.2);
       const b = ImageReference(publicUrl: 'x', scale: 1.3);

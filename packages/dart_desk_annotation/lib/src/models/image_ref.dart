@@ -106,32 +106,40 @@ class ImageReference {
     return null;
   }
 
+  static const Object _unset = Object();
+
+  /// Every parameter accepts an explicit `null` to clear the field — passing
+  /// `null` clears, omitting preserves. The `_unset` sentinel distinguishes
+  /// "caller omitted" from "caller wants null."
   ImageReference copyWith({
-    String? assetId,
-    String? externalUrl,
-    String? publicUrl,
-    int? width,
-    int? height,
-    String? blurHash,
-    String? lqip,
-    Hotspot? hotspot,
-    CropRect? crop,
-    String? altText,
-    double? scale,
-    Offset? offset,
+    Object? assetId = _unset,
+    Object? externalUrl = _unset,
+    Object? publicUrl = _unset,
+    Object? width = _unset,
+    Object? height = _unset,
+    Object? blurHash = _unset,
+    Object? lqip = _unset,
+    Object? hotspot = _unset,
+    Object? crop = _unset,
+    Object? altText = _unset,
+    Object? scale = _unset,
+    Object? offset = _unset,
   }) => ImageReference(
-    assetId: assetId ?? this.assetId,
-    externalUrl: externalUrl ?? this.externalUrl,
-    publicUrl: publicUrl ?? this.publicUrl,
-    width: width ?? this.width,
-    height: height ?? this.height,
-    blurHash: blurHash ?? this.blurHash,
-    lqip: lqip ?? this.lqip,
-    hotspot: hotspot ?? this.hotspot,
-    crop: crop ?? this.crop,
-    altText: altText ?? this.altText,
-    scale: scale ?? this.scale,
-    offset: offset ?? this.offset,
+    assetId: identical(assetId, _unset) ? this.assetId : assetId as String?,
+    externalUrl:
+        identical(externalUrl, _unset) ? this.externalUrl : externalUrl as String?,
+    publicUrl:
+        identical(publicUrl, _unset) ? this.publicUrl : publicUrl as String?,
+    width: identical(width, _unset) ? this.width : width as int?,
+    height: identical(height, _unset) ? this.height : height as int?,
+    blurHash:
+        identical(blurHash, _unset) ? this.blurHash : blurHash as String?,
+    lqip: identical(lqip, _unset) ? this.lqip : lqip as String?,
+    hotspot: identical(hotspot, _unset) ? this.hotspot : hotspot as Hotspot?,
+    crop: identical(crop, _unset) ? this.crop : crop as CropRect?,
+    altText: identical(altText, _unset) ? this.altText : altText as String?,
+    scale: identical(scale, _unset) ? this.scale : scale as double?,
+    offset: identical(offset, _unset) ? this.offset : offset as Offset?,
   );
 
   @override
