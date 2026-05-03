@@ -312,6 +312,13 @@ packages:
       relative: true
     source: path
     version: "0.2.0"
+  dart_desk_widgets:
+    dependency: "direct overridden"
+    description:
+      path: "packages/dart_desk_widgets"
+      relative: true
+    source: path
+    version: "0.0.1"
   dart_mappable:
     dependency: transitive
     description:
