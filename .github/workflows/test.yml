@@ -9,10 +9,9 @@ on:
 
 jobs:
   test:
-    # Free 4-core runner for public repos. Requires "Larger runners" enabled
-    # under repo Settings → Actions → Runners. Falls back to ubuntu-latest if
-    # unavailable.
-    runs-on: ubuntu-latest-4-cores
+    # Free 4-core ARM runner for public repos. Faster than x86 and doesn't
+    # require the "Larger runners" settings toggle.
+    runs-on: ubuntu-22.04-arm
     # Pin to the same Flutter image local devs use for `make goldens`.
     # Linux runners + matching freetype/fontconfig keep golden pixels stable.
     container:
