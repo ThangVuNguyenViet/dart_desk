@@ -1,3 +1,13 @@
+## 0.3.0
+
+> **Breaking**: tracks `dart_desk_annotation` 0.3.0. Generated output uses `initialValue` instead of `defaultValue`. Regenerate consumers (`dart run build_runner build`) after upgrading.
+
+ - **FEAT**: nullability-driven `optional_resolver` — `T?` fields generate as optional automatically (#15).
+ - **FEAT**: generator support for `DeskConditionContext` runtime conditions on field visibility (#14).
+ - **FEAT**: refined per-type field code generators (string, number, color, date, datetime, file, url, boolean, checkbox) for `initialValue` and conditional metadata.
+ - **FIX**(dart_desk): editor footer alignment, clear-to-null, rename defaultValue → initialValue (#16).
+ - **CHORE**: bump `dart_desk_annotation` to `^0.3.0`.
+
 ## 0.2.0
 
 > **Breaking**: `Cms*` prefix renamed to `Desk*` across generated outputs and recognized annotations. Regenerate consumers (`dart run build_runner build`) after upgrading.
