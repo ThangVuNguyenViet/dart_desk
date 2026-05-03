@@ -9,6 +9,8 @@ environment:
 # Workspace configuration
 workspace:
   - packages/dart_desk
+  - packages/dart_desk_annotation
+  - packages/dart_desk_generator
   - packages/dart_desk_widgets
   - examples/data_models
   - examples/example_app
@@ -24,10 +26,6 @@ dependencies:
 dependency_overrides:
   super_editor: 0.3.0-dev.50
   super_keyboard: 0.4.0
-  dart_desk_annotation:
-    path: packages/dart_desk_annotation
-  dart_desk_generator:
-    path: packages/dart_desk_generator
   # Workspace must pin a single dart_desk_client source. example_app
   # uses git, dart_desk uses hosted ^0.2.0 — without an override the
   # workspace solver fails. Default to the git source so CI and any
