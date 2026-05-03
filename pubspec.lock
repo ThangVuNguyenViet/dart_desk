@@ -1689,12 +1689,12 @@ packages:
     dependency: transitive
     description:
       name: super_editor
-      sha256: c10bcd53e8e5386ff74273a8afb639501ec0c21e8fdaea41b7b364dc9267417e
+      sha256: e85d457603be37b16072802c505c166a0e69fcab7890ec6e2534114c4f644e2a
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.0-dev.51"
+    version: "0.3.0-dev.50"
   super_keyboard:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: super_keyboard
       sha256: b5381ca46cf2cbc8cae79f8304e848f83363a8f47c1851125133c8af87d0f488
