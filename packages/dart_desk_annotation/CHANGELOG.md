@@ -1,3 +1,14 @@
+## 0.3.0
+
+> **Breaking**: `defaultValue` renamed to `initialValue` on `DeskField` and subclasses (#16). Find/replace `defaultValue:` → `initialValue:` on annotation usages.
+
+ - **FEAT**: add `scale`, `offset`, `hotspot`, `crop` to `ImageReference` for the image transform pipeline (#35).
+ - **FEAT**: `DeskConditionContext` for runtime-aware field visibility (#14).
+ - **FEAT**: nullability-driven optional field semantics (#15).
+ - **FEAT**(dart_desk): DeskContext cross-document lookup for builders (#17).
+ - **FIX**(image_input): deep-equal `DeskData.value` to stop rebuild churn (#31).
+ - **FIX**(dart_desk): editor footer alignment, clear-to-null, rename defaultValue → initialValue (#16).
+
 ## 0.2.0
 
 > **Breaking**: `Cms*` prefix renamed to `Desk*` across all annotations and types. Run a workspace-wide find/replace from `Cms` to `Desk` on imports and identifiers from this package.
