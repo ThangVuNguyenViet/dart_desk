@@ -301,7 +301,7 @@ packages:
     description:
       path: dart_desk_client
       ref: main
-      resolved-ref: c0c1b921738465fabf298bcb6529113ee37f634d
+      resolved-ref: "684bc56f6b90ba80c80ce6d2a3b182628923b4da"
       url: "https://github.com/ThangVuNguyenViet/dart_desk_be.git"
     source: git
     version: "0.2.1"

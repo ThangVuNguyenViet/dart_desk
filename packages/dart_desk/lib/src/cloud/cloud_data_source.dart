@@ -216,37 +216,14 @@ class CloudDataSource implements DataSource {
     int offset = 0,
   }) async {
     try {
-      // Always fetch with operations to compute data
       final response = await _client.document.getDocumentVersions(
         UuidValue.fromString(documentId),
         limit: limit,
         offset: offset,
-        includeOperations: true,
       );
 
-      // Convert versions and compute data from operations
-      final versions = <DocumentVersion>[];
-
-      // Start from base state (state at HLC before first version in page)
-      // This ensures correct reconstruction even with pagination
-      Map<String, dynamic> accumulatedState = response.baseData != null
-          ? jsonDecode(response.baseData!) as Map<String, dynamic>
-          : {}; // Empty state for first page (offset = 0)
-
-      for (final versionWithOps in response.versions) {
-        // Apply operations to accumulate state
-        accumulatedState = _reconstructFromOperations(
-          versionWithOps.operationsSincePrevious,
-          initialState: accumulatedState,
-        );
-
-        versions.add(
-          _toDocumentVersionWithData(versionWithOps.version, accumulatedState),
-        );
-      }
-
       return DocumentVersionList(
-        versions: versions,
+        versions: response.versions.map(_toDocumentVersion).toList(),
         total: response.total,
         page: response.page,
         pageSize: response.pageSize,
@@ -607,51 +584,6 @@ class CloudDataSource implements DataSource {
     );
   }
 
-  /// Converts a Serverpod DocumentVersion to platform-agnostic with computed data.
-  DocumentVersion _toDocumentVersionWithData(
-    serverpod.DocumentVersion version,
-    Map<String, dynamic> data,
-  ) {
-    return DocumentVersion(
-      id: version.id.toString(),
-      documentId: version.documentId.toString(),
-      versionNumber: version.versionNumber,
-      status: DocumentVersionStatus.fromString(version.status.name),
-      data: Map<String, dynamic>.from(data), // Copy to avoid mutation
-      snapshotHlc: version.snapshotHlc,
-      changeLog: version.changeLog,
-      publishedAt: version.publishedAt,
-      scheduledAt: version.scheduledAt,
-      archivedAt: version.archivedAt,
-      createdAt: version.createdAt,
-      createdByUserId: version.createdByUserId?.toString(),
-    );
-  }
-
-  /// Reconstructs document data from Serverpod CRDT operations.
-  Map<String, dynamic> _reconstructFromOperations(
-    List<serverpod.DocumentCrdtOperation> operations, {
-    Map<String, dynamic> initialState = const {},
-  }) {
-    Map<String, dynamic> flatState = _flattenMap(initialState);
-
-    for (var op in operations) {
-      if (op.operationType == serverpod.CrdtOperationType.put &&
-          op.fieldValue != null) {
-        _applyPutToFlatState(
-          flatState,
-          op.fieldPath,
-          jsonDecode(op.fieldValue!),
-        );
-      } else if (op.operationType == serverpod.CrdtOperationType.delete) {
-        flatState.remove(op.fieldPath);
-        flatState.removeWhere((k, _) => k.startsWith('${op.fieldPath}.'));
-      }
-    }
-
-    return _unflattenMap(flatState);
-  }
-
   /// Helper to parse string status to DocumentVersionStatus enum
   serverpod.DocumentVersionStatus _parseDocumentVersionStatus(String status) {
     switch (status.toLowerCase()) {
@@ -768,77 +700,4 @@ class CloudDataSource implements DataSource {
     }
   }
 
-  // ============================================================
-  // CRDT Helpers (Internal)
-  // ============================================================
-
-  /// Apply a put operation to flat state with parent/child conflict resolution.
-  ///
-  /// Invariants:
-  /// - Setting K = null removes all K.* sub-keys (null overrides a prior sub-map).
-  /// - Setting K.X = val removes any K = null ancestor (sub-key overrides a prior null).
-  void _applyPutToFlatState(
-    Map<String, dynamic> flatState,
-    String fieldPath,
-    dynamic value,
-  ) {
-    if (value == null) {
-      flatState.removeWhere((k, _) => k.startsWith('$fieldPath.'));
-    } else {
-      var path = fieldPath;
-      while (path.contains('.')) {
-        path = path.substring(0, path.lastIndexOf('.'));
-        if (flatState.containsKey(path) && flatState[path] == null) {
-          flatState.remove(path);
-        }
-      }
-    }
-    flatState[fieldPath] = value;
-  }
-
-  /// Flatten nested map to dot-notation
-  /// Example: {"user": {"name": "John"}} -> {"user.name": "John"}
-  Map<String, dynamic> _flattenMap(
-    Map<String, dynamic> map, [
-    String prefix = '',
-  ]) {
-    final result = <String, dynamic>{};
-
-    for (var entry in map.entries) {
-      final key = prefix.isEmpty ? entry.key : '$prefix.${entry.key}';
-
-      if (entry.value is Map<String, dynamic>) {
-        result.addAll(_flattenMap(entry.value as Map<String, dynamic>, key));
-      } else {
-        result[key] = entry.value;
-      }
-    }
-
-    return result;
-  }
-
-  /// Unflatten dot-notation to nested map
-  /// Example: {"user.name": "John"} -> {"user": {"name": "John"}}
-  Map<String, dynamic> _unflattenMap(Map<String, dynamic> flat) {
-    final result = <String, dynamic>{};
-
-    for (var entry in flat.entries) {
-      final keys = entry.key.split('.');
-      dynamic current = result;
-
-      for (var i = 0; i < keys.length - 1; i++) {
-        if (current is! Map<String, dynamic>) {
-          break;
-        }
-        current[keys[i]] ??= <String, dynamic>{};
-        current = current[keys[i]];
-      }
-
-      if (current is Map<String, dynamic>) {
-        current[keys.last] = entry.value;
-      }
-    }
-
-    return result;
-  }
 }
