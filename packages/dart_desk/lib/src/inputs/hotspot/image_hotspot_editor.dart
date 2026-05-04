@@ -72,6 +72,11 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
   // Track which element is being dragged
   String? _dragTarget;
 
+  // Bumps when scale changes from a non-slider source (scroll wheel, reset).
+  // ShadSlider is uncontrolled, so we re-key it to pick up the new initialValue
+  // — but never during the user's own slider drag.
+  int _scaleSliderTick = 0;
+
   // Track the image's actual aspect ratio once loaded
   late final _imageAspectRatio = createSignal<double?>(null);
 
@@ -166,6 +171,7 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                                       _draft.value = _draft.value.copyWith(
                                         scale: next.toDouble(),
                                       );
+                                      _scaleSliderTick++;
                                     }
                                   }
                                 : null,
@@ -275,6 +281,42 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
               ),
             ),
 
+          if (draft.mode == FramingMode.transform) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                SizedBox(
+                  width: 56,
+                  child: Text(
+                    'Scale',
+                    style: theme.textTheme.muted.copyWith(fontSize: 12),
+                  ),
+                ),
+                Expanded(
+                  child: ShadSlider(
+                    key: ValueKey('scale_slider_$_scaleSliderTick'),
+                    initialValue: (draft.scale ?? 1.0).clamp(0.1, 10.0),
+                    min: 0.1,
+                    max: 10.0,
+                    onChanged: (v) =>
+                        _draft.value = _draft.value.copyWith(scale: v),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  width: 48,
+                  child: Text(
+                    '${(draft.scale ?? 1.0).toStringAsFixed(2)}×',
+                    style: theme.textTheme.small.copyWith(
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                ),
+              ],
+            ),
+          ],
+
           const SizedBox(height: 16),
 
           // Preview strip
@@ -313,13 +355,19 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                   ),
                   ShadButton.ghost(
                     key: const ValueKey('reset_transform_button'),
-                    onPressed: () => _draft.value = draft.resetTransform(),
+                    onPressed: () {
+                      _draft.value = draft.resetTransform();
+                      _scaleSliderTick++;
+                    },
                     size: ShadButtonSize.sm,
                     child: const Text('Reset transform'),
                   ),
                   ShadButton.ghost(
                     key: const ValueKey('reset_all_button'),
-                    onPressed: () => _draft.value = draft.resetAll(),
+                    onPressed: () {
+                      _draft.value = draft.resetAll();
+                      _scaleSliderTick++;
+                    },
                     size: ShadButtonSize.sm,
                     child: const Text('Reset all'),
                   ),

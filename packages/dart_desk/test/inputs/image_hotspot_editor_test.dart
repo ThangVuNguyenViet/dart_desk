@@ -151,6 +151,81 @@ void main() {
       expect(liveCount, greaterThan(initialCount));
     });
 
+    testWidgets('scale slider hidden outside transform mode', (tester) async {
+      await tester.pumpWidget(
+        buildInputApp(
+          ImageHotspotEditor(
+            imageUrl: 'https://test.example.com/image.png',
+            onChanged: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('scale_slider_0')), findsNothing);
+      expect(find.text('Scale'), findsNothing);
+    });
+
+    testWidgets('scale slider visible in transform mode with readout', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        buildInputApp(
+          ImageHotspotEditor(
+            imageUrl: 'https://test.example.com/image.png',
+            initialMode: FramingMode.transform,
+            initialScale: 2.5,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('scale_slider_0')), findsOneWidget);
+      expect(find.text('Scale'), findsOneWidget);
+      expect(find.text('2.50×'), findsOneWidget);
+    });
+
+    testWidgets('reset transform restores default scale and re-keys slider', (
+      tester,
+    ) async {
+      late ({Hotspot? hotspot, CropRect? crop, double? scale, Offset? offset})
+      result;
+
+      await tester.pumpWidget(
+        buildInputApp(
+          ImageHotspotEditor(
+            imageUrl: 'https://test.example.com/image.png',
+            initialMode: FramingMode.transform,
+            initialScale: 3.0,
+            initialOffset: const Offset(0.2, 0.1),
+            onChanged: (value) => result = value,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('scale_slider_0')), findsOneWidget);
+      expect(find.text('3.00×'), findsOneWidget);
+
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('reset_transform_button')),
+      );
+      await tester.tap(find.byKey(const ValueKey('reset_transform_button')));
+      await tester.pumpAndSettle();
+
+      // Tick bumps the slider key on reset.
+      expect(find.byKey(const ValueKey('scale_slider_1')), findsOneWidget);
+      expect(find.text('1.00×'), findsOneWidget);
+
+      await tester.ensureVisible(find.byKey(const ValueKey('apply_button')));
+      await tester.tap(find.byKey(const ValueKey('apply_button')));
+      await tester.pumpAndSettle();
+
+      expect(result.scale, isNull);
+      expect(result.offset, isNull);
+    });
+
     testWidgets('calls onModeChanged when switching modes', (tester) async {
       FramingMode? mode;
 
