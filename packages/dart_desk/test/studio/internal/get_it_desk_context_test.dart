@@ -67,22 +67,24 @@ Future<void> _resetGetIt() async {
 void main() {
   setUp(_resetGetIt);
 
-  test('document returns the selected document from DeskDocumentViewModel',
-      () async {
-    final doc = DeskDocument(
-      clientId: 'c',
-      documentType: 'menuConfig',
-      title: 'T',
-      isDefault: true,
-    );
-    final vm = _FakeViewModel(doc);
-    GetIt.I.registerSingleton<DeskDocumentViewModel>(vm);
-    await vm.selectedDocument.future;
+  test(
+    'document returns the selected document from DeskDocumentViewModel',
+    () async {
+      final doc = DeskDocument(
+        clientId: 'c',
+        documentType: 'menuConfig',
+        title: 'T',
+        isDefault: true,
+      );
+      final vm = _FakeViewModel(doc);
+      GetIt.I.registerSingleton<DeskDocumentViewModel>(vm);
+      await vm.selectedDocument.future;
 
-    final ctx = GetItDeskContext();
-    expect(ctx.document, equals(doc));
-    expect(ctx.document?.isDefault, isTrue);
-  });
+      final ctx = GetItDeskContext();
+      expect(ctx.document, equals(doc));
+      expect(ctx.document?.isDefault, isTrue);
+    },
+  );
 
   test('document is null when no document is selected', () async {
     final vm = _FakeViewModel(null);
@@ -104,32 +106,26 @@ void main() {
     expect(() => ctx.read<_FakeService>(), throwsA(anything));
   });
 
-  test('documents() returns the loaded list for the requested document type',
-      () async {
-    final docs = [
-      DeskDocument(
-        clientId: 'c',
-        documentType: 'menuConfig',
-        title: 'A',
-      ),
-      DeskDocument(
-        clientId: 'c',
-        documentType: 'menuConfig',
-        title: 'B',
-      ),
-    ];
-    final dataSource = _FakeDataSource({'menuConfig': docs});
-    final deskVM = DeskViewModel(
-      dataSource: dataSource,
-      documentTypes: const [],
-    );
-    GetIt.I.registerSingleton<DeskViewModel>(deskVM);
+  test(
+    'documents() returns the loaded list for the requested document type',
+    () async {
+      final docs = [
+        DeskDocument(clientId: 'c', documentType: 'menuConfig', title: 'A'),
+        DeskDocument(clientId: 'c', documentType: 'menuConfig', title: 'B'),
+      ];
+      final dataSource = _FakeDataSource({'menuConfig': docs});
+      final deskVM = DeskViewModel(
+        dataSource: dataSource,
+        documentTypes: const [],
+      );
+      GetIt.I.registerSingleton<DeskViewModel>(deskVM);
 
-    await deskVM.documentsContainer('menuConfig').future;
+      await deskVM.documentsContainer('menuConfig').future;
 
-    final ctx = GetItDeskContext();
-    expect(ctx.documents('menuConfig').value, equals(docs));
-  });
+      final ctx = GetItDeskContext();
+      expect(ctx.documents('menuConfig').value, equals(docs));
+    },
+  );
 
   test('documents() flattens loading/error states to an empty list', () {
     final dataSource = _FakeDataSource(const {});

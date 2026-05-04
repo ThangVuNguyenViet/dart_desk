@@ -67,11 +67,7 @@ class _DelayingDataSource extends MockDataSource {
     if (versionsGate != null) {
       await versionsGate!.future;
     }
-    return super.getDocumentVersions(
-      documentId,
-      limit: limit,
-      offset: offset,
-    );
+    return super.getDocumentVersions(documentId, limit: limit, offset: offset);
   }
 }
 
@@ -231,7 +227,6 @@ void main() {
             'Effect should have navigated to the default document, which the '
             'route observer mirrors back into currentDocumentId.',
       );
-
     });
 
     testWidgets('falls back to first document when no default is marked', (
@@ -259,7 +254,6 @@ void main() {
             'With no default doc, the effect should navigate to the first '
             'document in the list.',
       );
-
     });
   });
 }

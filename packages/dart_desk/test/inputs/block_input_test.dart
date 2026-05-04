@@ -30,7 +30,9 @@ void main() {
       expect(find.text('Content'), findsOneWidget);
     });
 
-    testWidgets('optional toggle off fires onChanged(null) once', (tester) async {
+    testWidgets('optional toggle off fires onChanged(null) once', (
+      tester,
+    ) async {
       final received = <dynamic>[];
       await tester.pumpWidget(
         buildInputApp(
@@ -49,7 +51,9 @@ void main() {
       expect(received, [null]);
     });
 
-    testWidgets('optional toggle off then on restores last value', (tester) async {
+    testWidgets('optional toggle off then on restores last value', (
+      tester,
+    ) async {
       final received = <dynamic>[];
       await tester.pumpWidget(
         buildInputApp(

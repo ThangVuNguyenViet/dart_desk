@@ -9,15 +9,15 @@ PublicDeskDocument _doc({
   bool isDefault = true,
   Map<String, dynamic>? data,
 }) => PublicDeskDocument(
-      id: id,
-      documentType: type,
-      title: 'T',
-      slug: slug,
-      isDefault: isDefault,
-      data: data ?? const {'name': 'Aura'},
-      publishedAt: DateTime.utc(2026),
-      updatedAt: DateTime.utc(2026),
-    );
+  id: id,
+  documentType: type,
+  title: 'T',
+  slug: slug,
+  isDefault: isDefault,
+  data: data ?? const {'name': 'Aura'},
+  publishedAt: DateTime.utc(2026),
+  updatedAt: DateTime.utc(2026),
+);
 
 void main() {
   group('FakePublicContentSource', () {
@@ -83,14 +83,16 @@ void main() {
       expect(hits.map((d) => d.id), ['1']);
     });
 
-    test('getContentsByDataContains rejects non-object JSON fragments',
-        () async {
-      final source = FakePublicContentSource();
-      await expectLater(
-        () => source.getContentsByDataContains('brandTheme', '[1,2,3]'),
-        throwsA(isA<ArgumentError>()),
-      );
-    });
+    test(
+      'getContentsByDataContains rejects non-object JSON fragments',
+      () async {
+        final source = FakePublicContentSource();
+        await expectLater(
+          () => source.getContentsByDataContains('brandTheme', '[1,2,3]'),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
 
     test('getAllContents groups documents by type', () async {
       final source = FakePublicContentSource()

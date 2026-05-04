@@ -16,11 +16,11 @@ const _field = DeskBlockField(
 void main() {
   testGoldenScene('DeskBlockInput gallery', (tester) async {
     await Gallery(
-      'DeskBlockInput — state variants',
-      directory: Directory('goldens'),
-      fileName: 'block_input_gallery',
-      layout: ColumnSceneLayout(),
-    )
+          'DeskBlockInput — state variants',
+          directory: Directory('goldens'),
+          fileName: 'block_input_gallery',
+          layout: ColumnSceneLayout(),
+        )
         .itemFromBuilder(
           tolerancePx: kGoldenTolerancePx,
           description: 'empty editor',

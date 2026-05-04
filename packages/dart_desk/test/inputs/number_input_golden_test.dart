@@ -6,6 +6,7 @@ import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
 import 'package:dart_desk/testing.dart';
+import 'package:flutter/widgets.dart';
 
 const _field = DeskNumberField(
   name: 'price',
@@ -16,38 +17,36 @@ const _field = DeskNumberField(
 void main() {
   testGoldenScene('DeskNumberInput gallery', (tester) async {
     await Gallery(
-      'DeskNumberInput — state variants',
-      directory: Directory('goldens'),
-      fileName: 'number_input_gallery',
-      layout: ColumnSceneLayout(),
-    )
+          'DeskNumberInput — state variants',
+          directory: Directory('goldens'),
+          fileName: 'number_input_gallery',
+          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 1200),
+          itemScaffold: shadcnInputItemScaffold,
+          layout: ColumnSceneLayout(),
+        )
         .itemFromBuilder(
           tolerancePx: kGoldenTolerancePx,
           description: 'empty',
-          builder: (_) => buildInputApp(const DeskNumberInput(field: _field)),
+          builder: (_) => const DeskNumberInput(field: _field),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
           tolerancePx: kGoldenTolerancePx,
           description: 'filled',
-          builder: (_) => buildInputApp(
-            const DeskNumberInput(
-              field: _field,
-              data: DeskData(value: 42.5, path: 'price'),
-            ),
+          builder: (_) => const DeskNumberInput(
+            field: _field,
+            data: DeskData(value: 42.5, path: 'price'),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
           tolerancePx: kGoldenTolerancePx,
           description: 'optional / disabled',
-          builder: (_) => buildInputApp(
-            const DeskNumberInput(
-              field: DeskNumberField(
-                name: 'discount',
-                title: 'Discount (optional)',
-                option: DeskNumberOption(optional: true),
-              ),
+          builder: (_) => const DeskNumberInput(
+            field: DeskNumberField(
+              name: 'discount',
+              title: 'Discount (optional)',
+              option: DeskNumberOption(optional: true),
             ),
           ),
           setup: (t) async => t.pumpAndSettle(),
@@ -55,15 +54,13 @@ void main() {
         .itemFromBuilder(
           tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
-          builder: (_) => buildInputApp(
-            const DeskNumberInput(
-              field: DeskNumberField(
-                name: 'discount',
-                title: 'Discount (optional)',
-                option: DeskNumberOption(optional: true),
-              ),
-              data: DeskData(value: 42, path: 'discount'),
+          builder: (_) => const DeskNumberInput(
+            field: DeskNumberField(
+              name: 'discount',
+              title: 'Discount (optional)',
+              option: DeskNumberOption(optional: true),
             ),
+            data: DeskData(value: 42, path: 'discount'),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )

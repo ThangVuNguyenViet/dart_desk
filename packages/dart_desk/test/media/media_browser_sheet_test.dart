@@ -6,54 +6,53 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
 
 void main() {
-  testWidgets(
-    'tapping a tile shows AssetDetailPanel inline (no layout jump)',
-    (tester) async {
-      final dataSource = MockDataSource()..seedDefaults();
-      await tester.pumpWidget(
-        ShadApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 1024,
-              height: 700,
-              child: MediaBrowser(dataSource: dataSource),
-            ),
+  testWidgets('tapping a tile shows AssetDetailPanel inline (no layout jump)', (
+    tester,
+  ) async {
+    final dataSource = MockDataSource()..seedDefaults();
+    await tester.pumpWidget(
+      ShadApp(
+        home: Scaffold(
+          body: SizedBox(
+            width: 1024,
+            height: 700,
+            child: MediaBrowser(dataSource: dataSource),
           ),
         ),
-      );
-      await tester.pumpAndSettle();
+      ),
+    );
+    await tester.pumpAndSettle();
 
-      // Detail column is always reserved — placeholder before selection.
-      expect(find.byType(AssetDetailPanel), findsNothing);
-      expect(find.text('Select an asset to see details'), findsOneWidget);
+    // Detail column is always reserved — placeholder before selection.
+    expect(find.byType(AssetDetailPanel), findsNothing);
+    expect(find.text('Select an asset to see details'), findsOneWidget);
 
-      final firstTile = find
-          .byWidgetPredicate(
-            (w) =>
-                w.key is ValueKey &&
-                (w.key as ValueKey).value.toString().startsWith(
-                  'media_grid_item_',
-                ),
-          )
-          .first;
+    final firstTile = find
+        .byWidgetPredicate(
+          (w) =>
+              w.key is ValueKey &&
+              (w.key as ValueKey).value.toString().startsWith(
+                'media_grid_item_',
+              ),
+        )
+        .first;
 
-      // Measure tile width before selection.
-      final widthBefore = tester.getSize(firstTile).width;
+    // Measure tile width before selection.
+    final widthBefore = tester.getSize(firstTile).width;
 
-      await tester.tap(firstTile);
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pumpAndSettle();
+    await tester.tap(firstTile);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpAndSettle();
 
-      expect(find.byType(AssetDetailPanel), findsOneWidget);
+    expect(find.byType(AssetDetailPanel), findsOneWidget);
 
-      // Grid width must not reflow after selection.
-      final widthAfter = tester.getSize(firstTile).width;
-      expect(
-        (widthAfter - widthBefore).abs() < 1.0,
-        isTrue,
-        reason: 'Tile width changed: $widthBefore -> $widthAfter',
-      );
-    },
-  );
+    // Grid width must not reflow after selection.
+    final widthAfter = tester.getSize(firstTile).width;
+    expect(
+      (widthAfter - widthBefore).abs() < 1.0,
+      isTrue,
+      reason: 'Tile width changed: $widthBefore -> $widthAfter',
+    );
+  });
 }

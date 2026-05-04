@@ -1,20 +1,17 @@
 import 'dart:io';
 
 import 'package:dart_desk/dart_desk.dart';
+import 'package:dart_desk/testing.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../helpers/input_test_helpers.dart';
-import 'package:dart_desk/testing.dart';
 
 class _MockDataSource extends Mock implements DataSource {}
 
-const _field = DeskImageField(
-  name: 'hero',
-  title: 'Hero Image',
-  option: DeskImageOption(hotspot: false),
-);
+const _field = DeskImageField(name: 'hero', title: 'Hero Image');
 
 void main() {
   setUpAll(() {
@@ -34,30 +31,28 @@ void main() {
           'DeskImageInput — state variants',
           directory: Directory('goldens'),
           fileName: 'image_input_gallery',
+          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 1200),
+          itemScaffold: shadcnInputItemScaffold,
           layout: ColumnSceneLayout(),
         )
         .itemFromBuilder(
           tolerancePx: kGoldenTolerancePx,
           description: 'empty / upload area',
-          builder: (_) => buildInputApp(
-            DeskImageInput(field: _field, dataSource: dataSource),
-          ),
+          builder: (_) => DeskImageInput(field: _field, dataSource: dataSource),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
           tolerancePx: kGoldenTolerancePx,
           description: 'filled with external URL',
-          builder: (_) => buildInputApp(
-            DeskImageInput(
-              field: _field,
-              dataSource: dataSource,
-              data: const DeskData(
-                value: {
-                  'type': 'external',
-                  'url': 'https://cdn.example.com/hero.png',
-                },
-                path: 'hero',
-              ),
+          builder: (_) => DeskImageInput(
+            field: _field,
+            dataSource: dataSource,
+            data: const DeskData(
+              value: {
+                'type': 'external',
+                'url': 'https://cdn.example.com/hero.png',
+              },
+              path: 'hero',
             ),
           ),
           setup: (t) async => t.pumpAndSettle(),
@@ -65,21 +60,19 @@ void main() {
         .itemFromBuilder(
           tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
-          builder: (_) => buildInputApp(
-            DeskImageInput(
-              field: const DeskImageField(
-                name: 'hero',
-                title: 'Hero Image',
-                option: DeskImageOption(hotspot: false, optional: true),
-              ),
-              dataSource: dataSource,
-              data: const DeskData(
-                value: {
-                  '_type': 'imageReference',
-                  'externalUrl': 'https://cdn.example.com/hero.png',
-                },
-                path: 'hero',
-              ),
+          builder: (_) => DeskImageInput(
+            field: const DeskImageField(
+              name: 'hero',
+              title: 'Hero Image',
+              option: DeskImageOption(hotspot: false, optional: true),
+            ),
+            dataSource: dataSource,
+            data: const DeskData(
+              value: {
+                '_type': 'imageReference',
+                'externalUrl': 'https://cdn.example.com/hero.png',
+              },
+              path: 'hero',
             ),
           ),
           setup: (t) async => t.pumpAndSettle(),
@@ -87,15 +80,13 @@ void main() {
         .itemFromBuilder(
           tolerancePx: kGoldenTolerancePx,
           description: 'optional / disabled',
-          builder: (_) => buildInputApp(
-            DeskImageInput(
-              field: const DeskImageField(
-                name: 'hero',
-                title: 'Hero Image',
-                option: DeskImageOption(hotspot: false, optional: true),
-              ),
-              dataSource: dataSource,
+          builder: (_) => DeskImageInput(
+            field: const DeskImageField(
+              name: 'hero',
+              title: 'Hero Image',
+              option: DeskImageOption(hotspot: false, optional: true),
             ),
+            dataSource: dataSource,
           ),
           setup: (t) async => t.pumpAndSettle(),
         )

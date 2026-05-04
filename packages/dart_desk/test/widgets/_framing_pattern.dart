@@ -8,10 +8,7 @@ class FramingPattern extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _FramingPainter(),
-      size: Size.infinite,
-    );
+    return CustomPaint(painter: _FramingPainter(), size: Size.infinite);
   }
 }
 

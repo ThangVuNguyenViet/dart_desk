@@ -56,9 +56,7 @@ Widget _buildApp({
             builder: (context) {
               onBuilt?.call(context);
               return Center(
-                child: DeskVersionHistory(
-                  viewModel: GetIt.I<DeskViewModel>(),
-                ),
+                child: DeskVersionHistory(viewModel: GetIt.I<DeskViewModel>()),
               );
             },
           ),
@@ -151,12 +149,17 @@ void main() {
         expect(find.text('Auto-saved'), findsWidgets);
 
         // The draft (newer) should appear above the published (older).
-        final draftTop =
-            tester.getTopLeft(find.text('v${draft.versionNumber}')).dy;
-        final publishedTop =
-            tester.getTopLeft(find.text('v${published.versionNumber}')).dy;
-        expect(draftTop, lessThan(publishedTop),
-            reason: 'Newer draft row should appear above older published row');
+        final draftTop = tester
+            .getTopLeft(find.text('v${draft.versionNumber}'))
+            .dy;
+        final publishedTop = tester
+            .getTopLeft(find.text('v${published.versionNumber}'))
+            .dy;
+        expect(
+          draftTop,
+          lessThan(publishedTop),
+          reason: 'Newer draft row should appear above older published row',
+        );
       },
     );
 
@@ -277,8 +280,11 @@ void main() {
       // v2 (newer) should render above v1 (older): lower dy value.
       final v2Top = tester.getTopLeft(find.text('v${v2.versionNumber}')).dy;
       final v1Top = tester.getTopLeft(find.text('v${v1.versionNumber}')).dy;
-      expect(v2Top, lessThan(v1Top),
-          reason: 'Newer version (v${v2.versionNumber}) should appear first');
+      expect(
+        v2Top,
+        lessThan(v1Top),
+        reason: 'Newer version (v${v2.versionNumber}) should appear first',
+      );
     });
   });
 
@@ -368,9 +374,7 @@ void main() {
       expect(dataSource.lastRestoredVersionId, equals(draftVersion.id));
     });
 
-    testWidgets('Restore success shows toast without crashing', (
-      tester,
-    ) async {
+    testWidgets('Restore success shows toast without crashing', (tester) async {
       final dataSource = _TrackingDataSource()..seedDefaults();
 
       await tester.pumpWidget(

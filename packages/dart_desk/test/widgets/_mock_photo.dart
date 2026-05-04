@@ -56,11 +56,7 @@ class _MockPhotoPainter extends CustomPainter {
 
     final headC = Offset(w * 0.22, h * 0.62);
     final headR = h * 0.06;
-    canvas.drawCircle(
-      headC,
-      headR,
-      Paint()..color = const Color(0xFFE8B98A),
-    );
+    canvas.drawCircle(headC, headR, Paint()..color = const Color(0xFFE8B98A));
     canvas.drawRect(
       Rect.fromCenter(
         center: headC.translate(0, headR + h * 0.08),

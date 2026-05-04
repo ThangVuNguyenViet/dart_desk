@@ -31,11 +31,10 @@ Widget _frame(String label, double w, double h) => Column(
       height: h,
       child: ValueListenableBuilder<ImageReference>(
         valueListenable: _ref,
-        builder: (_, ref, _) =>
-            Container(
-              color: const Color(0xFFEEE9DA),
-              child: DeskFrame(ref: ref, child: const MockPhoto()),
-            ),
+        builder: (_, ref, _) => Container(
+          color: const Color(0xFFEEE9DA),
+          child: DeskFrame(ref: ref, child: const MockPhoto()),
+        ),
       ),
     ),
   ],

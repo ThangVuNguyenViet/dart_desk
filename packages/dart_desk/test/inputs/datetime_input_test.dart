@@ -25,7 +25,10 @@ void main() {
         buildInputApp(
           DeskDateTimeInput(
             field: field,
-            data: const DeskData(value: '2026-03-01T10:30:00', path: 'datetime'),
+            data: const DeskData(
+              value: '2026-03-01T10:30:00',
+              path: 'datetime',
+            ),
           ),
         ),
       );
@@ -61,7 +64,10 @@ void main() {
         buildInputApp(
           DeskDateTimeInput(
             field: field,
-            data: const DeskData(value: '2026-03-01T10:30:00', path: 'datetime'),
+            data: const DeskData(
+              value: '2026-03-01T10:30:00',
+              path: 'datetime',
+            ),
             onChanged: (v) => received = v,
           ),
         ),

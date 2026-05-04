@@ -84,7 +84,9 @@ void main() {
       expect(received, 'option_b');
     });
 
-    testWidgets('optional toggle off fires onChanged(null) once', (tester) async {
+    testWidgets('optional toggle off fires onChanged(null) once', (
+      tester,
+    ) async {
       const optField = DeskDropdownField<String>(
         name: 'category',
         title: 'Category',
@@ -114,7 +116,9 @@ void main() {
       expect(received, [null]);
     });
 
-    testWidgets('optional toggle off then on restores last value', (tester) async {
+    testWidgets('optional toggle off then on restores last value', (
+      tester,
+    ) async {
       const optField = DeskDropdownField<String>(
         name: 'category',
         title: 'Category',
@@ -164,9 +168,7 @@ void main() {
       Widget mk(String? value) => buildInputApp(
         DeskDropdownInput<String>(
           field: optField,
-          data: value == null
-              ? null
-              : DeskData(value: value, path: 'category'),
+          data: value == null ? null : DeskData(value: value, path: 'category'),
           onChanged: (_) => fireCount++,
         ),
       );

@@ -70,8 +70,7 @@ class _FakeDataSource implements DataSource {
     String documentId, {
     int limit = 20,
     int offset = 0,
-  }) async =>
-      _versionList;
+  }) async => _versionList;
 
   // --- stubs for the rest of the interface ---
 
@@ -91,8 +90,7 @@ class _FakeDataSource implements DataSource {
     Map<String, dynamic> data, {
     String? slug,
     bool isDefault = false,
-  }) async =>
-      throw UnimplementedError();
+  }) async => throw UnimplementedError();
 
   @override
   Future<DeskDocument?> updateDocument(
@@ -100,8 +98,7 @@ class _FakeDataSource implements DataSource {
     String? title,
     String? slug,
     bool? isDefault,
-  }) async =>
-      throw UnimplementedError();
+  }) async => throw UnimplementedError();
 
   @override
   Future<bool> deleteDocument(String documentId) async =>
@@ -111,8 +108,7 @@ class _FakeDataSource implements DataSource {
   Future<DeskDocument> setDefaultDocument(
     String documentTypeSlug,
     String documentId,
-  ) async =>
-      throw UnimplementedError();
+  ) async => throw UnimplementedError();
 
   @override
   Future<String> suggestSlug(String title, String documentType) async =>
@@ -128,24 +124,21 @@ class _FakeDataSource implements DataSource {
   @override
   Future<Map<String, dynamic>?> getDocumentVersionData(
     String versionId,
-  ) async =>
-      throw UnimplementedError();
+  ) async => throw UnimplementedError();
 
   @override
   Future<DocumentVersion> createDocumentVersion(
     String documentId, {
     String status = 'draft',
     String? changeLog,
-  }) async =>
-      throw UnimplementedError();
+  }) async => throw UnimplementedError();
 
   @override
   Future<DeskDocument> updateDocumentData(
     String documentId,
     Map<String, dynamic> updates, {
     String? sessionId,
-  }) async =>
-      throw UnimplementedError();
+  }) async => throw UnimplementedError();
 
   @override
   Future<DocumentVersion> publishCurrentVersion(String documentId) async =>
@@ -181,15 +174,13 @@ class _FakeDataSource implements DataSource {
     MediaSort sort = MediaSort.dateDesc,
     int limit = 50,
     int offset = 0,
-  }) async =>
-      throw UnimplementedError();
+  }) async => throw UnimplementedError();
 
   @override
   Future<MediaAsset> updateMediaAsset(
     String assetId, {
     String? fileName,
-  }) async =>
-      throw UnimplementedError();
+  }) async => throw UnimplementedError();
 
   @override
   Future<int> getMediaUsageCount(String assetId) async =>
@@ -209,7 +200,10 @@ void main() {
         for (var i = 0; i < 50; i++) {
           // Accessing the value triggers the FutureSignal to start loading.
           final versionsLoading = vm.versionsContainer(docId).value.isLoading;
-          final docLoading = vm.selectedDocumentContainer(docId).value.isLoading;
+          final docLoading = vm
+              .selectedDocumentContainer(docId)
+              .value
+              .isLoading;
           if (!versionsLoading && !docLoading) return;
           await pumpEventQueue();
         }
@@ -228,10 +222,7 @@ void main() {
               ),
             ];
 
-          final vm = DeskViewModel(
-            dataSource: fakeDS,
-            documentTypes: [],
-          );
+          final vm = DeskViewModel(dataSource: fakeDS, documentTypes: []);
 
           vm.selectedDocumentId.value = 'doc-1';
           await waitForContainers(vm, 'doc-1');
@@ -258,10 +249,7 @@ void main() {
               ),
             ];
 
-          final vm = DeskViewModel(
-            dataSource: fakeDS,
-            documentTypes: [],
-          );
+          final vm = DeskViewModel(dataSource: fakeDS, documentTypes: []);
 
           vm.selectedDocumentId.value = 'doc-1';
           await waitForContainers(vm, 'doc-1');
@@ -283,10 +271,7 @@ void main() {
               ),
             ];
 
-          final vm = DeskViewModel(
-            dataSource: fakeDS,
-            documentTypes: [],
-          );
+          final vm = DeskViewModel(dataSource: fakeDS, documentTypes: []);
 
           vm.selectedDocumentId.value = 'doc-1';
           await waitForContainers(vm, 'doc-1');
@@ -324,10 +309,7 @@ void main() {
             ),
           ];
 
-        final vm = DeskViewModel(
-          dataSource: fakeDS,
-          documentTypes: [],
-        );
+        final vm = DeskViewModel(dataSource: fakeDS, documentTypes: []);
 
         vm.selectedDocumentId.value = 'doc-1';
         await waitForContainers(vm, 'doc-1');
@@ -352,10 +334,7 @@ void main() {
         documentTypes: [],
       );
       // The field was removed — accessing it via `dynamic` should throw NoSuchMethodError.
-      expect(
-        () => (vm as dynamic).saveDocumentData,
-        throwsNoSuchMethodError,
-      );
+      expect(() => (vm as dynamic).saveDocumentData, throwsNoSuchMethodError);
     });
 
     test('publishDocumentData mutation no longer exists on DeskViewModel', () {

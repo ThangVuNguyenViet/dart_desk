@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 import 'package:image/image.dart' as img;
 import 'package:irondash_message_channel/irondash_message_channel.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -35,11 +36,30 @@ Widget buildInputApp(Widget child) {
         child: Scaffold(
           body: ShadToaster(
             child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: child,
-              ),
+              child: Padding(padding: const EdgeInsets.all(16), child: child),
             ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/// Item scaffold for input goldens. Wraps the bare input widget in the minimum
+/// shadcn tree the input needs to render, plus `GoldenImageBounds` so the
+/// screenshotter can crop to the input's intrinsic painted area instead of
+/// capturing the surrounding empty surface.
+///
+/// Use with `Gallery(itemScaffold: shadcnInputItemScaffold)` and pass bare
+/// inputs (no `buildInputApp`) to `itemFromBuilder.builder`.
+Widget shadcnInputItemScaffold(WidgetTester tester, Widget content) {
+  return ShadApp(
+    home: Scaffold(
+      body: Builder(
+        builder: (context) => DefaultTextStyle(
+          style: ShadTheme.of(context).textTheme.p,
+          child: GoldenImageBounds(
+            child: Padding(padding: const EdgeInsets.all(16), child: content),
           ),
         ),
       ),
@@ -63,12 +83,12 @@ void installSuperDragAndDropMocks() {
 
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(
-    const MethodChannel('dev.irondash.engine_context'),
-    (call) async {
-      if (call.method == 'getEngineHandle') return 0;
-      return null;
-    },
-  );
+        const MethodChannel('dev.irondash.engine_context'),
+        (call) async {
+          if (call.method == 'getEngineHandle') return 0;
+          return null;
+        },
+      );
 
   final ctx = MockMessageChannelContext();
   for (final channel in const [

@@ -58,10 +58,7 @@ class _TolerantComparator extends LocalFileComparator {
 }
 
 Future<void> _loadAuraFonts(Directory dir) async {
-  await _loadFontsFromDir(
-    dir,
-    family: (name) => _familyFromFilename(name),
-  );
+  await _loadFontsFromDir(dir, family: (name) => _familyFromFilename(name));
 }
 
 Future<void> _loadShadcnGeist({required Directory packageRoot}) async {

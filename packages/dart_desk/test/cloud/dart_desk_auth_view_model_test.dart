@@ -37,10 +37,10 @@ void main() {
   tearDown(() => authNotifier.dispose());
 
   DartDeskAuthViewModel build() => DartDeskAuthViewModel(
-        client: client,
-        googleSignInClient: googleSignInClient,
-        sessionManager: session,
-      );
+    client: client,
+    googleSignInClient: googleSignInClient,
+    sessionManager: session,
+  );
 
   // Resolves microtasks queued by the awaitable future signal so its
   // factory runs to completion before assertions.
@@ -74,23 +74,26 @@ void main() {
     },
   );
 
-  test('authenticated + getCurrentUser returns user → AsyncData(user)', () async {
-    when(() => session.isAuthenticated).thenReturn(true);
-    final user = User(email: 't@example.com');
-    when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async => user);
+  test(
+    'authenticated + getCurrentUser returns user → AsyncData(user)',
+    () async {
+      when(() => session.isAuthenticated).thenReturn(true);
+      final user = User(email: 't@example.com');
+      when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async => user);
 
-    final vm = build();
-    vm.currentUser.value;
-    await vm.start();
-    await settle();
+      final vm = build();
+      vm.currentUser.value;
+      await vm.start();
+      await settle();
 
-    final state = vm.currentUser.value;
-    expect(state, isA<AsyncData<User?>>());
-    expect((state as AsyncData<User?>).value, user);
-    verifyNever(() => session.signOutDevice());
+      final state = vm.currentUser.value;
+      expect(state, isA<AsyncData<User?>>());
+      expect((state as AsyncData<User?>).value, user);
+      verifyNever(() => session.signOutDevice());
 
-    vm.dispose();
-  });
+      vm.dispose();
+    },
+  );
 
   test('unauthenticated at start → AsyncData(null)', () async {
     when(() => session.isAuthenticated).thenReturn(false);
@@ -118,10 +121,7 @@ void main() {
 
     await vm.signInWithEmail(email: '', password: '');
     expect(vm.signInError.value, 'Please enter both email and password.');
-    expect(
-      vm.displayError.value,
-      'Please enter both email and password.',
-    );
+    expect(vm.displayError.value, 'Please enter both email and password.');
     // currentUser stays as AsyncData(null) — sign-in errors don't taint
     // the user state.
     expect(vm.currentUser.value, isA<AsyncData<User?>>());
@@ -168,42 +168,39 @@ void main() {
     },
   );
 
-  test(
-    'identity change (different authUserId) triggers refetch',
-    () async {
-      when(() => session.isAuthenticated).thenReturn(true);
-      final userA = User(email: 'a@example.com');
-      final userB = User(email: 'b@example.com');
-      var callCount = 0;
-      when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async {
-        callCount++;
-        return callCount == 1 ? userA : userB;
-      });
+  test('identity change (different authUserId) triggers refetch', () async {
+    when(() => session.isAuthenticated).thenReturn(true);
+    final userA = User(email: 'a@example.com');
+    final userB = User(email: 'b@example.com');
+    var callCount = 0;
+    when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async {
+      callCount++;
+      return callCount == 1 ? userA : userB;
+    });
 
-      final idA = UuidValue.fromString('00000000-0000-4000-8000-00000000000a');
-      final idB = UuidValue.fromString('00000000-0000-4000-8000-00000000000b');
-      final first = _MockAuthSuccess();
-      when(() => first.authUserId).thenReturn(idA);
-      authNotifier.value = first;
+    final idA = UuidValue.fromString('00000000-0000-4000-8000-00000000000a');
+    final idB = UuidValue.fromString('00000000-0000-4000-8000-00000000000b');
+    final first = _MockAuthSuccess();
+    when(() => first.authUserId).thenReturn(idA);
+    authNotifier.value = first;
 
-      final vm = build();
-      vm.currentUser.value;
-      await vm.start();
-      await settle();
-      expect((vm.currentUser.value as AsyncData<User?>).value, userA);
+    final vm = build();
+    vm.currentUser.value;
+    await vm.start();
+    await settle();
+    expect((vm.currentUser.value as AsyncData<User?>).value, userA);
 
-      // Account switch: different authUserId.
-      final second = _MockAuthSuccess();
-      when(() => second.authUserId).thenReturn(idB);
-      authNotifier.value = second;
-      await settle();
+    // Account switch: different authUserId.
+    final second = _MockAuthSuccess();
+    when(() => second.authUserId).thenReturn(idB);
+    authNotifier.value = second;
+    await settle();
 
-      expect(callCount, 2);
-      expect((vm.currentUser.value as AsyncData<User?>).value, userB);
+    expect(callCount, 2);
+    expect((vm.currentUser.value as AsyncData<User?>).value, userB);
 
-      vm.dispose();
-    },
-  );
+    vm.dispose();
+  });
 
   test('auth listener flipping to authenticated triggers reload', () async {
     var authed = false;
@@ -221,9 +218,9 @@ void main() {
     // the listenable fires with a fresh AuthSuccess.
     authed = true;
     final auth = _MockAuthSuccess();
-    when(() => auth.authUserId).thenReturn(
-      UuidValue.fromString('00000000-0000-4000-8000-000000000099'),
-    );
+    when(
+      () => auth.authUserId,
+    ).thenReturn(UuidValue.fromString('00000000-0000-4000-8000-000000000099'));
     authNotifier.value = auth;
     await settle();
 

@@ -155,7 +155,9 @@ void main() {
       },
     );
 
-    testWidgets('optional toggle off fires onChanged(null) once', (tester) async {
+    testWidgets('optional toggle off fires onChanged(null) once', (
+      tester,
+    ) async {
       const optField = DeskMultiDropdownField<String>(
         name: 'tags',
         title: 'Tags',
@@ -185,7 +187,9 @@ void main() {
       expect(received, [null]);
     });
 
-    testWidgets('optional toggle off then on restores last value', (tester) async {
+    testWidgets('optional toggle off then on restores last value', (
+      tester,
+    ) async {
       const optField = DeskMultiDropdownField<String>(
         name: 'tags',
         title: 'Tags',
@@ -219,7 +223,9 @@ void main() {
       expect(received[1], ['a']);
     });
 
-    testWidgets('external value flip to null does not fire onChanged', (tester) async {
+    testWidgets('external value flip to null does not fire onChanged', (
+      tester,
+    ) async {
       const optField = DeskMultiDropdownField<String>(
         name: 'tags',
         title: 'Tags',

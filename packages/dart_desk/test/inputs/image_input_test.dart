@@ -39,11 +39,7 @@ void main() {
     HttpOverrides.global = null;
   });
 
-  const field = DeskImageField(
-    name: 'hero',
-    title: 'Hero Image',
-    option: DeskImageOption(hotspot: false),
-  );
+  const field = DeskImageField(name: 'hero', title: 'Hero Image');
 
   const hotspotField = DeskImageField(
     name: 'hero',
@@ -114,8 +110,9 @@ void main() {
       tester,
     ) async {
       final dataSource = MockDataSource();
-      when(() => dataSource.getMediaAsset('asset-hero'))
-          .thenAnswer((_) async => _testAsset());
+      when(
+        () => dataSource.getMediaAsset('asset-hero'),
+      ).thenAnswer((_) async => _testAsset());
 
       await tester.pumpWidget(
         buildInputApp(
@@ -143,8 +140,9 @@ void main() {
       'edit framing live-propagates onChanged before Apply (reset transform)',
       (tester) async {
         final dataSource = MockDataSource();
-        when(() => dataSource.getMediaAsset('asset-hero'))
-            .thenAnswer((_) async => _testAsset());
+        when(
+          () => dataSource.getMediaAsset('asset-hero'),
+        ).thenAnswer((_) async => _testAsset());
         final received = <Map<String, dynamic>?>[];
 
         await tester.pumpWidget(
@@ -195,8 +193,9 @@ void main() {
       tester,
     ) async {
       final dataSource = MockDataSource();
-      when(() => dataSource.getMediaAsset('asset-hero'))
-          .thenAnswer((_) async => _testAsset());
+      when(
+        () => dataSource.getMediaAsset('asset-hero'),
+      ).thenAnswer((_) async => _testAsset());
 
       await tester.pumpWidget(
         buildInputApp(
@@ -389,7 +388,9 @@ void main() {
       expect(received!['_type'], 'imageReference');
     });
 
-    testWidgets('optional toggle off fires onChanged(null) once', (tester) async {
+    testWidgets('optional toggle off fires onChanged(null) once', (
+      tester,
+    ) async {
       const optField = DeskImageField(
         name: 'hero',
         title: 'Hero Image',
@@ -423,7 +424,9 @@ void main() {
       expect(received[0], isNull);
     });
 
-    testWidgets('optional toggle off then on restores last value', (tester) async {
+    testWidgets('optional toggle off then on restores last value', (
+      tester,
+    ) async {
       const optField = DeskImageField(
         name: 'hero',
         title: 'Hero Image',
@@ -461,42 +464,43 @@ void main() {
       expect(received[1]!['externalUrl'], 'https://example.com/photo.jpg');
     });
 
-    testWidgets('optional external value flip to null does not fire onChanged', (
-      tester,
-    ) async {
-      const optField = DeskImageField(
-        name: 'hero',
-        title: 'Hero Image',
-        option: DeskImageOption(hotspot: false, optional: true),
-      );
-      var fireCount = 0;
-      Widget mk(Map<String, dynamic>? value) => buildInputApp(
-        DeskImageInput(
-          field: optField,
-          data: value == null ? null : DeskData(value: value, path: 'hero'),
-          dataSource: MockDataSource(),
-          onChanged: (_) => fireCount++,
-        ),
-      );
+    testWidgets(
+      'optional external value flip to null does not fire onChanged',
+      (tester) async {
+        const optField = DeskImageField(
+          name: 'hero',
+          title: 'Hero Image',
+          option: DeskImageOption(hotspot: false, optional: true),
+        );
+        var fireCount = 0;
+        Widget mk(Map<String, dynamic>? value) => buildInputApp(
+          DeskImageInput(
+            field: optField,
+            data: value == null ? null : DeskData(value: value, path: 'hero'),
+            dataSource: MockDataSource(),
+            onChanged: (_) => fireCount++,
+          ),
+        );
 
-      await tester.pumpWidget(
-        mk({
-          '_type': 'imageReference',
-          'externalUrl': 'https://example.com/photo.jpg',
-        }),
-      );
-      for (var i = 0; i < 5; i++) {
-        await tester.pump(const Duration(milliseconds: 50));
-      }
-      fireCount = 0;
-      await tester.pumpWidget(mk(null));
-      for (var i = 0; i < 5; i++) {
-        await tester.pump(const Duration(milliseconds: 50));
-      }
-      expect(fireCount, 0);
-      final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
-      expect(cb.value, isFalse);
-    });
+        await tester.pumpWidget(
+          mk({
+            '_type': 'imageReference',
+            'externalUrl': 'https://example.com/photo.jpg',
+          }),
+        );
+        for (var i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+        fireCount = 0;
+        await tester.pumpWidget(mk(null));
+        for (var i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+        expect(fireCount, 0);
+        final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
+        expect(cb.value, isFalse);
+      },
+    );
 
     testWidgets('no tabs present in unified layout', (tester) async {
       await tester.pumpWidget(
@@ -513,8 +517,9 @@ void main() {
   });
 
   group('DeskImageInput keep-alive', () {
-    testWidgets('stays alive when scrolled out of a ListView and back',
-        (tester) async {
+    testWidgets('stays alive when scrolled out of a ListView and back', (
+      tester,
+    ) async {
       // Build a DeskImageInput inside a ListView.builder with many tall spacers.
       // Scroll the image_input off-screen, then back. Assert the State object
       // identity is preserved (would fail without AutomaticKeepAliveClientMixin).
@@ -552,9 +557,11 @@ void main() {
       await tester.pump();
 
       final stateAfter = tester.state(finder);
-      expect(identical(stateBefore, stateAfter), isTrue,
-          reason:
-              'DeskImageInput State should be kept alive across scroll');
+      expect(
+        identical(stateBefore, stateAfter),
+        isTrue,
+        reason: 'DeskImageInput State should be kept alive across scroll',
+      );
     });
   });
 }

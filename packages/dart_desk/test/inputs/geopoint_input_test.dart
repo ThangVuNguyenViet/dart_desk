@@ -85,7 +85,9 @@ void main() {
       expect(find.text('Location'), findsOneWidget);
     });
 
-    testWidgets('optional toggle off fires onChanged(null) once', (tester) async {
+    testWidgets('optional toggle off fires onChanged(null) once', (
+      tester,
+    ) async {
       const optField = DeskGeopointField(
         name: 'location',
         title: 'Location',
@@ -112,7 +114,9 @@ void main() {
       expect(received, [null]);
     });
 
-    testWidgets('optional toggle off then on restores last value', (tester) async {
+    testWidgets('optional toggle off then on restores last value', (
+      tester,
+    ) async {
       const optField = DeskGeopointField(
         name: 'location',
         title: 'Location',
@@ -143,7 +147,9 @@ void main() {
       expect(received[1], {'lat': 1.0, 'lng': 2.0});
     });
 
-    testWidgets('external value flip to null does not fire onChanged', (tester) async {
+    testWidgets('external value flip to null does not fire onChanged', (
+      tester,
+    ) async {
       const optField = DeskGeopointField(
         name: 'location',
         title: 'Location',

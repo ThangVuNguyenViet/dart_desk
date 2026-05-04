@@ -57,7 +57,10 @@ void main() {
         buildInputApp(
           DeskArrayInput(
             field: field,
-            data: DeskData(value: List<String>.from(['Existing']), path: 'tags'),
+            data: DeskData(
+              value: List<String>.from(['Existing']),
+              path: 'tags',
+            ),
             onChanged: (v) => received = v,
           ),
         ),
@@ -118,7 +121,9 @@ void main() {
 
       // DeskArrayField doesn't have a hidden option on the field itself,
       // but the option does — checking that the widget builds with no items
-      await tester.pumpWidget(buildInputApp(DeskArrayInput(field: hiddenField)));
+      await tester.pumpWidget(
+        buildInputApp(DeskArrayInput(field: hiddenField)),
+      );
       await tester.pumpAndSettle();
 
       // Array input always renders (no hidden option on DeskArrayOption)
@@ -346,8 +351,9 @@ void main() {
         await tester.pumpAndSettle();
 
         // Find the two emissions whose contents match the post-save states.
-        final saveB =
-            received.lastWhere((v) => v != null && v.length == 2 && v[1] == 'B');
+        final saveB = received.lastWhere(
+          (v) => v != null && v.length == 2 && v[1] == 'B',
+        );
         final saveC = received.last;
         expect(saveB, ['A', 'B']);
         expect(saveC, ['A', 'B', 'C']);
@@ -362,7 +368,10 @@ void main() {
           buildInputApp(
             DeskArrayInput(
               field: field,
-              data: DeskData(value: List<String>.from(['X', 'Y']), path: 'tags'),
+              data: DeskData(
+                value: List<String>.from(['X', 'Y']),
+                path: 'tags',
+              ),
               onChanged: received.add,
             ),
           ),
