@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 import 'package:image/image.dart' as img;
 import 'package:irondash_message_channel/irondash_message_channel.dart';
 import 'package:shadcn_ui/shadcn_ui.dart';
@@ -36,57 +35,10 @@ Widget buildInputApp(Widget child) {
         child: Scaffold(
           body: ShadToaster(
             child: SingleChildScrollView(
-              child: Padding(padding: const EdgeInsets.all(16), child: child),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-/// Item scaffold for input goldens. Wraps the bare input widget in the minimum
-/// shadcn tree the input needs to render, plus `GoldenImageBounds` so the
-/// screenshotter can crop to the input's intrinsic painted area instead of
-/// capturing the surrounding empty surface.
-///
-/// Use with `Gallery(itemScaffold: shadcnInputItemScaffold)` and pass bare
-/// inputs (no `buildInputApp`) to `itemFromBuilder.builder`.
-Widget shadcnInputItemScaffold(WidgetTester tester, Widget content) {
-  // Inputs use Column (MainAxisSize.max), which fills any bounded height
-  // it receives. Gallery's itemConstraints (maxHeight: 1200) propagates
-  // through an internal ConstrainedBox we can't bypass. IntrinsicHeight
-  // forces the child to its intrinsic height — Column then sums its
-  // children's intrinsic heights instead of expanding. GoldenImageBounds
-  // (RepaintBoundary) shrink-wraps and the screenshotter crops tightly.
-  return _scaffold(tester, content, shrinkWrap: true);
-}
-
-/// Variant for inputs whose subtree contains a `LayoutBuilder` (e.g.
-/// shadcn select / dropdown popover internals). `IntrinsicHeight` queries
-/// children for intrinsic sizes, but `LayoutBuilder` cannot answer those,
-/// so wrapping with `IntrinsicHeight` throws. Use this scaffold for those
-/// inputs; the captured screenshot will fill the gallery's `maxHeight`
-/// instead of cropping tight, but the test will run.
-Widget shadcnInputItemScaffoldNoIntrinsics(WidgetTester tester, Widget content) {
-  return _scaffold(tester, content, shrinkWrap: false);
-}
-
-Widget _scaffold(
-  WidgetTester tester,
-  Widget content, {
-  required bool shrinkWrap,
-}) {
-  return ShadApp(
-    home: Builder(
-      builder: (context) => DefaultTextStyle(
-        style: ShadTheme.of(context).textTheme.p,
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: GoldenImageBounds(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: shrinkWrap ? IntrinsicHeight(child: content) : content,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: child,
+              ),
             ),
           ),
         ),
@@ -111,12 +63,12 @@ void installSuperDragAndDropMocks() {
 
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(
-        const MethodChannel('dev.irondash.engine_context'),
-        (call) async {
-          if (call.method == 'getEngineHandle') return 0;
-          return null;
-        },
-      );
+    const MethodChannel('dev.irondash.engine_context'),
+    (call) async {
+      if (call.method == 'getEngineHandle') return 0;
+      return null;
+    },
+  );
 
   final ctx = MockMessageChannelContext();
   for (final channel in const [

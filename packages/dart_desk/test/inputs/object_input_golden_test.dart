@@ -5,8 +5,6 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
-import 'package:dart_desk/testing.dart';
-import 'package:flutter/widgets.dart';
 
 const _field = DeskObjectField(
   name: 'address',
@@ -43,81 +41,82 @@ const _field = DeskObjectField(
 void main() {
   testGoldenScene('DeskObjectInput gallery', (tester) async {
     await Gallery(
-          'DeskObjectInput — state variants',
-          directory: Directory('goldens'),
-          fileName: 'object_input_gallery',
-          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 300),
-          itemScaffold: shadcnInputItemScaffold,
-          layout: ColumnSceneLayout(),
-        )
-        .itemFromBuilder(
-          tolerancePx: kGoldenTolerancePx,
-          description: 'empty',
-          builder: (_) => const DeskObjectInput(field: _field),
+      'DeskObjectInput — state variants',
+      directory: Directory('goldens'),
+      fileName: 'object_input_gallery',
+      layout: ColumnSceneLayout(),
+    )
+        .itemFromBuilder(          description: 'empty',
+          builder: (_) => buildInputApp(const DeskObjectInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: kGoldenTolerancePx,
-          description: 'filled',
-          builder: (_) => const DeskObjectInput(
-            field: _field,
-            data: DeskData(
-              value: {
-                'street': '123 Main St',
-                'city': 'San Francisco',
-                'zip': '94105',
-              },
-              path: 'address',
-            ),
-          ),
-          setup: (t) async => t.pumpAndSettle(),
-        )
-        .itemFromBuilder(
-          tolerancePx: kGoldenTolerancePx,
-          description: 'optional / enabled',
-          builder: (_) => const DeskObjectInput(
-            field: DeskObjectField(
-              name: 'address',
-              title: 'Address',
-              option: DeskObjectOption(
-                optional: true,
-                children: [
-                  ColumnFields(
-                    children: [
-                      DeskStringField(
-                        name: 'street',
-                        title: 'Street',
-                        option: DeskStringOption(),
-                      ),
-                    ],
-                  ),
-                ],
+        .itemFromBuilder(          description: 'filled',
+          builder: (_) => buildInputApp(
+            const DeskObjectInput(
+              field: _field,
+              data: DeskData(
+                value: {
+                  'street': '123 Main St',
+                  'city': 'San Francisco',
+                  'zip': '94105',
+                },
+                path: 'address',
               ),
             ),
-            data: DeskData(value: {'street': '123 Main St'}, path: 'address'),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
-          tolerancePx: kGoldenTolerancePx,
+          description: 'optional / enabled',
+          builder: (_) => buildInputApp(
+            const DeskObjectInput(
+              field: DeskObjectField(
+                name: 'address',
+                title: 'Address',
+                option: DeskObjectOption(
+                  optional: true,
+                  children: [
+                    ColumnFields(
+                      children: [
+                        DeskStringField(
+                          name: 'street',
+                          title: 'Street',
+                          option: DeskStringOption(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              data: DeskData(
+                value: {'street': '123 Main St'},
+                path: 'address',
+              ),
+            ),
+          ),
+          setup: (t) async => t.pumpAndSettle(),
+        )
+        .itemFromBuilder(
           description: 'optional / disabled',
-          builder: (_) => const DeskObjectInput(
-            field: DeskObjectField(
-              name: 'address',
-              title: 'Address',
-              option: DeskObjectOption(
-                optional: true,
-                children: [
-                  ColumnFields(
-                    children: [
-                      DeskStringField(
-                        name: 'street',
-                        title: 'Street',
-                        option: DeskStringOption(),
-                      ),
-                    ],
-                  ),
-                ],
+          builder: (_) => buildInputApp(
+            const DeskObjectInput(
+              field: DeskObjectField(
+                name: 'address',
+                title: 'Address',
+                option: DeskObjectOption(
+                  optional: true,
+                  children: [
+                    ColumnFields(
+                      children: [
+                        DeskStringField(
+                          name: 'street',
+                          title: 'Street',
+                          option: DeskStringOption(),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

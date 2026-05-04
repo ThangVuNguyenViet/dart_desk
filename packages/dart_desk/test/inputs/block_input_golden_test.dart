@@ -5,7 +5,6 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
-import 'package:dart_desk/testing.dart';
 
 const _field = DeskBlockField(
   name: 'content',
@@ -16,20 +15,16 @@ const _field = DeskBlockField(
 void main() {
   testGoldenScene('DeskBlockInput gallery', (tester) async {
     await Gallery(
-          'DeskBlockInput — state variants',
-          directory: Directory('goldens'),
-          fileName: 'block_input_gallery',
-          layout: ColumnSceneLayout(),
-        )
-        .itemFromBuilder(
-          tolerancePx: kGoldenTolerancePx,
-          description: 'empty editor',
+      'DeskBlockInput — state variants',
+      directory: Directory('goldens'),
+      fileName: 'block_input_gallery',
+      layout: ColumnSceneLayout(),
+    )
+        .itemFromBuilder(          description: 'empty editor',
           builder: (_) => buildInputApp(const DeskBlockInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(
-          tolerancePx: kGoldenTolerancePx,
-          description: 'pre-filled with text',
+        .itemFromBuilder(          description: 'pre-filled with text',
           builder: (_) => buildInputApp(
             const DeskBlockInput(
               field: _field,
@@ -42,7 +37,6 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
-          tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
           builder: (_) => buildInputApp(
             const DeskBlockInput(
@@ -57,7 +51,6 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
-          tolerancePx: kGoldenTolerancePx,
           description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskBlockInput(
