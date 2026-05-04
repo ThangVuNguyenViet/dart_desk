@@ -1,7 +1,8 @@
 import 'dart:async';
+
+import 'package:collection/collection.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -83,11 +84,8 @@ class _DeskImageInputState extends State<DeskImageInput>
     setState(() {
       if (!enabled) {
         final ref = _viewModel.imageRef.value;
-        final ext = _viewModel.externalUrl.value;
         if (ref != null) {
           _lastValue = ref.toMap();
-        } else if (ext != null && ext.isNotEmpty) {
-          _lastValue = ImageReference(externalUrl: ext).toMap();
         }
         _viewModel.clear();
         _isEnabled = false;
@@ -259,10 +257,9 @@ class _DeskImageInputState extends State<DeskImageInput>
   }
 
   void _editCrop() {
-    final ref = _viewModel.imageRef.value;
-    if (ref == null) return;
-
-    final originalRef = ref;
+    final originalRef = _viewModel.imageRef.value;
+    final imageUrl = originalRef?.url;
+    if (originalRef == null || imageUrl == null) return;
 
     showShadSheet(
       context: context,
@@ -271,12 +268,12 @@ class _DeskImageInputState extends State<DeskImageInput>
         constraints: const BoxConstraints(maxWidth: 560),
         title: const Text('Edit Framing'),
         child: ImageHotspotEditor(
-          imageUrl: ref.publicUrl!,
-          initialHotspot: ref.hotspot,
-          initialCrop: ref.crop,
+          imageUrl: imageUrl,
+          initialHotspot: originalRef.hotspot,
+          initialCrop: originalRef.crop,
           initialMode: _viewModel.lastFramingMode.value,
-          initialScale: ref.scale,
-          initialOffset: ref.offset,
+          initialScale: originalRef.scale,
+          initialOffset: originalRef.offset?.toOffset(),
           onModeChanged: (mode) => _viewModel.lastFramingMode.value = mode,
           onLiveChange: (delta) {
             // Stream every change through to the parent so framing edits
@@ -285,7 +282,7 @@ class _DeskImageInputState extends State<DeskImageInput>
               hotspot: delta.hotspot,
               crop: delta.crop,
               scale: delta.scale,
-              offset: delta.offset,
+              offset: delta.offset?.toImageOffset(),
             );
             _viewModel.updateImageRef(updated);
             widget.onChanged?.call(updated.toMap());
@@ -300,7 +297,7 @@ class _DeskImageInputState extends State<DeskImageInput>
               hotspot: result.hotspot,
               crop: result.crop,
               scale: result.scale,
-              offset: result.offset,
+              offset: result.offset?.toImageOffset(),
             );
             _viewModel.updateImageRef(updated);
             widget.onChanged?.call(updated.toMap());
@@ -450,12 +447,15 @@ class _DeskImageInputState extends State<DeskImageInput>
         );
       }
 
-      final url = widget.transformUrl != null
-          ? widget.transformUrl!(
-              ref.publicUrl!,
+      // transformUrl is asset/CDN-only; external URLs pass through verbatim.
+      final transform = widget.transformUrl;
+      final publicUrl = ref.publicUrl;
+      final url = transform != null && publicUrl != null
+          ? transform(
+              publicUrl,
               const ImageTransformParams(width: 600, fit: FitMode.clip),
             )
-          : ref.publicUrl!;
+          : ref.url ?? '';
 
       return Image.network(
         url,
@@ -485,35 +485,6 @@ class _DeskImageInputState extends State<DeskImageInput>
               Container(color: theme.colorScheme.muted),
               const Center(child: CircularProgressIndicator()),
             ],
-          );
-        },
-      );
-    }
-
-    final extUrl = _viewModel.externalUrl.value;
-    if (extUrl != null && extUrl.isNotEmpty) {
-      return Image.network(
-        extUrl,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FaIcon(
-                  FontAwesomeIcons.imagePortrait,
-                  size: 48,
-                  color: theme.colorScheme.mutedForeground,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Failed to load image',
-                  style: theme.textTheme.small.copyWith(
-                    color: theme.colorScheme.mutedForeground,
-                  ),
-                ),
-              ],
-            ),
           );
         },
       );
@@ -556,16 +527,15 @@ class _DeskImageInputState extends State<DeskImageInput>
     final theme = ShadTheme.of(context);
     final ref = _viewModel.imageRef.watch(context);
     final uploadState = _viewModel.upload.watch(context);
-    final externalUrl = _viewModel.externalUrl.watch(context);
-    final hasImage = ref != null;
-    final hasExternalUrl = externalUrl != null && externalUrl.isNotEmpty;
-    final hasAnyValue = hasImage || hasExternalUrl;
+    final publicUrl = ref?.publicUrl;
+    final externalUrl = ref?.externalUrl;
+    final hasAnyValue = ref != null;
+    final hasResolvedImage = ref?.url != null;
     final hotspotEnabled = widget.field.option?.hotspot ?? false;
     final isUploading = uploadState.isLoading;
     final errorText = uploadState.hasError
         ? 'Upload failed: ${uploadState.error}'
         : null;
-    final isAssetMode = hasImage && ref.publicUrl != null;
 
     return DropRegion(
       formats: Formats.standardFormats,
@@ -648,7 +618,7 @@ class _DeskImageInputState extends State<DeskImageInput>
                   ],
                 ),
               ),
-              if (hotspotEnabled && hasImage)
+              if (hotspotEnabled && hasResolvedImage)
                 ShadButton.outline(
                   key: const ValueKey('edit_framing_button'),
                   onPressed: _editCrop,
@@ -681,17 +651,17 @@ class _DeskImageInputState extends State<DeskImageInput>
 
           const SizedBox(height: 8),
 
-          if (isAssetMode)
+          if (publicUrl != null)
             ShadInput(
               key: const ValueKey('url_display'),
-              initialValue: ref.publicUrl!,
+              initialValue: publicUrl,
               readOnly: true,
               trailing: ShadButton.ghost(
                 size: ShadButtonSize.sm,
                 width: 32,
                 padding: EdgeInsets.zero,
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: ref.publicUrl!));
+                  Clipboard.setData(ClipboardData(text: publicUrl));
                   ShadToaster.of(context).show(
                     const ShadToast(
                       description: Text('URL copied to clipboard'),
