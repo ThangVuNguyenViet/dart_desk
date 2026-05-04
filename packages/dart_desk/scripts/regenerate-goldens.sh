@@ -56,7 +56,7 @@ fi
 volume_args=()
 while IFS= read -r dir; do
   rel="${dir#${WORKSPACE_ROOT}/}"
-  vol_name="dartdesk-darttool-$(echo "${rel}" | tr '/' '-')"
+  vol_name="dartdesk-darttool-$(echo "${rel}" | tr -c 'a-zA-Z0-9_.-' '-')"
   volume_args+=(-v "${vol_name}:/workspace/${rel}")
 done < <(find "${WORKSPACE_ROOT}" -name .dart_tool -type d -prune 2>/dev/null)
 
