@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dart_desk/dart_desk.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
@@ -26,6 +27,7 @@ void main() {
       'DeskMultiDropdownInput — state variants',
       directory: Directory('goldens'),
       fileName: 'multi_dropdown_input_gallery',
+      itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 200),
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(

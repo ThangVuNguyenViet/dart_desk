@@ -21,7 +21,7 @@ void main() {
       directory: Directory('goldens'),
       fileName: 'date_input_gallery',
       // Give each item enough width so ShadDatePickerFormField doesn't overflow.
-      itemConstraints: const BoxConstraints(minWidth: 500, maxWidth: 500),
+      itemConstraints: const BoxConstraints(minWidth: 500, maxWidth: 500, maxHeight: 200),
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(

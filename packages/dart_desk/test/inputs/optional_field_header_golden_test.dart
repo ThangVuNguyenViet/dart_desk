@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dart_desk/src/inputs/optional_field_header.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
@@ -14,6 +15,7 @@ void main() {
       'OptionalFieldHeader — state variants',
       directory: Directory('goldens'),
       fileName: 'optional_field_header_gallery',
+      itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 200),
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(

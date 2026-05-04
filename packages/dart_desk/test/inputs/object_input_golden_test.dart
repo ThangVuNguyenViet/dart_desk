@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dart_desk/src/inputs/object_input.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
@@ -45,6 +46,7 @@ void main() {
       'DeskObjectInput — state variants',
       directory: Directory('goldens'),
       fileName: 'object_input_gallery',
+      itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 200),
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
