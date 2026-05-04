@@ -1,3 +1,7 @@
+## 0.3.3
+
+ - **FEAT**(dart_desk): DeskListenable.asValueListenable() extension.
+
 ## 0.3.2
 
  - **REFACTOR**: 4-layer architecture, fixtures, screen goldens (#8).

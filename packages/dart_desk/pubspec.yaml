@@ -1,6 +1,6 @@
 name: dart_desk
 description: "CMS studio interface with inputs, validators, and runtime components for Dart Desk applications"
-version: 0.3.2
+version: 0.3.3
 homepage: https://github.com/ThangVuNguyenViet/dart_desk
 repository: https://github.com/ThangVuNguyenViet/dart_desk
 issue_tracker: https://github.com/ThangVuNguyenViet/dart_desk/issues
