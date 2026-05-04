@@ -98,6 +98,9 @@ jobs:
           path: ${{ env.CACHE_PATHS }}
           key: ${{ needs.setup.outputs.cache-key }}
       - run: flutter --suppress-analytics pub get
+      - name: codegen (data_models)
+        working-directory: examples/data_models
+        run: dart run build_runner build
       - name: ${{ matrix.name }}
         working-directory: ${{ matrix.working-directory }}
         run: ${{ matrix.command }}

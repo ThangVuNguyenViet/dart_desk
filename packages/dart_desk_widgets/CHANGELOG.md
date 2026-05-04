@@ -1,3 +1,9 @@
+## 0.1.1
+
+ - **FIX**(image_input): deep-equal DeskData.value to stop rebuild churn (#31).
+ - **FEAT**(image_input): scale slider in Edit Framing transform mode (#39).
+ - **FEAT**: image transform (scale + offset) + slide-over Edit Framing (#35).
+
 ## 0.1.0
 
  - **FEAT**: `DeskFrame` now respects `ImageReference.scale` and `offset`, applying author-defined transforms on top of hotspot/crop framing (#35).

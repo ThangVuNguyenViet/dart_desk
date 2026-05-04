@@ -8,8 +8,8 @@ class FieldEquals extends DeskCondition {
   const FieldEquals(this.field, this.value);
 
   @override
-  bool evaluate(Object ctx) =>
-      (ctx as DeskContext).document?.activeVersionData?[field] == value;
+  bool evaluate(DeskContext ctx) =>
+      ctx.document?.activeVersionData?[field] == value;
 }
 
 /// Shows the field when [field] does not equal [value].
@@ -19,8 +19,8 @@ class FieldNotEquals extends DeskCondition {
   const FieldNotEquals(this.field, this.value);
 
   @override
-  bool evaluate(Object ctx) =>
-      (ctx as DeskContext).document?.activeVersionData?[field] != value;
+  bool evaluate(DeskContext ctx) =>
+      ctx.document?.activeVersionData?[field] != value;
 }
 
 /// Shows the field when [field] is not null.
@@ -29,8 +29,8 @@ class FieldNotNull extends DeskCondition {
   const FieldNotNull(this.field);
 
   @override
-  bool evaluate(Object ctx) =>
-      (ctx as DeskContext).document?.activeVersionData?[field] != null;
+  bool evaluate(DeskContext ctx) =>
+      ctx.document?.activeVersionData?[field] != null;
 }
 
 /// Shows the field when [field] is null.
@@ -39,8 +39,8 @@ class FieldIsNull extends DeskCondition {
   const FieldIsNull(this.field);
 
   @override
-  bool evaluate(Object ctx) =>
-      (ctx as DeskContext).document?.activeVersionData?[field] == null;
+  bool evaluate(DeskContext ctx) =>
+      ctx.document?.activeVersionData?[field] == null;
 }
 
 /// Shows the field when all [conditions] are true.
@@ -49,7 +49,7 @@ class AllConditions extends DeskCondition {
   const AllConditions(this.conditions);
 
   @override
-  bool evaluate(Object ctx) => conditions.every((c) => c.evaluate(ctx));
+  bool evaluate(DeskContext ctx) => conditions.every((c) => c.evaluate(ctx));
 }
 
 /// Shows the field when any of [conditions] is true.
@@ -58,5 +58,5 @@ class AnyCondition extends DeskCondition {
   const AnyCondition(this.conditions);
 
   @override
-  bool evaluate(Object ctx) => conditions.any((c) => c.evaluate(ctx));
+  bool evaluate(DeskContext ctx) => conditions.any((c) => c.evaluate(ctx));
 }

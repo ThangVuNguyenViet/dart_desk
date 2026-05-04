@@ -1,3 +1,8 @@
+## 0.3.1
+
+ - **FIX**(dart_desk): editor footer alignment, clear-to-null, rename defaultValue → initialValue (#16).
+ - **FEAT**: DeskConditionContext for runtime-aware field conditions (#14).
+
 ## 0.3.0
 
 > **Breaking**: tracks `dart_desk_annotation` 0.3.0. Generated output uses `initialValue` instead of `defaultValue`. Regenerate consumers (`dart run build_runner build`) after upgrading.

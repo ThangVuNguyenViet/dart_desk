@@ -21,7 +21,7 @@ import '../../../inputs/string_input.dart';
 import '../../../inputs/text_input.dart';
 import '../../../inputs/url_input.dart';
 import '../../core/view_models/desk_view_model.dart';
-// DeskContext is read from the widget tree via DeskContext.of(context).
+// DeskContext is read from the widget tree via DeskContextScope.of(context).
 
 /// Type definition for field value change callbacks
 typedef OnFieldChanged = void Function(String fieldName, dynamic value);
@@ -274,7 +274,7 @@ class _DeskFormState extends State<DeskForm> {
                         .where((field) {
                           final visibleWhen = field.option?.visibleWhen;
                           return visibleWhen == null ||
-                              visibleWhen.evaluate(DeskContext.of(context));
+                              visibleWhen.evaluate(DeskContextScope.of(context));
                         })
                         .map((field) {
                           return Padding(
