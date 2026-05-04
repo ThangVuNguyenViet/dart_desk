@@ -47,3 +47,4 @@ app.*.map.json
 .worktrees/
 app.log
 .claude/worktrees/
+pubspec.lock
