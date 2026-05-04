@@ -10,6 +10,8 @@ export 'src/annotations.dart';
 export 'src/serializable.dart';
 // Base field abstractions
 export 'src/fields/base/field.dart';
+export 'src/fields/base/desk_context.dart';
+export 'src/fields/base/desk_listenable.dart';
 // Complex field configurations (array_field and dropdown_field omitted — they import Flutter)
 export 'src/fields/complex/block_field.dart';
 export 'src/fields/complex/field_layout.dart';

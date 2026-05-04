@@ -12,6 +12,8 @@ export 'src/config.dart';
 export 'src/fields/base/field.dart';
 export 'src/fields/base/conditions.dart';
 export 'src/fields/base/desk_context.dart';
+export 'src/fields/base/desk_context_scope.dart';
+export 'src/fields/base/desk_listenable.dart';
 // Complex field configurations
 export 'src/fields/complex/array_field.dart';
 export 'src/fields/complex/block_field.dart';

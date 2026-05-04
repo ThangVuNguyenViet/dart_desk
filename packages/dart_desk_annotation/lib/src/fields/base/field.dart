@@ -1,19 +1,13 @@
+import 'desk_context.dart';
+
 /// Base condition class for conditional field visibility.
 /// Subclass and override [evaluate] to create custom conditions.
 /// All subclasses must be const-constructible.
-///
-/// [evaluate] takes an opaque [Object] (rather than `DeskContext`) so this
-/// file stays Flutter-free and can be exported via
-/// `dart_desk_annotation_generator.dart` without dragging `dart:ui` into
-/// the build_runner build script. Concrete subclasses (in `conditions.dart`)
-/// cast the argument to `DeskContext`.
 abstract class DeskCondition {
   const DeskCondition();
 
-  /// Returns true if the field should be visible given the current context.
-  /// The runtime type is `DeskContext`; declared as `Object` here to keep
-  /// this file Flutter-free.
-  bool evaluate(Object ctx);
+  /// Returns true if the field should be visible given [ctx].
+  bool evaluate(DeskContext ctx);
 }
 
 abstract class DeskOption {

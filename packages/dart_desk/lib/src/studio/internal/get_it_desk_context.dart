@@ -44,9 +44,26 @@ class GetItDeskContext extends DeskContext {
       GetIt.I<DeskDocumentViewModel>().selectedDocument.value.value;
 
   @override
-  ValueListenable<List<DeskDocument>> documents(String documentType) =>
-      _documents(documentType);
+  DeskListenable<List<DeskDocument>> documents(String documentType) =>
+      _ValueListenableAdapter(_documents(documentType));
 
   @override
   T read<T extends Object>() => GetIt.I<T>();
+}
+
+/// Wraps a Flutter `ValueListenable<T>` as the Flutter-free
+/// [DeskListenable<T>] consumed by [DeskContext].
+class _ValueListenableAdapter<T> implements DeskListenable<T> {
+  _ValueListenableAdapter(this._inner);
+  final ValueListenable<T> _inner;
+
+  @override
+  T get value => _inner.value;
+
+  @override
+  void addListener(void Function() listener) => _inner.addListener(listener);
+
+  @override
+  void removeListener(void Function() listener) =>
+      _inner.removeListener(listener);
 }

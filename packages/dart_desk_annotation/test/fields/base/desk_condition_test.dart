@@ -1,5 +1,4 @@
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _FakeContext extends DeskContext {
@@ -7,7 +6,7 @@ class _FakeContext extends DeskContext {
   @override
   final DeskDocument? document;
   @override
-  ValueListenable<List<DeskDocument>> documents(String documentType) =>
+  DeskListenable<List<DeskDocument>> documents(String documentType) =>
       throw StateError('documents() not stubbed in this test');
   @override
   T read<T extends Object>() =>
