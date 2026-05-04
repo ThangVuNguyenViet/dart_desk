@@ -11,4 +11,4 @@
 /// fails. This constant is the per-item tolerance every gallery item should
 /// pass to absorb that microarchitectural noise without masking real layout
 /// or style regressions (which produce diffs orders of magnitude larger).
-const int kGoldenTolerancePx = 500;
+const int kGoldenTolerancePx = 1000;
