@@ -15,7 +15,7 @@ void main() {
           'OptionalFieldHeader — state variants',
           directory: Directory('goldens'),
           fileName: 'optional_field_header_gallery',
-          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 1200),
+          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 300),
           itemScaffold: shadcnInputItemScaffold,
           layout: ColumnSceneLayout(),
         )

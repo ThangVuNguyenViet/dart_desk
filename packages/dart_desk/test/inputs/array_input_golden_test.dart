@@ -28,8 +28,8 @@ void main() {
           'DeskArrayInput — state variants',
           directory: Directory('goldens'),
           fileName: 'array_input_gallery',
-          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 1200),
-          itemScaffold: shadcnInputItemScaffold,
+          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 300),
+          itemScaffold: shadcnInputItemScaffoldNoIntrinsics,
           layout: ColumnSceneLayout(),
         )
         .itemFromBuilder(

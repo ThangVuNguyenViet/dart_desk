@@ -20,7 +20,7 @@ void main() {
           'DeskFileInput — empty state variants',
           directory: Directory('goldens'),
           fileName: 'file_input_gallery',
-          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 1200),
+          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 300),
           itemScaffold: shadcnInputItemScaffold,
           layout: ColumnSceneLayout(),
         )

@@ -25,7 +25,7 @@ void main() {
           itemConstraints: const BoxConstraints(
             minWidth: 500,
             maxWidth: 500,
-            maxHeight: 1200,
+            maxHeight: 300,
           ),
           itemScaffold: shadcnInputItemScaffold,
           layout: ColumnSceneLayout(),

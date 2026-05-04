@@ -26,7 +26,7 @@ void main() {
           'DeskBooleanInput — state variants',
           directory: Directory('goldens'),
           fileName: 'boolean_input_gallery',
-          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 1200),
+          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 300),
           itemScaffold: shadcnInputItemScaffold,
           layout: ColumnSceneLayout(),
         )

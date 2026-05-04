@@ -20,7 +20,7 @@ void main() {
           'DeskUrlInput — state variants',
           directory: Directory('goldens'),
           fileName: 'url_input_gallery',
-          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 1200),
+          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 300),
           itemScaffold: shadcnInputItemScaffold,
           layout: ColumnSceneLayout(),
         )

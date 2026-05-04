@@ -28,13 +28,27 @@ TARGET="${1:-test/}"
 echo "→ Pulling ${IMAGE}"
 docker pull --quiet "${IMAGE}"
 
+# Find every host `.dart_tool` and `.flutter-plugins-dependencies` so we can
+# shadow them inside the container with anonymous volumes. Without this,
+# `flutter pub get` writes Linux/arm64 artifacts to the bind-mounted host
+# tree, which clobbers the macOS Flutter SDK pointers and breaks `flutter
+# run` until the host re-runs `flutter pub get`. Anonymous volumes are
+# discarded when `--rm` cleans up the container, so the host stays pristine.
+shadow_args=()
+while IFS= read -r dir; do
+  rel="${dir#${WORKSPACE_ROOT}/}"
+  shadow_args+=(-v "/workspace/${rel}")
+done < <(find "${WORKSPACE_ROOT}" -name .dart_tool -type d -prune 2>/dev/null)
+
 echo "→ Running flutter test --update-goldens ${TARGET}"
 echo "  (workspace: ${WORKSPACE_ROOT})"
 echo "  (package:   ${PACKAGE_REL})"
+echo "  (shadowing ${#shadow_args[@]} host paths from container writes)"
 
 docker run --rm -t \
   --platform linux/arm64 \
   -v "${WORKSPACE_ROOT}:/workspace" \
+  "${shadow_args[@]}" \
   -w "/workspace/${PACKAGE_REL}" \
   -e CI=1 \
   "${IMAGE}" \

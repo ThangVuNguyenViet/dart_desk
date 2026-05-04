@@ -24,7 +24,7 @@ void main() {
           'OptionalFieldWrapper — enabled vs disabled',
           directory: Directory('goldens'),
           fileName: 'optional_field_wrapper_gallery',
-          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 1200),
+          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 300),
           itemScaffold: shadcnInputItemScaffold,
           layout: ColumnSceneLayout(),
         )

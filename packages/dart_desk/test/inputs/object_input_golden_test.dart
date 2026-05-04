@@ -46,7 +46,7 @@ void main() {
           'DeskObjectInput — state variants',
           directory: Directory('goldens'),
           fileName: 'object_input_gallery',
-          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 1200),
+          itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 300),
           itemScaffold: shadcnInputItemScaffold,
           layout: ColumnSceneLayout(),
         )
