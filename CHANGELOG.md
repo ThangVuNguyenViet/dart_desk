@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`dart_desk` - `v0.3.3`](#dart_desk---v033)
+
+---
+
+#### `dart_desk` - `v0.3.3`
+
+ - **FEAT**(dart_desk): DeskListenable.asValueListenable() extension.
+
+
+## 2026-05-04
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`dart_desk` - `v0.3.2`](#dart_desk---v032)
  - [`dart_desk_annotation` - `v0.3.2`](#dart_desk_annotation---v032)
  - [`dart_desk_generator` - `v0.3.2`](#dart_desk_generator---v032)
