@@ -32,6 +32,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(Uint8List(0));
     initTestPngBytes();
+    installSuperDragAndDropMocks();
     HttpOverrides.global = FakeHttpOverrides();
   });
 
@@ -186,6 +187,113 @@ void main() {
         expect(received, isNotEmpty);
         expect(received.last?['scale'], isNull);
         expect(received.last?['offset'], isNull);
+      },
+    );
+
+    testWidgets(
+      'editor onLiveChange does not throw SignalEffectException when '
+      'parent rebuilds on the written signal',
+      (tester) async {
+        // Reproduce the exact cycle that fires in production:
+        // editor.initState → createEffect (synchronous) → onLiveChange →
+        // viewModel.imageRef.value = updated  (a signal a parent watches)
+        // The write must not happen during the effect's first run, or
+        // preact_signals throws SignalEffectException at endBatch.
+        final externalRef = ImageReference(
+          externalUrl: 'https://example.com/photo.jpg',
+        );
+        final received = <Map<String, dynamic>?>[];
+
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskImageInput(
+              field: hotspotField,
+              data: DeskData(value: externalRef.toMap(), path: 'hero'),
+              dataSource: MockDataSource(),
+              onChanged: received.add,
+            ),
+          ),
+        );
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        await tester.tap(find.byKey(const ValueKey('edit_framing_button')));
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        expect(
+          tester.takeException(),
+          isNull,
+          reason:
+              'Opening Edit Framing on an external URL must not throw '
+              'SignalEffectException via the createEffect → onLiveChange '
+              '→ imageRef.value write cycle.',
+        );
+      },
+    );
+
+    testWidgets(
+      'edit framing on external URL opens editor without SignalEffectException',
+      (tester) async {
+        final received = <Map<String, dynamic>?>[];
+
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskImageInput(
+              field: hotspotField,
+              data: const DeskData(
+                value: {
+                  '_type': 'imageReference',
+                  'externalUrl': 'https://example.com/photo.jpg',
+                },
+                path: 'hero',
+              ),
+              dataSource: MockDataSource(),
+              onChanged: received.add,
+            ),
+          ),
+        );
+
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+
+        // Edit framing button must be present for external URLs too.
+        expect(
+          find.byKey(const ValueKey('edit_framing_button')),
+          findsOneWidget,
+        );
+
+        await tester.tap(find.byKey(const ValueKey('edit_framing_button')));
+        // Drive real async work (image stream) so _imageAspectRatio resolves.
+        // The bug fires when that async write lands during the parent's
+        // build cycle for the external URL ref.
+        await tester.runAsync(() async {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+        });
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+
+        // Editor sheet opened.
+        expect(find.text('Edit Framing'), findsAtLeastNWidgets(1));
+        // Switching framing modes triggers _draft writes which fan out
+        // through the editor's createEffect → onLiveChange →
+        // viewModel.updateImageRef — the same signals path that throws
+        // SignalEffectException for external URLs.
+        await tester.tap(find.byKey(const ValueKey('framing_mode_transform')));
+        await tester.runAsync(() async {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+        });
+        for (var i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        // No SignalEffectException (or any exception) during editor open
+        // or interaction.
+        expect(tester.takeException(), isNull);
       },
     );
 

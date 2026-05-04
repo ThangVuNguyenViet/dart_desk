@@ -59,16 +59,6 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
   );
   late final _loadFailed = createSignal<bool>(false);
 
-  late final _liveEffect = createEffect(() {
-    final d = _draft.value;
-    widget.onLiveChange?.call((
-      hotspot: d.hotspot,
-      crop: d.crop,
-      scale: d.scale,
-      offset: d.offset,
-    ));
-  });
-
   // Track which element is being dragged
   String? _dragTarget;
 
@@ -83,7 +73,23 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
   @override
   void initState() {
     super.initState();
-    _liveEffect; // registers the effect; auto-disposed by SignalsMixin
+    // Read _draft inside the effect to subscribe; invoke onLiveChange via
+    // untracked() so any signal writes performed by the parent (e.g.
+    // viewModel.imageRef.value =) don't enter this effect's dependency
+    // graph. Without untracked, the parent's watcher re-runs inside this
+    // batch and preact_signals throws SignalEffectException ("Cycle
+    // detected") at endBatch.
+    createEffect(() {
+      final d = _draft.value;
+      untracked(() {
+        widget.onLiveChange?.call((
+          hotspot: d.hotspot,
+          crop: d.crop,
+          scale: d.scale,
+          offset: d.offset,
+        ));
+      });
+    });
     _loadImageDimensions();
   }
 

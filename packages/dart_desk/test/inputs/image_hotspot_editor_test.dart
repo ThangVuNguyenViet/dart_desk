@@ -6,6 +6,7 @@ import 'package:dart_desk/src/inputs/hotspot/framing_math.dart';
 import 'package:dart_desk/src/inputs/hotspot/image_hotspot_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:signals/signals_flutter.dart';
 
 import '../helpers/input_test_helpers.dart';
 
@@ -60,6 +61,54 @@ void main() {
 
       expect(callCount, 0);
     });
+
+    testWidgets(
+      'onLiveChange writing a parent-watched signal does not throw '
+      'SignalEffectException (cycle detection)',
+      (tester) async {
+        // Reproduces the production crash:
+        //   _ImageHotspotEditorState.initState
+        //     → createEffect (runs synchronously, reads _draft.value)
+        //     → widget.onLiveChange?.call(...)
+        //     → writes a signal a parent already watches via Watch
+        //     → preact_signals detects cyclic write at endBatch
+        //     → SignalEffectException
+        //
+        // The fix wraps onLiveChange in untracked() so writes performed
+        // by the callback don't enter the editor effect's dependency
+        // graph and don't cycle through the parent's watcher.
+        final parentSignal = signal<int>(0, debugLabel: 'cycle_parent');
+
+        await tester.pumpWidget(
+          buildInputApp(
+            // Parent subscribes to parentSignal via Watch — establishing
+            // the cyclic dependency that triggers SignalEffectException
+            // when the editor's effect writes parentSignal during its
+            // synchronous first run.
+            Column(
+              children: [
+                Watch((context) => Text('count: ${parentSignal.value}')),
+                ImageHotspotEditor(
+                  imageUrl: 'https://test.example.com/image.png',
+                  onLiveChange: (_) => parentSignal.value++,
+                  onChanged: (_) {},
+                ),
+              ],
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(
+          tester.takeException(),
+          isNull,
+          reason:
+              'Mounting ImageHotspotEditor whose onLiveChange writes a '
+              'signal that a sibling Watch is subscribed to must not '
+              'throw SignalEffectException.',
+        );
+      },
+    );
 
     testWidgets('transform mode segment is selectable', (tester) async {
       FramingMode? lastMode;
