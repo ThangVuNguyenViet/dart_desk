@@ -1,4 +1,18 @@
+import 'dart:ui';
+
+import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+
 export 'package:dart_desk_annotation/src/models/image_types.dart';
+
+/// Bridges the Flutter-free [ImageOffset] (used in [ImageReference]) with
+/// `dart:ui` [Offset] used by widgets and editors.
+extension ImageOffsetX on ImageOffset {
+  Offset toOffset() => Offset(dx, dy);
+}
+
+extension OffsetToImageOffset on Offset {
+  ImageOffset toImageOffset() => ImageOffset(dx: dx, dy: dy);
+}
 
 enum FitMode { clip, crop, fill, max, scale }
 

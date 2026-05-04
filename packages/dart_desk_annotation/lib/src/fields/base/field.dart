@@ -1,75 +1,19 @@
-import 'desk_context.dart';
-
 /// Base condition class for conditional field visibility.
 /// Subclass and override [evaluate] to create custom conditions.
 /// All subclasses must be const-constructible.
+///
+/// [evaluate] takes an opaque [Object] (rather than `DeskContext`) so this
+/// file stays Flutter-free and can be exported via
+/// `dart_desk_annotation_generator.dart` without dragging `dart:ui` into
+/// the build_runner build script. Concrete subclasses (in `conditions.dart`)
+/// cast the argument to `DeskContext`.
 abstract class DeskCondition {
   const DeskCondition();
 
-  /// Returns true if the field should be visible given the current [ctx].
-  bool evaluate(DeskContext ctx);
-}
-
-/// Shows the field when [field] equals [value].
-class FieldEquals extends DeskCondition {
-  final String field;
-  final Object? value;
-  const FieldEquals(this.field, this.value);
-
-  @override
-  bool evaluate(DeskContext ctx) =>
-      ctx.document?.activeVersionData?[field] == value;
-}
-
-/// Shows the field when [field] does not equal [value].
-class FieldNotEquals extends DeskCondition {
-  final String field;
-  final Object? value;
-  const FieldNotEquals(this.field, this.value);
-
-  @override
-  bool evaluate(DeskContext ctx) =>
-      ctx.document?.activeVersionData?[field] != value;
-}
-
-/// Shows the field when [field] is not null.
-class FieldNotNull extends DeskCondition {
-  final String field;
-  const FieldNotNull(this.field);
-
-  @override
-  bool evaluate(DeskContext ctx) =>
-      ctx.document?.activeVersionData?[field] != null;
-}
-
-/// Shows the field when [field] is null.
-class FieldIsNull extends DeskCondition {
-  final String field;
-  const FieldIsNull(this.field);
-
-  @override
-  bool evaluate(DeskContext ctx) =>
-      ctx.document?.activeVersionData?[field] == null;
-}
-
-/// Shows the field when all [conditions] are true.
-class AllConditions extends DeskCondition {
-  final List<DeskCondition> conditions;
-  const AllConditions(this.conditions);
-
-  @override
-  bool evaluate(DeskContext ctx) =>
-      conditions.every((c) => c.evaluate(ctx));
-}
-
-/// Shows the field when any of [conditions] is true.
-class AnyCondition extends DeskCondition {
-  final List<DeskCondition> conditions;
-  const AnyCondition(this.conditions);
-
-  @override
-  bool evaluate(DeskContext ctx) =>
-      conditions.any((c) => c.evaluate(ctx));
+  /// Returns true if the field should be visible given the current context.
+  /// The runtime type is `DeskContext`; declared as `Object` here to keep
+  /// this file Flutter-free.
+  bool evaluate(Object ctx);
 }
 
 abstract class DeskOption {

@@ -66,10 +66,7 @@ class BrandTheme extends DeskContent
   )
   final num cornerRadius;
 
-  @DeskImage(
-    description: 'Logo (square)',
-    option: DeskImageOption(hotspot: false),
-  )
+  @DeskImage(description: 'Logo (square)')
   final ImageReference? logo;
 
   @DeskFile(
@@ -131,8 +128,8 @@ class HeadlineFontDropdownOption extends DeskDropdownOption<String> {
   FutureOr<String?>? get initialValue => 'Noto Serif';
   @override
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
-        for (final f in headlineFonts) DropdownOption(value: f, label: f),
-      ];
+    for (final f in headlineFonts) DropdownOption(value: f, label: f),
+  ];
   @override
   String? get placeholder => 'Headline font';
 }
@@ -145,8 +142,8 @@ class BodyFontDropdownOption extends DeskDropdownOption<String> {
   FutureOr<String?>? get initialValue => 'Manrope';
   @override
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
-        for (final f in bodyFonts) DropdownOption(value: f, label: f),
-      ];
+    for (final f in bodyFonts) DropdownOption(value: f, label: f),
+  ];
   @override
   String? get placeholder => 'Body font';
 }

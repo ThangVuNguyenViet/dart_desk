@@ -17,7 +17,8 @@ class _HideOnDefault extends DeskCondition {
   const _HideOnDefault();
 
   @override
-  bool evaluate(DeskContext ctx) => ctx.document?.isDefault != true;
+  bool evaluate(Object ctx) =>
+      (ctx as DeskContext).document?.isDefault != true;
 }
 
 /// Fake view model that returns a fixed [DeskDocument] from [selectedDocument].

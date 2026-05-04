@@ -20,7 +20,7 @@ ImageReference _with({
   width: _ref.width,
   height: _ref.height,
   scale: scale,
-  offset: offset,
+  offset: offset == null ? null : ImageOffset(dx: offset.dx, dy: offset.dy),
   hotspot: hotspot,
   crop: crop,
 );

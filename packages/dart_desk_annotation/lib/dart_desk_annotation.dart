@@ -10,6 +10,7 @@ export 'src/desk_data.dart';
 export 'src/config.dart';
 // Base field abstractions
 export 'src/fields/base/field.dart';
+export 'src/fields/base/conditions.dart';
 export 'src/fields/base/desk_context.dart';
 // Complex field configurations
 export 'src/fields/complex/array_field.dart';
