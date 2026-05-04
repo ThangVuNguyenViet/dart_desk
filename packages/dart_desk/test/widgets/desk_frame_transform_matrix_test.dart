@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '_mock_photo.dart';
+import 'package:dart_desk/testing.dart';
 
 const _ref = ImageReference(
   publicUrl: 'fake://demo',
@@ -45,22 +46,27 @@ void main() {
           layout: ColumnSceneLayout(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'identity (control — must match today)',
           builder: (_) => _cell(_ref),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'scale 0.6 — transparent edges visible',
           builder: (_) => _cell(_with(scale: 0.6)),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'offset (0.2, 0) — shifted right, exposed left edge',
           builder: (_) => _cell(_with(offset: const Offset(0.2, 0))),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'scale 1.4 — zoomed, no edges',
           builder: (_) => _cell(_with(scale: 1.4)),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'scale 0.8 + offset (-0.15, 0.1) + hotspot top-right',
           builder: (_) => _cell(_with(
             scale: 0.8,

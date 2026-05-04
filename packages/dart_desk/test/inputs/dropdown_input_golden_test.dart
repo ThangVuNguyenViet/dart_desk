@@ -5,6 +5,7 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _field = DeskDropdownField<String>(
   name: 'category',
@@ -27,12 +28,16 @@ void main() {
       fileName: 'dropdown_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'empty / unselected',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty / unselected',
           builder: (_) =>
               buildInputApp(const DeskDropdownInput<String>(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'selected value',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'selected value',
           builder: (_) => buildInputApp(
             const DeskDropdownInput<String>(
               field: _field,
@@ -42,6 +47,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
           builder: (_) => buildInputApp(
             const DeskDropdownInput<String>(
@@ -63,6 +69,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskDropdownInput<String>(

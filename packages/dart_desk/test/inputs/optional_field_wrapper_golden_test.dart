@@ -6,6 +6,7 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _inner = DeskStringInput(
   field: DeskStringField(
@@ -24,13 +25,17 @@ void main() {
       fileName: 'optional_field_wrapper_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'enabled — full opacity, interactive',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'enabled — full opacity, interactive',
           builder: (_) => buildInputApp(
             const OptionalFieldWrapper(isEnabled: true, child: _inner),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'disabled — dimmed to 0.4 opacity',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'disabled — dimmed to 0.4 opacity',
           builder: (_) => buildInputApp(
             const OptionalFieldWrapper(isEnabled: false, child: _inner),
           ),

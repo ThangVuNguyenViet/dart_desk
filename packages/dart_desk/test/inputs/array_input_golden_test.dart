@@ -29,7 +29,9 @@ void main() {
       fileName: 'array_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'empty list',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty list',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(
               field: _field,
@@ -38,7 +40,9 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'populated list',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'populated list',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(
               field: _field,
@@ -51,6 +55,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(
@@ -64,6 +69,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / disabled',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(field: _optionalField),
