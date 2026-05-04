@@ -1,3 +1,10 @@
+## 0.1.2
+
+ - **FIX**(annotation): split DeskContext so generator-safe barrel stays Flutter-free (#41).
+ - **FIX**(image_input): deep-equal DeskData.value to stop rebuild churn (#31).
+ - **FEAT**(image_input): scale slider in Edit Framing transform mode (#39).
+ - **FEAT**: image transform (scale + offset) + slide-over Edit Framing (#35).
+
 ## 0.1.1
 
  - **FIX**(image_input): deep-equal DeskData.value to stop rebuild churn (#31).

@@ -1,3 +1,13 @@
+## 0.3.2
+
+ - **FIX**(annotation): split DeskContext so generator-safe barrel stays Flutter-free (#41).
+ - **FIX**(image_input): deep-equal DeskData.value to stop rebuild churn (#31).
+ - **FIX**(dart_desk): editor footer alignment, clear-to-null, rename defaultValue → initialValue (#16).
+ - **FEAT**(image_input): scale slider in Edit Framing transform mode (#39).
+ - **FEAT**: image transform (scale + offset) + slide-over Edit Framing (#35).
+ - **FEAT**(dart_desk): DeskContext cross-document lookup for builders (#17).
+ - **FEAT**: DeskConditionContext for runtime-aware field conditions (#14).
+
 ## 0.3.1
 
  - **FIX**(image_input): deep-equal DeskData.value to stop rebuild churn (#31).

@@ -1,3 +1,9 @@
+## 0.3.2
+
+ - **FIX**(annotation): split DeskContext so generator-safe barrel stays Flutter-free (#41).
+ - **FIX**(dart_desk): editor footer alignment, clear-to-null, rename defaultValue → initialValue (#16).
+ - **FEAT**: DeskConditionContext for runtime-aware field conditions (#14).
+
 ## 0.3.1
 
  - **FIX**(dart_desk): editor footer alignment, clear-to-null, rename defaultValue → initialValue (#16).

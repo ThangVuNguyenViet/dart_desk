@@ -1,3 +1,27 @@
+## 0.3.2
+
+ - **REFACTOR**: 4-layer architecture, fixtures, screen goldens (#8).
+ - **FIX**(annotation): split DeskContext so generator-safe barrel stays Flutter-free (#41).
+ - **FIX**(image_input): deep-equal DeskData.value to stop rebuild churn (#31).
+ - **FIX**(array_input): stream in-progress edits to parent for live preview (#30).
+ - **FIX**(auth): silent token refresh no longer tears down UI (#28).
+ - **FIX**(image_input): stop flooding logs with image bytes on upload (#27).
+ - **FIX**(dart_desk): always show Publish button (drop conditional badge) (#24).
+ - **FIX**(dart_desk): enable hierarchicalLoggingEnabled before setting per-logger level (#19).
+ - **FIX**(dart_desk): editor footer alignment, clear-to-null, rename defaultValue → initialValue (#16).
+ - **FIX**(dart_desk): auto-select default doc, hide status pill while loading, 500px editor (#10).
+ - **FIX**(dart_desk): keep app mounted on auth refresh + save/publish bar UX (#9).
+ - **FIX**(dart_desk): keep editor mounted while version data loads (#7).
+ - **FIX**(dart_desk): encode Serializable values before writing to editedData.
+ - **FEAT**(image_input): scale slider in Edit Framing transform mode (#39).
+ - **FEAT**: image transform (scale + offset) + slide-over Edit Framing (#35).
+ - **FEAT**: render autosaved drafts in version history (#29).
+ - **FEAT**(dart_desk): DeskContext cross-document lookup for builders (#17).
+ - **FEAT**(dart_desk): debugShowSignalLogs and debugShowClientLog flags (#18).
+ - **FEAT**: DeskConditionContext for runtime-aware field conditions (#14).
+ - **FEAT**(dart_desk): add Clear button + refactor image input to ViewModel (#12).
+ - **DOCS**: rewrite dart_desk READMEs (#11).
+
 ## 0.3.1
 
  - **REFACTOR**: 4-layer architecture, fixtures, screen goldens (#8).
