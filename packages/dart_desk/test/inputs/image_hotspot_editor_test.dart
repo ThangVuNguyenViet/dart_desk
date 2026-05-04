@@ -226,6 +226,38 @@ void main() {
       expect(result.offset, isNull);
     });
 
+    testWidgets('reset transform fires onLiveChange before Apply', (
+      tester,
+    ) async {
+      final liveScales = <double?>[];
+
+      await tester.pumpWidget(
+        buildInputApp(
+          ImageHotspotEditor(
+            imageUrl: 'https://test.example.com/image.png',
+            initialMode: FramingMode.transform,
+            initialScale: 4.0,
+            initialOffset: const Offset(0.3, 0.0),
+            onLiveChange: (delta) => liveScales.add(delta.scale),
+            onChanged: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      liveScales.clear();
+
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('reset_transform_button')),
+      );
+      await tester.tap(find.byKey(const ValueKey('reset_transform_button')));
+      await tester.pump();
+
+      // onLiveChange MUST fire with the reset scale (null) without needing
+      // Apply — image_input.dart relies on this to propagate to the parent.
+      expect(liveScales, contains(null));
+    });
+
     testWidgets('calls onModeChanged when switching modes', (tester) async {
       FramingMode? mode;
 

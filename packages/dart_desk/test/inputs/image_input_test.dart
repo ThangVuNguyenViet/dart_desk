@@ -139,6 +139,58 @@ void main() {
       expect(find.text('Edit framing'), findsOneWidget);
     });
 
+    testWidgets(
+      'edit framing live-propagates onChanged before Apply (reset transform)',
+      (tester) async {
+        final dataSource = MockDataSource();
+        when(() => dataSource.getMediaAsset('asset-hero'))
+            .thenAnswer((_) async => _testAsset());
+        final received = <Map<String, dynamic>?>[];
+
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskImageInput(
+              field: hotspotField,
+              data: const DeskData(
+                value: {
+                  '_type': 'imageReference',
+                  'assetId': 'asset-hero',
+                  'scale': 4.0,
+                  'offset': {'dx': 0.3, 'dy': 0.0},
+                },
+                path: 'hero',
+              ),
+              dataSource: dataSource,
+              onChanged: received.add,
+            ),
+          ),
+        );
+
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+
+        await tester.tap(find.byKey(const ValueKey('edit_framing_button')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('framing_mode_transform')));
+        await tester.pumpAndSettle();
+
+        received.clear();
+
+        await tester.ensureVisible(
+          find.byKey(const ValueKey('reset_transform_button')),
+        );
+        await tester.tap(find.byKey(const ValueKey('reset_transform_button')));
+        await tester.pump();
+
+        // The reset must propagate to the parent immediately, without waiting
+        // for Apply.
+        expect(received, isNotEmpty);
+        expect(received.last?['scale'], isNull);
+        expect(received.last?['offset'], isNull);
+      },
+    );
+
     testWidgets('framing status reflects custom hotspot and crop', (
       tester,
     ) async {

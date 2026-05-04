@@ -279,17 +279,21 @@ class _DeskImageInputState extends State<DeskImageInput>
           initialOffset: ref.offset,
           onModeChanged: (mode) => _viewModel.lastFramingMode.value = mode,
           onLiveChange: (delta) {
-            // Live preview only — do not persist to document.
-            _viewModel.updateImageRef(originalRef.copyWith(
+            // Stream every change through to the parent so framing edits
+            // propagate (and autosave) immediately, not only on Apply.
+            final updated = originalRef.copyWith(
               hotspot: delta.hotspot,
               crop: delta.crop,
               scale: delta.scale,
               offset: delta.offset,
-            ));
+            );
+            _viewModel.updateImageRef(updated);
+            widget.onChanged?.call(updated.toMap());
           },
           onCancel: () {
-            // Revert preview to whatever the document holds.
+            // Revert both preview and persisted state to the pre-edit ref.
             _viewModel.updateImageRef(originalRef);
+            widget.onChanged?.call(originalRef.toMap());
           },
           onChanged: (result) {
             final updated = originalRef.copyWith(
