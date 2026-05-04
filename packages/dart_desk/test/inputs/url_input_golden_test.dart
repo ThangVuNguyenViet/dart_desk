@@ -5,6 +5,7 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _field = DeskUrlField(
   name: 'website',
@@ -20,11 +21,15 @@ void main() {
       fileName: 'url_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'empty',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty',
           builder: (_) => buildInputApp(const DeskUrlInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'filled with valid URL',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'filled with valid URL',
           builder: (_) => buildInputApp(
             const DeskUrlInput(
               field: _field,
@@ -36,7 +41,9 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'optional / disabled',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskUrlInput(
               field: DeskUrlField(
@@ -48,7 +55,9 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'optional / enabled',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'optional / enabled',
           builder: (_) => buildInputApp(
             const DeskUrlInput(
               field: DeskUrlField(

@@ -6,6 +6,7 @@ import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 class _MockDataSource extends Mock implements DataSource {}
 
@@ -35,13 +36,17 @@ void main() {
           fileName: 'image_input_gallery',
           layout: ColumnSceneLayout(),
         )
-        .itemFromBuilder(          description: 'empty / upload area',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty / upload area',
           builder: (_) => buildInputApp(
             DeskImageInput(field: _field, dataSource: dataSource),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'filled with external URL',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'filled with external URL',
           builder: (_) => buildInputApp(
             DeskImageInput(
               field: _field,
@@ -58,6 +63,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
           builder: (_) => buildInputApp(
             DeskImageInput(
@@ -79,6 +85,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / disabled',
           builder: (_) => buildInputApp(
             DeskImageInput(

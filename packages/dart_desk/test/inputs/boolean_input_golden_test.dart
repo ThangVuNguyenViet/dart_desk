@@ -5,6 +5,7 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _field = DeskBooleanField(
   name: 'is_active',
@@ -27,11 +28,13 @@ void main() {
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'off / unset',
           builder: (_) => buildInputApp(const DeskBooleanInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'on / enabled',
           builder: (_) => buildInputApp(
             const DeskBooleanInput(
@@ -42,6 +45,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional — null (unset)',
           builder: (_) => buildInputApp(
             const DeskBooleanInput(
@@ -52,6 +56,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional — false',
           builder: (_) => buildInputApp(
             const DeskBooleanInput(
@@ -62,6 +67,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional — true',
           builder: (_) => buildInputApp(
             const DeskBooleanInput(

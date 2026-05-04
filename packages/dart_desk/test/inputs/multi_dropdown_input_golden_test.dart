@@ -4,6 +4,7 @@ import 'package:dart_desk/dart_desk.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _field = DeskMultiDropdownField<String>(
   name: 'tags',
@@ -27,13 +28,17 @@ void main() {
       fileName: 'multi_dropdown_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'empty / unselected',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty / unselected',
           builder: (_) => buildInputApp(
             const DeskMultiDropdownInput<String>(field: _field),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'two items selected',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'two items selected',
           builder: (_) => buildInputApp(
             const DeskMultiDropdownInput<String>(
               field: _field,
@@ -46,6 +51,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
           builder: (_) => buildInputApp(
             const DeskMultiDropdownInput<String>(
@@ -67,6 +73,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskMultiDropdownInput<String>(

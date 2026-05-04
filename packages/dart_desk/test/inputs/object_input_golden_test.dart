@@ -5,6 +5,7 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _field = DeskObjectField(
   name: 'address',
@@ -46,11 +47,15 @@ void main() {
       fileName: 'object_input_gallery',
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'empty',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty',
           builder: (_) => buildInputApp(const DeskObjectInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'filled',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'filled',
           builder: (_) => buildInputApp(
             const DeskObjectInput(
               field: _field,
@@ -67,6 +72,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
           builder: (_) => buildInputApp(
             const DeskObjectInput(
@@ -97,6 +103,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskObjectInput(

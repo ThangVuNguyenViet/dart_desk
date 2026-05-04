@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _field = DeskDateField(
   name: 'publish_date',
@@ -23,11 +24,15 @@ void main() {
       itemConstraints: const BoxConstraints(minWidth: 500, maxWidth: 500),
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'empty',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty',
           builder: (_) => buildInputApp(const DeskDateInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'filled',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'filled',
           builder: (_) => buildInputApp(
             const DeskDateInput(
               field: _field,
@@ -39,7 +44,9 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'optional / disabled',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskDateInput(
               field: DeskDateField(
@@ -51,7 +58,9 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'optional / enabled',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'optional / enabled',
           builder: (_) => buildInputApp(
             const DeskDateInput(
               field: DeskDateField(

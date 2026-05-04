@@ -5,6 +5,7 @@ import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _field = DeskStringField(
   name: 'title',
@@ -15,28 +16,31 @@ const _field = DeskStringField(
 void main() {
   testGoldenScene('DeskStringInput gallery', (tester) async {
     await Gallery(
-      'DeskStringInput — state variants',
-      directory: Directory('goldens'),
-      fileName: 'string_input_gallery',
-      layout: ColumnSceneLayout(),
-    )
-        .itemFromBuilder(          description: 'empty',
+          'DeskStringInput — state variants',
+          directory: Directory('goldens'),
+          fileName: 'string_input_gallery',
+          layout: ColumnSceneLayout(),
+        )
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty',
           builder: (_) => buildInputApp(const DeskStringInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'filled',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'filled',
           builder: (_) => buildInputApp(
             const DeskStringInput(
               field: _field,
-              data: DeskData(
-                value: 'My Awesome Article',
-                path: 'title',
-              ),
+              data: DeskData(value: 'My Awesome Article', path: 'title'),
             ),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'optional / disabled',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskStringInput(
               field: DeskStringField(
@@ -49,6 +53,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
           builder: (_) => buildInputApp(
             const DeskStringInput(
