@@ -28,15 +28,15 @@ void main() {
 
     test('equality is value-based on all fields', () {
       PublicDeskDocument make() => PublicDeskDocument(
-            id: 'x',
-            documentType: 't',
-            title: 'T',
-            slug: 's',
-            isDefault: false,
-            data: const {'a': 1},
-            publishedAt: DateTime.utc(2026),
-            updatedAt: DateTime.utc(2026),
-          );
+        id: 'x',
+        documentType: 't',
+        title: 'T',
+        slug: 's',
+        isDefault: false,
+        data: const {'a': 1},
+        publishedAt: DateTime.utc(2026),
+        updatedAt: DateTime.utc(2026),
+      );
       expect(make(), equals(make()));
       expect(make().hashCode, equals(make().hashCode));
     });
@@ -53,17 +53,16 @@ void main() {
         },
         DateTime? publishedAt,
         DateTime? updatedAt,
-      }) =>
-          PublicDeskDocument(
-            id: id,
-            documentType: documentType,
-            title: title,
-            slug: slug,
-            isDefault: isDefault,
-            data: data,
-            publishedAt: publishedAt ?? DateTime.utc(2026),
-            updatedAt: updatedAt ?? DateTime.utc(2026),
-          );
+      }) => PublicDeskDocument(
+        id: id,
+        documentType: documentType,
+        title: title,
+        slug: slug,
+        isDefault: isDefault,
+        data: data,
+        publishedAt: publishedAt ?? DateTime.utc(2026),
+        updatedAt: updatedAt ?? DateTime.utc(2026),
+      );
 
       final base = build();
 
@@ -73,26 +72,35 @@ void main() {
       // Differing nested data value — proves deep equality is in use.
       expect(
         base,
-        isNot(equals(build(data: const {
-          'a': {'b': 2},
-        }))),
+        isNot(
+          equals(
+            build(
+              data: const {
+                'a': {'b': 2},
+              },
+            ),
+          ),
+        ),
       );
 
       // Equal nested data structures still compare equal.
       expect(
-        build(data: const {
-          'a': {'b': 1},
-        }),
-        equals(build(data: const {
-          'a': {'b': 1},
-        })),
+        build(
+          data: const {
+            'a': {'b': 1},
+          },
+        ),
+        equals(
+          build(
+            data: const {
+              'a': {'b': 1},
+            },
+          ),
+        ),
       );
 
       // Differing publishedAt.
-      expect(
-        base,
-        isNot(equals(build(publishedAt: DateTime.utc(2027)))),
-      );
+      expect(base, isNot(equals(build(publishedAt: DateTime.utc(2027)))));
 
       // hashCode must incorporate data — differing data should yield
       // a different hash (would have caught the original hashCode bug).

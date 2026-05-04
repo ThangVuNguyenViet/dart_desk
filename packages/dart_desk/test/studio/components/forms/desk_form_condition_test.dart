@@ -17,7 +17,8 @@ class _HideOnDefault extends DeskCondition {
   const _HideOnDefault();
 
   @override
-  bool evaluate(DeskContext ctx) => ctx.document?.isDefault != true;
+  bool evaluate(Object ctx) =>
+      (ctx as DeskContext).document?.isDefault != true;
 }
 
 /// Fake view model that returns a fixed [DeskDocument] from [selectedDocument].
@@ -49,10 +50,10 @@ Future<void> _registerVm(DeskDocument? doc) async {
 
 /// The field under test — a string field gated by [_HideOnDefault].
 DeskStringField _gatedField() => const DeskStringField(
-      name: 'deviceOverrideGroups',
-      title: 'Device override groups',
-      option: DeskStringOption(visibleWhen: _HideOnDefault()),
-    );
+  name: 'deviceOverrideGroups',
+  title: 'Device override groups',
+  option: DeskStringOption(visibleWhen: _HideOnDefault()),
+);
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -65,8 +66,9 @@ void main() {
     }
   });
 
-  testWidgets('DeskForm hides field when condition.evaluate returns false',
-      (tester) async {
+  testWidgets('DeskForm hides field when condition.evaluate returns false', (
+    tester,
+  ) async {
     // isDefault = true → _HideOnDefault returns false → field hidden
     await _registerVm(
       DeskDocument(
@@ -82,10 +84,7 @@ void main() {
         home: Scaffold(
           body: DeskContextScope(
             context: GetItDeskContext(),
-            child: DeskForm(
-              data: const {},
-              fields: [_gatedField()],
-            ),
+            child: DeskForm(data: const {}, fields: [_gatedField()]),
           ),
         ),
       ),
@@ -95,8 +94,9 @@ void main() {
     expect(find.text('Device override groups'), findsNothing);
   });
 
-  testWidgets('DeskForm shows field when condition.evaluate returns true',
-      (tester) async {
+  testWidgets('DeskForm shows field when condition.evaluate returns true', (
+    tester,
+  ) async {
     // isDefault = false → _HideOnDefault returns true → field visible
     await _registerVm(
       DeskDocument(
@@ -112,10 +112,7 @@ void main() {
         home: Scaffold(
           body: DeskContextScope(
             context: GetItDeskContext(),
-            child: DeskForm(
-              data: const {},
-              fields: [_gatedField()],
-            ),
+            child: DeskForm(data: const {}, fields: [_gatedField()]),
           ),
         ),
       ),

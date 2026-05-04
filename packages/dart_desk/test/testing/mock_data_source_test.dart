@@ -102,10 +102,7 @@ void main() {
       'uploadImage creates a new asset and returns it with correct fileName',
       () async {
         final fileData = Uint8List.fromList([0, 1, 2, 3]);
-        final asset = await dataSource.uploadImage(
-          'test-image.png',
-          fileData,
-        );
+        final asset = await dataSource.uploadImage('test-image.png', fileData);
 
         expect(asset.fileName, 'test-image.png');
 
@@ -119,14 +116,8 @@ void main() {
       () async {
         final fileData = Uint8List.fromList([0, 1, 2, 3]);
 
-        final first = await dataSource.uploadImage(
-          'test-image.png',
-          fileData,
-        );
-        final second = await dataSource.uploadImage(
-          'test-image.png',
-          fileData,
-        );
+        final first = await dataSource.uploadImage('test-image.png', fileData);
+        final second = await dataSource.uploadImage('test-image.png', fileData);
 
         // Same asset returned — same assetId and id
         expect(second.assetId, first.assetId);

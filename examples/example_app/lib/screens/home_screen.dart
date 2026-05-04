@@ -41,11 +41,7 @@ class HomeScreen extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Photo(
-                      reference: config.heroImage,
-                      height: 540,
-                      radius: 0,
-                    ),
+                    Photo(reference: config.heroImage, height: 540, radius: 0),
                     // Gradient scrim
                     Container(
                       decoration: const BoxDecoration(
@@ -86,11 +82,7 @@ class HomeScreen extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.location_on,
-                                  size: 11,
-                                  color: cream,
-                                ),
+                                Icon(Icons.location_on, size: 11, color: cream),
                                 const SizedBox(width: 4),
                                 Text(
                                   config.locationLabel,
@@ -249,29 +241,29 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'THIS WEEK',
-                                style: TextStyle(
-                                  fontSize: 10.5,
-                                  letterSpacing: 2.5,
-                                  fontWeight: FontWeight.w700,
-                                  color: scheme.secondary,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'THIS WEEK',
+                                  style: TextStyle(
+                                    fontSize: 10.5,
+                                    letterSpacing: 2.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: scheme.secondary,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                config.featuredSectionTitle,
-                                style: TextStyle(
-                                  fontFamily: serifFont,
-                                  fontSize: 24,
-                                  fontStyle: FontStyle.italic,
-                                  letterSpacing: -0.2,
+                                const SizedBox(height: 2),
+                                Text(
+                                  config.featuredSectionTitle,
+                                  style: TextStyle(
+                                    fontFamily: serifFont,
+                                    fontSize: 24,
+                                    fontStyle: FontStyle.italic,
+                                    letterSpacing: -0.2,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
                           ),
                           Text(
                             'See all',
@@ -319,8 +311,9 @@ class HomeScreen extends StatelessWidget {
                                         ),
                                         decoration: BoxDecoration(
                                           color: cream.withValues(alpha: 0.92),
-                                          borderRadius:
-                                              BorderRadius.circular(999),
+                                          borderRadius: BorderRadius.circular(
+                                            999,
+                                          ),
                                         ),
                                         child: Text(
                                           dish.tag.toUpperCase(),

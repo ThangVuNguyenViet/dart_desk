@@ -51,19 +51,23 @@ void main() {
       expect(received, 'New value');
     });
 
-    testWidgets('optional toggle off then on restores last value', (tester) async {
+    testWidgets('optional toggle off then on restores last value', (
+      tester,
+    ) async {
       String? captured;
-      await tester.pumpWidget(buildInputApp(
-        DeskStringInput(
-          field: const DeskStringField(
-            name: 'title',
-            title: 'Title',
-            option: DeskStringOption(optional: true),
+      await tester.pumpWidget(
+        buildInputApp(
+          DeskStringInput(
+            field: const DeskStringField(
+              name: 'title',
+              title: 'Title',
+              option: DeskStringOption(optional: true),
+            ),
+            data: const DeskData(value: 'Hello', path: 'title'),
+            onChanged: (v) => captured = v,
           ),
-          data: const DeskData(value: 'Hello', path: 'title'),
-          onChanged: (v) => captured = v,
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Toggle off.
@@ -77,20 +81,21 @@ void main() {
       expect(captured, equals('Hello'));
     });
 
-    testWidgets('external value flip to null does not fire onChanged',
-        (tester) async {
+    testWidgets('external value flip to null does not fire onChanged', (
+      tester,
+    ) async {
       var fireCount = 0;
       Widget mk(String? value) => buildInputApp(
-            DeskStringInput(
-              field: const DeskStringField(
-                name: 'title',
-                title: 'Title',
-                option: DeskStringOption(optional: true),
-              ),
-              data: value == null ? null : DeskData(value: value, path: 'title'),
-              onChanged: (_) => fireCount++,
-            ),
-          );
+        DeskStringInput(
+          field: const DeskStringField(
+            name: 'title',
+            title: 'Title',
+            option: DeskStringOption(optional: true),
+          ),
+          data: value == null ? null : DeskData(value: value, path: 'title'),
+          onChanged: (_) => fireCount++,
+        ),
+      );
 
       await tester.pumpWidget(mk('Hello'));
       await tester.pumpAndSettle();

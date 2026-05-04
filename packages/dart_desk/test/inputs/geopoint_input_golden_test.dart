@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:dart_desk/src/inputs/geopoint_input.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _field = DeskGeopointField(
   name: 'location',
@@ -18,14 +20,19 @@ void main() {
       'DeskGeopointInput — state variants',
       directory: Directory('goldens'),
       fileName: 'geopoint_input_gallery',
+      itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 200),
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'empty',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty',
           builder: (_) =>
               buildInputApp(const DeskGeopointInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'filled with coordinates',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'filled with coordinates',
           builder: (_) => buildInputApp(
             const DeskGeopointInput(
               field: _field,
@@ -38,6 +45,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
           builder: (_) => buildInputApp(
             const DeskGeopointInput(
@@ -55,6 +63,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskGeopointInput(

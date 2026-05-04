@@ -219,7 +219,9 @@ void main() {
 
     group('RowFields', () {
       testWidgets('renders fields horizontally using Expanded', (tester) async {
-        await tester.pumpWidget(buildInputApp(DeskObjectInput(field: rowField)));
+        await tester.pumpWidget(
+          buildInputApp(DeskObjectInput(field: rowField)),
+        );
         await tester.pumpAndSettle();
 
         expect(find.byType(DeskStringInput), findsNWidgets(2));

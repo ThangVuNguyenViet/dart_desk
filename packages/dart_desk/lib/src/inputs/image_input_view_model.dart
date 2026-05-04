@@ -32,12 +32,6 @@ class ImageInputViewModel {
     debugLabel: '$fieldName.asset',
   );
 
-  /// External URL value when the user types one in instead of uploading.
-  late final externalUrl = Signal<String?>(
-    null,
-    debugLabel: '$fieldName.externalUrl',
-  );
-
   /// Raw bytes of the in-flight upload, used for local preview.
   ///
   /// Stored off-signal: a multi-MB Uint8List flowing through a Signal gets
@@ -84,7 +78,6 @@ class ImageInputViewModel {
           );
           asset.value = newAsset;
           imageRef.value = ImageReferenceFromAsset.fromAsset(newAsset);
-          externalUrl.value = null;
           return newAsset;
         } finally {
           _setPickedBytes(null);
@@ -99,7 +92,7 @@ class ImageInputViewModel {
     if (!ImageReference.isImageReference(value)) return;
 
     if (value['externalUrl'] != null) {
-      externalUrl.value = value['externalUrl'] as String;
+      imageRef.value = ImageReference(externalUrl: value['externalUrl'] as String);
       return;
     }
 
@@ -135,7 +128,6 @@ class ImageInputViewModel {
   void selectAsset(MediaAsset newAsset) {
     asset.value = newAsset;
     imageRef.value = ImageReferenceFromAsset.fromAsset(newAsset);
-    externalUrl.value = null;
     upload.reset();
   }
 
@@ -144,21 +136,23 @@ class ImageInputViewModel {
     imageRef.value = newRef;
   }
 
-  /// User typed an external URL. Clears any asset selection when non-empty.
+  /// User typed an external URL. Stores it as an [ImageReference.externalUrl]
+  /// in [imageRef] so consumers have a single source of truth.
   void setExternalUrl(String? url) {
-    externalUrl.value = (url == null || url.isEmpty) ? null : url;
-    if (url != null && url.isNotEmpty) {
+    if (url == null || url.isEmpty) {
       imageRef.value = null;
       asset.value = null;
-      upload.reset();
+      return;
     }
+    imageRef.value = ImageReference(externalUrl: url);
+    asset.value = null;
+    upload.reset();
   }
 
   /// Clears the value entirely (remove button).
   void clear() {
     imageRef.value = null;
     asset.value = null;
-    externalUrl.value = null;
     _setPickedBytes(null);
     upload.reset();
   }
@@ -171,7 +165,6 @@ class ImageInputViewModel {
   void dispose() {
     imageRef.dispose();
     asset.dispose();
-    externalUrl.dispose();
     pickedBytesVersion.dispose();
     isDragOver.dispose();
     lastFramingMode.dispose();

@@ -39,6 +39,31 @@ class Hotspot {
   int get hashCode => Object.hash(x, y, width, height);
 }
 
+/// Flutter-free 2D offset for image transforms. Mirrors `dart:ui` `Offset`
+/// but lives in the annotation package so generators (which run without
+/// `dart:ui`) can compile against [ImageReference].
+class ImageOffset {
+  final double dx, dy;
+  const ImageOffset({required this.dx, required this.dy});
+
+  static const ImageOffset zero = ImageOffset(dx: 0, dy: 0);
+
+  factory ImageOffset.fromJson(Map<String, dynamic> json) => ImageOffset(
+    dx: (json['dx'] as num).toDouble(),
+    dy: (json['dy'] as num).toDouble(),
+  );
+
+  Map<String, dynamic> toJson() => {'dx': dx, 'dy': dy};
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ImageOffset && dx == other.dx && dy == other.dy;
+
+  @override
+  int get hashCode => Object.hash(dx, dy);
+}
+
 class CropRect {
   final double top, bottom, left, right;
   const CropRect({

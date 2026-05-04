@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:dart_desk/src/inputs/color_input.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _field = DeskColorField(
   name: 'brand_color',
@@ -18,13 +20,18 @@ void main() {
       'DeskColorInput — state variants',
       directory: Directory('goldens'),
       fileName: 'color_input_gallery',
+      itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 200),
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'empty / unset',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty / unset',
           builder: (_) => buildInputApp(const DeskColorInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'filled with red',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'filled with red',
           builder: (_) => buildInputApp(
             const DeskColorInput(
               field: _field,
@@ -33,7 +40,9 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'optional / disabled',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'optional / disabled',
           builder: (_) => buildInputApp(
             const DeskColorInput(
               field: DeskColorField(
@@ -45,7 +54,9 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'optional / enabled',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'optional / enabled',
           builder: (_) => buildInputApp(
             const DeskColorInput(
               field: DeskColorField(

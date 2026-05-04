@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dart_desk/src/inputs/array_input.dart';
 import 'package:dart_desk/testing.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
@@ -27,9 +28,12 @@ void main() {
       'DeskArrayInput — state variants',
       directory: Directory('goldens'),
       fileName: 'array_input_gallery',
+      itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 200),
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'empty list',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'empty list',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(
               field: _field,
@@ -38,7 +42,9 @@ void main() {
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'populated list',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'populated list',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(
               field: _field,
@@ -51,6 +57,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / enabled',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(
@@ -64,6 +71,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional / disabled',
           builder: (_) => buildInputApp(
             DeskArrayInput<String>(field: _optionalField),

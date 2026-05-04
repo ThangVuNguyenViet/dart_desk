@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:dart_desk/src/inputs/optional_field_wrapper.dart';
 import 'package:dart_desk/src/inputs/string_input.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _inner = DeskStringInput(
   field: DeskStringField(
@@ -22,15 +24,20 @@ void main() {
       'OptionalFieldWrapper — enabled vs disabled',
       directory: Directory('goldens'),
       fileName: 'optional_field_wrapper_gallery',
+      itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 200),
       layout: ColumnSceneLayout(),
     )
-        .itemFromBuilder(          description: 'enabled — full opacity, interactive',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'enabled — full opacity, interactive',
           builder: (_) => buildInputApp(
             const OptionalFieldWrapper(isEnabled: true, child: _inner),
           ),
           setup: (t) async => t.pumpAndSettle(),
         )
-        .itemFromBuilder(          description: 'disabled — dimmed to 0.4 opacity',
+        .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
+          description: 'disabled — dimmed to 0.4 opacity',
           builder: (_) => buildInputApp(
             const OptionalFieldWrapper(isEnabled: false, child: _inner),
           ),

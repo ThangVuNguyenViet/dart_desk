@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,11 +16,11 @@ void main() {
       const original = ImageReference(
         publicUrl: 'fake://x',
         scale: 0.85,
-        offset: Offset(0.1, -0.2),
+        offset: ImageOffset(dx: 0.1, dy: -0.2),
       );
       final restored = ImageReference.fromMap(original.toMap());
       expect(restored.scale, 0.85);
-      expect(restored.offset, const Offset(0.1, -0.2));
+      expect(restored.offset, const ImageOffset(dx: 0.1, dy: -0.2));
     });
 
     test('identity transform omits keys from toMap', () {
@@ -36,29 +34,29 @@ void main() {
       const a = ImageReference(
         publicUrl: 'fake://x',
         scale: 1.5,
-        offset: Offset(0.2, 0),
+        offset: ImageOffset(dx: 0.2, dy: 0),
       );
       final b = a.copyWith(altText: 'new alt');
       expect(b.scale, 1.5);
-      expect(b.offset, const Offset(0.2, 0));
+      expect(b.offset, const ImageOffset(dx: 0.2, dy: 0));
     });
 
     test('copyWith(scale: null) clears scale', () {
       const a = ImageReference(
         publicUrl: 'fake://x',
         scale: 1.5,
-        offset: Offset(0.2, 0),
+        offset: ImageOffset(dx: 0.2, dy: 0),
       );
       final b = a.copyWith(scale: null);
       expect(b.scale, isNull);
-      expect(b.offset, const Offset(0.2, 0));
+      expect(b.offset, const ImageOffset(dx: 0.2, dy: 0));
     });
 
     test('copyWith(offset: null) clears offset', () {
       const a = ImageReference(
         publicUrl: 'fake://x',
         scale: 1.5,
-        offset: Offset(0.2, 0),
+        offset: ImageOffset(dx: 0.2, dy: 0),
       );
       final b = a.copyWith(offset: null);
       expect(b.offset, isNull);

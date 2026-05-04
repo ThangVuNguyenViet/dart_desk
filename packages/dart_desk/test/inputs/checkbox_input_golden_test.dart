@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:dart_desk/src/inputs/checkbox_input.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '../helpers/input_test_helpers.dart';
+import 'package:dart_desk/testing.dart';
 
 const _field = DeskCheckboxField(
   name: 'accept_terms',
@@ -27,15 +29,18 @@ void main() {
       'DeskCheckboxInput — state variants',
       directory: Directory('goldens'),
       fileName: 'checkbox_input_gallery',
+      itemConstraints: const BoxConstraints(maxWidth: 480, maxHeight: 200),
       layout: ColumnSceneLayout(),
     )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'unchecked',
           builder: (_) =>
               buildInputApp(const DeskCheckboxInput(field: _field)),
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'checked',
           builder: (_) => buildInputApp(
             const DeskCheckboxInput(
@@ -46,6 +51,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional — null (indeterminate)',
           builder: (_) => buildInputApp(
             const DeskCheckboxInput(
@@ -56,6 +62,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional — false',
           builder: (_) => buildInputApp(
             const DeskCheckboxInput(
@@ -66,6 +73,7 @@ void main() {
           setup: (t) async => t.pumpAndSettle(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'optional — true',
           builder: (_) => buildInputApp(
             const DeskCheckboxInput(

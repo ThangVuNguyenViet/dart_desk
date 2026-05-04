@@ -24,17 +24,16 @@ void main() {
     String slug = 'hello-world',
     bool isDefault = true,
     Map<String, dynamic>? data,
-  }) =>
-      serverpod.PublicDocument(
-        id: uuid,
-        documentType: documentType,
-        title: title,
-        slug: slug,
-        isDefault: isDefault,
-        data: jsonEncode(data ?? {'body': 'world', 'count': 3}),
-        publishedAt: publishedAt,
-        updatedAt: updatedAt,
-      );
+  }) => serverpod.PublicDocument(
+    id: uuid,
+    documentType: documentType,
+    title: title,
+    slug: slug,
+    isDefault: isDefault,
+    data: jsonEncode(data ?? {'body': 'world', 'count': 3}),
+    publishedAt: publishedAt,
+    updatedAt: updatedAt,
+  );
 
   /// Asserts every field of [actual] matches the canonical fixture from
   /// [makeDoc]. Any regression in `_toPublic` for any field will fail here.
@@ -64,8 +63,9 @@ void main() {
   group('getDefaultContents', () {
     test('converts serverpod.PublicDocument → PublicDeskDocument', () async {
       final doc = makeDoc();
-      when(() => endpoint.getDefaultContents())
-          .thenAnswer((_) async => {'article': doc});
+      when(
+        () => endpoint.getDefaultContents(),
+      ).thenAnswer((_) async => {'article': doc});
 
       final result = await source.getDefaultContents();
 
@@ -84,8 +84,11 @@ void main() {
   group('getAllContents', () {
     test('converts list values fully', () async {
       final doc = makeDoc();
-      when(() => endpoint.getAllContents())
-          .thenAnswer((_) async => {'article': [doc]});
+      when(() => endpoint.getAllContents()).thenAnswer(
+        (_) async => {
+          'article': [doc],
+        },
+      );
 
       final result = await source.getAllContents();
 
@@ -104,8 +107,9 @@ void main() {
   group('getContentsByType', () {
     test('converts list fully', () async {
       final doc = makeDoc(documentType: 'page', isDefault: false);
-      when(() => endpoint.getContentsByType('page'))
-          .thenAnswer((_) async => [doc]);
+      when(
+        () => endpoint.getContentsByType('page'),
+      ).thenAnswer((_) async => [doc]);
 
       final result = await source.getContentsByType('page');
 
@@ -124,8 +128,9 @@ void main() {
   group('getDefaultContent', () {
     test('converts single doc fully', () async {
       final doc = makeDoc();
-      when(() => endpoint.getDefaultContent('article'))
-          .thenAnswer((_) async => doc);
+      when(
+        () => endpoint.getDefaultContent('article'),
+      ).thenAnswer((_) async => doc);
 
       final result = await source.getDefaultContent('article');
 
@@ -143,8 +148,9 @@ void main() {
   group('getContentBySlug', () {
     test('converts single doc fully', () async {
       final doc = makeDoc(slug: 'my-slug', title: 'My Title');
-      when(() => endpoint.getContentBySlug('article', 'my-slug'))
-          .thenAnswer((_) async => doc);
+      when(
+        () => endpoint.getContentBySlug('article', 'my-slug'),
+      ).thenAnswer((_) async => doc);
 
       final result = await source.getContentBySlug('article', 'my-slug');
 
@@ -162,10 +168,10 @@ void main() {
   group('getContentsByDataContains', () {
     test('converts list fully', () async {
       final doc = makeDoc(data: {'tag': 'flutter'});
-      when(() => endpoint.getContentsByDataContains(
-            'article',
-            '{"tag":"flutter"}',
-          )).thenAnswer((_) async => [doc]);
+      when(
+        () =>
+            endpoint.getContentsByDataContains('article', '{"tag":"flutter"}'),
+      ).thenAnswer((_) async => [doc]);
 
       final result = await source.getContentsByDataContains(
         'article',
@@ -186,8 +192,9 @@ void main() {
 
   group('error wrapping', () {
     test('wraps endpoint errors in DeskDataSourceException', () async {
-      when(() => endpoint.getDefaultContents())
-          .thenThrow(Exception('network down'));
+      when(
+        () => endpoint.getDefaultContents(),
+      ).thenThrow(Exception('network down'));
 
       await expectLater(
         () => source.getDefaultContents(),

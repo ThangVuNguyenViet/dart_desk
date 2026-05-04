@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:dart_desk/dart_desk.dart';
 import 'package:dart_mappable/dart_mappable.dart';
 import 'package:flutter/widgets.dart';
@@ -17,13 +18,16 @@ class Coupon with CouponMappable implements Serializable<Coupon> {
   @DeskString(description: 'Code', option: DeskStringOption())
   final String code;
 
-  @DeskNumber(description: 'Discount %', option: DeskNumberOption(min: 0, max: 100))
+  @DeskNumber(
+    description: 'Discount %',
+    option: DeskNumberOption(min: 0, max: 100),
+  )
   final num discountPercent;
 
   @DeskDateTime(description: 'Expires at', option: DeskDateTimeOption())
   final DateTime expiresAt;
 
-  @DeskImage(description: 'Artwork', option: DeskImageOption(hotspot: false))
+  @DeskImage(description: 'Artwork')
   final ImageReference? image;
 
   @DeskMultiDropdown<String>(description: 'Tags', option: CouponTagsOption())
@@ -59,8 +63,8 @@ class CouponTagsOption extends DeskMultiDropdownOption<String> {
   int? get minSelected => null;
   @override
   FutureOr<List<DropdownOption<String>>> options(BuildContext context) => [
-        for (final t in couponTags) DropdownOption(value: t, label: t),
-      ];
+    for (final t in couponTags) DropdownOption(value: t, label: t),
+  ];
   @override
   String? get placeholder => 'Tags';
 }

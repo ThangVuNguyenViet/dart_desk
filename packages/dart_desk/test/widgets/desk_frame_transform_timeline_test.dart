@@ -31,11 +31,10 @@ Widget _frame(String label, double w, double h) => Column(
       height: h,
       child: ValueListenableBuilder<ImageReference>(
         valueListenable: _ref,
-        builder: (_, ref, _) =>
-            Container(
-              color: const Color(0xFFEEE9DA),
-              child: DeskFrame(ref: ref, child: const MockPhoto()),
-            ),
+        builder: (_, ref, _) => Container(
+          color: const Color(0xFFEEE9DA),
+          child: DeskFrame(ref: ref, child: const MockPhoto()),
+        ),
       ),
     ),
   ],
@@ -91,7 +90,7 @@ void main() {
             width: _ref.value.width,
             height: _ref.value.height,
             scale: 0.6,
-            offset: const Offset(-0.1, -0.05),
+            offset: const ImageOffset(dx: -0.1, dy: -0.05),
           );
           await tester.pump();
         })

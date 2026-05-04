@@ -88,8 +88,9 @@ void main() {
     expect(result, isFalse);
   });
 
-  testWidgets('shows in-use message and only Close when usageCount > 0',
-      (tester) async {
+  testWidgets('shows in-use message and only Close when usageCount > 0', (
+    tester,
+  ) async {
     await _openDialog(tester, asset: _fakeAsset(), usageCount: 3);
     expect(find.textContaining('In use by 3 document'), findsOneWidget);
     expect(find.text('Close'), findsOneWidget);

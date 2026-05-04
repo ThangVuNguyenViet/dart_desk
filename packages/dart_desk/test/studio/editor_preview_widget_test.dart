@@ -498,8 +498,9 @@ void main() {
   // ========================================================================
 
   group('Clear button', () {
-    testWidgets('Clear is always visible, even without unsaved changes',
-        (tester) async {
+    testWidgets('Clear is always visible, even without unsaved changes', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildEditorPreviewTestApp(
           dataSource: dataSource,
@@ -535,5 +536,4 @@ void main() {
       expect(docVM.isDirty.value, isTrue);
     });
   });
-
 }

@@ -7,9 +7,12 @@ import 'package:dart_desk/src/media/browser/media_grid.dart';
 import 'package:dart_desk/testing.dart';
 
 void main() {
-  testWidgets('shows trash button on hover and hides off-hover',
-      (tester) async {
-    final state = MediaBrowserState(dataSource: MockDataSource()..seedDefaults());
+  testWidgets('shows trash button on hover and hides off-hover', (
+    tester,
+  ) async {
+    final state = MediaBrowserState(
+      dataSource: MockDataSource()..seedDefaults(),
+    );
     addTearDown(state.dispose);
 
     await tester.pumpWidget(
@@ -25,22 +28,32 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final tile = find.byWidgetPredicate(
-      (w) =>
-          w.key is ValueKey &&
-          (w.key as ValueKey).value.toString().startsWith('media_grid_item_'),
-    ).first;
+    final tile = find
+        .byWidgetPredicate(
+          (w) =>
+              w.key is ValueKey &&
+              (w.key as ValueKey).value.toString().startsWith(
+                'media_grid_item_',
+              ),
+        )
+        .first;
     expect(tile, findsOneWidget);
 
-    final trashFinder = find.byWidgetPredicate(
-      (w) =>
-          w.key is ValueKey &&
-          (w.key as ValueKey).value.toString().startsWith('media_grid_trash_'),
-    ).first;
+    final trashFinder = find
+        .byWidgetPredicate(
+          (w) =>
+              w.key is ValueKey &&
+              (w.key as ValueKey).value.toString().startsWith(
+                'media_grid_trash_',
+              ),
+        )
+        .first;
 
     // Pre-hover
     final beforeOpacity = tester.widget<AnimatedOpacity>(
-      find.ancestor(of: trashFinder, matching: find.byType(AnimatedOpacity)).first,
+      find
+          .ancestor(of: trashFinder, matching: find.byType(AnimatedOpacity))
+          .first,
     );
     expect(beforeOpacity.opacity, equals(0));
 
@@ -52,7 +65,9 @@ void main() {
     await tester.pumpAndSettle();
 
     final afterOpacity = tester.widget<AnimatedOpacity>(
-      find.ancestor(of: trashFinder, matching: find.byType(AnimatedOpacity)).first,
+      find
+          .ancestor(of: trashFinder, matching: find.byType(AnimatedOpacity))
+          .first,
     );
     expect(afterOpacity.opacity, equals(1));
   });

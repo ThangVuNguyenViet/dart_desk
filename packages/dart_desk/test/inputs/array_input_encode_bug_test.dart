@@ -61,7 +61,10 @@ void main() {
           DeskArrayInput<_Item>(
             field: field,
             data: DeskData(
-              value: <_Item>[_Item(label: 'A'), _Item(label: 'B')],
+              value: <_Item>[
+                _Item(label: 'A'),
+                _Item(label: 'B'),
+              ],
               path: 'items',
             ),
             onChanged: (v) => received = v,

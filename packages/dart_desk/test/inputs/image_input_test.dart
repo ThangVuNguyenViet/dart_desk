@@ -32,6 +32,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(Uint8List(0));
     initTestPngBytes();
+    installSuperDragAndDropMocks();
     HttpOverrides.global = FakeHttpOverrides();
   });
 
@@ -39,11 +40,7 @@ void main() {
     HttpOverrides.global = null;
   });
 
-  const field = DeskImageField(
-    name: 'hero',
-    title: 'Hero Image',
-    option: DeskImageOption(hotspot: false),
-  );
+  const field = DeskImageField(name: 'hero', title: 'Hero Image');
 
   const hotspotField = DeskImageField(
     name: 'hero',
@@ -114,8 +111,9 @@ void main() {
       tester,
     ) async {
       final dataSource = MockDataSource();
-      when(() => dataSource.getMediaAsset('asset-hero'))
-          .thenAnswer((_) async => _testAsset());
+      when(
+        () => dataSource.getMediaAsset('asset-hero'),
+      ).thenAnswer((_) async => _testAsset());
 
       await tester.pumpWidget(
         buildInputApp(
@@ -139,12 +137,173 @@ void main() {
       expect(find.text('Edit framing'), findsOneWidget);
     });
 
+    testWidgets(
+      'edit framing live-propagates onChanged before Apply (reset transform)',
+      (tester) async {
+        final dataSource = MockDataSource();
+        when(
+          () => dataSource.getMediaAsset('asset-hero'),
+        ).thenAnswer((_) async => _testAsset());
+        final received = <Map<String, dynamic>?>[];
+
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskImageInput(
+              field: hotspotField,
+              data: const DeskData(
+                value: {
+                  '_type': 'imageReference',
+                  'assetId': 'asset-hero',
+                  'scale': 4.0,
+                  'offset': {'dx': 0.3, 'dy': 0.0},
+                },
+                path: 'hero',
+              ),
+              dataSource: dataSource,
+              onChanged: received.add,
+            ),
+          ),
+        );
+
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+
+        await tester.tap(find.byKey(const ValueKey('edit_framing_button')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('framing_mode_transform')));
+        await tester.pumpAndSettle();
+
+        received.clear();
+
+        await tester.ensureVisible(
+          find.byKey(const ValueKey('reset_transform_button')),
+        );
+        await tester.tap(find.byKey(const ValueKey('reset_transform_button')));
+        await tester.pump();
+
+        // The reset must propagate to the parent immediately, without waiting
+        // for Apply.
+        expect(received, isNotEmpty);
+        expect(received.last?['scale'], isNull);
+        expect(received.last?['offset'], isNull);
+      },
+    );
+
+    testWidgets(
+      'editor onLiveChange does not throw SignalEffectException when '
+      'parent rebuilds on the written signal',
+      (tester) async {
+        // Reproduce the exact cycle that fires in production:
+        // editor.initState → createEffect (synchronous) → onLiveChange →
+        // viewModel.imageRef.value = updated  (a signal a parent watches)
+        // The write must not happen during the effect's first run, or
+        // preact_signals throws SignalEffectException at endBatch.
+        final externalRef = ImageReference(
+          externalUrl: 'https://example.com/photo.jpg',
+        );
+        final received = <Map<String, dynamic>?>[];
+
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskImageInput(
+              field: hotspotField,
+              data: DeskData(value: externalRef.toMap(), path: 'hero'),
+              dataSource: MockDataSource(),
+              onChanged: received.add,
+            ),
+          ),
+        );
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        await tester.tap(find.byKey(const ValueKey('edit_framing_button')));
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        expect(
+          tester.takeException(),
+          isNull,
+          reason:
+              'Opening Edit Framing on an external URL must not throw '
+              'SignalEffectException via the createEffect → onLiveChange '
+              '→ imageRef.value write cycle.',
+        );
+      },
+    );
+
+    testWidgets(
+      'edit framing on external URL opens editor without SignalEffectException',
+      (tester) async {
+        final received = <Map<String, dynamic>?>[];
+
+        await tester.pumpWidget(
+          buildInputApp(
+            DeskImageInput(
+              field: hotspotField,
+              data: const DeskData(
+                value: {
+                  '_type': 'imageReference',
+                  'externalUrl': 'https://example.com/photo.jpg',
+                },
+                path: 'hero',
+              ),
+              dataSource: MockDataSource(),
+              onChanged: received.add,
+            ),
+          ),
+        );
+
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+
+        // Edit framing button must be present for external URLs too.
+        expect(
+          find.byKey(const ValueKey('edit_framing_button')),
+          findsOneWidget,
+        );
+
+        await tester.tap(find.byKey(const ValueKey('edit_framing_button')));
+        // Drive real async work (image stream) so _imageAspectRatio resolves.
+        // The bug fires when that async write lands during the parent's
+        // build cycle for the external URL ref.
+        await tester.runAsync(() async {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+        });
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+
+        // Editor sheet opened.
+        expect(find.text('Edit Framing'), findsAtLeastNWidgets(1));
+        // Switching framing modes triggers _draft writes which fan out
+        // through the editor's createEffect → onLiveChange →
+        // viewModel.updateImageRef — the same signals path that throws
+        // SignalEffectException for external URLs.
+        await tester.tap(find.byKey(const ValueKey('framing_mode_transform')));
+        await tester.runAsync(() async {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+        });
+        for (var i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+
+        // No SignalEffectException (or any exception) during editor open
+        // or interaction.
+        expect(tester.takeException(), isNull);
+      },
+    );
+
     testWidgets('framing status reflects custom hotspot and crop', (
       tester,
     ) async {
       final dataSource = MockDataSource();
-      when(() => dataSource.getMediaAsset('asset-hero'))
-          .thenAnswer((_) async => _testAsset());
+      when(
+        () => dataSource.getMediaAsset('asset-hero'),
+      ).thenAnswer((_) async => _testAsset());
 
       await tester.pumpWidget(
         buildInputApp(
@@ -337,7 +496,9 @@ void main() {
       expect(received!['_type'], 'imageReference');
     });
 
-    testWidgets('optional toggle off fires onChanged(null) once', (tester) async {
+    testWidgets('optional toggle off fires onChanged(null) once', (
+      tester,
+    ) async {
       const optField = DeskImageField(
         name: 'hero',
         title: 'Hero Image',
@@ -371,7 +532,9 @@ void main() {
       expect(received[0], isNull);
     });
 
-    testWidgets('optional toggle off then on restores last value', (tester) async {
+    testWidgets('optional toggle off then on restores last value', (
+      tester,
+    ) async {
       const optField = DeskImageField(
         name: 'hero',
         title: 'Hero Image',
@@ -409,42 +572,43 @@ void main() {
       expect(received[1]!['externalUrl'], 'https://example.com/photo.jpg');
     });
 
-    testWidgets('optional external value flip to null does not fire onChanged', (
-      tester,
-    ) async {
-      const optField = DeskImageField(
-        name: 'hero',
-        title: 'Hero Image',
-        option: DeskImageOption(hotspot: false, optional: true),
-      );
-      var fireCount = 0;
-      Widget mk(Map<String, dynamic>? value) => buildInputApp(
-        DeskImageInput(
-          field: optField,
-          data: value == null ? null : DeskData(value: value, path: 'hero'),
-          dataSource: MockDataSource(),
-          onChanged: (_) => fireCount++,
-        ),
-      );
+    testWidgets(
+      'optional external value flip to null does not fire onChanged',
+      (tester) async {
+        const optField = DeskImageField(
+          name: 'hero',
+          title: 'Hero Image',
+          option: DeskImageOption(hotspot: false, optional: true),
+        );
+        var fireCount = 0;
+        Widget mk(Map<String, dynamic>? value) => buildInputApp(
+          DeskImageInput(
+            field: optField,
+            data: value == null ? null : DeskData(value: value, path: 'hero'),
+            dataSource: MockDataSource(),
+            onChanged: (_) => fireCount++,
+          ),
+        );
 
-      await tester.pumpWidget(
-        mk({
-          '_type': 'imageReference',
-          'externalUrl': 'https://example.com/photo.jpg',
-        }),
-      );
-      for (var i = 0; i < 5; i++) {
-        await tester.pump(const Duration(milliseconds: 50));
-      }
-      fireCount = 0;
-      await tester.pumpWidget(mk(null));
-      for (var i = 0; i < 5; i++) {
-        await tester.pump(const Duration(milliseconds: 50));
-      }
-      expect(fireCount, 0);
-      final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
-      expect(cb.value, isFalse);
-    });
+        await tester.pumpWidget(
+          mk({
+            '_type': 'imageReference',
+            'externalUrl': 'https://example.com/photo.jpg',
+          }),
+        );
+        for (var i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+        fireCount = 0;
+        await tester.pumpWidget(mk(null));
+        for (var i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+        }
+        expect(fireCount, 0);
+        final cb = tester.widget<ShadCheckbox>(find.byType(ShadCheckbox));
+        expect(cb.value, isFalse);
+      },
+    );
 
     testWidgets('no tabs present in unified layout', (tester) async {
       await tester.pumpWidget(
@@ -461,8 +625,9 @@ void main() {
   });
 
   group('DeskImageInput keep-alive', () {
-    testWidgets('stays alive when scrolled out of a ListView and back',
-        (tester) async {
+    testWidgets('stays alive when scrolled out of a ListView and back', (
+      tester,
+    ) async {
       // Build a DeskImageInput inside a ListView.builder with many tall spacers.
       // Scroll the image_input off-screen, then back. Assert the State object
       // identity is preserved (would fail without AutomaticKeepAliveClientMixin).
@@ -500,9 +665,11 @@ void main() {
       await tester.pump();
 
       final stateAfter = tester.state(finder);
-      expect(identical(stateBefore, stateAfter), isTrue,
-          reason:
-              'DeskImageInput State should be kept alive across scroll');
+      expect(
+        identical(stateBefore, stateAfter),
+        isTrue,
+        reason: 'DeskImageInput State should be kept alive across scroll',
+      );
     });
   });
 }

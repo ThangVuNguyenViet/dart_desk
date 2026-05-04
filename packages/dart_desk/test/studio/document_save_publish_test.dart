@@ -75,9 +75,7 @@ Widget _buildDocumentListApp({
             builder: (context) {
               GetIt.I<DeskViewModel>().currentDocumentTypeSlug.value =
                   docType.name;
-              return DeskDocumentListView(
-                selectedDocumentType: docType,
-              );
+              return DeskDocumentListView(selectedDocumentType: docType);
             },
           ),
         ),
@@ -200,10 +198,9 @@ void main() {
 
       // Pre-update the document data so MockDataSource sets crdtHlc, making
       // hasUnpublishedChanges = true and enabling the Publish button.
-      await dataSource.updateDocumentData(
-        doc.id!,
-        {'string_field': 'publish value'},
-      );
+      await dataSource.updateDocumentData(doc.id!, {
+        'string_field': 'publish value',
+      });
 
       await tester.pumpWidget(
         _buildEditorApp(
@@ -249,96 +246,99 @@ void main() {
 
   group('Bug 2: Save and Publish loading are independent', () {
     testWidgets(
-        'Publish button is disabled while autosave is in flight (updateData.isLoading)',
-        (tester) async {
-      // Use the hanging data source so updateDocumentData never completes —
-      // this freezes the autosave in the isLoading = true state for inspection.
-      final hangingDataSource = _HangingDataSource()..seedDefaults();
-      final docs = await hangingDataSource.getDocuments(
-        allFieldsDocumentType.name,
-      );
-      final doc = docs.documents.first;
-      // Pre-stamp crdtHlc so hasUnpublishedChanges = true (Publish button enabled
-      // in the normal idle state).
-      hangingDataSource.forceSetCrdtHlc(doc.id!, '9999999999999999');
+      'Publish button is disabled while autosave is in flight (updateData.isLoading)',
+      (tester) async {
+        // Use the hanging data source so updateDocumentData never completes —
+        // this freezes the autosave in the isLoading = true state for inspection.
+        final hangingDataSource = _HangingDataSource()..seedDefaults();
+        final docs = await hangingDataSource.getDocuments(
+          allFieldsDocumentType.name,
+        );
+        final doc = docs.documents.first;
+        // Pre-stamp crdtHlc so hasUnpublishedChanges = true (Publish button enabled
+        // in the normal idle state).
+        hangingDataSource.forceSetCrdtHlc(doc.id!, '9999999999999999');
 
-      await tester.pumpWidget(
-        _buildEditorApp(
-          dataSource: hangingDataSource,
-          docType: allFieldsDocumentType,
-          onBuilt: (context) {
-            final docVM = GetIt.I<DeskDocumentViewModel>();
-            docVM.documentId.value = doc.id!;
-            docVM.editedData.value = {'string_field': 'in-flight check'};
-            docVM.isDirty.value = true;
-            GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
-          },
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          _buildEditorApp(
+            dataSource: hangingDataSource,
+            docType: allFieldsDocumentType,
+            onBuilt: (context) {
+              final docVM = GetIt.I<DeskDocumentViewModel>();
+              docVM.documentId.value = doc.id!;
+              docVM.editedData.value = {'string_field': 'in-flight check'};
+              docVM.isDirty.value = true;
+              GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
+            },
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Advance past the debounce — autosave fires but hangs in updateDocumentData.
-      await tester.pump(const Duration(seconds: 1, milliseconds: 100));
-      // One pump so the hanging future starts (isLoading = true) without settling.
-      await tester.pump();
+        // Advance past the debounce — autosave fires but hangs in updateDocumentData.
+        await tester.pump(const Duration(seconds: 1, milliseconds: 100));
+        // One pump so the hanging future starts (isLoading = true) without settling.
+        await tester.pump();
 
-      final publishBtn = tester.widget<DeskButton>(
-        find.byKey(const ValueKey('publish_document_button')),
-      );
-      expect(
-        publishBtn.onPressed,
-        isNull,
-        reason:
-            'Publish button must be disabled while autosave updateData is in flight (isAnyBusy = true)',
-      );
-    });
+        final publishBtn = tester.widget<DeskButton>(
+          find.byKey(const ValueKey('publish_document_button')),
+        );
+        expect(
+          publishBtn.onPressed,
+          isNull,
+          reason:
+              'Publish button must be disabled while autosave updateData is in flight (isAnyBusy = true)',
+        );
+      },
+    );
 
     testWidgets(
-        'Publish button is disabled while the flush-save step is in progress',
-        (tester) async {
-      // Seed and pre-stamp crdtHlc on the hanging data source so
-      // hasUnpublishedChanges is true before the widget mounts.
-      // We use forceSetCrdtHlc to avoid calling updateDocumentData (which hangs).
-      final hangingDataSource = _HangingDataSource()..seedDefaults();
-      final docs = await hangingDataSource.getDocuments(
-        allFieldsDocumentType.name,
-      );
-      final doc = docs.documents.first;
-      hangingDataSource.forceSetCrdtHlc(doc.id!, '9999999999999999');
+      'Publish button is disabled while the flush-save step is in progress',
+      (tester) async {
+        // Seed and pre-stamp crdtHlc on the hanging data source so
+        // hasUnpublishedChanges is true before the widget mounts.
+        // We use forceSetCrdtHlc to avoid calling updateDocumentData (which hangs).
+        final hangingDataSource = _HangingDataSource()..seedDefaults();
+        final docs = await hangingDataSource.getDocuments(
+          allFieldsDocumentType.name,
+        );
+        final doc = docs.documents.first;
+        hangingDataSource.forceSetCrdtHlc(doc.id!, '9999999999999999');
 
-      await tester.pumpWidget(
-        _buildEditorApp(
-          dataSource: hangingDataSource,
-          docType: allFieldsDocumentType,
-          onBuilt: (context) {
-            final docVM = GetIt.I<DeskDocumentViewModel>();
-            docVM.editedData.value = {'string_field': 'check loading'};
-            docVM.documentId.value = doc.id!;
-            docVM.isDirty.value = true;
-            GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
-          },
-        ),
-      );
-      // Let selectedDocumentContainer load so hasUnpublishedChanges resolves.
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          _buildEditorApp(
+            dataSource: hangingDataSource,
+            docType: allFieldsDocumentType,
+            onBuilt: (context) {
+              final docVM = GetIt.I<DeskDocumentViewModel>();
+              docVM.editedData.value = {'string_field': 'check loading'};
+              docVM.documentId.value = doc.id!;
+              docVM.isDirty.value = true;
+              GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
+            },
+          ),
+        );
+        // Let selectedDocumentContainer load so hasUnpublishedChanges resolves.
+        await tester.pumpAndSettle();
 
-      // Tap Publish — updateDocumentData will hang (it's the flush-save step).
-      await tester.tap(find.byKey(const ValueKey('publish_document_button')));
-      await tester.pump();
+        // Tap Publish — updateDocumentData will hang (it's the flush-save step).
+        await tester.tap(find.byKey(const ValueKey('publish_document_button')));
+        await tester.pump();
 
-      final publishBtn = tester.widget<DeskButton>(
-        find.byKey(const ValueKey('publish_document_button')),
-      );
+        final publishBtn = tester.widget<DeskButton>(
+          find.byKey(const ValueKey('publish_document_button')),
+        );
 
-      // During the flush-save step: updateData.isLoading = true → isAnyBusy = true
-      // → Publish button onPressed is null (disabled). The spinner shows once
-      // publishCurrentDraft itself starts (after updateData completes).
-      expect(
-        publishBtn.onPressed,
-        isNull,
-        reason: 'Publish button must be disabled while its flush-save step is in progress',
-      );
-    });
+        // During the flush-save step: updateData.isLoading = true → isAnyBusy = true
+        // → Publish button onPressed is null (disabled). The spinner shows once
+        // publishCurrentDraft itself starts (after updateData completes).
+        expect(
+          publishBtn.onPressed,
+          isNull,
+          reason:
+              'Publish button must be disabled while its flush-save step is in progress',
+        );
+      },
+    );
   });
 
   // =========================================================================
@@ -367,10 +367,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the status pill next to the Beta document tile.
-      final tile = find.ancestor(
-        of: find.text('Test Document Beta'),
-        matching: find.byType(Container),
-      ).first;
+      final tile = find
+          .ancestor(
+            of: find.text('Test Document Beta'),
+            matching: find.byType(Container),
+          )
+          .first;
 
       // Verify the pill says "draft".
       expect(
@@ -414,10 +416,12 @@ void main() {
       viewModel.versionsContainer(betaDoc.id!).awaitableReload();
       await tester.pumpAndSettle();
 
-      final tile = find.ancestor(
-        of: find.text('Test Document Beta'),
-        matching: find.byType(Container),
-      ).first;
+      final tile = find
+          .ancestor(
+            of: find.text('Test Document Beta'),
+            matching: find.byType(Container),
+          )
+          .first;
 
       expect(
         find.descendant(of: tile, matching: find.text('published')),
@@ -464,7 +468,8 @@ void main() {
       expect(
         find.text('Please wait'),
         findsNothing,
-        reason: '"Please wait" must not appear — it becomes invisible on colored buttons',
+        reason:
+            '"Please wait" must not appear — it becomes invisible on colored buttons',
       );
     });
 

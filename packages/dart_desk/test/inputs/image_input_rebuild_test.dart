@@ -57,11 +57,7 @@ void main() {
     HttpOverrides.global = null;
   });
 
-  const field = DeskImageField(
-    name: 'hero',
-    title: 'Hero Image',
-    option: DeskImageOption(hotspot: false),
-  );
+  const field = DeskImageField(name: 'hero', title: 'Hero Image');
 
   group('DeskImageInput rebuild efficiency', () {
     testWidgets('empty state does not rebuild siblings', (tester) async {
@@ -271,76 +267,75 @@ void main() {
       },
     );
 
-    testWidgets(
-      'parent rebuild with different value DOES re-init viewmodel',
-      (tester) async {
-        final dataSource = MockDataSource();
-        final assetA = MediaAsset(
-          id: '1',
-          assetId: 'asset-a',
-          fileName: 'a.png',
-          mimeType: 'image/png',
-          fileSize: 1024,
-          publicUrl: 'https://cdn.example.com/a.png',
-          width: 100,
-          height: 100,
-          hasAlpha: false,
-          blurHash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj',
-          createdAt: DateTime(2026),
-          metadataStatus: MediaAssetMetadataStatus.complete,
-        );
-        final assetB = MediaAsset(
-          id: '2',
-          assetId: 'asset-b',
-          fileName: 'b.png',
-          mimeType: 'image/png',
-          fileSize: 1024,
-          publicUrl: 'https://cdn.example.com/b.png',
-          width: 100,
-          height: 100,
-          hasAlpha: false,
-          blurHash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj',
-          createdAt: DateTime(2026),
-          metadataStatus: MediaAssetMetadataStatus.complete,
-        );
-        when(
-          () => dataSource.getMediaAsset('asset-a'),
-        ).thenAnswer((_) async => assetA);
-        when(
-          () => dataSource.getMediaAsset('asset-b'),
-        ).thenAnswer((_) async => assetB);
+    testWidgets('parent rebuild with different value DOES re-init viewmodel', (
+      tester,
+    ) async {
+      final dataSource = MockDataSource();
+      final assetA = MediaAsset(
+        id: '1',
+        assetId: 'asset-a',
+        fileName: 'a.png',
+        mimeType: 'image/png',
+        fileSize: 1024,
+        publicUrl: 'https://cdn.example.com/a.png',
+        width: 100,
+        height: 100,
+        hasAlpha: false,
+        blurHash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj',
+        createdAt: DateTime(2026),
+        metadataStatus: MediaAssetMetadataStatus.complete,
+      );
+      final assetB = MediaAsset(
+        id: '2',
+        assetId: 'asset-b',
+        fileName: 'b.png',
+        mimeType: 'image/png',
+        fileSize: 1024,
+        publicUrl: 'https://cdn.example.com/b.png',
+        width: 100,
+        height: 100,
+        hasAlpha: false,
+        blurHash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj',
+        createdAt: DateTime(2026),
+        metadataStatus: MediaAssetMetadataStatus.complete,
+      );
+      when(
+        () => dataSource.getMediaAsset('asset-a'),
+      ).thenAnswer((_) async => assetA);
+      when(
+        () => dataSource.getMediaAsset('asset-b'),
+      ).thenAnswer((_) async => assetB);
 
-        final currentAssetId = ValueNotifier<String>('asset-a');
+      final currentAssetId = ValueNotifier<String>('asset-a');
 
-        await tester.pumpWidget(
-          buildInputApp(
-            ValueListenableBuilder<String>(
-              valueListenable: currentAssetId,
-              builder: (_, id, _) => DeskImageInput(
-                field: field,
-                data: DeskData(
-                  value: <String, dynamic>{
-                    '_type': 'imageReference',
-                    'assetId': id,
-                  },
-                  path: 'hero',
-                ),
-                dataSource: dataSource,
+      await tester.pumpWidget(
+        buildInputApp(
+          ValueListenableBuilder<String>(
+            valueListenable: currentAssetId,
+            builder: (_, id, _) => DeskImageInput(
+              field: field,
+              data: DeskData(
+                value: <String, dynamic>{
+                  '_type': 'imageReference',
+                  'assetId': id,
+                },
+                path: 'hero',
               ),
+              dataSource: dataSource,
             ),
           ),
-        );
+        ),
+      );
 
-        await tester.pump();
-        verify(() => dataSource.getMediaAsset('asset-a')).called(1);
+      await tester.pump();
+      verify(() => dataSource.getMediaAsset('asset-a')).called(1);
 
-        // Switch to a genuinely different value.
-        currentAssetId.value = 'asset-b';
-        await tester.pump();
+      // Switch to a genuinely different value.
+      currentAssetId.value = 'asset-b';
+      await tester.pump();
 
-        verify(() => dataSource.getMediaAsset('asset-b')).called(1);
-      },
-    );
+      verify(() => dataSource.getMediaAsset('asset-b')).called(1);
+    });
 
     testWidgets('remove does not cause cascading rebuilds', (tester) async {
       final siblingBuilds = ValueNotifier<int>(0);
@@ -444,11 +439,7 @@ void main() {
               ColumnFields(
                 children: [
                   DeskStringField(name: 'caption', title: 'Caption'),
-                  DeskImageField(
-                    name: 'image',
-                    title: 'Image',
-                    option: DeskImageOption(hotspot: false),
-                  ),
+                  DeskImageField(name: 'image', title: 'Image'),
                 ],
               ),
             ],

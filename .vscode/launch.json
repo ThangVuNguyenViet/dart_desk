@@ -13,11 +13,11 @@
                 "--dart-define",
                 "SERVER_URL=https://api.dartdesk.dev/",
                 "--dart-define",
-                "API_KEY=cms_w_gxNQysyBV6VdBkjM_JN6Yn5Fk1BhVTGb3K7YEp5kvDU",
-                "-d",
-                "chrome",
-                "--web-port",
-                "60367"
+                "API_KEY=cms_w_S15OB4uEH8YWZ5VyknhNBDHrtflbHmwhLhDMPVT6ORg",
+                // "-d",
+                // "chrome",
+                // "--web-port",
+                // "60367"
             ]
         },
         {

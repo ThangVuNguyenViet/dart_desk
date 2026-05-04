@@ -51,7 +51,7 @@ void main() {
       expect(find.text('report.pdf'), findsOneWidget);
     });
 
-testWidgets('optional toggle off then on restores last value', (
+    testWidgets('optional toggle off then on restores last value', (
       tester,
     ) async {
       String? captured;
@@ -87,9 +87,7 @@ testWidgets('optional toggle off then on restores last value', (
       Widget mk(String? value) => buildInputApp(
         DeskFileInput(
           field: _optionalField,
-          data: value == null
-              ? null
-              : DeskData(value: value, path: 'document'),
+          data: value == null ? null : DeskData(value: value, path: 'document'),
           onChanged: (_) => fireCount++,
         ),
       );

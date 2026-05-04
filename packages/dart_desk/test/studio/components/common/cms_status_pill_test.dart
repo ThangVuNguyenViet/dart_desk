@@ -85,40 +85,40 @@ void main() {
 
   group('CmsStatusPill — Unpublished changes state', () {
     testWidgets(
-        'shows "Unpublished changes" when hasUnpublishedChanges is true', (
-      tester,
-    ) async {
-      final dataSource = MockDataSource()..seedDefaults();
+      'shows "Unpublished changes" when hasUnpublishedChanges is true',
+      (tester) async {
+        final dataSource = MockDataSource()..seedDefaults();
 
-      // Pre-stamp crdtHlc to make hasUnpublishedChanges = true without
-      // triggering the data source's updateDocumentData (avoids async races).
-      final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
-      final doc = docs.documents.first;
-      dataSource.forceSetCrdtHlc(doc.id!, '9999999999999999');
+        // Pre-stamp crdtHlc to make hasUnpublishedChanges = true without
+        // triggering the data source's updateDocumentData (avoids async races).
+        final docs = await dataSource.getDocuments(allFieldsDocumentType.name);
+        final doc = docs.documents.first;
+        dataSource.forceSetCrdtHlc(doc.id!, '9999999999999999');
 
-      await tester.pumpWidget(
-        ShadApp(
-          home: Scaffold(
-            body: StudioProvider(
-              dataSource: dataSource,
-              documentTypes: [allFieldsDocumentType],
-              child: Builder(
-                builder: (context) {
-                  // Set selectedDocumentId so hasUnpublishedChanges can compute.
-                  GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
-                  return const Center(child: CmsStatusPill());
-                },
+        await tester.pumpWidget(
+          ShadApp(
+            home: Scaffold(
+              body: StudioProvider(
+                dataSource: dataSource,
+                documentTypes: [allFieldsDocumentType],
+                child: Builder(
+                  builder: (context) {
+                    // Set selectedDocumentId so hasUnpublishedChanges can compute.
+                    GetIt.I<DeskViewModel>().selectedDocumentId.value = doc.id!;
+                    return const Center(child: CmsStatusPill());
+                  },
+                ),
               ),
             ),
           ),
-        ),
-      );
-      // Let the selectedDocumentContainer async future resolve.
-      await tester.pumpAndSettle();
+        );
+        // Let the selectedDocumentContainer async future resolve.
+        await tester.pumpAndSettle();
 
-      expect(find.text('Unpublished changes'), findsOneWidget);
-      expect(find.byIcon(Icons.history), findsOneWidget);
-    });
+        expect(find.text('Unpublished changes'), findsOneWidget);
+        expect(find.byIcon(Icons.history), findsOneWidget);
+      },
+    );
   });
 
   // =========================================================================

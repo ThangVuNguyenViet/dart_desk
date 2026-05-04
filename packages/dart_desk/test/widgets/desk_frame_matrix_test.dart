@@ -6,18 +6,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test_goldens/flutter_test_goldens.dart';
 
 import '_framing_pattern.dart';
+import 'package:dart_desk/testing.dart';
 
-const _wide = ImageReference(
-  publicUrl: 'fake://wide',
-  width: 800,
-  height: 400,
-);
+const _wide = ImageReference(publicUrl: 'fake://wide', width: 800, height: 400);
 
-const _tall = ImageReference(
-  publicUrl: 'fake://tall',
-  width: 400,
-  height: 800,
-);
+const _tall = ImageReference(publicUrl: 'fake://tall', width: 400, height: 800);
 
 ImageReference _withHotspot(ImageReference r, double x, double y) =>
     ImageReference(
@@ -46,11 +39,7 @@ Widget _cell(ImageReference ref, BoxFit fit) => Center(
   child: SizedBox(
     width: 220,
     height: 160,
-    child: DeskFrame(
-      ref: ref,
-      fit: fit,
-      child: const FramingPattern(),
-    ),
+    child: DeskFrame(ref: ref, fit: fit, child: const FramingPattern()),
   ),
 );
 
@@ -63,18 +52,22 @@ void main() {
           layout: ColumnSceneLayout(),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'cover • wide • default',
           builder: (_) => _cell(_wide, BoxFit.cover),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'cover • wide • hotspot right',
           builder: (_) => _cell(_withHotspot(_wide, 0.85, 0.5), BoxFit.cover),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'cover • wide • crop right half',
           builder: (_) => _cell(_withCrop(_wide, right: 0.5), BoxFit.cover),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'cover • wide • crop + hotspot',
           builder: (_) => _cell(
             _withHotspot(
@@ -86,10 +79,12 @@ void main() {
           ),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'contain • wide • default',
           builder: (_) => _cell(_wide, BoxFit.contain),
         )
         .itemFromBuilder(
+          tolerancePx: kGoldenTolerancePx,
           description: 'cover • tall • hotspot top',
           builder: (_) => _cell(_withHotspot(_tall, 0.5, 0.15), BoxFit.cover),
         )

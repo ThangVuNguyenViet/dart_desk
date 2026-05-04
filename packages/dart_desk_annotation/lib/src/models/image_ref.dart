@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'image_types.dart';
 
 /// Unified image reference for dart_desk.
@@ -28,9 +26,9 @@ class ImageReference {
   /// Range clamps to [0.1, 10] on render.
   final double? scale;
 
-  /// Translation in box-relative fractions. null or Offset.zero = identity.
+  /// Translation in box-relative fractions. null or `ImageOffset.zero` = identity.
   /// Range clamps to [-2.0, 2.0] per axis on render.
-  final Offset? offset;
+  final ImageOffset? offset;
 
   // TODO(transform-d): rotation (degrees, pivot = hotspot)
   // TODO(transform-d): skewX, skewY (radians)
@@ -68,10 +66,7 @@ class ImageReference {
     altText: map['altText'] as String?,
     scale: (map['scale'] as num?)?.toDouble(),
     offset: map['offset'] != null
-        ? Offset(
-            (map['offset']['dx'] as num).toDouble(),
-            (map['offset']['dy'] as num).toDouble(),
-          )
+        ? ImageOffset.fromJson(map['offset'] as Map<String, dynamic>)
         : null,
   );
 
@@ -139,7 +134,7 @@ class ImageReference {
     crop: identical(crop, _unset) ? this.crop : crop as CropRect?,
     altText: identical(altText, _unset) ? this.altText : altText as String?,
     scale: identical(scale, _unset) ? this.scale : scale as double?,
-    offset: identical(offset, _unset) ? this.offset : offset as Offset?,
+    offset: identical(offset, _unset) ? this.offset : offset as ImageOffset?,
   );
 
   @override
