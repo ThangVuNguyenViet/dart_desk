@@ -21,6 +21,10 @@ jobs:
         run: flutter --suppress-analytics pub get
         working-directory: packages/dart_desk
 
+      - name: codegen (data_models)
+        run: dart run build_runner build
+        working-directory: examples/data_models
+
       - name: build web
         run: |
           flutter build web --release \
