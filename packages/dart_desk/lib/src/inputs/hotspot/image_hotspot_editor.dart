@@ -73,24 +73,17 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
   @override
   void initState() {
     super.initState();
-    // Read _draft inside the effect to subscribe; invoke onLiveChange via
-    // untracked() so any signal writes performed by the parent (e.g.
-    // viewModel.imageRef.value =) don't enter this effect's dependency
-    // graph. Without untracked, the parent's watcher re-runs inside this
-    // batch and preact_signals throws SignalEffectException ("Cycle
-    // detected") at endBatch.
-    createEffect(() {
-      final d = _draft.value;
-      untracked(() {
-        widget.onLiveChange?.call((
-          hotspot: d.hotspot,
-          crop: d.crop,
-          scale: d.scale,
-          offset: d.offset,
-        ));
-      });
-    });
     _loadImageDimensions();
+  }
+
+  void _setDraft(FramingDraft next) {
+    _draft.value = next;
+    widget.onLiveChange?.call((
+      hotspot: next.hotspot,
+      crop: next.crop,
+      scale: next.scale,
+      offset: next.offset,
+    ));
   }
 
   void _loadImageDimensions() {
@@ -128,7 +121,7 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
               FramingModeToggle(
                 mode: draft.mode,
                 onChanged: (mode) {
-                  _draft.value = draft.copyWith(mode: mode);
+                  _setDraft(draft.copyWith(mode: mode));
                   widget.onModeChanged?.call(mode);
                 },
               ),
@@ -174,8 +167,10 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                                                       event.scrollDelta.dy *
                                                           0.001))
                                               .clamp(0.1, 10.0);
-                                      _draft.value = _draft.value.copyWith(
-                                        scale: next.toDouble(),
+                                      _setDraft(
+                                        _draft.value.copyWith(
+                                          scale: next.toDouble(),
+                                        ),
                                       );
                                       _scaleSliderTick++;
                                     }
@@ -305,7 +300,7 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                     min: 0.1,
                     max: 10.0,
                     onChanged: (v) =>
-                        _draft.value = _draft.value.copyWith(scale: v),
+                        _setDraft(_draft.value.copyWith(scale: v)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -349,20 +344,20 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                 children: [
                   ShadButton.ghost(
                     key: const ValueKey('reset_focus_button'),
-                    onPressed: () => _draft.value = draft.resetFocus(),
+                    onPressed: () => _setDraft(draft.resetFocus()),
                     size: ShadButtonSize.sm,
                     child: const Text('Reset focus'),
                   ),
                   ShadButton.ghost(
                     key: const ValueKey('reset_crop_button'),
-                    onPressed: () => _draft.value = draft.resetCrop(),
+                    onPressed: () => _setDraft(draft.resetCrop()),
                     size: ShadButtonSize.sm,
                     child: const Text('Reset crop'),
                   ),
                   ShadButton.ghost(
                     key: const ValueKey('reset_transform_button'),
                     onPressed: () {
-                      _draft.value = draft.resetTransform();
+                      _setDraft(draft.resetTransform());
                       _scaleSliderTick++;
                     },
                     size: ShadButtonSize.sm,
@@ -371,7 +366,7 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
                   ShadButton.ghost(
                     key: const ValueKey('reset_all_button'),
                     onPressed: () {
-                      _draft.value = draft.resetAll();
+                      _setDraft(draft.resetAll());
                       _scaleSliderTick++;
                     },
                     size: ShadButtonSize.sm,
@@ -486,20 +481,24 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
           cur.dx + details.delta.dx / size.width,
           cur.dy + details.delta.dy / size.height,
         );
-        _draft.value = draft.copyWith(
-          offset: Offset(next.dx.clamp(-2.0, 2.0), next.dy.clamp(-2.0, 2.0)),
+        _setDraft(
+          draft.copyWith(
+            offset: Offset(next.dx.clamp(-2.0, 2.0), next.dy.clamp(-2.0, 2.0)),
+          ),
         );
         break;
       case 'hotspot':
-        _draft.value = draft.copyWith(
-          hotspot: draft.hotspot.copyWith(
-            x: (pos.dx / size.width).clamp(
-              draft.crop.left,
-              1.0 - draft.crop.right,
-            ),
-            y: (pos.dy / size.height).clamp(
-              draft.crop.top,
-              1.0 - draft.crop.bottom,
+        _setDraft(
+          draft.copyWith(
+            hotspot: draft.hotspot.copyWith(
+              x: (pos.dx / size.width).clamp(
+                draft.crop.left,
+                1.0 - draft.crop.right,
+              ),
+              y: (pos.dy / size.height).clamp(
+                draft.crop.top,
+                1.0 - draft.crop.bottom,
+              ),
             ),
           ),
         );
@@ -507,87 +506,103 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
       case 'hotspot_top':
         final center = draft.hotspot.y * size.height;
         final newRy = (center - pos.dy).clamp(10.0, center);
-        _draft.value = draft.copyWith(
-          hotspot: draft.hotspot.copyWith(
-            height: (newRy * 2 / size.height).clamp(0.05, 1.0),
+        _setDraft(
+          draft.copyWith(
+            hotspot: draft.hotspot.copyWith(
+              height: (newRy * 2 / size.height).clamp(0.05, 1.0),
+            ),
           ),
         );
         break;
       case 'hotspot_bottom':
         final center = draft.hotspot.y * size.height;
         final newRy = (pos.dy - center).clamp(10.0, size.height - center);
-        _draft.value = draft.copyWith(
-          hotspot: draft.hotspot.copyWith(
-            height: (newRy * 2 / size.height).clamp(0.05, 1.0),
+        _setDraft(
+          draft.copyWith(
+            hotspot: draft.hotspot.copyWith(
+              height: (newRy * 2 / size.height).clamp(0.05, 1.0),
+            ),
           ),
         );
         break;
       case 'hotspot_left':
         final center = draft.hotspot.x * size.width;
         final newRx = (center - pos.dx).clamp(10.0, center);
-        _draft.value = draft.copyWith(
-          hotspot: draft.hotspot.copyWith(
-            width: (newRx * 2 / size.width).clamp(0.05, 1.0),
+        _setDraft(
+          draft.copyWith(
+            hotspot: draft.hotspot.copyWith(
+              width: (newRx * 2 / size.width).clamp(0.05, 1.0),
+            ),
           ),
         );
         break;
       case 'hotspot_right':
         final center = draft.hotspot.x * size.width;
         final newRx = (pos.dx - center).clamp(10.0, size.width - center);
-        _draft.value = draft.copyWith(
-          hotspot: draft.hotspot.copyWith(
-            width: (newRx * 2 / size.width).clamp(0.05, 1.0),
+        _setDraft(
+          draft.copyWith(
+            hotspot: draft.hotspot.copyWith(
+              width: (newRx * 2 / size.width).clamp(0.05, 1.0),
+            ),
           ),
         );
         break;
       case 'crop_top':
-        _draft.value = draft.copyWith(
-          crop: CropRect(
-            top: (pos.dy / size.height).clamp(
-              0.0,
-              1.0 - draft.crop.bottom - 0.1,
+        _setDraft(
+          draft.copyWith(
+            crop: CropRect(
+              top: (pos.dy / size.height).clamp(
+                0.0,
+                1.0 - draft.crop.bottom - 0.1,
+              ),
+              bottom: draft.crop.bottom,
+              left: draft.crop.left,
+              right: draft.crop.right,
             ),
-            bottom: draft.crop.bottom,
-            left: draft.crop.left,
-            right: draft.crop.right,
           ),
         );
         break;
       case 'crop_bottom':
-        _draft.value = draft.copyWith(
-          crop: CropRect(
-            top: draft.crop.top,
-            bottom: (1.0 - pos.dy / size.height).clamp(
-              0.0,
-              1.0 - draft.crop.top - 0.1,
+        _setDraft(
+          draft.copyWith(
+            crop: CropRect(
+              top: draft.crop.top,
+              bottom: (1.0 - pos.dy / size.height).clamp(
+                0.0,
+                1.0 - draft.crop.top - 0.1,
+              ),
+              left: draft.crop.left,
+              right: draft.crop.right,
             ),
-            left: draft.crop.left,
-            right: draft.crop.right,
           ),
         );
         break;
       case 'crop_left':
-        _draft.value = draft.copyWith(
-          crop: CropRect(
-            top: draft.crop.top,
-            bottom: draft.crop.bottom,
-            left: (pos.dx / size.width).clamp(
-              0.0,
-              1.0 - draft.crop.right - 0.1,
+        _setDraft(
+          draft.copyWith(
+            crop: CropRect(
+              top: draft.crop.top,
+              bottom: draft.crop.bottom,
+              left: (pos.dx / size.width).clamp(
+                0.0,
+                1.0 - draft.crop.right - 0.1,
+              ),
+              right: draft.crop.right,
             ),
-            right: draft.crop.right,
           ),
         );
         break;
       case 'crop_right':
-        _draft.value = draft.copyWith(
-          crop: CropRect(
-            top: draft.crop.top,
-            bottom: draft.crop.bottom,
-            left: draft.crop.left,
-            right: (1.0 - pos.dx / size.width).clamp(
-              0.0,
-              1.0 - draft.crop.left - 0.1,
+        _setDraft(
+          draft.copyWith(
+            crop: CropRect(
+              top: draft.crop.top,
+              bottom: draft.crop.bottom,
+              left: draft.crop.left,
+              right: (1.0 - pos.dx / size.width).clamp(
+                0.0,
+                1.0 - draft.crop.left - 0.1,
+              ),
             ),
           ),
         );
