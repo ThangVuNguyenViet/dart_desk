@@ -110,6 +110,37 @@ void main() {
       },
     );
 
+    testWidgets(
+      'mounting under a stateful parent that setStates on onLiveChange '
+      'does not throw "setState called during build"',
+      (tester) async {
+        // Reproduces the production crash where DeskObjectInput
+        // (a stateful ancestor) calls setState in _onChildChanged when
+        // ImageHotspotEditor is mounted as a new child during the
+        // ancestor's own rebuild. If the editor invokes onLiveChange
+        // synchronously during initState (e.g. via an eager effect),
+        // the setState lands inside the build phase and Flutter throws.
+        await tester.pumpWidget(
+          buildInputApp(const _HostingParent()),
+        );
+        await tester.pumpAndSettle();
+
+        // Trigger the parent rebuild that inflates the editor as a
+        // brand-new child during build.
+        await tester.tap(find.byKey(const ValueKey('show_editor')));
+        await tester.pump();
+
+        expect(
+          tester.takeException(),
+          isNull,
+          reason:
+              'ImageHotspotEditor must not invoke onLiveChange '
+              'synchronously during initState — doing so triggers '
+              'setState in a stateful ancestor that is mid-build.',
+        );
+      },
+    );
+
     testWidgets('transform mode segment is selectable', (tester) async {
       FramingMode? lastMode;
 
@@ -327,4 +358,36 @@ void main() {
       expect(mode, FramingMode.preview);
     });
   });
+}
+
+class _HostingParent extends StatefulWidget {
+  const _HostingParent();
+
+  @override
+  State<_HostingParent> createState() => _HostingParentState();
+}
+
+class _HostingParentState extends State<_HostingParent> {
+  bool _showEditor = false;
+  int _liveCount = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ElevatedButton(
+          key: const ValueKey('show_editor'),
+          onPressed: () => setState(() => _showEditor = true),
+          child: const Text('show'),
+        ),
+        Text('live: $_liveCount'),
+        if (_showEditor)
+          ImageHotspotEditor(
+            imageUrl: 'https://test.example.com/image.png',
+            onLiveChange: (_) => setState(() => _liveCount++),
+            onChanged: (_) {},
+          ),
+      ],
+    );
+  }
 }
