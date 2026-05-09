@@ -12,16 +12,24 @@ A working Flutter app that boots `DartDeskApp` against a hosted Dart Desk Cloud 
 - `DocumentTypeDecoration` icons in the sidebar.
 - `CloudDataSource` wiring against a hosted backend (override via env to self-host).
 
+## Entrypoints
+
+| File | Purpose | Deployed URL |
+|------|---------|-------------|
+| `lib/main_memory.dart` | In-memory `MockDataSource`, no auth, fully sandboxed per visitor | `https://dartdesk-demo.app.dartdesk.dev` |
+| `lib/main_cloud.dart` | Serverpod IDP auth + cloud backend, requires `--dart-define SERVER_URL=...` and `--dart-define API_KEY=...` | `https://dartdesk-demo-cloud.app.dartdesk.dev` |
+
 ## Run
 
 ```bash
-flutter run
+flutter run --target lib/main_memory.dart
 ```
 
-Override the backend for self-hosting:
+Run the cloud variant against a self-hosted backend:
 
 ```bash
 flutter run \
+  --target lib/main_cloud.dart \
   --dart-define=SERVER_URL=https://your-host/ \
   --dart-define=API_KEY=your-api-key
 ```
@@ -30,7 +38,8 @@ flutter run \
 
 | File | What's there |
 |------|--------------|
-| `lib/main.dart` | Entrypoint — builds `Client`, wraps it in `CloudDataSource`, calls `buildDeskApp` |
+| `lib/main_memory.dart` | In-memory entrypoint — `MockDataSource`, no auth |
+| `lib/main_cloud.dart` | Cloud entrypoint — builds `Client`, wraps it in `CloudDataSource`, calls `buildDeskApp` |
 | `lib/bootstrap.dart` | `DartDeskConfig` — document types, decorations, title, icon |
 | `lib/document_types.dart` | The 6 `DocumentTypeSpec.build(...)` calls with their preview builders |
 
