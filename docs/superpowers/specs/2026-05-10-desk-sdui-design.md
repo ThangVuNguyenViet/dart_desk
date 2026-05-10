@@ -457,8 +457,49 @@ The runtime treats any `ValueListenable<T>` subscription (Flutter SDK type) as r
 - `ValueNotifier<T>` (Flutter SDK)
 - Any custom `ChangeNotifier` exposing a value
 - Any third-party type that implements `ValueListenable<T>`
+- `Animation<T>` (Flutter SDK — extends `Listenable`; see Animation pattern below)
 
 The runtime imports no state-management package.
+
+### Animation pattern
+
+`AnimationController` cannot live inside `@Screen` — it needs a `TickerProvider` (vsync) and `dispose()`, neither of which fit a stateless top-level function. The canonical pattern: **the host `StatefulWidget` (the one mounting `SduiScreen`) owns the `AnimationController`, and exposes the resulting `Animation<T>` on the controller object the screen binds to**. Because `Animation<T>` extends `Listenable`, the runtime subscribes via `listenablePaths` and the `@Screen` reads `controller.fadeAnim.value` as a reactive ref.
+
+```dart
+// Host side — regular Flutter
+class _CartScreenHostState extends State<CartScreenHost>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 300),
+  );
+  late final fadeAnim = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
+
+  @override
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  @override
+  Widget build(BuildContext context) =>
+    SduiScreen(
+      name: 'cart',
+      runtime: sduiRuntime,
+      inputs: {'data': widget.data, 'controller': widget.controller..fadeAnim = fadeAnim},
+    );
+}
+```
+
+```dart
+// @Screen side — declarative read
+@Screen('cart')
+Widget buildCart(CartData data, CartController controller) {
+  return Opacity(
+    opacity: controller.fadeAnim.value,  // reactive — value changes drive rebuild
+    child: ...
+  );
+}
+```
+
+Self-contained animated widgets (`AnimatedContainer`, `Hero`, `flutter_animate`, `rive`, `lottie`) remain available as registered widgets and tick natively without IR involvement.
 
 ## Risks and mitigations
 
