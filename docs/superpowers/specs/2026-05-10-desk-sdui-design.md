@@ -16,7 +16,7 @@
 
 Make it possible to author Flutter screens that ship as data, so the app can render different layouts per tenant — and swap them via a backend without rebuilding or republishing the binary. Authors write idiomatic Flutter (a Dart-subset), a build-time codegen lowers `@Screen` functions into a small IR, and the runtime renders that IR by composing native registered widgets and ViewModel methods.
 
-Native widgets keep their full power (signals, async, plugins, animations, gestures, platform channels). The IR only describes layout and binding — never code, never new behaviors.
+Native widgets keep their full power (state, async, plugins, animations, gestures, platform channels). The IR only describes layout and binding — never code, never new behaviors.
 
 ## Non-goals
 
@@ -90,7 +90,7 @@ dart_desk_workspace/
 **Dependencies:**
 
 - `desk_sdui_annotation` — `meta` only
-- `desk_sdui` — `flutter`, `desk_sdui_annotation`. **Does not depend on `signals` or any state-management package.** The reactive contract is `ValueListenable<T>` from the Flutter SDK.
+- `desk_sdui` — `flutter`, `desk_sdui_annotation`. **Does not depend on any state-management package.** The reactive contract is `ValueListenable<T>` from the Flutter SDK.
 - `desk_sdui_generator` — `analyzer`, `build`, `source_gen`, `build_runner: ^2.15.0`, `desk_sdui_annotation`. **Must not use `dart:mirrors`** (would prevent AOT-compiled builders).
 
 ### Three runtime phases
@@ -103,7 +103,7 @@ PHASE 1: LOAD  (once per blob, cacheable)
 
 PHASE 2: RESOLVE  (per build)
   walk IR depth-first
-  resolve $refs against input map (data, vm, theme, ...)
+  resolve $refs against input map (data, controller, theme, ...)
   resolve $events to bound methods
   evaluate expression nodes
   return Widget tree
@@ -116,7 +116,7 @@ PHASE 3: RENDER  (per frame, Flutter's job)
 Cost model:
 
 - LOAD: ~0.5ms for a 5KB JSON blob, paid once per screen per session.
-- RESOLVE: ~50-150µs for a typical 150-node screen. Reactive subtrees rebuild independently — a signal change on a 10-node subtree resolves only those 10.
+- RESOLVE: ~50-150µs for a typical 150-node screen. Reactive subtrees rebuild independently — a listenable change on a 10-node subtree resolves only those 10.
 - RENDER: identical to a hand-written Flutter screen. Resolver does not run at frame rate.
 
 **Build rate vs. frame rate.** The resolver runs during Flutter `build()` calls, not during layout/paint. A static screen at 60fps with no state changes runs zero resolver code per frame; Flutter reuses cached widgets. The resolver runs only when state changes trigger a rebuild — typically 0-10 times per second in normal operation, not 60.
@@ -210,11 +210,11 @@ IrNode (sealed base)
 |---|---|
 | `Column(children: [...])` | `WidgetNode('Column', {'children': ListNode([...])})` |
 | `data.title` | `RefNode(['data','title'])` |
-| `vm.flag` (type `Signal<bool>` or any `ValueListenable<T>`) | `RefNode(['vm','flag'], reactive: true)` |
-| `vm.method` (tear-off) | `EventNode(['vm','method'])` |
-| `() => vm.removeItem(item.id)` | `EventNode(['vm','removeItem'], args: {'arg0': RefNode(['item','id'])})` |
+| `controller.flag` (type `ValueListenable<bool>`) | `RefNode(['controller','flag'], reactive: true)` |
+| `controller.method` (tear-off) | `EventNode(['controller','method'])` |
+| `() => controller.removeItem(item.id)` | `EventNode(['controller','removeItem'], args: {'arg0': RefNode(['item','id'])})` |
 | `data.items.length >= 50` | `CompareOp(>=, LengthOf(RefNode(['data','items'])), LiteralNode(50))` |
-| `'$count items'` | `StringInterp([RefNode(['count']), ' items'])` |
+| `'$total items'` | `StringInterp([RefNode(['count']), ' items'])` |
 | `if (cond) A` / `if (cond) A else B` | `ConditionalNode(cond, A, B?)` |
 | `cond ? A : B` | `ConditionalNode(cond, A, B)` |
 | `a ?? b` | `CoalesceOp(a, b)` |
@@ -229,12 +229,12 @@ Inspired by `riverpod_generator`'s family-provider pattern: constrain to a small
 
 | Closure shape | Lowering |
 |---|---|
-| `vm.foo` (tear-off) | `EventNode(['vm','foo'])` |
-| `() => vm.foo()` | `EventNode(['vm','foo'])` |
-| `() => vm.foo(literal)` | `EventNode(['vm','foo'], args: {arg0: LiteralNode(literal)})` |
-| `() => vm.foo(item.id)` (closes over loop var) | `EventNode(['vm','foo'], args: {arg0: RefNode(['item','id'])})` |
-| `(value) => vm.foo(value)` (callback arg passes through) | `EventNode(['vm','foo'], args: {arg0: RefNode(['_callback_arg_0'])})` |
-| `(a) => vm.foo(transform(a))` (inline transform) | **Analyzer error**: "extract `transform` to a top-level pure fn or vm method" |
+| `controller.foo` (tear-off) | `EventNode(['controller','foo'])` |
+| `() => controller.foo()` | `EventNode(['controller','foo'])` |
+| `() => controller.foo(literal)` | `EventNode(['controller','foo'], args: {arg0: LiteralNode(literal)})` |
+| `() => controller.foo(item.id)` (closes over loop var) | `EventNode(['controller','foo'], args: {arg0: RefNode(['item','id'])})` |
+| `(value) => controller.foo(value)` (callback arg passes through) | `EventNode(['controller','foo'], args: {arg0: RefNode(['_callback_arg_0'])})` |
+| `(a) => controller.foo(transform(a))` (inline transform) | **Analyzer error**: "extract `transform` to a top-level pure fn or controller method" |
 | Anything else | **Analyzer error**: "extract to a ViewModel method" |
 
 ### Forbidden constructs in `@Screen`
@@ -249,7 +249,7 @@ Inspired by `riverpod_generator`'s family-provider pattern: constrain to a small
 | `while`, `do { } while` | "loops with side effects not supported" |
 | Nested function definition | "extract to a top-level function or another @Screen" |
 | Class instantiation of unregistered type | "type X is not a registered widget" |
-| Method call on a non-listenable VM field that mutates state | "ViewModel methods must be called as event handlers (`onTap: vm.foo`)" |
+| Method call on a non-listenable controller field that mutates state | "controller methods must be called as event handlers (`onTap: controller.foo`)" |
 
 ### Const-fold rule
 
@@ -262,13 +262,13 @@ After lowering, the lowerer walks the IR. Any subtree where every leaf is `Liter
 After const-folding, the lowerer does a second pass:
 
 1. Find every `RefNode` with `reactive: true`.
-2. Group by ref path (so two reads of `vm.showPromoCode` are one signal).
-3. For each group, find the lowest common ancestor IrNode.
-4. Mark that node with `reactiveSignals: [...]` metadata.
+2. Group by ref path (so two reads of `controller.showPromoCode` collapse to one subscription).
+3. For each group, walk up to the nearest enclosing `WidgetNode`.
+4. Add the joined ref path to that node's `listenablePaths: Set<String>`.
 
-The runtime, when rendering a node with `reactiveSignals`, wraps it in `ListenableBuilder` subscribed to those listenables. Only that subtree rebuilds on signal change.
+The runtime, when rendering a `WidgetNode` whose `listenablePaths` is non-empty, wraps it in `ListenableBuilder` subscribed to the matching `Listenable`s from `input['__reactive__']`. Only that subtree rebuilds when the listenable fires.
 
-If a single signal's reads span the whole screen, the lowerer emits a build-time warning suggesting refactor — not an error.
+If a single listenable's reads span the whole screen, the lowerer emits a build-time warning suggesting refactor — not an error.
 
 ### Key inference rule
 
@@ -288,7 +288,7 @@ import '../models/cart_data.dart';
 part 'cart.sdui.g.dart';
 
 @Screen('cart')
-Widget buildCart(CartData data, CartScreenViewModel vm) {
+Widget buildCart(CartData data, CartController controller) {
   return Column(children: [
     if (data.items.isEmpty)
       const Text('Cart is empty'),
@@ -296,19 +296,19 @@ Widget buildCart(CartData data, CartScreenViewModel vm) {
       ItemTile(
         key: ValueKey(item.id),
         item: item,
-        onRemove: () => vm.removeItem(item.id),
+        onRemove: () => controller.removeItem(item.id),
       ),
     InkWell(
-      onTap: vm.togglePromoCode,
+      onTap: controller.togglePromoCode,
       child: const Text('Have a promo code?'),
     ),
-    if (vm.showPromoCode())
-      PromoCodeField(onSubmit: vm.applyPromo),
+    if (controller.showPromoCode())
+      PromoCodeField(onSubmit: controller.applyPromo),
   ]);
 }
 ```
 
-The developer doesn't register `ItemTile`, `PromoCodeField`, `Column`, `InkWell`, or `Text`. The developer doesn't register `vm.togglePromoCode`, `vm.removeItem`, or `vm.applyPromo` as actions. Codegen handles all of it from usage.
+The developer doesn't register `ItemTile`, `PromoCodeField`, `Column`, `InkWell`, or `Text`. The developer doesn't register `controller.togglePromoCode`, `controller.removeItem`, or `controller.applyPromo` as actions. Codegen handles all of it from usage.
 
 ### Boot wiring
 
@@ -373,7 +373,7 @@ Declared in `desk_sdui_generator/build.yaml`:
    - Parses via `package:analyzer`
    - Walks each `@Screen` function body, lowering AST → IR
    - Walks the parameter list, generates `InputBinding`s
-   - Walks `vm.method` references, generates the `methods` map
+   - Walks `controller.method` references, generates the `methods` map
    - Walks `ValueListenable<T>`-typed accesses, generates the `reactive` map
    - Emits `<file>.sdui.g.dart` (always) and `<file>.uib` (always — JSON wire form)
 
@@ -385,7 +385,7 @@ Both builders use `package:analyzer`'s diagnostic API for warnings/errors. AOT-c
 
 - Widget referenced in `@Screen` (e.g., `AppImage(...)`) → analyzer resolves the class, codegen synthesizes a builder binding from its constructor signature, registers under its class name.
 - Top-level pure function called directly (e.g., `extractPlainText(block)`) → auto-registered under its name.
-- ViewModel method referenced as `vm.foo` (tear-off) or `() => vm.foo(...)` (closure) → auto-registered as bound method.
+- ViewModel method referenced as `controller.foo` (tear-off) or `() => controller.foo(...)` (closure) → auto-registered as bound method.
 
 **Escape hatch:** for widgets registered but not statically referenced (e.g., picked dynamically by name from tenant config), an optional `@SduiExpose('name')` annotation. Rare; not the daily path.
 
@@ -454,11 +454,11 @@ Mounting triggers Phase 1 (load); first build runs Phase 2 (resolve). Subsequent
 
 The runtime treats any `ValueListenable<T>` subscription (Flutter SDK type) as reactive. Concrete sources:
 
-- `Signal<T>` from `signals_flutter` (extends `ValueListenable`)
 - `ValueNotifier<T>` (Flutter SDK)
 - Any custom `ChangeNotifier` exposing a value
+- Any third-party type that implements `ValueListenable<T>`
 
-The runtime never imports the `signals` package.
+The runtime imports no state-management package.
 
 ## Risks and mitigations
 
@@ -466,7 +466,7 @@ The runtime never imports the `signals` package.
 |---|---|---|
 | 1 | Codegen complexity for closures-with-args | Whitelist 5 supported shapes (above); analyzer error for the rest with fix-it suggestions; spike one real example before locking |
 | 2 | Const-fold misses a hidden dependency | Const-fold only when every leaf is a true compile-time constant; `Theme.of`-style values are `RefNode`s by construction |
-| 3 | Reactive-scope hoisting too wide | Build-time warning for wide-scoped signals; document refactor patterns |
+| 3 | Reactive-scope hoisting too wide | Build-time warning for wide-scoped listenables; document refactor patterns |
 | 4 | Analyzer plugin breaks on SDK upgrade | Lean lint surface (5–7 rules); pin analyzer version; degraded fallback: errors surface in `build_runner` output |
 | 5 | `.sdui.g.dart` files inflate binary | Acceptable for v1; v2 release-mode strip when remote-only |
 | 6 | Cold-start latency for first remote screen | v1 blocks with `loadingBuilder`; v2 adds prefetch + bundled fallbacks |
@@ -530,7 +530,7 @@ The runtime never imports the `signals` package.
 ## Constraints for implementation
 
 - **build_runner ≥ 2.15.0**, AOT-compiled builders (`--force-aot`), no `dart:mirrors`
-- Runtime depends on Flutter SDK only — no `signals`, no `provider`, no `riverpod`
+- Runtime depends on Flutter SDK only — no state-management or DI package
 - Reactive contract is `ValueListenable<T>` (anything implementing it works)
 - IR is parsed once into typed Dart objects; no JSON walked on the build path
 - Authoring DSL is Dart-subset; analyzer plugin enforces the subset in IDE
