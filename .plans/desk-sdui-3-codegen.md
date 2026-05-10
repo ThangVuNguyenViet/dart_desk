@@ -2,9 +2,9 @@
 
 > **For agentic workers:** This plan implements `desk_sdui_generator` (build_runner codegen). Phases 1 (foundation) and 2 (runtime) must be complete and committed first. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Two `build_runner` builders that lower `@Screen`-annotated functions into IR, emit `<file>.sdui.g.dart` + `<file>.uib`, and discover all `@Screen`s in a package to emit `desk_sdui_setup.sdui.g.dart` with `_registerAll()`. Plus an analyzer plugin enforcing the authored-DSL subset.
+**Goal:** Two `build_runner` builders that compile `@Screen`-annotated functions to a node tree and emit `<file>.sdui.g.dart` + `<file>.uib`, and discover all `@Screen`s in a package to emit `desk_sdui_setup.sdui.g.dart` with `_registerAll()`. Plus an analyzer plugin enforcing the authored-DSL subset.
 
-**Architecture:** `screenBuilder` runs per-`.dart`, walking each `@Screen` body via `package:analyzer` AST visitors → IR. Three lowering passes follow: const-fold, reactive-scope hoist, key inference. Emits Dart IR literal + JSON wire form. `registryBuilder` runs once per package, glob-collects all `@Screen`s, emits the `_registerAll()` part file. Analyzer plugin shares the lowering rules to surface IDE errors before build.
+**Architecture:** `screenBuilder` runs per-`.dart`, walking each `@Screen` body via `package:analyzer` AST visitors → node tree. Three lowering passes follow: const-fold, reactive-scope hoist, key inference. Emits a Dart node-tree literal + JSON wire form. `registryBuilder` runs once per package, glob-collects all `@Screen`s, emits the `_registerAll()` part file. Analyzer plugin shares the lowering rules to surface IDE errors before build.
 
 **Tech Stack:** `analyzer ^7.0.0`, `build ^2.4.0`, `source_gen ^2.0.0`, `build_runner ^2.15.0` with `--force-aot`, no `dart:mirrors`. `code_builder` ^4.10.0 for emitting Dart literals.
 
@@ -12,7 +12,7 @@
 
 ---
 
-## Phase 1+2 IR adapter notes (READ FIRST)
+## Phase 1+2 node-class adapter notes (READ FIRST)
 
 Code samples in this plan that conflict with actual constructor signatures are stale — use these instead, confirmed by reading `packages/desk_sdui_annotation/lib/src/ir/ir_node.dart` and `packages/desk_sdui/lib/src/runtime.dart`.
 
@@ -43,7 +43,7 @@ Code samples in this plan that conflict with actual constructor signatures are s
 | `MethodBinding({name, invoke})` | `invoke: Function` |
 | `ReactiveBinding({path, read})` | `read: ValueListenable<Object?> Function(Map<String, Object?>)` |
 
-**Reactive scope hoisting (Task 7):** instead of inserting a `ReactiveScopeNode`, the pass walks the tree and **mutates** (or rebuilds, since IR is immutable — emit a copy) the LCA `WidgetNode` to set its `listenablePaths` field. For a group of reactive RefNodes whose joined paths are e.g. `['controller.count', 'controller.flag']`, the LCA WidgetNode becomes `WidgetNode(..., listenablePaths: {'controller.count', 'controller.flag'})`. If the LCA is not a `WidgetNode` (e.g., a `ListNode`), promote it: wrap its parent so the reactive scope lands on a WidgetNode boundary, OR raise a build-time warning and let the reactive subscription happen at the nearest enclosing WidgetNode.
+**Reactive scope hoisting (Task 7):** instead of inserting a `ReactiveScopeNode`, the pass walks the tree and **mutates** (or rebuilds, since the node tree is immutable — emit a copy) the LCA `WidgetNode` to set its `listenablePaths` field. For a group of reactive RefNodes whose joined paths are e.g. `['controller.count', 'controller.flag']`, the LCA WidgetNode becomes `WidgetNode(..., listenablePaths: {'controller.count', 'controller.flag'})`. If the LCA is not a `WidgetNode` (e.g., a `ListNode`), promote it: wrap its parent so the reactive scope lands on a WidgetNode boundary, OR raise a build-time warning and let the reactive subscription happen at the nearest enclosing WidgetNode.
 
 The simplest correct rule: walk up from each `RefNode(reactive: true)` to the nearest enclosing `WidgetNode` ancestor; record the path in that WidgetNode's `listenablePaths`. This is a coarser scope than full LCA but always lands on a node the runtime knows how to wrap. v1 uses this rule; LCA optimization is deferred.
 
@@ -205,9 +205,9 @@ git commit -m "chore(desk_sdui_generator): wire deps + build.yaml"
 
 ---
 
-## Task 2: AST → IR — expression lowerer
+## Task 2: AST → node tree — expression lowerer
 
-Lower analyzer `Expression` nodes (binary ops, prefix ops, property access, etc) to `ExpressionNode` IR nodes.
+Lower analyzer `Expression` nodes (binary ops, prefix ops, property access, etc) to `ExpressionNode` node types.
 
 **Files:**
 - Create: `packages/desk_sdui_generator/lib/src/screen_lowering/expression_lowerer.dart`
@@ -309,7 +309,7 @@ void main() {
 
 - [ ] **Step 3: Implement `lowerExpression`**
 
-Use a `switch` on the analyzer node type. Map every supported AST shape to an IR constructor; for unsupported, throw a `LoweringError` with the source range.
+Use a `switch` on the analyzer node type. Map every supported AST shape to a node constructor; for unsupported, throw a `LoweringError` with the source range.
 
 ```dart
 // lib/src/screen_lowering/expression_lowerer.dart
@@ -451,9 +451,9 @@ git commit -m "feat(desk_sdui_generator): expression lowerer (analyzer Expressio
 
 ---
 
-## Task 3: AST → IR — widget lowerer
+## Task 3: AST → node tree — widget lowerer
 
-Lower analyzer `InstanceCreationExpression` nodes (constructor calls like `Column(children: [...])`) to `WidgetNode` IR. Recognize a curated set of const constructors (`EdgeInsets.all(8)`, `Color(0xFF...)`, `BorderRadius.circular(N)`, `TextStyle(...)`, `ValueKey(...)`, `Alignment.center`) as `LiteralNode(<const>)` baked at build time.
+Lower analyzer `InstanceCreationExpression` nodes (constructor calls like `Column(children: [...])`) to `WidgetNode`. Recognize a curated set of const constructors (`EdgeInsets.all(8)`, `Color(0xFF...)`, `BorderRadius.circular(N)`, `TextStyle(...)`, `ValueKey(...)`, `Alignment.center`) as `LiteralNode(<const>)` baked at build time.
 
 **Files:**
 - Create: `packages/desk_sdui_generator/lib/src/screen_lowering/widget_lowerer.dart`
@@ -824,7 +824,7 @@ git commit -m "feat(desk_sdui_generator): closure lowerer (5-shape whitelist)"
 
 ---
 
-## Task 5: AST → IR — top-level `astToIr`
+## Task 5: AST → node tree — top-level `astToIr`
 
 Composes expression + widget + closure lowerers into one entry point that walks a `@Screen` function body.
 
@@ -922,7 +922,7 @@ git commit -m "feat(desk_sdui_generator): ast_to_ir top-level — composes lower
 
 ## Task 6: Const-fold pass
 
-After lowering, walk the IR. Replace any subtree where every leaf is `LiteralNode`/`ConstNode` (no `RefNode`/`EventNode`) with a `ConstNode(constructedWidget)`.
+After lowering, walk the node tree. Replace any subtree where every leaf is `LiteralNode`/`ConstNode` (no `RefNode`/`EventNode`) with a `ConstNode(constructedWidget)`.
 
 **Files:**
 - Create: `packages/desk_sdui_generator/lib/src/screen_lowering/const_fold_pass.dart`
@@ -974,7 +974,7 @@ bool _isPureLiteral(IrNode node) {
 }
 ```
 
-(The materializer maps `WidgetNode('Text', {data: 'hi'})` to a `const Text('hi')` literal — emitted as Dart source by `ir_emitter_dart`. For the IR pass we keep `ConstNode(value: <pseudo>)` and let the emitter recognize it.)
+(The materializer maps `WidgetNode('Text', {data: 'hi'})` to a `const Text('hi')` literal — emitted as Dart source by `ir_emitter_dart`. For the const-fold pass we keep `ConstNode(value: <pseudo>)` and let the emitter recognize it.)
 
 - [ ] **Step 3: Run — expect PASS**
 
@@ -991,7 +991,7 @@ git commit -m "feat(desk_sdui_generator): const-fold pass"
 
 For every `RefNode(reactive: true)`, find the **nearest enclosing `WidgetNode` ancestor** and add the joined ref path (e.g., `'controller.count'`) to its `listenablePaths: Set<String>`. (Per the adapter notes: v1 uses nearest-WidgetNode-ancestor, not full LCA, since `WidgetNode` is the only node type that carries the field and the runtime only wraps WidgetNode in `ListenableBuilder`.)
 
-The pass is rewriting — IR nodes are immutable, so emit a copy of the WidgetNode with the augmented `listenablePaths`.
+The pass is rewriting — the node tree is immutable, so emit a copy of the WidgetNode with the augmented `listenablePaths`.
 
 **Files:**
 - Create: `packages/desk_sdui_generator/lib/src/screen_lowering/reactive_hoist_pass.dart`
@@ -1086,9 +1086,9 @@ git commit -m "feat(desk_sdui_generator): key inference pass for ForNode bodies"
 
 ---
 
-## Task 9: IR → Dart literal emitter
+## Task 9: Node tree → Dart literal emitter
 
-Generate the `.sdui.g.dart` part file. Emits a `ScreenBinding` with the IR tree as a constant Dart literal, the `inputs`/`methods`/`reactives` lists synthesized from `ScreenLowerResult`.
+Generate the `.sdui.g.dart` part file. Emits a `ScreenBinding` with the node tree as a constant Dart literal, the `inputs`/`methods`/`reactives` lists synthesized from `ScreenLowerResult`.
 
 **Files:**
 - Create: `packages/desk_sdui_generator/lib/src/screen_lowering/ir_emitter_dart.dart`
@@ -1116,7 +1116,7 @@ test('emits ScreenBinding with const IR for trivial @Screen', () {
 
 - [ ] **Step 2: Implement using `code_builder`**
 
-Walks the IR; for each node type emit a corresponding `const Foo(...)` Dart expression. `ConstNode` emits its inner value as a `const ...` Dart literal directly.
+Walks the node tree; for each node type emit a corresponding `const Foo(...)` Dart expression. `ConstNode` emits its inner value as a `const ...` Dart literal directly.
 
 - [ ] **Step 3: Run — expect PASS**
 
@@ -1129,7 +1129,7 @@ git commit -m "feat(desk_sdui_generator): IR → Dart literal emitter"
 
 ---
 
-## Task 10: IR → JSON emitter (`.uib`)
+## Task 10: `.sdui.json` emitter (`.uib`)
 
 Reuses Phase 1's `JsonIrCodec`. Drops `ConstNode` widgets back to their constituent `WidgetNode` form before encoding (so wire form is portable; `ConstNode` is a Dart-only optimization).
 
