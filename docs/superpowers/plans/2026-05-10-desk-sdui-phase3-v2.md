@@ -4,7 +4,12 @@
 
 **Goal:** Replace hand-written `builtin_widgets.dart` with codegen-driven auto-registration. Each `@Screen` codegens its own dependency-registration callback; the registry is the union across all screens.
 
-**Architecture:** Codegen walks each `@Screen` AST, classifies every external reference (widget ctor, constant, method, subscript, value-type ctor), and emits a `register<Screen>Dependencies(Runtime)` function alongside the existing `<Screen>Binding`. The setup generator unions all per-screen registrations.
+**Architecture (dart_mappable-shaped):**
+
+- For each `@Screen` source file, codegen produces two outputs alongside it: `<file>.sdui.g.dart` (binding + per-screen `register<Screen>Types(rt)` function) and `<file>.sdui.json` (wire payload). This is analogous to dart_mappable's `.mapper.dart` per source file.
+- The setup generator writes a single `desk_sdui_setup.g.dart` that imports every per-screen `register<Screen>Types` and calls them all from `registerAllScreens(rt)`. This is analogous to dart_mappable's `.init.dart`.
+- **Key invariant:** registrations are generated from the **type's analyzer element** (full constructor signature, full method signature), NOT from any single call site. So if chef and cart both use `Column`, both files emit the same `rt.registerWidget('Column', ...)` closure — bytewise identical. The setup calls both; last-writer-wins is safe because the writers are interchangeable. No merge logic needed; no duplicate-registration bug.
+- Generation from the type definition means each registration covers the type's full surface (e.g. `Column`'s ~9 ctor params), so any payload using any subset works. Slightly larger code per registration; correctness by construction.
 
 **Spec:** `docs/superpowers/specs/2026-05-10-desk-sdui-phase3-v2-design.md`
 
@@ -386,58 +391,59 @@ git commit -m "feat(desk_sdui): resolver dispatches MethodCallNode and ValueCtor
 
 ---
 
-## Task 4: Symbol collector — classify external refs in @Screen AST
+## Task 4: Type collector — collect deduped TYPES referenced across all @Screens
 
 **Files:**
-- Create: `packages/desk_sdui_generator/lib/src/symbol_collector.dart`
-- Test: `packages/desk_sdui_generator/test/symbol_collector_test.dart`
+- Create: `packages/desk_sdui_generator/lib/src/type_collector.dart`
+- Test: `packages/desk_sdui_generator/test/type_collector_test.dart`
 
-The collector takes a resolved `FunctionDeclaration` (the `@Screen` body) and returns a typed list of `CollectedSymbol`s.
+The collector walks one or more `@Screen` AST bodies and outputs **deduped sets of element references** (not per-call-site usages). Multiple screens using the same widget contribute one entry total.
 
-- [ ] **Step 1: Define the data model first**
+**Rationale for type-keyed (vs usage-keyed) collection:** if chef uses `Column(children:, crossAxisAlignment:)` and cart uses `Column(children:, mainAxisAlignment:)`, a usage-keyed approach would emit two `registerWidget('Column', ...)` calls — the second overwrites the first and silently drops `crossAxisAlignment` from chef's payload at runtime. Type-keyed collection emits ONE Column registration generated from `Column`'s ctor (covering all params), so any payload using any subset works.
+
+- [ ] **Step 1: Define the data model**
 
 ```dart
-// symbol_collector.dart
-sealed class CollectedSymbol {
-  const CollectedSymbol(this.qualifiedName);
-  final String qualifiedName;
+// type_collector.dart
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
+
+class CollectedTypes {
+  CollectedTypes({
+    Set<ClassElement>? widgets,
+    Set<ClassElement>? valueTypes,
+    Set<Element>? constants,        // FieldElement or PropertyAccessorElement
+    Set<MethodElement>? methods,
+    Set<DartType>? subscriptables,
+    Set<FunctionElement>? functions,
+  })  : widgets = widgets ?? {},
+        valueTypes = valueTypes ?? {},
+        constants = constants ?? {},
+        methods = methods ?? {},
+        subscriptables = subscriptables ?? {},
+        functions = functions ?? {};
+
+  final Set<ClassElement> widgets;       // {Column, Padding, Text, ...}
+  final Set<ClassElement> valueTypes;    // {EdgeInsets, BoxDecoration, ...}
+  final Set<Element> constants;          // {Icons.menu, Colors.white, ...} — element identity dedupes
+  final Set<MethodElement> methods;      // {String.toUpperCase, num.toStringAsFixed, ...}
+  final Set<DartType> subscriptables;    // {MaterialColor, Map<K,V>, List<E>, ...}
+  final Set<FunctionElement> functions;  // {min, max, ...} — top-level fns
+
+  void unionWith(CollectedTypes other) {
+    widgets.addAll(other.widgets);
+    valueTypes.addAll(other.valueTypes);
+    constants.addAll(other.constants);
+    methods.addAll(other.methods);
+    subscriptables.addAll(other.subscriptables);
+    functions.addAll(other.functions);
+  }
 }
 
-class CollectedWidget extends CollectedSymbol {
-  const CollectedWidget(super.qualifiedName, this.constructorElement);
-  final ConstructorElement constructorElement;
-}
-
-class CollectedConstant extends CollectedSymbol {
-  const CollectedConstant(super.qualifiedName, this.element);
-  final Element element; // FieldElement or PropertyAccessorElement
-}
-
-class CollectedMethod extends CollectedSymbol {
-  const CollectedMethod(super.qualifiedName, this.methodElement, this.receiverType);
-  final MethodElement methodElement;
-  final DartType receiverType;
-}
-
-class CollectedSubscript extends CollectedSymbol {
-  const CollectedSubscript(super.qualifiedName, this.receiverType);
-  final DartType receiverType;
-}
-
-class CollectedValueCtor extends CollectedSymbol {
-  const CollectedValueCtor(super.qualifiedName, this.constructorElement);
-  final ConstructorElement constructorElement;
-}
-
-class CollectedFunction extends CollectedSymbol {
-  const CollectedFunction(super.qualifiedName, this.functionElement);
-  final FunctionElement functionElement;
-}
-
-List<CollectedSymbol> collectSymbols(FunctionDeclaration screen) {
-  final visitor = _SymbolVisitor();
+CollectedTypes collectTypes(FunctionDeclaration screen) {
+  final visitor = _TypeVisitor();
   screen.accept(visitor);
-  return visitor.symbols.toList();
+  return visitor.collected;
 }
 ```
 
@@ -536,11 +542,19 @@ git commit -m "feat(desk_sdui_generator): symbol collector classifies external r
 
 ---
 
-## Task 5: Registration emitter — turn collected symbols into Dart code
+## Task 5: Registration emitter — generate from type definitions
 
 **Files:**
 - Create: `packages/desk_sdui_generator/lib/src/registration_emitter.dart`
 - Test: `packages/desk_sdui_generator/test/registration_emitter_test.dart`
+
+**CRITICAL invariant:** registrations are generated from the **type's analyzer element** (its full constructor signature, full method signature), NOT from the specific call shape at the usage site. This means:
+
+- `Column` registration covers ALL named/positional params Column's ctor accepts (~9 params), with each param's default value filled in from `parameter.defaultValueCode` when available, and nullable types where the parameter is optional with no default.
+- `String.toUpperCase` registration covers the full method signature (zero args, returns String).
+- The same `Column` referenced from chef.dart and cart.dart produces bytewise-identical registration closures, so multiple registrations are idempotent (last-writer-wins is safe because writers are interchangeable).
+
+Use `parameter.defaultValueCode` from the analyzer to emit defaults. For required params, no default. For positional params, generate `args[0]`-style indexing. For named params, generate `args['name']`-style lookup with default.
 
 - [ ] **Step 1: Failing test**
 
@@ -648,10 +662,12 @@ git commit -m "feat(desk_sdui_generator): emit per-screen registerXDependencies 
 
 ---
 
-## Task 7: Union per-screen registrations in registry generator
+## Task 7: Setup file unions per-screen registrations (dart_mappable .init.dart pattern)
 
 **Files:**
 - Modify: `packages/desk_sdui_generator/lib/src/registry/registry_generator.dart`
+
+This is the equivalent of dart_mappable's `.init.dart` builder: scan the package for `@Screen`-annotated source files, import each one's `<screen>.sdui.g.dart`, and emit a single `registerAllScreens(rt)` that calls every per-screen `register<Screen>Types(rt)`. Idempotent registration (Task 5 invariant) means overlap is safe.
 
 - [ ] **Step 1: Failing test — `registerAllScreens` calls every per-screen register fn**
 
