@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-memory:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/cirruslabs/flutter:3.41.6
@@ -25,11 +25,8 @@ jobs:
         run: dart run build_runner build
         working-directory: examples/data_models
 
-      - name: build web
-        run: |
-          flutter build web --release \
-            --dart-define SERVER_URL=https://api.dartdesk.dev \
-            --dart-define API_KEY=${{ secrets.DARTDESK_DEMO_API_KEY }}
+      - name: build web (in-memory)
+        run: flutter build web --release --target lib/main_memory.dart
         working-directory: examples/desk_app
 
       - name: install dart_desk_cli
@@ -46,4 +43,48 @@ jobs:
         working-directory: examples/desk_app
 
       - name: print live url
-        run: echo "Deployed to https://dartdesk-demo.app.dartdesk.dev"
+        run: echo "Deployed in-memory demo to https://dartdesk-demo.app.dartdesk.dev"
+
+  deploy-cloud:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/cirruslabs/flutter:3.41.6
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: flutter pub get
+        run: flutter --suppress-analytics pub get
+        working-directory: packages/dart_desk
+
+      - name: codegen (data_models)
+        run: dart run build_runner build
+        working-directory: examples/data_models
+
+      - name: build web (cloud)
+        run: |
+          flutter build web --release \
+            --target lib/main_cloud.dart \
+            --dart-define SERVER_URL=https://api.dartdesk.dev \
+            --dart-define API_KEY=${{ secrets.DARTDESK_DEMO_API_KEY }}
+        working-directory: examples/desk_app
+
+      - name: swap dart_desk.yaml to cloud variant
+        run: cp dart_desk.cloud.yaml dart_desk.yaml
+        working-directory: examples/desk_app
+
+      - name: install dart_desk_cli
+        run: |
+          dart pub global activate --source git https://github.com/ThangVuNguyenViet/dart_desk_cli --git-ref main
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+
+      - name: deploy
+        run: |
+          dartdesk deploy \
+            --skip-build \
+            --token ${{ secrets.DARTDESK_DEPLOY_TOKEN }} \
+            --commit ${{ github.sha }}
+        working-directory: examples/desk_app
+
+      - name: print live url
+        run: echo "Deployed cloud demo to https://dartdesk-demo-cloud.app.dartdesk.dev"
