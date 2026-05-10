@@ -1,10 +1,10 @@
 # desk_sdui Phase 2 — Runtime Implementation Plan
 
-> **For agentic workers:** This plan implements the `desk_sdui` (Flutter runtime) package. Phase 1 (foundation: annotation + IR + JSON codec) must be complete and committed first. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** This plan implements the `desk_sdui` (Flutter runtime) package. Phase 1 (foundation: annotation node types + JSON codec) must be complete and committed first. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement the Flutter runtime that loads an `IrTree`, resolves it against an input map, and renders a Widget tree. Reactive subtrees rebuild via `ListenableBuilder` against `ValueListenable<T>` sources.
 
-**Architecture:** Three runtime phases — LOAD (fetch + decode bytes → typed `IrTree`, cached by contentHash), RESOLVE (walk IR with input map → Widget tree), RENDER (Flutter reconciles, no resolver code at frame rate). The runtime depends on Flutter SDK + `desk_sdui_annotation` only — no state-management package.
+**Architecture:** Three runtime phases — LOAD (fetch + decode bytes → typed `IrTree`, cached by contentHash), RESOLVE (walk the node tree with input map → Widget tree), RENDER (Flutter reconciles, no resolver code at frame rate). The runtime depends on Flutter SDK + `desk_sdui_annotation` only — no state-management package.
 
 **Tech Stack:** Flutter SDK, `desk_sdui_annotation` (path dep), `crypto` (for SHA-1 contentHash), `http` (for `RemoteIrFetcher`), `flutter_test`.
 
@@ -12,9 +12,9 @@
 
 ---
 
-## Phase 1 IR adapter notes (READ FIRST)
+## Phase 1 node-class adapter notes (READ FIRST)
 
-The actual Phase 1 IR shape diverges from earlier-drafted code samples in this plan. **Use the actual constructor signatures below; the code samples elsewhere in this plan that conflict are stale.** Confirm by reading `packages/desk_sdui_annotation/lib/src/ir/ir_node.dart` before each task.
+The actual Phase 1 node-class shapes diverge from earlier-drafted code samples in this plan. **Use the actual constructor signatures below; the code samples elsewhere in this plan that conflict are stale.** Confirm by reading `packages/desk_sdui_annotation/lib/src/ir/ir_node.dart` before each task.
 
 | Node | Actual constructor | Notes |
 |---|---|---|
@@ -128,7 +128,7 @@ git commit -m "chore(desk_sdui): wire runtime dependencies"
 - Create: `packages/desk_sdui/lib/src/runtime.dart`
 - Test: `packages/desk_sdui/test/runtime_test.dart`
 
-These types describe the static contract a generated `.sdui.g.dart` file emits. `InputBinding` describes one parameter of a `@Screen` function (e.g., `data: CartData`); `ScreenBinding` ties everything together (name, IR, inputs, methods, reactive sources).
+These types describe the static contract a generated `.sdui.g.dart` file emits. `InputBinding` describes one parameter of a `@Screen` function (e.g., `data: CartData`); `ScreenBinding` ties everything together (name, node tree, inputs, methods, reactive sources).
 
 - [ ] **Step 1: Write the test for `InputBinding`**
 
@@ -302,7 +302,7 @@ git commit -m "feat(desk_sdui): runtime registries + ScreenBinding"
 
 ## Task 3: Implement `RefResolver` (path walker)
 
-A `RefNode` carries a `path: List<String>` like `['data', 'items', '0', 'title']`. The resolver walks the input map and returns the leaf value. Pre-split paths in IR mean per-build is just `Map.[]` / `List.[]`.
+A `RefNode` carries a `path: List<String>` like `['data', 'items', '0', 'title']`. The resolver walks the input map and returns the leaf value. Pre-split paths in the node tree mean per-build is just `Map.[]` / `List.[]`.
 
 **Files:**
 - Create: `packages/desk_sdui/lib/src/ref_resolver.dart`
@@ -662,7 +662,7 @@ git commit -m "feat(desk_sdui): expression evaluator with sealed switch"
 
 ---
 
-## Task 5: Implement `Resolver` (IR walker → Widget)
+## Task 5: Implement `Resolver` (node-tree walker → Widget)
 
 The resolve pass walks an `IrTree` against the input map and produces a `Widget`. It dispatches on `IrNode` subtype.
 
@@ -1415,7 +1415,7 @@ git commit -m "feat(desk_sdui): built-in widget registry — layout primitives"
 
 ---
 
-## Task 8: IR fetchers
+## Task 8: `.sdui.json` fetchers
 
 Three sources, all decode through Phase 1's `JsonIrCodec`.
 
