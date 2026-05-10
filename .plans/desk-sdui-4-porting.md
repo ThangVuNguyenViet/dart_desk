@@ -498,7 +498,7 @@ git add packages/desk_sdui_demo/lib/screens/home_basic.dart \
 git commit -m "feat(desk_sdui_demo): @Screen port + parity test — home_basic"
 ```
 
-When porting reveals a missing IR construct or a missing built-in widget — *stop, file the gap as a Phase 1/2/3 fix-up commit, fix it there, and resume.* The whole point of porting is to surface these gaps.
+When porting reveals a missing node-tree construct or a missing built-in widget — *stop, file the gap as a Phase 1/2/3 fix-up commit, fix it there, and resume.* The whole point of porting is to surface these gaps.
 
 ---
 
@@ -554,7 +554,7 @@ Validate spec criterion: "resolve cost <0.5ms per build for largest screen."
 **Files:**
 - Create: `packages/desk_sdui_demo/test/perf/resolve_benchmark_test.dart`
 
-- [ ] **Step 1: Pick the largest of the 6 screens** (likely `home_scroll` or `chef`). Identify by IR node count after lowering.
+- [ ] **Step 1: Pick the largest of the 6 screens** (likely `home_scroll` or `chef`). Identify by node count after lowering.
 
 - [ ] **Step 2: Write benchmark**
 
@@ -652,7 +652,7 @@ dev_dependencies:
 … ValueListenable example with a counter …
 
 ## How it works
-… 3-phase diagram, IR shape, build vs frame rate …
+… 3-phase diagram, wire format, build vs frame rate …
 
 ## Subset boundaries
 … what works, what doesn't, why …
