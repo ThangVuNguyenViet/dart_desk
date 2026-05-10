@@ -7,20 +7,20 @@
 ## Glossary
 
 - **SDUI** — server-driven UI. Layout *description* ships from a server; rendering happens on the device.
-- **IR** — intermediate representation. The typed Dart tree the codegen lowers `@Screen` source into; serialized as JSON (or later MessagePack) for the wire.
-- **`@Screen`** — the only annotation; marks a function whose body is lowered to IR.
-- **Lowering** — transforming the analyzer AST of a `@Screen` body into IR nodes.
-- **Reactive scope** — the smallest IR subtree that contains all reads of a given `ValueListenable`; rebuilt independently when that listenable changes.
+- **IR** — intermediate representation. The typed Dart node tree the codegen compiles `@Screen` source into; serialized as JSON (or later MessagePack) for the wire as a `.sdui.json` payload.
+- **`@Screen`** — the only annotation; marks a function whose body is lowered to a `.sdui.json` payload.
+- **Lowering** — transforming the analyzer AST of a `@Screen` body into the node tree.
+- **Reactive scope** — the smallest node-tree subtree that contains all reads of a given `ValueListenable`; rebuilt independently when that listenable changes.
 
 ## Goal
 
-Make it possible to author Flutter screens that ship as data, so the app can render different layouts per tenant — and swap them via a backend without rebuilding or republishing the binary. Authors write idiomatic Flutter (a Dart-subset), a build-time codegen lowers `@Screen` functions into a small IR, and the runtime renders that IR by composing native registered widgets and ViewModel methods.
+Make it possible to author Flutter screens that ship as data, so the app can render different layouts per tenant — and swap them via a backend without rebuilding or republishing the binary. Authors write idiomatic Flutter (a Dart-subset), a build-time codegen lowers `@Screen` functions into a small `.sdui.json` payload, and the runtime renders that widget payload by composing native registered widgets and ViewModel methods.
 
-Native widgets keep their full power (state, async, plugins, animations, gestures, platform channels). The IR only describes layout and binding — never code, never new behaviors.
+Native widgets keep their full power (state, async, plugins, animations, gestures, platform channels). The widget payload only describes layout and binding — never code, never new behaviors.
 
 ## Non-goals
 
-- Not a hot-code-push system. The IR cannot introduce a new verb at runtime.
+- Not a hot-code-push system. The widget payload cannot introduce a new verb at runtime.
 - Not a general Dart runtime. No `await`, no `setState`, no class definitions, no closures over runtime state.
 - Not a visual/no-code editor (that's a separate spec for the dart_desk Studio Layouts section).
 - Not animations as a special concern — animated widgets are just registered widgets.
@@ -33,11 +33,11 @@ Native widgets keep their full power (state, async, plugins, animations, gesture
 |---|---|---|
 | **flutter_eval** | Interpreted Dart subset, ~74 opcodes | Per-frame interpreter cost; Apple-policy grey area; introduces new verbs |
 | **Shorebird** | AOT-compiled native code patches | Apple-policy grey area; whole-app patches; paid SaaS |
-| **RFW (Remote Flutter Widgets)** | Data-only IR, official flutter.dev | No expressions, no codegen, hand-authored binary blobs |
+| **RFW (Remote Flutter Widgets)** | Data-only widget payload, official flutter.dev | No expressions, no codegen, hand-authored binary blobs |
 | **Stac** | JSON-driven, ~90 widgets, single-vendor | Per-build regex variable resolution; JSON walked on hot path |
 | **riverpod_generator** | Annotation-driven codegen for DI | Different problem (DI), but the **architectural pattern is directly transferable** — see Codegen section |
 
-This package takes RFW's data-only render model + Stac's pre-registered-widget pattern + a Dart-authored frontend + Riverpod's codegen approach. Architectural guarantee: by construction, the runtime cannot introduce a new verb — every widget, fn, and ViewModel method is statically registered in the reviewed binary.
+This package takes RFW's data-only render model + Stac's pre-registered-widget pattern + a Dart-authored frontend + Riverpod's codegen approach. Architectural guarantee: by construction, the widget payload cannot introduce a new verb — every widget, fn, and ViewModel method is statically registered in the reviewed binary.
 
 ## Success criterion (v1)
 
@@ -98,11 +98,11 @@ dart_desk_workspace/
 ```
 PHASE 1: LOAD  (once per blob, cacheable)
   fetch bytes from RemoteIrFetcher / AssetBundleIrFetcher / in-binary literal
-  decode bytes → typed IR tree via JsonIrCodec
+  decode bytes → typed node tree via JsonIrCodec
   cache by name + version hash
 
 PHASE 2: RESOLVE  (per build)
-  walk IR depth-first
+  walk the node tree depth-first
   resolve $refs against input map (data, controller, theme, ...)
   resolve $events to bound methods
   evaluate expression nodes
@@ -115,44 +115,44 @@ PHASE 3: RENDER  (per frame, Flutter's job)
 
 Cost model:
 
-- LOAD: ~0.5ms for a 5KB JSON blob, paid once per screen per session.
+- LOAD: ~0.5ms for a 5KB `.sdui.json` payload, paid once per screen per session.
 - RESOLVE: ~50-150µs for a typical 150-node screen. Reactive subtrees rebuild independently — a listenable change on a 10-node subtree resolves only those 10.
 - RENDER: identical to a hand-written Flutter screen. Resolver does not run at frame rate.
 
 **Build rate vs. frame rate.** The resolver runs during Flutter `build()` calls, not during layout/paint. A static screen at 60fps with no state changes runs zero resolver code per frame; Flutter reuses cached widgets. The resolver runs only when state changes trigger a rebuild — typically 0-10 times per second in normal operation, not 60.
 
-**Overhead vs. hand-written Flutter.** For the same widget composition, our resolver adds ~50-100ns per `WidgetNode` (registry lookup + builder invocation) compared to direct Dart construction. For a 150-node IR that's ~10-30µs of overhead per build. Well under the 16ms frame budget; invisible in normal operation.
+**Overhead vs. hand-written Flutter.** For the same widget composition, our resolver adds ~50-100ns per `WidgetNode` (registry lookup + builder invocation) compared to direct Dart construction. For a 150-node tree that's ~10-30µs of overhead per build. Well under the 16ms frame budget; invisible in normal operation.
 
-**Why this differs from flutter_eval.** flutter_eval's interpreter runs continuously — including inside animation callbacks invoked at 60Hz. Per-op interpreter cost compounds with per-frame work, eating frame budget. Our IR runs once per build then hands a widget tree to Flutter; animations tick natively in registered animated widgets without IR involvement.
+**Why this differs from flutter_eval.** flutter_eval's interpreter runs continuously — including inside animation callbacks invoked at 60Hz. Per-op interpreter cost compounds with per-frame work, eating frame budget. Our node tree resolves once per build then hands a widget tree to Flutter; animations tick natively in registered animated widgets without node-tree involvement.
 
 ### Turing-completeness boundary (load-bearing)
 
-The IR is deliberately *not* Turing-complete. The system as a whole is — via registered Dart functions called from the IR. This split is intentional and load-bearing for performance, Apple-policy safety, and debuggability.
+The widget payload is deliberately *not* Turing-complete. The system as a whole is — via registered Dart functions called from the node tree. This split is intentional and load-bearing for performance, Apple-policy safety, and debuggability.
 
 **The cost rule:**
 
 > A build's total work must be `O(IR-tree-size + data-shape-size)`.
 
-Every existing IR construct preserves this:
+Every existing construct in the node tree preserves this:
 
 - `WidgetNode`/`RefNode`/`EventNode` — one op each, visited once
 - `ConditionalNode` — single branch evaluated, not both
 - `ForNode` over a list — N iterations where N = collection size (data-bounded)
 - `CompareOp`/`ArithOp`/`LengthOf` — one op each
 
-The **data shape** determines cost, not the **code shape**. The IR cannot make itself work harder than its own size plus the data it walks.
+The **data shape** determines cost, not the **code shape**. The node tree cannot make itself work harder than its own size plus the data it walks.
 
 **What the rule excludes:**
 
-- `WhileNode` — unbounded iteration breaks the bound (one IR node, runtime-state-driven op count)
-- Recursion in IR — call depth is runtime-state-driven, not bounded by IR size
+- `WhileNode` — unbounded iteration breaks the bound (one node, runtime-state-driven op count)
+- Recursion in the node tree — call depth is runtime-state-driven, not bounded by node-tree size
 - Mutable locals — destroy const-folding, reactive-scope hoisting, and most future memoization opportunities
 
-These would each add ~10-50× overhead for any computation that flows through them, because they let the IR run unbounded work in interpreter time. Anything you'd want them for is better expressed as a registered Dart function called from the IR — same expressiveness, native Dart speed, smaller debug surface, smaller Apple-policy surface.
+These would each add ~10-50× overhead for any computation that flows through them, because they let the node tree run unbounded work in interpreter time. Anything you'd want them for is better expressed as a registered Dart function called from the node tree — same expressiveness, native Dart speed, smaller debug surface, smaller Apple-policy surface.
 
 **Where Turing-completeness lives:**
 
-The system is fully Turing-complete because registered Dart functions can compute anything at native speed. The IR pays one cheap call per invocation; the function itself runs as normal Dart. Computation lives where it's free (Dart side); the IR only handles composition + binding.
+The system is fully Turing-complete because registered Dart functions can compute anything at native speed. The node tree pays one cheap call per invocation; the function itself runs as normal Dart. Computation lives where it's free (Dart side); the node tree only handles composition + binding.
 
 This split is not a workaround for platform limits — it's the architecture that makes the runtime fast and safe. Re-litigating it loses both properties.
 
@@ -160,16 +160,16 @@ This split is not a workaround for platform limits — it's the architecture tha
 
 These rules are mandatory in the implementation; violating them brings back Stac's per-build cost.
 
-1. **Never walk JSON or strings on the build path.** IR is loaded once, parsed once, cached as typed Dart objects.
+1. **Never walk JSON or strings on the build path.** The `.sdui.json` payload is loaded once, parsed once, cached as typed Dart objects.
 2. **Expressions are AST nodes assembled by codegen, never strings parsed at runtime.** No regex on the build path.
 3. **`$ref` paths are pre-split at parse time** into segment lists; per-build is just `Map.[]` walks.
-4. **Reactive `$ref`s subscribe via `ListenableBuilder`** scoped to the smallest enclosing IR subtree, not the whole screen.
-5. **Animations don't traverse the resolver.** Animated widgets (e.g., `AnimatedContainer`, `Hero`, `flutter_animate`, `rive`, `lottie`) are registered as leaves and tick internally with no IR awareness.
+4. **Reactive `$ref`s subscribe via `ListenableBuilder`** scoped to the smallest enclosing node-tree subtree, not the whole screen.
+5. **Animations don't traverse the resolver.** Animated widgets (e.g., `AnimatedContainer`, `Hero`, `flutter_animate`, `rive`, `lottie`) are registered as leaves and tick internally without going through the node tree.
 6. **Const-fold subtrees with no refs/events** at build time so they emit as `const` Dart literals (canonicalized; zero allocation per rebuild).
 
-## IR shape
+## Wire format
 
-Closed set of typed Dart node classes. Adding a new node type requires explicit design — no ad-hoc growth.
+Closed set of typed Dart node classes that define the wire format. Adding a new node type requires explicit design — no ad-hoc growth.
 
 ```
 IrNode (sealed base)
@@ -204,9 +204,9 @@ IrNode (sealed base)
     └── StringInterp    'hello $name!'
 ```
 
-### Lowering rules — AST → IR
+### Lowering rules — AST → `.sdui.json`
 
-| Source pattern | IR |
+| Source pattern | Node |
 |---|---|
 | `Column(children: [...])` | `WidgetNode('Column', {'children': ListNode([...])})` |
 | `data.title` | `RefNode(['data','title'])` |
@@ -253,13 +253,13 @@ Inspired by `riverpod_generator`'s family-provider pattern: constrain to a small
 
 ### Const-fold rule
 
-After lowering, the lowerer walks the IR. Any subtree where every leaf is `LiteralNode`/`ConstNode` and contains no `RefNode`/`EventNode` is replaced with `ConstNode(constructedWidget)`. The `.sdui.g.dart` emits a `const` Dart literal for it; Dart canonicalizes; rebuilds reuse the instance.
+After lowering, the lowerer walks the node tree. Any subtree where every leaf is `LiteralNode`/`ConstNode` and contains no `RefNode`/`EventNode` is replaced with `ConstNode(constructedWidget)`. The `.sdui.g.dart` emits a `const` Dart literal for it; Dart canonicalizes; rebuilds reuse the instance.
 
 `Theme.of(context)` and similar are **not** const-foldable — the `Theme` parameter is declared in the `@Screen` signature, so theme reads are `RefNode`s, not literals.
 
 ### Reactive scope hoisting
 
-After const-folding, the lowerer does a second pass:
+After const-folding, the lowerer does a second pass over the node tree:
 
 1. Find every `RefNode` with `reactive: true`.
 2. Group by ref path (so two reads of `controller.showPromoCode` collapse to one subscription).
@@ -268,7 +268,7 @@ After const-folding, the lowerer does a second pass:
 
 The runtime, when rendering a `WidgetNode` whose `listenablePaths` is non-empty, wraps it in `ListenableBuilder` subscribed to the matching `Listenable`s from `input['__reactive__']`. Only that subtree rebuilds when the listenable fires.
 
-If a single listenable's reads span the whole screen, the lowerer emits a build-time warning suggesting refactor — not an error.
+If a single listenable's reads span the whole screen, the lowerer emits a build-time warning suggesting a refactor — not an error.
 
 ### Key inference rule
 
@@ -358,7 +358,7 @@ class CartScreen extends StatelessWidget {
 edit cart.dart → save → build_runner sees change (~500ms)
               → regenerates cart.sdui.g.dart (~200ms)
               → Flutter hot-reload picks it up (~100ms)
-              → screen rebuilds with new IR
+              → screen rebuilds with updated node tree
 ```
 
 Total: ~1 second.
@@ -371,7 +371,7 @@ Declared in `desk_sdui_generator/build.yaml`:
 
 1. **`screenBuilder`** — runs per-file. For each `.dart` containing `@Screen`-annotated functions:
    - Parses via `package:analyzer`
-   - Walks each `@Screen` function body, lowering AST → IR
+   - Walks each `@Screen` function body, compiling AST → `.sdui.json`
    - Walks the parameter list, generates `InputBinding`s
    - Walks `controller.method` references, generates the `methods` map
    - Walks `ValueListenable<T>`-typed accesses, generates the `reactive` map
@@ -432,7 +432,7 @@ runtime.registerFn(String name, Function fn);
 
 Resolution order for `Runtime.load(name)`:
 
-1. `fetcher` (if set and online) — fetches `.uib` JSON from the configured endpoint
+1. `fetcher` (if set and online) — fetches the `.sdui.json` payload from the configured endpoint
 2. `assetBundle` (if set) — reads `<prefix>/<name>.uib` from the app's asset bundle
 3. In-binary `ScreenBinding.ir` — the Dart literal compiled from `.sdui.g.dart`
 
@@ -499,7 +499,7 @@ Widget buildCart(CartData data, CartController controller) {
 }
 ```
 
-Self-contained animated widgets (`AnimatedContainer`, `Hero`, `flutter_animate`, `rive`, `lottie`) remain available as registered widgets and tick natively without IR involvement.
+Self-contained animated widgets (`AnimatedContainer`, `Hero`, `flutter_animate`, `rive`, `lottie`) remain available as registered widgets and tick natively without node-tree involvement.
 
 ## Risks and mitigations
 
@@ -524,7 +524,7 @@ Self-contained animated widgets (`AnimatedContainer`, `Hero`, `flutter_animate`,
 | O2 | Top-level helper functions: auto-registered? | Yes for pure functions; analyzer error for side-effecting |
 | O3 | Loop variable destructuring (`(i, x) in xs.indexed`) | Supported in v1 |
 | O4 | Generic widget types (`DropdownButton<String>`) | Supported; codegen synthesizes builder per concrete instantiation |
-| O5 | IR version-bump policy | Strict semver; runtime refuses major-ahead blobs |
+| O5 | Wire format version-bump policy | Strict semver; runtime refuses major-ahead blobs |
 | O6 | Theme: parameter or `Theme.of(context)`? | Parameter — explicit, testable |
 | O7 | Logging surface | Consumer-provided callback; default `print` |
 
@@ -532,7 +532,7 @@ Self-contained animated widgets (`AnimatedContainer`, `Hero`, `flutter_animate`,
 
 **Three packages:**
 
-- `desk_sdui_annotation` — `@Screen`, IR node classes, `JsonIrCodec`
+- `desk_sdui_annotation` — `@Screen`, node classes, `JsonIrCodec`
 - `desk_sdui` — `Runtime`, `SduiScreen`, `RemoteIrFetcher`, `AssetBundleIrFetcher`, expression evaluator
 - `desk_sdui_generator` — `screenBuilder`, `registryBuilder`, analyzer plugin (5-rule lint surface)
 
@@ -573,6 +573,6 @@ Self-contained animated widgets (`AnimatedContainer`, `Hero`, `flutter_animate`,
 - **build_runner ≥ 2.15.0**, AOT-compiled builders (`--force-aot`), no `dart:mirrors`
 - Runtime depends on Flutter SDK only — no state-management or DI package
 - Reactive contract is `ValueListenable<T>` (anything implementing it works)
-- IR is parsed once into typed Dart objects; no JSON walked on the build path
+- The `.sdui.json` payload is parsed once into typed Dart objects; no JSON walked on the build path
 - Authoring DSL is Dart-subset; analyzer plugin enforces the subset in IDE
 - Class names should not contain "CMS" — the runtime is general-purpose
