@@ -154,6 +154,64 @@ The rule fires at the `@Screen` body's reference site. Apple-policy posture rema
 
 The denylist is small and stable — these libraries are the canonical "would do something Apple cares about" surface. Adding `@Screen`-allowed exceptions (e.g. a specific safe `dart:io` constant) is explicit per-symbol via a configuration file under `desk_sdui_generator/`.
 
+## Enforced limitations of `@Screen`
+
+This is the canonical reference for what an `@Screen` body may contain. It supersedes the scattered tables in the original spec (`2026-05-10-desk-sdui-design.md` §"AST → `.sdui.json` mapping", §"Closure whitelist", §"Forbidden constructs") and the lint list in `.plans/desk-sdui-3-codegen.md` Task 13. v2 deltas are flagged inline.
+
+### Allowed expressions (AST → wire)
+
+| Source pattern | Node |
+|---|---|
+| `Column(children: [...])` (any registered widget ctor) | `WidgetNode` |
+| `data.title` | `RefNode` |
+| `controller.flag` (typed `ValueListenable<T>`) | `RefNode` (reactive) |
+| `controller.method` (tear-off) | `EventNode` |
+| `if (cond) A` / `if (cond) A else B` / `cond ? A : B` | `ConditionalNode` |
+| `a ?? b` | `CoalesceOp` |
+| `a == b`, `a < b`, etc. | `CompareOp` |
+| `a + b`, `a - b`, etc. | `ArithOp` |
+| `a && b`, `a || b`, `!a` | `LogicOp` / `NotOp` |
+| `a.b` (non-method member access) | `MemberAccess` |
+| `xs[k]` | `IndexAccess` (v2: dispatched through registered `SubscriptHandler`) |
+| `xs.length` | `LengthOf` |
+| `'$x items'` | `StringInterp` |
+| `for (final x in xs) child` / `for (final (i, x) in xs.indexed) child` | `ForNode` |
+| `...somelist` | `SpreadNode` |
+| `EdgeInsets.all(8)` (any registered value-type ctor) | `ValueCtorNode` (v2 — was const-folded `LiteralNode` in v1) |
+| `data.title.toUpperCase()` (any registered method) | `MethodCallNode` (v2 — was unsupported in v1) |
+| `Icons.menu`, `Colors.white`, `CrossAxisAlignment.start` (any registered static const) | `RefNode` resolving to a registered constant (v2 — v1 hand-listed via `builtin_widgets.dart`) |
+
+**v2 delta:** the definition of "registered" widened. In v1, "registered" meant "listed in `builtin_widgets.dart`." In v2, "registered" means "used by some `@Screen` in the app, or declared via `@RegisterForSdui`." The set is computed by codegen, not curated.
+
+### Closure whitelist
+
+Closures inside `@Screen` are restricted to five shapes (handler arguments to widget params like `onTap`, `onPressed`, callback APIs):
+
+| Shape | Lowering |
+|---|---|
+| `controller.foo` (tear-off) | `EventNode` |
+| `() => controller.foo()` | `EventNode` |
+| `() => controller.foo(literal)` | `EventNode` with literal arg |
+| `() => controller.foo(item.id)` (closes over loop var) | `EventNode` with ref arg |
+| `(value) => controller.foo(value)` (callback arg passes through) | `EventNode` with `_callback_arg_N` ref |
+
+Anything else — inline transforms, multi-statement bodies, conditionals inside the closure — is an analyzer error: "extract to a ViewModel method."
+
+### Forbidden constructs
+
+| Construct | Why | Lint |
+|---|---|---|
+| `await` / `async` | `@Screen` is a pure render — async belongs in ViewModels | `sdui_no_async_in_screen` |
+| `setState` | `@Screen` is stateless — state lives in ViewModels | `sdui_no_set_state` |
+| `var x = ...` (mutable local) | Only `final`/`const` allowed | `sdui_no_mutable_locals` |
+| `try { } catch { }` | No error handling — handle in ViewModels | `sdui_no_try_catch` |
+| `for (var i = 0; i < n; i++)` / `while` / `do-while` | Counter and side-effecting loops not supported — only `for-in` | (Phase 3 v1) |
+| Nested function definition | Extract to a top-level fn or another `@Screen` | `sdui_no_function_definition` |
+| Method call on a non-listenable controller field | Controller methods must be event handlers (`onTap: c.foo`) | (Phase 3 v1) |
+| References to `dart:io`, `dart:isolate`, `dart:ffi`, `dart:mirrors` | Apple §3.3.2 posture; codegen would auto-register otherwise | `sdui_no_side_effects_in_screen` (v2 — Task 10) |
+
+**v2 delta:** "Class instantiation of unregistered type" is no longer a forbidden construct *per se* — codegen auto-registers any type the screen instantiates. The `sdui_no_side_effects_in_screen` denylist replaces it as the gating rule for what's reachable from server payloads.
+
 ## Out of scope (still v2 deferred)
 
 - **Closure shapes** — the existing 5-shape closure whitelist stays. Auto-registration handles widget/method/constant references; closure bodies are a separate lowering concern.
