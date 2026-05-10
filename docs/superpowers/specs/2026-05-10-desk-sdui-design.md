@@ -7,9 +7,9 @@
 ## Glossary
 
 - **SDUI** — server-driven UI. Layout *description* ships from a server; rendering happens on the device.
-- **IR** — intermediate representation. The typed Dart node tree the codegen compiles `@Screen` source into; serialized as JSON (or later MessagePack) for the wire as a `.sdui.json` payload.
-- **`@Screen`** — the only annotation; marks a function whose body is lowered to a `.sdui.json` payload.
-- **Lowering** — transforming the analyzer AST of a `@Screen` body into the node tree.
+- **IR** — intermediate representation. The typed Dart node tree the codegen compiles `@Screen` source into; serialized as JSON (or later MessagePack) for the wire as a `.sdui.json` payload. When discussing the on-wire artifact, this document uses "`.sdui.json` payload" or "widget payload"; when discussing the in-memory node tree, it uses "IR" or "node tree".
+- **`@Screen`** — the only annotation; marks a function whose body is compiled to a `.sdui.json` payload.
+- **Lowering** — transforming the analyzer AST of a `@Screen` body into the node tree, producing a `.sdui.json` payload at build time.
 - **Reactive scope** — the smallest node-tree subtree that contains all reads of a given `ValueListenable`; rebuilt independently when that listenable changes.
 
 ## Goal
