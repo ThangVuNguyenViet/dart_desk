@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Bootstrap a new sibling repo `dart_desk_workspace/desk_sdui/` with a melos workspace and three package skeletons, then ship a working `desk_sdui_annotation` package — `@Screen` annotation, the complete IR class hierarchy, and a `JsonIrCodec` with round-trip tests for every node type. CI green at the end.
+**Goal:** Bootstrap a new sibling repo `dart_desk_workspace/desk_sdui/` with a melos workspace and three package skeletons, then ship a working `desk_sdui_annotation` package — `@Screen` annotation, the complete node-class hierarchy, and a `JsonIrCodec` with round-trip tests for every node type. CI green at the end.
 
-**Architecture:** A Dart melos workspace with three packages: `desk_sdui_annotation` (pure Dart, no Flutter), `desk_sdui` (Flutter runtime, empty in this phase), and `desk_sdui_generator` (build_runner codegen, empty in this phase). Phase 1 only puts substantive code in `desk_sdui_annotation` — the IR definitions and a JSON codec. The other two packages exist as empty pubspec'd skeletons so the dependency edges and CI matrix are wired up early.
+**Architecture:** A Dart melos workspace with three packages: `desk_sdui_annotation` (pure Dart, no Flutter), `desk_sdui` (Flutter runtime, empty in this phase), and `desk_sdui_generator` (build_runner codegen, empty in this phase). Phase 1 only puts substantive code in `desk_sdui_annotation` — the node definitions and a JSON codec. The other two packages exist as empty pubspec'd skeletons so the dependency edges and CI matrix are wired up early.
 
 **Tech Stack:** Dart 3.5+, Flutter SDK (only for the runtime package's stub `pubspec.yaml`), melos workspace, `very_good_analysis` lints, `test` for unit tests, GitHub Actions for CI.
 
@@ -141,15 +141,15 @@ Server-driven UI for Flutter. Author screens as `@Screen` Dart-subset, ship layo
 
 This is a melos workspace with three packages:
 
-- **`desk_sdui_annotation`** — `@Screen` annotation and IR types. Pure Dart.
-- **`desk_sdui`** — runtime that renders IR into a Flutter widget tree.
+- **`desk_sdui_annotation`** — `@Screen` annotation and node types. Pure Dart.
+- **`desk_sdui`** — runtime that renders the node tree into a Flutter widget tree.
 - **`desk_sdui_generator`** — `build_runner` codegen + analyzer plugin.
 
 Design spec: see `dart_desk/docs/superpowers/specs/2026-05-10-desk-sdui-design.md` in the sibling `dart_desk` repo.
 
 ## Status
 
-Phase 1 of v1 — foundation only. The annotation package ships the IR types and JSON codec; the runtime and generator are empty skeletons.
+Phase 1 of v1 — foundation only. The annotation package ships the node-class hierarchy and JSON codec; the runtime and generator are empty skeletons.
 ```
 
 - [ ] **Step 4: Initial commit**
@@ -270,7 +270,7 @@ Create `packages/desk_sdui_annotation/pubspec.yaml`:
 
 ```yaml
 name: desk_sdui_annotation
-description: Annotations and IR types for desk_sdui — pure Dart, no Flutter.
+description: Annotations and node types for desk_sdui — pure Dart, no Flutter.
 version: 0.0.1-dev
 publish_to: none  # not yet publishing
 
@@ -300,7 +300,7 @@ Create `packages/desk_sdui_annotation/CHANGELOG.md`:
 ```markdown
 ## 0.0.1-dev
 
-- Initial scaffold. `@Screen` annotation and IR class hierarchy.
+- Initial scaffold. `@Screen` annotation and node-class hierarchy.
 ```
 
 - [ ] **Step 4: Write `README.md`**
@@ -310,7 +310,7 @@ Create `packages/desk_sdui_annotation/README.md`:
 ```markdown
 # desk_sdui_annotation
 
-Annotations and IR types for [desk_sdui](../desk_sdui). Pure Dart, no Flutter dependency.
+Annotations and node types for [desk_sdui](../desk_sdui). Pure Dart, no Flutter dependency.
 
 ## What's here
 
@@ -464,9 +464,9 @@ git commit -m "feat(annotation): add @Screen annotation"
 
 ---
 
-## Task 5: Define IR operator enums
+## Task 5: Define operator enums
 
-Three small enum files used by IR expression nodes. Doing them first so later tasks can reference them.
+Three small enum files used by expression nodes. Doing them first so later tasks can reference them.
 
 **Files:**
 - Create: `packages/desk_sdui_annotation/lib/src/ir/compare_op.dart`
@@ -2296,7 +2296,7 @@ Create `packages/desk_sdui/README.md`:
 ```markdown
 # desk_sdui
 
-Runtime that renders desk_sdui IR into a Flutter widget tree.
+Runtime that renders the desk_sdui node tree into a Flutter widget tree.
 
 ## Status
 
@@ -2422,7 +2422,7 @@ Create `packages/desk_sdui_generator/README.md`:
 # desk_sdui_generator
 
 `build_runner` codegen and analyzer plugin for desk_sdui. Walks `@Screen`
-function bodies and emits typed IR + bindings.
+function bodies and emits a typed `.sdui.json` payload + bindings.
 
 ## Status
 
@@ -2622,8 +2622,8 @@ CI runs and should pass on the first push.
 - ✅ `melos run analyze` passes
 - ✅ `melos run format` passes (no diff)
 - ✅ `melos run test` passes (every test in every package)
-- ✅ The `desk_sdui_annotation` package has @Screen + complete IR + JSON codec
-- ✅ Round-trip codec test exercises every IR node type
+- ✅ The `desk_sdui_annotation` package has @Screen + complete node hierarchy + JSON codec
+- ✅ Round-trip codec test exercises every node type
 - ✅ The other two packages compile and have placeholder tests
 - ✅ CI workflow runs analyze + format + test
 - ✅ `find packages -name "*.dart"` matches the layout in Task 15 step 4
