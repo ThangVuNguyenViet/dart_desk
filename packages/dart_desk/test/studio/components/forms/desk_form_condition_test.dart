@@ -1,3 +1,4 @@
+import 'package:signals/signals.dart';
 import 'package:dart_desk/src/studio/components/forms/desk_form.dart';
 import 'package:dart_desk/src/studio/core/view_models/desk_document_view_model.dart';
 import 'package:dart_desk/src/studio/internal/get_it_desk_context.dart';

@@ -1,3 +1,4 @@
+import 'package:signals/signals.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:signals/signals_flutter.dart';

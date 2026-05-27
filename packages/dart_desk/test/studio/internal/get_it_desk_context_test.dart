@@ -1,3 +1,4 @@
+import 'package:signals/signals.dart';
 import 'package:dart_desk/src/data/desk_data_source.dart';
 import 'package:dart_desk/src/data/models/document_list.dart';
 import 'package:dart_desk/src/studio/core/view_models/desk_document_view_model.dart';
