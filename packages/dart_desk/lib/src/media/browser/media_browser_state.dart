@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:signals/signals.dart';
 
 import '../../data/desk_data_source.dart';
-import '../../extensions/awaitable_future_signal.dart';
 import '../../data/models/image_types.dart';
 import '../../data/models/media_asset.dart';
 import '../../data/models/media_page.dart';
@@ -23,7 +22,7 @@ class MediaBrowserState {
   final selectedAssetId = signal<String?>(null, debugLabel: 'selectedAssetId');
 
   // Data — reactive: auto-reloads when filter signals change
-  late final assetsData = awaitableFutureSignal<MediaPage>(
+  late final assetsData = futureSignal<MediaPage>(
     () => dataSource.listMedia(
       search: search.value.isEmpty ? null : search.value,
       type: typeFilter.value,
@@ -45,7 +44,7 @@ class MediaBrowserState {
 
   Future<MediaAsset> uploadFile(String fileName, Uint8List bytes) async {
     final asset = await dataSource.uploadImage(fileName, bytes);
-    assetsData.awaitableReload();
+    assetsData.reload();
     return asset;
   }
 
@@ -54,7 +53,7 @@ class MediaBrowserState {
     if (selectedAssetId.value == assetId) {
       selectedAssetId.value = null;
     }
-    assetsData.awaitableReload();
+    assetsData.reload();
   }
 
   /// Fetches the usage count for [assetId], then invokes [confirm] with that

@@ -291,7 +291,7 @@ void main() {
               snapshotHlc: 'h-200',
             ),
           ];
-          vm.versionsContainer('doc-1').awaitableReload();
+          vm.versionsContainer('doc-1').reload();
           await waitForContainers(vm, 'doc-1');
 
           expect(vm.hasUnpublishedChanges.value, isFalse);

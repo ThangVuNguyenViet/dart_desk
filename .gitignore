@@ -53,3 +53,4 @@ pubspec.lock
 *.mapper.dart
 *.desk.dart
 *.g.dart
+.gitnexus

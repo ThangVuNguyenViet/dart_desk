@@ -240,7 +240,7 @@ typedef WidgetBuilderFn = Widget Function(
 );
 
 abstract class IrFetcher {
-  Future<List<int>> fetch(String name);
+  Future<Uint8List> fetch(String name);
 }
 ```
 
@@ -1479,8 +1479,10 @@ class _FakeBundle extends CachingAssetBundle {
 
 ```dart
 // lib/src/loader/ir_fetcher.dart
+import 'dart:typed_data';
+
 abstract class IrFetcher {
-  Future<List<int>> fetch(String name);
+  Future<Uint8List> fetch(String name);
 }
 ```
 
@@ -1498,7 +1500,7 @@ class AssetBundleIrFetcher implements IrFetcher {
   final String prefix;
 
   @override
-  Future<List<int>> fetch(String name) async {
+  Future<Uint8List> fetch(String name) async {
     final key = '$prefix/$name.uib';
     final data = await bundle.load(key);
     return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
@@ -1510,10 +1512,11 @@ class AssetBundleIrFetcher implements IrFetcher {
 
 ```dart
 // lib/src/loader/remote_ir_fetcher.dart
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'ir_fetcher.dart';
 
-typedef HttpGet = Future<List<int>> Function(Uri uri);
+typedef HttpGet = Future<Uint8List> Function(Uri uri);
 
 class RemoteIrFetcher implements IrFetcher {
   RemoteIrFetcher({required this.endpoint, HttpGet? client})
@@ -1523,19 +1526,19 @@ class RemoteIrFetcher implements IrFetcher {
   final HttpGet _client;
 
   @override
-  Future<List<int>> fetch(String name) async {
+  Future<Uint8List> fetch(String name) async {
     final uri = endpoint.replace(
       pathSegments: [...endpoint.pathSegments, '$name.uib'],
     );
     return _client(uri);
   }
 
-  static Future<List<int>> _defaultGet(Uri uri) async {
+  static Future<Uint8List> _defaultGet(Uri uri) async {
     final res = await http.get(uri);
     if (res.statusCode != 200) {
       throw StateError('GET $uri failed: ${res.statusCode}');
     }
-    return res.bodyBytes;
+    return res.bodyBytes; // http.Response.bodyBytes is already Uint8List
   }
 }
 ```

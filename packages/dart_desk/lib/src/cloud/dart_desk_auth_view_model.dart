@@ -6,12 +6,11 @@ import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:signals/signals.dart';
 
 import '../debug.dart';
-import '../extensions/awaitable_future_signal.dart';
 
 /// Owns the top-level auth state for [DartDeskAuth].
 ///
 /// State surfaces:
-///   - [currentUser] — an [AwaitableFutureSignal] driven by the session
+///   - [currentUser] — an [FutureSignal] driven by the session
 ///     manager. Cold start parks in [AsyncLoading] until [start] resolves;
 ///     thereafter the factory runs whenever [_authInfo] changes (sign-in,
 ///     sign-out, token refresh). Yields:
@@ -54,27 +53,28 @@ class DartDeskAuthViewModel {
   }) {
     final sessionManager = FlutterAuthSessionManager();
 
-    final client = Client(
-          serverUrl,
-          onFailedCall: (context, error, stackTrace) {
-            clientLogger.severe(
-              'API call failed: ${context.endpointName}.${context.methodName}',
-              error,
-              stackTrace,
-            );
-          },
-          onSucceededCall: (context) {
-            clientLogger.info(
-              'API call succeeded: ${context.endpointName}.${context.methodName}',
-            );
-          },
-        )
-        ..connectivityMonitor = FlutterConnectivityMonitor()
-        ..authSessionManager = sessionManager
-        ..authKeyProvider = DartDeskAuthKeyProvider(
-          apiKey: apiKey,
-          inner: sessionManager,
-        );
+    final client =
+        Client(
+            serverUrl,
+            onFailedCall: (context, error, stackTrace) {
+              clientLogger.severe(
+                'API call failed: ${context.endpointName}.${context.methodName}',
+                error,
+                stackTrace,
+              );
+            },
+            onSucceededCall: (context) {
+              clientLogger.info(
+                'API call succeeded: ${context.endpointName}.${context.methodName}',
+              );
+            },
+          )
+          ..connectivityMonitor = FlutterConnectivityMonitor()
+          ..authSessionManager = sessionManager
+          ..authKeyProvider = DartDeskAuthKeyProvider(
+            apiKey: apiKey,
+            inner: sessionManager,
+          );
 
     final googleSignInClient = Client(serverUrl)
       ..connectivityMonitor = FlutterConnectivityMonitor()
@@ -97,21 +97,21 @@ class DartDeskAuthViewModel {
   /// token refresh after idle.
   final _authInfo = signal<AuthSuccess?>(null, debugLabel: 'authInfo');
 
-  late final AwaitableFutureSignal<User?> currentUser =
-      awaitableFutureSignal<User?>(
-    () async {
-      if (!_authReady.value) {
-        // Park in AsyncLoading until start() finishes initialize(). The
-        // dependency on _authReady will trigger a re-run once it flips.
-        return Completer<User?>().future;
-      }
-      _authInfo.value; // tracked: any auth change triggers a reload.
-      if (!sessionManager.isAuthenticated) return null;
-      return client.user.getCurrentUser();
-    },
-    dependencies: [_authReady, _authInfo],
-    debugLabel: 'currentUser',
-  );
+  late final FutureSignal<User?> currentUser =
+      futureSignal<User?>(
+        () async {
+          if (!_authReady.value) {
+            // Park in AsyncLoading until start() finishes initialize(). The
+            // dependency on _authReady will trigger a re-run once it flips.
+            return Completer<User?>().future;
+          }
+          _authInfo.value; // tracked: any auth change triggers a reload.
+          if (!sessionManager.isAuthenticated) return null;
+          return client.user.getCurrentUser();
+        },
+        dependencies: [_authReady, _authInfo],
+        debugLabel: 'currentUser',
+      );
 
   /// Transient errors that aren't the result of the user fetch (form
   /// validation, OAuth callback failures, manual [reportError] calls).

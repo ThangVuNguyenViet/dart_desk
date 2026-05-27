@@ -4,7 +4,6 @@ import 'package:signals/signals_flutter.dart';
 
 import '../../../data/desk_data_source.dart';
 import '../../../data/models/document_version.dart';
-import '../../../extensions/awaitable_future_signal.dart';
 import '../signals/mutation_signal.dart';
 
 class DeskViewModel {
@@ -56,7 +55,7 @@ class DeskViewModel {
   // ============================================================
 
   late final documentsContainer = SignalContainer(
-    (String documentType) => AwaitableFutureSignal(
+    (String documentType) => FutureSignal(
       () => dataSource.getDocuments(documentType, limit: 200),
       debugLabel: 'documents',
     ),
@@ -64,7 +63,7 @@ class DeskViewModel {
   );
 
   late final versionsContainer = SignalContainer(
-    (String documentId) => AwaitableFutureSignal(
+    (String documentId) => FutureSignal(
       () => dataSource.getDocumentVersions(documentId),
       debugLabel: 'versions',
     ),
@@ -72,7 +71,7 @@ class DeskViewModel {
   );
 
   late final documentDataContainer = SignalContainer(
-    (String versionId) => AwaitableFutureSignal(
+    (String versionId) => FutureSignal(
       () => _fetchVersionWithData(versionId),
       debugLabel: 'documentData',
     ),
@@ -83,7 +82,7 @@ class DeskViewModel {
   ///
   /// Used by [hasUnpublishedChanges] to read the document's [crdtHlc].
   late final selectedDocumentContainer = SignalContainer(
-    (String documentId) => AwaitableFutureSignal(
+    (String documentId) => FutureSignal(
       () => dataSource.getDocument(documentId),
       debugLabel: 'selectedDocument',
     ),
@@ -169,7 +168,7 @@ class DeskViewModel {
 
         documentsContainer(
           currentDocumentType.value?.name ?? '',
-        ).awaitableReload();
+        ).reload();
 
         return document;
       }, debugLabel: 'createDocument');
@@ -182,7 +181,7 @@ class DeskViewModel {
       docTypeName,
       documentId,
     );
-    documentsContainer(docTypeName).awaitableReload();
+    documentsContainer(docTypeName).reload();
     return updated;
   }, debugLabel: 'setDefaultDocument');
 
@@ -208,7 +207,7 @@ class DeskViewModel {
           selectedDocumentId.value = null;
           selectedVersionId.value = null;
         }
-        await documentsContainer(docTypeName).awaitableReload();
+        await documentsContainer(docTypeName).reload();
 
         if (wasDefault) {
           final refreshed = untracked(
@@ -236,14 +235,14 @@ class DeskViewModel {
 
         documentsContainer(
           currentDocumentType.value?.name ?? '',
-        ).awaitableReload();
-        versionsContainer(documentId).awaitableReload();
+        ).reload();
+        versionsContainer(documentId).reload();
         selectedVersionId.value = version.id;
         if (version.id != null) {
-          documentDataContainer(version.id!).awaitableReload();
+          documentDataContainer(version.id!).reload();
         }
         // Reload the selected document so crdtHlc is fresh for hasUnpublishedChanges.
-        selectedDocumentContainer(documentId).awaitableReload();
+        selectedDocumentContainer(documentId).reload();
 
         return version;
       }, debugLabel: 'publishCurrentDraft');
@@ -261,8 +260,8 @@ class DeskViewModel {
             args.documentId,
             versionData ?? {},
           );
-          versionsContainer(args.documentId).awaitableReload();
-          selectedDocumentContainer(args.documentId).awaitableReload();
+          versionsContainer(args.documentId).reload();
+          selectedDocumentContainer(args.documentId).reload();
           return updated;
         },
         debugLabel: 'restoreVersion',
@@ -320,9 +319,9 @@ class DeskViewModel {
 
     final docId = selectedDocumentId.value;
     if (docId != null) {
-      versionsContainer(docId).awaitableReload();
+      versionsContainer(docId).reload();
     }
-    documentDataContainer(versionId).awaitableReload();
+    documentDataContainer(versionId).reload();
 
     return result;
   }, debugLabel: 'archiveVersion');
@@ -336,7 +335,7 @@ class DeskViewModel {
 
       final docId = selectedDocumentId.value;
       if (docId != null) {
-        versionsContainer(docId).awaitableReload();
+        versionsContainer(docId).reload();
       }
     }
     return result;
@@ -349,21 +348,21 @@ class DeskViewModel {
   void refreshDocuments() {
     final docType = currentDocumentType.value?.name;
     if (docType != null) {
-      documentsContainer(docType).awaitableReload();
+      documentsContainer(docType).reload();
     }
   }
 
   void refreshVersions() {
     final docId = selectedDocumentId.value;
     if (docId != null) {
-      versionsContainer(docId).awaitableReload();
+      versionsContainer(docId).reload();
     }
   }
 
   void refreshSelectedData() {
     final versionId = selectedVersionId.value;
     if (versionId != null) {
-      documentDataContainer(versionId).awaitableReload();
+      documentDataContainer(versionId).reload();
     }
   }
 

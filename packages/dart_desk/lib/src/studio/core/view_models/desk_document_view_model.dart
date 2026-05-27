@@ -3,7 +3,6 @@ import 'package:logging/logging.dart';
 import 'package:signals/signals_flutter.dart';
 
 import '../../../data/desk_data_source.dart';
-import '../../../extensions/awaitable_future_signal.dart';
 import '../signals/mutation_signal.dart';
 import 'desk_view_model.dart';
 
@@ -22,7 +21,7 @@ class DeskDocumentViewModel {
   final documentId = Signal<String?>(null, debugLabel: 'documentId');
 
   /// FutureSignal for the currently selected document
-  late final selectedDocument = AwaitableFutureSignal<DeskDocument?>(() async {
+  late final selectedDocument = FutureSignal<DeskDocument?>(() async {
     final docId = documentId.value;
     if (docId == null) return null;
     return await dataSource.getDocument(docId);
@@ -134,7 +133,7 @@ class DeskDocumentViewModel {
         );
 
         if (result != null && args.documentId == documentId.value) {
-          await selectedDocument.awaitableReload();
+          await selectedDocument.reload();
         }
 
         return result;

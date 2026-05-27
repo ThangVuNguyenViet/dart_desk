@@ -413,7 +413,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Reload the versions container so the badge widget reacts.
-      viewModel.versionsContainer(betaDoc.id!).awaitableReload();
+      viewModel.versionsContainer(betaDoc.id!).reload();
       await tester.pumpAndSettle();
 
       final tile = find

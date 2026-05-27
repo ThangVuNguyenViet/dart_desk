@@ -1,4 +1,3 @@
-import 'package:dart_desk/src/extensions/awaitable_future_signal.dart';
 import 'package:dart_desk/src/studio/components/forms/desk_form.dart';
 import 'package:dart_desk/src/studio/core/view_models/desk_document_view_model.dart';
 import 'package:dart_desk/src/studio/internal/get_it_desk_context.dart';
@@ -27,7 +26,7 @@ class _FakeViewModel implements DeskDocumentViewModel {
   final DeskDocument? _doc;
 
   @override
-  late final selectedDocument = AwaitableFutureSignal<DeskDocument?>(
+  late final selectedDocument = FutureSignal<DeskDocument?>(
     () async => _doc,
   );
 
