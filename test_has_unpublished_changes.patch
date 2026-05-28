@@ -1,0 +1,16 @@
+--- packages/dart_desk/lib/src/studio/core/view_models/desk_view_model.dart
++++ packages/dart_desk/lib/src/studio/core/view_models/desk_view_model.dart
+@@ -285,19 +285,25 @@
+       loading: () => const <DocumentVersion>[],
+       error: (_, _) => const <DocumentVersion>[],
+     );
+ 
+     final docState = selectedDocumentContainer(docId).value;
+     final crdtHlc = docState.map(
+       data: (doc) => doc?.crdtHlc,
+       loading: () => null,
+       error: (_, _) => null,
+     );
++    print('hasUnpublishedChanges eval: docId=$docId, versions=${versions.length}, crdtHlc=$crdtHlc');
+ 
+     if (crdtHlc == null) return false;

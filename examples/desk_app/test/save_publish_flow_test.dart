@@ -142,8 +142,8 @@ void main() {
       // After autosave completes, crdtHlc > snapshotHlc (no published version
       // exists yet), so hasUnpublishedChanges = true.
       // Reload containers so the computed signal picks up the fresh crdtHlc.
-      deskVM.selectedDocumentContainer(doc.id!).reload();
-      deskVM.versionsContainer(doc.id!).reload();
+      await deskVM.selectedDocumentContainer(doc.id!).reload();
+      await deskVM.versionsContainer(doc.id!).reload();
       await tester.pumpAndSettle();
 
       expect(
@@ -224,8 +224,8 @@ void main() {
       );
 
       // hasUnpublishedChanges is true again because crdtHlc > snapshotHlc.
-      deskVM.selectedDocumentContainer(doc.id!).reload();
-      deskVM.versionsContainer(doc.id!).reload();
+      await deskVM.selectedDocumentContainer(doc.id!).reload();
+      await deskVM.versionsContainer(doc.id!).reload();
       await tester.pumpAndSettle();
       expect(
         deskVM.hasUnpublishedChanges.value,

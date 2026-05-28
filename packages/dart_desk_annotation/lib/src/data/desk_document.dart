@@ -159,9 +159,10 @@ class DeskDocument {
     return other is DeskDocument &&
         other.id == id &&
         other.documentType == documentType &&
-        other.slug == slug;
+        other.slug == slug &&
+        other.crdtHlc == crdtHlc;
   }
 
   @override
-  int get hashCode => Object.hash(id, documentType, slug);
+  int get hashCode => Object.hash(id, documentType, slug, crdtHlc);
 }

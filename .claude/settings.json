@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh -i '~/.ssh/dart-desk-key.pem' ec2-user@35.90.244.173 'sudo cp /home/ec2-user/serverpod/pending/config/passwords.yaml /home/ec2-user/serverpod/active/config/passwords.yaml *)",
+      "Bash(gh pr *)"
+    ]
+  }
+}
