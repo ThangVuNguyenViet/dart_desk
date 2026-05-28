@@ -1,3 +1,12 @@
+## 0.3.4
+
+ - **FIX**(signals): update DeskDocument equality to include crdtHlc for Signals v7 compatibility.
+ - **FIX**(signals): resolve SignalEffectException during widget builds by shifting Container cache initialization to initState.
+ - **FIX**: restore missing signals import in test files.
+ - **FIX**(image_input): avoid setState-during-build crash in Edit Framing (#45).
+ - **FEAT**(dart_desk): DeskListenable → ValueListenable adapter + v0.3.3 release (#44).
+ - **FEAT**(dart_desk): DeskListenable.asValueListenable() extension.
+
 ## 0.3.3
 
  - **FEAT**(dart_desk): DeskListenable.asValueListenable() extension.

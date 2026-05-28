@@ -1,3 +1,7 @@
+## 0.3.2+1
+
+ - **FIX**(signals): update DeskDocument equality to include crdtHlc for Signals v7 compatibility.
+
 ## 0.3.2
 
  - **FIX**(annotation): split DeskContext so generator-safe barrel stays Flutter-free (#41).

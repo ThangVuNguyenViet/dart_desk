@@ -1,3 +1,7 @@
+## 0.1.2+1
+
+ - Update a dependency to the latest release.
+
 ## 0.1.2
 
  - **FIX**(annotation): split DeskContext so generator-safe barrel stays Flutter-free (#41).

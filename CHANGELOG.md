@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2026-05-28
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`dart_desk` - `v0.3.4`](#dart_desk---v034)
+ - [`dart_desk_annotation` - `v0.3.2+1`](#dart_desk_annotation---v0321)
+ - [`dart_desk_generator` - `v0.3.2+1`](#dart_desk_generator---v0321)
+ - [`dart_desk_widgets` - `v0.1.2+1`](#dart_desk_widgets---v0121)
+
+Packages with dependency updates only:
+
+> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
+
+ - `dart_desk_generator` - `v0.3.2+1`
+ - `dart_desk_widgets` - `v0.1.2+1`
+
+---
+
+#### `dart_desk` - `v0.3.4`
+
+ - **FIX**(signals): update DeskDocument equality to include crdtHlc for Signals v7 compatibility.
+ - **FIX**(signals): resolve SignalEffectException during widget builds by shifting Container cache initialization to initState.
+ - **FIX**: restore missing signals import in test files.
+ - **FIX**(image_input): avoid setState-during-build crash in Edit Framing (#45).
+ - **FEAT**(dart_desk): DeskListenable → ValueListenable adapter + v0.3.3 release (#44).
+ - **FEAT**(dart_desk): DeskListenable.asValueListenable() extension.
+
+#### `dart_desk_annotation` - `v0.3.2+1`
+
+ - **FIX**(signals): update DeskDocument equality to include crdtHlc for Signals v7 compatibility.
+
+
 ## 2026-05-04
 
 ### Changes
