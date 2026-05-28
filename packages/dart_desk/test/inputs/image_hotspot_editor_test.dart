@@ -77,7 +77,7 @@ void main() {
         // The fix wraps onLiveChange in untracked() so writes performed
         // by the callback don't enter the editor effect's dependency
         // graph and don't cycle through the parent's watcher.
-        final parentSignal = signal<int>(0, debugLabel: 'cycle_parent');
+        final parentSignal = signal<int>(0, options: SignalOptions(name: 'cycle_parent'));
 
         await tester.pumpWidget(
           buildInputApp(
@@ -87,7 +87,7 @@ void main() {
             // synchronous first run.
             Column(
               children: [
-                Watch((context) => Text('count: ${parentSignal.value}')),
+                SignalBuilder(builder: (context) => Text('count: ${parentSignal.value}')),
                 ImageHotspotEditor(
                   imageUrl: 'https://test.example.com/image.png',
                   onLiveChange: (_) => parentSignal.value++,

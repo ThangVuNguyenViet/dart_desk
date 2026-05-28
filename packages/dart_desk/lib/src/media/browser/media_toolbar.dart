@@ -8,7 +8,7 @@ import 'package:signals/signals_flutter.dart';
 import '../../data/models/image_types.dart';
 import 'media_browser_state.dart';
 
-class MediaToolbar extends StatefulWidget {
+class MediaToolbar extends SignalStatefulWidget {
   final MediaBrowserState state;
 
   const MediaToolbar({super.key, required this.state});
@@ -100,8 +100,8 @@ class _MediaToolbarState extends State<MediaToolbar> {
           const SizedBox(width: 8),
 
           // Grid/List toggle
-          Watch((context) {
-            final isGrid = widget.state.isGridView.watch(context);
+          SignalBuilder(builder: (context) {
+            final isGrid = widget.state.isGridView.value;
             return ShadButton.outline(
               size: ShadButtonSize.sm,
               onPressed: () => widget.state.isGridView.value = !isGrid,

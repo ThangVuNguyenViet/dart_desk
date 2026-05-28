@@ -56,7 +56,7 @@ class DraftEvent extends HistoryEvent {
 
 /// A version history dropdown component that displays an event-style timeline.
 ///
-/// This component uses Signals' [Watch] widget to reactively display
+/// This component uses Signals' [SignalBuilder] widget to reactively display
 /// versions from the [DeskViewModel.versionsContainer]. It provides:
 ///
 /// - Compact dropdown trigger showing selected version
@@ -74,7 +74,7 @@ class DraftEvent extends HistoryEvent {
 ///   viewModel: myViewModel,
 /// )
 /// ```
-class DeskVersionHistory extends StatefulWidget {
+class DeskVersionHistory extends SignalStatefulWidget {
   /// The CMS view model containing version data and selection state.
   final DeskViewModel viewModel;
 
@@ -104,17 +104,17 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
     final theme = ShadTheme.of(context);
 
     final documentViewModel = GetIt.I<DeskDocumentViewModel>();
-    final docId = documentViewModel.documentId.watch(context);
+    final docId = documentViewModel.documentId.value;
 
     final versionsState = docId != null
-        ? widget.viewModel.versionsContainer(docId).watch(context)
+        ? widget.viewModel.versionsContainer(docId).value
         : AsyncState.data(
             DocumentVersionList(versions: [], total: 0, page: 1, pageSize: 10),
           );
 
-    final selectedVersionId = widget.viewModel.selectedVersionId.watch(context);
+    final selectedVersionId = widget.viewModel.selectedVersionId.value;
 
-    return versionsState.map(
+    return versionsState.map<Widget>(
       data: (data) {
         final selectedVersion = data.versions.firstWhere(
           (v) => v.id == selectedVersionId,
@@ -450,7 +450,7 @@ class _DeskVersionHistoryState extends State<DeskVersionHistory> {
 // ---------------------------------------------------------------------------
 
 /// A single row in the event-style timeline.
-class _TimelineEventRow extends StatefulWidget {
+class _TimelineEventRow extends SignalStatefulWidget {
   final HistoryEvent event;
   final VoidCallback? onViewVersion;
   final VoidCallback? onRestore;
@@ -605,7 +605,7 @@ class _TimelineEventRowState extends State<_TimelineEventRow> {
 // ---------------------------------------------------------------------------
 
 /// A status badge for a document version.
-class _StatusBadge extends StatelessWidget {
+class _StatusBadge extends SignalWidget {
   final DocumentVersion version;
   final bool compact;
 

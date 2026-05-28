@@ -1,3 +1,4 @@
+import 'package:signals/signals_flutter.dart';
 import 'package:signals/signals.dart';
 
 // ---------------------------------------------------------------------------
@@ -69,7 +70,7 @@ final class MutationError<T> extends MutationState<T> {
 /// }, debugLabel: 'createItem');
 ///
 /// // Screen
-/// final state = vm.createItem.watch(context);
+/// final state = vm.createItem.value;
 /// if (state.isLoading) return Spinner();\n/// if (state.hasError) return ErrorText(state.error.toString());
 ///
 /// // Button
@@ -82,7 +83,7 @@ class MutationSignal<T, A> extends Signal<MutationState<T>> {
   final Future<T> Function(A) _fn;
 
   MutationSignal(this._fn, {String? debugLabel})
-    : super(MutationIdle<T>(), debugLabel: debugLabel);
+    : super(MutationIdle<T>(), options: SignalOptions(name: debugLabel));
 
   /// Executes the mutation with [args].
   ///

@@ -12,7 +12,7 @@ import '../core/view_models/desk_document_view_model.dart';
 import '../core/view_models/desk_view_model.dart';
 
 /// Document editor widget that dynamically generates forms based on fields
-class DeskDocumentEditor extends StatefulWidget {
+class DeskDocumentEditor extends SignalStatefulWidget {
   final List<DeskField> fields;
   final String? title;
 
@@ -23,7 +23,7 @@ class DeskDocumentEditor extends StatefulWidget {
 }
 
 class _DeskDocumentEditorState extends State<DeskDocumentEditor>
-    with SignalsMixin {
+     {
   /// Shared edited data signal from the document view model.
   MapSignal<String, dynamic> get editedData =>
       GetIt.I<DeskDocumentViewModel>().editedData;
@@ -143,17 +143,17 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     final viewModel = GetIt.I<DeskViewModel>();
 
     final documentViewModel = GetIt.I<DeskDocumentViewModel>();
-    final saveStatus = documentViewModel.updateData.watch(context);
-    final publishStatus = viewModel.publishCurrentDraft.watch(context);
-    final createStatus = viewModel.createDocument.watch(context);
+    final saveStatus = documentViewModel.updateData.value;
+    final publishStatus = viewModel.publishCurrentDraft.value;
+    final createStatus = viewModel.createDocument.value;
 
     final isSaving = saveStatus.isLoading || createStatus.isLoading;
     final isPublishing = publishStatus.isLoading || createStatus.isLoading;
     final isAnyBusy = isSaving || isPublishing;
 
-    final versionId = viewModel.selectedVersionId.watch(context);
+    final versionId = viewModel.selectedVersionId.value;
     final versionState = versionId != null
-        ? viewModel.documentDataContainer(versionId).watch(context)
+        ? viewModel.documentDataContainer(versionId).value
         : null;
 
     final edited = editedData.value;
@@ -195,7 +195,7 @@ class _DeskDocumentEditorState extends State<DeskDocumentEditor>
     required bool isAnyBusy,
     required bool isVersionLoading,
   }) {
-    editedData.watch(context);
+    editedData.value;
 
     final theme = ShadTheme.of(context);
 

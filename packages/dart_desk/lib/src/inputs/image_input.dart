@@ -21,7 +21,7 @@ import 'optional_field_wrapper.dart';
 
 final _log = Logger('dart_desk.inputs.imageInput');
 
-class DeskImageInput extends StatefulWidget {
+class DeskImageInput extends SignalStatefulWidget {
   final DeskImageField field;
   final DeskData? data;
   final ValueChanged<Map<String, dynamic>?>? onChanged;
@@ -330,9 +330,9 @@ class _DeskImageInputState extends State<DeskImageInput>
   }
 
   Widget _buildImagePreviewArea(ShadThemeData theme) {
-    final ref = _viewModel.imageRef.watch(context);
-    final uploadState = _viewModel.upload.watch(context);
-    final dragOver = _viewModel.isDragOver.watch(context);
+    final ref = _viewModel.imageRef.value;
+    final uploadState = _viewModel.upload.value;
+    final dragOver = _viewModel.isDragOver.value;
 
     return Container(
       width: double.infinity,
@@ -512,7 +512,7 @@ class _DeskImageInputState extends State<DeskImageInput>
   }
 
   Widget _buildLocalBytesPreview(ShadThemeData theme) {
-    _viewModel.pickedBytesVersion.watch(context);
+    _viewModel.pickedBytesVersion.value;
     final bytes = _viewModel.pickedBytes;
     if (bytes == null) {
       return Container(color: theme.colorScheme.muted);
@@ -525,8 +525,8 @@ class _DeskImageInputState extends State<DeskImageInput>
     super.build(context); // required by AutomaticKeepAliveClientMixin
 
     final theme = ShadTheme.of(context);
-    final ref = _viewModel.imageRef.watch(context);
-    final uploadState = _viewModel.upload.watch(context);
+    final ref = _viewModel.imageRef.value;
+    final uploadState = _viewModel.upload.value;
     final publicUrl = ref?.publicUrl;
     final externalUrl = ref?.externalUrl;
     final hasAnyValue = ref != null;

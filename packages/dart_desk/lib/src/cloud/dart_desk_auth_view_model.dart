@@ -90,12 +90,12 @@ class DartDeskAuthViewModel {
   /// Flips to true after [sessionManager.initialize] resolves. While false,
   /// [currentUser] hangs (returns a never-completing future) so the UI stays
   /// in [AsyncLoading] instead of flashing the sign-in screen.
-  final _authReady = signal<bool>(false, debugLabel: 'authReady');
+  final _authReady = signal<bool>(false, options: SignalOptions(name: 'authReady'));
 
   /// Mirror of [sessionManager.authInfoListenable]'s value. Identity changes
   /// here trigger a [currentUser] re-fetch — covering sign-in, sign-out, and
   /// token refresh after idle.
-  final _authInfo = signal<AuthSuccess?>(null, debugLabel: 'authInfo');
+  final _authInfo = signal<AuthSuccess?>(null, options: SignalOptions(name: 'authInfo'));
 
   late final FutureSignal<User?> currentUser =
       futureSignal<User?>(
@@ -109,20 +109,19 @@ class DartDeskAuthViewModel {
           if (!sessionManager.isAuthenticated) return null;
           return client.user.getCurrentUser();
         },
-        dependencies: [_authReady, _authInfo],
-        debugLabel: 'currentUser',
+        options: AsyncSignalOptions(name: 'currentUser'),
       );
 
   /// Transient errors that aren't the result of the user fetch (form
   /// validation, OAuth callback failures, manual [reportError] calls).
-  final signInError = signal<Object?>(null, debugLabel: 'signInError');
+  final signInError = signal<Object?>(null, options: SignalOptions(name: 'signInError'));
 
   /// Combines factory errors and transient errors for the sign-in screen.
   late final Computed<Object?> displayError = computed<Object?>(() {
     final state = currentUser.value;
     if (state is AsyncError<User?>) return state.error;
     return signInError.value;
-  }, debugLabel: 'displayError');
+  }, options: ComputedOptions(name: 'displayError'));
 
   EffectCleanup? _disposeErrorEffect;
   bool _started = false;

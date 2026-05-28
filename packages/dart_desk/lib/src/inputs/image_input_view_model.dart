@@ -23,13 +23,13 @@ class ImageInputViewModel {
   /// The resolved image reference shown to the user.
   late final imageRef = Signal<ImageReference?>(
     null,
-    debugLabel: '$fieldName.imageRef',
+    options: SignalOptions(name: '$fieldName.imageRef'),
   );
 
   /// The backing media asset (when [imageRef] points at one).
   late final asset = Signal<MediaAsset?>(
     null,
-    debugLabel: '$fieldName.asset',
+    options: SignalOptions(name: '$fieldName.asset'),
   );
 
   /// Raw bytes of the in-flight upload, used for local preview.
@@ -46,7 +46,7 @@ class ImageInputViewModel {
   /// bytes themselves traversing the signals graph.
   late final pickedBytesVersion = Signal<int>(
     0,
-    debugLabel: '$fieldName.pickedBytesVersion',
+    options: SignalOptions(name: '$fieldName.pickedBytesVersion'),
   );
 
   void _setPickedBytes(Uint8List? bytes) {
@@ -56,12 +56,12 @@ class ImageInputViewModel {
 
   late final isDragOver = Signal<bool>(
     false,
-    debugLabel: '$fieldName.isDragOver',
+    options: SignalOptions(name: '$fieldName.isDragOver'),
   );
 
   late final lastFramingMode = Signal<FramingMode>(
     FramingMode.focus,
-    debugLabel: '$fieldName.lastFramingMode',
+    options: SignalOptions(name: '$fieldName.lastFramingMode'),
   );
 
   /// Upload mutation. Loading/error states are read from this signal directly

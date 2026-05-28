@@ -9,7 +9,7 @@ import 'package:signals/signals_flutter.dart';
 import '../../../studio.dart';
 
 @RoutePage()
-class DocumentTypeScreen extends StatelessWidget {
+class DocumentTypeScreen extends SignalWidget {
   const DocumentTypeScreen({
     super.key,
     @PathParam('documentTypeSlug') required this.documentTypeSlug,
@@ -79,7 +79,7 @@ class DocumentTypeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     final viewModel = GetIt.I<DeskViewModel>();
-    final docType = viewModel.currentDocumentType.watch(context);
+    final docType = viewModel.currentDocumentType.value;
     final breakpoint = ResponsiveBreakpoints.of(context);
     final isMobile = breakpoint.isMobile;
 

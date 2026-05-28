@@ -7,7 +7,7 @@ import '../../data/models/media_asset.dart';
 import 'asset_delete_confirm_dialog.dart';
 import 'media_browser_state.dart';
 
-class MediaListView extends StatelessWidget {
+class MediaListView extends SignalWidget {
   final MediaBrowserState state;
   final ValueChanged<MediaAsset>? onDoubleClick;
 
@@ -16,7 +16,7 @@ class MediaListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final asyncState = state.assetsData.watch(context);
+    final asyncState = state.assetsData.value;
     final assets = asyncState.value?.items ?? [];
 
     if (asyncState.isLoading && assets.isEmpty) {
@@ -44,7 +44,7 @@ class MediaListView extends StatelessWidget {
   }
 }
 
-class _MediaRow extends StatefulWidget {
+class _MediaRow extends SignalStatefulWidget {
   final MediaAsset asset;
   final MediaBrowserState state;
   final ValueChanged<MediaAsset>? onDoubleClick;
@@ -87,7 +87,7 @@ class _MediaRowState extends State<_MediaRow> {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     final asset = widget.asset;
-    final selectedId = widget.state.selectedAssetId.watch(context);
+    final selectedId = widget.state.selectedAssetId.value;
     final isSelected = asset.assetId == selectedId;
 
     return MouseRegion(

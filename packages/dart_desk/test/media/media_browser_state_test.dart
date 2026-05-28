@@ -48,6 +48,7 @@ void main() {
       expect(state.assetsData.value.value?.items, hasLength(4));
 
       await state.deleteAsset('asset-icon');
+        await pumpEventQueue();
       await state.assetsData.future;
 
       expect(state.assetsData.value.value?.items, hasLength(3));
@@ -60,6 +61,7 @@ void main() {
         state.selectedAssetId.value = 'asset-icon';
 
         await state.deleteAsset('asset-icon');
+        await pumpEventQueue();
 
         expect(state.selectedAssetId.value, isNull);
       },
@@ -105,7 +107,7 @@ void main() {
             return true;
           },
         );
-        await state.assetsData.future;
+        await pumpEventQueue();
         expect(state.assetsData.value.value?.items, hasLength(3));
       },
     );

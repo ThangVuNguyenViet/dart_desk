@@ -1,0 +1,9 @@
+--- test/cloud/dart_desk_auth_view_model_test.dart
++++ test/cloud/dart_desk_auth_view_model_test.dart
+@@ -140,6 +140,7 @@
+       var callCount = 0;
+       when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async {
+         callCount++;
++        print('fetch \$callCount');
+         return user;
+       });

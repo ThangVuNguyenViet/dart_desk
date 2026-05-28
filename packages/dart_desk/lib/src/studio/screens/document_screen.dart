@@ -12,7 +12,7 @@ import 'document_editor.dart';
 import 'document_preview.dart';
 
 @RoutePage()
-class DocumentScreen extends StatelessWidget {
+class DocumentScreen extends SignalWidget {
   const DocumentScreen({
     super.key,
     @PathParam('documentTypeSlug') required this.documentTypeSlug,
@@ -28,7 +28,7 @@ class DocumentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     final viewModel = GetIt.I<DeskViewModel>();
-    final docType = viewModel.currentDocumentType.watch(context);
+    final docType = viewModel.currentDocumentType.value;
     final breakpoint = ResponsiveBreakpoints.of(context);
     final isDesktop = breakpoint.largerThan(DeskBreakpoints.tabletTag);
 

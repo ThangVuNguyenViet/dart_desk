@@ -30,12 +30,12 @@ class GetItDeskContext extends DeskContext {
           documentType,
         );
         return computed<List<DeskDocument>>(
-          () => source.value.map(
+          () => source.value.map<List<DeskDocument>>(
             data: (list) => list.documents,
             loading: () => const <DeskDocument>[],
             error: (_, _) => const <DeskDocument>[],
           ),
-          debugLabel: 'documents($documentType)',
+          options: ComputedOptions(name: 'documents($documentType)'),
         );
       }, cache: true);
 

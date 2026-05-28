@@ -30,7 +30,7 @@ final _log = Logger('dart_desk.cloud.auth');
 ///   ),
 /// );
 /// ```
-class DartDeskAuth extends StatefulWidget {
+class DartDeskAuth extends SignalStatefulWidget {
   final Widget Function(
     BuildContext context,
     Client client,
@@ -462,8 +462,8 @@ class _DartDeskAuthState extends State<DartDeskAuth> {
 
   @override
   Widget build(BuildContext context) {
-    final state = _authVM.currentUser.watch(context);
-    final error = _authVM.displayError.watch(context);
+    final state = _authVM.currentUser.value;
+    final error = _authVM.displayError.value;
 
     // Check AsyncData *before* AsyncLoading: AsyncDataReloading extends both,
     // so a refresh keeps the authenticated subtree mounted instead of being

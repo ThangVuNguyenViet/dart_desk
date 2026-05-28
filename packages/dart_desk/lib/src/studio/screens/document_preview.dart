@@ -10,7 +10,7 @@ import '../theme/spacing.dart';
 
 /// Live preview panel that renders the document type's builder with current
 /// edited data, falling back to the saved version data.
-class DocumentPreview extends StatelessWidget {
+class DocumentPreview extends SignalWidget {
   const DocumentPreview({super.key, required this.docType});
 
   final DocumentType docType;
@@ -20,7 +20,7 @@ class DocumentPreview extends StatelessWidget {
     final theme = ShadTheme.of(context);
     final viewModel = GetIt.I<DeskViewModel>();
     final documentViewModel = GetIt.I<DeskDocumentViewModel>();
-    final edited = documentViewModel.editedData.watch(context);
+    final edited = documentViewModel.editedData.value;
 
     Map<String, dynamic> data = edited;
     if (data.isEmpty) {

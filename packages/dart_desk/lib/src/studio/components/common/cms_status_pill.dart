@@ -19,7 +19,7 @@ import '../../theme/spacing.dart';
 /// | 4        | (default)                          | "Saved"                 |
 ///
 /// Resolves both VMs from GetIt so callers need zero constructor args.
-class CmsStatusPill extends StatelessWidget {
+class CmsStatusPill extends SignalWidget {
   const CmsStatusPill({super.key});
 
   @override
@@ -27,8 +27,8 @@ class CmsStatusPill extends StatelessWidget {
     final documentVM = GetIt.I<DeskDocumentViewModel>();
     final viewModel = GetIt.I<DeskViewModel>();
 
-    final saveState = documentVM.updateData.watch(context);
-    final hasChanges = viewModel.hasUnpublishedChanges.watch(context);
+    final saveState = documentVM.updateData.value;
+    final hasChanges = viewModel.hasUnpublishedChanges.value;
 
     if (saveState.isLoading) {
       return const _Pill(
@@ -69,7 +69,7 @@ class CmsStatusPill extends StatelessWidget {
 
 enum _PillVariant { muted, success, warning, error }
 
-class _Pill extends StatelessWidget {
+class _Pill extends SignalWidget {
   final String label;
   final IconData icon;
   final _PillVariant variant;

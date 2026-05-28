@@ -21,7 +21,7 @@ import 'default_desk_header.dart';
 ///
 /// Displays logo, breadcrumbs, theme toggle, version history, and sign-out.
 /// Navigation uses [context.router.navigate] (auto_route).
-class DeskTopBar extends StatelessWidget {
+class DeskTopBar extends SignalWidget {
   const DeskTopBar({super.key});
 
   @override
@@ -31,8 +31,8 @@ class DeskTopBar extends StatelessWidget {
     final viewModel = GetIt.I<DeskViewModel>();
     final config = GetIt.I<StudioConfig>();
 
-    final docTypeSlug = viewModel.currentDocumentTypeSlug.watch(context);
-    final docId = viewModel.currentDocumentId.watch(context);
+    final docTypeSlug = viewModel.currentDocumentTypeSlug.value;
+    final docId = viewModel.currentDocumentId.value;
 
     final segments = <BreadcrumbSegment>[
       BreadcrumbSegment(
@@ -63,14 +63,14 @@ class DeskTopBar extends StatelessWidget {
     if (docId != null) {
       final documentViewModel = GetIt.I<DeskDocumentViewModel>();
       final title =
-          documentViewModel.selectedDocument.watch(context).value?.title ?? '';
+          documentViewModel.selectedDocument.value.value?.title ?? '';
       segments.add(
         BreadcrumbSegment(label: title.isNotEmpty ? title : 'Document'),
       );
     }
 
     final themeModeSignal = DeskThemeModeProvider.of(context);
-    final currentTheme = themeModeSignal.watch(context);
+    final currentTheme = themeModeSignal.value;
 
     return Container(
       height: 48,

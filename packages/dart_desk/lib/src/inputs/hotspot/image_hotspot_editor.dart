@@ -10,7 +10,7 @@ import 'framing_controller.dart';
 import 'framing_mode_toggle.dart';
 import 'hotspot_painter.dart';
 
-class ImageHotspotEditor extends StatefulWidget {
+class ImageHotspotEditor extends SignalStatefulWidget {
   final String imageUrl;
   final Hotspot? initialHotspot;
   final CropRect? initialCrop;
@@ -47,8 +47,8 @@ class ImageHotspotEditor extends StatefulWidget {
 }
 
 class _ImageHotspotEditorState extends State<ImageHotspotEditor>
-    with SignalsMixin {
-  late final _draft = createSignal(
+     {
+  late final _draft = signal(
     FramingDraft.initial(
       crop: widget.initialCrop,
       hotspot: widget.initialHotspot,
@@ -57,7 +57,7 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
       offset: widget.initialOffset,
     ),
   );
-  late final _loadFailed = createSignal<bool>(false);
+  late final _loadFailed = signal<bool>(false);
 
   // Track which element is being dragged
   String? _dragTarget;
@@ -68,7 +68,7 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
   int _scaleSliderTick = 0;
 
   // Track the image's actual aspect ratio once loaded
-  late final _imageAspectRatio = createSignal<double?>(null);
+  late final _imageAspectRatio = signal<double?>(null);
 
   @override
   void initState() {
@@ -103,9 +103,9 @@ class _ImageHotspotEditorState extends State<ImageHotspotEditor>
   @override
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
-    final aspectRatio = _imageAspectRatio.watch(context);
-    final draft = _draft.watch(context);
-    final loadFailed = _loadFailed.watch(context);
+    final aspectRatio = _imageAspectRatio.value;
+    final draft = _draft.value;
+    final loadFailed = _loadFailed.value;
 
     return ShadCard(
       key: const ValueKey('hotspot_editor'),
@@ -641,7 +641,7 @@ class _CheckerboardPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-class _ErrorState extends StatelessWidget {
+class _ErrorState extends SignalWidget {
   final VoidCallback onRetry;
   final VoidCallback onClose;
 

@@ -15,7 +15,7 @@ import '../common/desk_document_type_item.dart';
 ///
 /// Supports expanded (icon + label + count) and collapsed (icon-only rail) modes.
 /// Collapse state is driven by [DeskViewModel.sidebarCollapsed].
-class DeskDocumentTypeSidebar extends StatelessWidget {
+class DeskDocumentTypeSidebar extends SignalWidget {
   final List<DocumentTypeDecoration> documentTypeDecorations;
   final Widget? header;
   final Widget? footer;
@@ -31,8 +31,8 @@ class DeskDocumentTypeSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ShadTheme.of(context);
     final viewModel = GetIt.I<DeskViewModel>();
-    final isCollapsed = viewModel.sidebarCollapsed.watch(context);
-    final currentSlug = viewModel.currentDocumentTypeSlug.watch(context);
+    final isCollapsed = viewModel.sidebarCollapsed.value;
+    final currentSlug = viewModel.currentDocumentTypeSlug.value;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),

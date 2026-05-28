@@ -572,7 +572,7 @@ class _DeskDocumentListViewState extends State<DeskDocumentListView> {
 
 /// Watches the versions container for a document and displays its latest
 /// version's status as a [DeskStatusPill].
-class _DocumentStatusPill extends StatelessWidget {
+class _DocumentStatusPill extends StatefulWidget {
   final String documentId;
   final DeskViewModel viewModel;
 
@@ -582,10 +582,21 @@ class _DocumentStatusPill extends StatelessWidget {
   });
 
   @override
+  State<_DocumentStatusPill> createState() => _DocumentStatusPillState();
+}
+
+class _DocumentStatusPillState extends State<_DocumentStatusPill> {
+  late final FutureSignal<DocumentVersionList> _versionsSignal;
+
+  @override
+  void initState() {
+    super.initState();
+    _versionsSignal = widget.viewModel.versionsContainer(widget.documentId);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final versionsState = viewModel
-        .versionsContainer(documentId)
-        .watch(context);
+    final versionsState = _versionsSignal.watch(context);
 
     // Render nothing while loading/erroring instead of misleadingly showing
     // "draft" — AsyncDataReloading still routes to data, so reloads keep the

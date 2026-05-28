@@ -19,20 +19,20 @@ class DeskDocumentViewModel {
   final DataSource dataSource;
 
   /// Signal for the document ID
-  final documentId = Signal<String?>(null, debugLabel: 'documentId');
+  final documentId = Signal<String?>(null, options: SignalOptions(name: 'documentId'));
 
   /// FutureSignal for the currently selected document
   late final selectedDocument = FutureSignal<DeskDocument?>(() async {
     final docId = documentId.value;
     if (docId == null) return null;
     return await dataSource.getDocument(docId);
-  }, debugLabel: 'selectedDocument');
+  }, options: AsyncSignalOptions(name: 'selectedDocument'));
 
   /// Shared edited data signal — written by the editor, read by the preview.
-  final editedData = MapSignal<String, dynamic>({}, debugLabel: 'editedData');
+  final editedData = MapSignal<String, dynamic>({}, options: MapSignalOptions(name: 'editedData'));
 
   /// True when the user has made changes that have not yet been saved.
-  final isDirty = Signal<bool>(false, debugLabel: 'isDirty');
+  final isDirty = Signal<bool>(false, options: SignalOptions(name: 'isDirty'));
 
   final List<EffectCleanup> _cleanups = [];
 

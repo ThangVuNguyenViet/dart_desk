@@ -54,10 +54,10 @@ void main() {
       ).thenThrow(const ServerpodClientException('not found', 404));
 
       final vm = build();
-    final dispose = effect(() => vm.currentUser.value);
       vm.currentUser.value; // force lazy factory to run.
       await vm.start();
-      await pumpEventQueue(times: 50);
+      vm.currentUser.value;
+    await pumpEventQueue(times: 50);
 
       final state = vm.currentUser.value;
       expect(state, isA<AsyncError<User?>>());
@@ -66,8 +66,7 @@ void main() {
       expect((error as ServerpodClientException).statusCode, 404);
       verify(() => session.signOutDevice()).called(1);
 
-      dispose();
-    vm.dispose();
+      vm.dispose();
     },
   );
 
@@ -79,17 +78,17 @@ void main() {
       when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async => user);
 
       final vm = build();
-    final dispose = effect(() => vm.currentUser.value);
+      vm.currentUser.value;
       await vm.start();
-      await pumpEventQueue(times: 50);
+      vm.currentUser.value;
+    await pumpEventQueue(times: 50);
 
       final state = vm.currentUser.value;
       expect(state, isA<AsyncData<User?>>());
       expect((state as AsyncData<User?>).value, user);
       verifyNever(() => session.signOutDevice());
 
-      dispose();
-    vm.dispose();
+      vm.dispose();
     },
   );
 
@@ -97,9 +96,9 @@ void main() {
     when(() => session.isAuthenticated).thenReturn(false);
 
     final vm = build();
-    final dispose = effect(() => vm.currentUser.value);
     vm.currentUser.value;
     await vm.start();
+    vm.currentUser.value;
     await pumpEventQueue(times: 50);
 
     final state = vm.currentUser.value;
@@ -107,7 +106,6 @@ void main() {
     expect((state as AsyncData<User?>).value, isNull);
     verifyNever(() => userEndpoint.getCurrentUser());
 
-    dispose();
     vm.dispose();
   });
 
@@ -115,9 +113,9 @@ void main() {
     when(() => session.isAuthenticated).thenReturn(false);
 
     final vm = build();
-    final dispose = effect(() => vm.currentUser.value);
     vm.currentUser.value;
     await vm.start();
+    vm.currentUser.value;
     await pumpEventQueue(times: 50);
 
     await vm.signInWithEmail(email: '', password: '');
@@ -128,7 +126,6 @@ void main() {
     expect(vm.currentUser.value, isA<AsyncData<User?>>());
     expect((vm.currentUser.value as AsyncData<User?>).value, isNull);
 
-    dispose();
     vm.dispose();
   });
 
@@ -140,7 +137,6 @@ void main() {
       var callCount = 0;
       when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async {
         callCount++;
-        print('fetch \$callCount');
         return user;
       });
 
@@ -152,9 +148,10 @@ void main() {
       authNotifier.value = first;
 
       final vm = build();
-    final dispose = effect(() => vm.currentUser.value);
+      vm.currentUser.value;
       await vm.start();
-      await pumpEventQueue(times: 50);
+      vm.currentUser.value;
+    await pumpEventQueue(times: 50);
       expect(callCount, 1);
 
       // Simulate a silent token refresh: SessionManager emits a new
@@ -162,13 +159,13 @@ void main() {
       final refreshed = _MockAuthSuccess();
       when(() => refreshed.authUserId).thenReturn(userId);
       authNotifier.value = refreshed;
-      await pumpEventQueue(times: 50);
+      vm.currentUser.value;
+    await pumpEventQueue(times: 50);
 
       expect(callCount, 1, reason: 'silent refresh should not refetch user');
       expect((vm.currentUser.value as AsyncData<User?>).value, user);
 
-      dispose();
-    vm.dispose();
+      vm.dispose();
     },
   );
 
@@ -189,9 +186,9 @@ void main() {
     authNotifier.value = first;
 
     final vm = build();
-    final dispose = effect(() => vm.currentUser.value);
     vm.currentUser.value;
     await vm.start();
+    vm.currentUser.value;
     await pumpEventQueue(times: 50);
     expect((vm.currentUser.value as AsyncData<User?>).value, userA);
 
@@ -199,12 +196,12 @@ void main() {
     final second = _MockAuthSuccess();
     when(() => second.authUserId).thenReturn(idB);
     authNotifier.value = second;
+    vm.currentUser.value;
     await pumpEventQueue(times: 50);
 
     expect(callCount, 2);
     expect((vm.currentUser.value as AsyncData<User?>).value, userB);
 
-    dispose();
     vm.dispose();
   });
 
@@ -215,9 +212,9 @@ void main() {
     when(() => userEndpoint.getCurrentUser()).thenAnswer((_) async => user);
 
     final vm = build();
-    final dispose = effect(() => vm.currentUser.value);
     vm.currentUser.value;
     await vm.start();
+    vm.currentUser.value;
     await pumpEventQueue(times: 50);
     expect((vm.currentUser.value as AsyncData<User?>).value, isNull);
 
@@ -229,11 +226,11 @@ void main() {
       () => auth.authUserId,
     ).thenReturn(UuidValue.fromString('00000000-0000-4000-8000-000000000099'));
     authNotifier.value = auth;
+    vm.currentUser.value;
     await pumpEventQueue(times: 50);
 
     expect((vm.currentUser.value as AsyncData<User?>).value, user);
 
-    dispose();
     vm.dispose();
   });
 }

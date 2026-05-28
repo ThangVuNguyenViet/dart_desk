@@ -20,7 +20,7 @@ import '../screens/document_list.dart';
 import '../theme/spacing.dart';
 
 @RoutePage()
-class StudioShellScreen extends StatefulWidget {
+class StudioShellScreen extends SignalStatefulWidget {
   const StudioShellScreen({super.key});
 
   @override
@@ -180,9 +180,9 @@ class _StudioShellScreenState extends State<StudioShellScreen> {
   Widget _buildDesktopLayout(BuildContext context, StudioConfig config) {
     final theme = ShadTheme.of(context);
     final viewModel = GetIt.I<DeskViewModel>();
-    final docType = viewModel.currentDocumentType.watch(context);
-    final isListVisible = viewModel.documentListVisible.watch(context);
-    final docTypeSlug = viewModel.currentDocumentTypeSlug.watch(context);
+    final docType = viewModel.currentDocumentType.value;
+    final isListVisible = viewModel.documentListVisible.value;
+    final docTypeSlug = viewModel.currentDocumentTypeSlug.value;
 
     return Row(
       children: [

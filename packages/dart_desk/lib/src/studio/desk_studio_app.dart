@@ -20,7 +20,7 @@ import 'theme/theme.dart';
 /// Creates [StudioConfig] and registers it in GetIt, instantiates [StudioRouter],
 /// and wires [ShadApp.router]. The consuming app only needs to provide data
 /// and document type configuration.
-class DeskStudioApp extends StatefulWidget {
+class DeskStudioApp extends SignalStatefulWidget {
   const DeskStudioApp({
     super.key,
     required this.dataSource,
@@ -48,7 +48,7 @@ class DeskStudioApp extends StatefulWidget {
 
 class _DeskStudioAppState extends State<DeskStudioApp> {
   late final StudioRouter _router;
-  final _themeMode = Signal<ThemeMode>(ThemeMode.dark, debugLabel: 'themeMode');
+  final _themeMode = Signal<ThemeMode>(ThemeMode.dark, options: SignalOptions(name: 'themeMode'));
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _DeskStudioAppState extends State<DeskStudioApp> {
 
   @override
   Widget build(BuildContext context) {
-    final currentMode = _themeMode.watch(context);
+    final currentMode = _themeMode.value;
     final resolvedTheme =
         widget.theme ??
         (currentMode == ThemeMode.dark ? deskStudioTheme : deskStudioLightTheme);

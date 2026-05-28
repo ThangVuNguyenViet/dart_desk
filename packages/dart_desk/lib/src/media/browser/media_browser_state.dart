@@ -11,15 +11,15 @@ class MediaBrowserState {
   final DataSource dataSource;
 
   // Filter/search state
-  final search = signal('', debugLabel: 'search');
-  final typeFilter = signal(MediaTypeFilter.all, debugLabel: 'typeFilter');
-  final sort = signal(MediaSort.dateDesc, debugLabel: 'sort');
-  final page = signal(0, debugLabel: 'page');
+  final search = signal('', options: SignalOptions(name: 'search'));
+  final typeFilter = signal(MediaTypeFilter.all, options: SignalOptions(name: 'typeFilter'));
+  final sort = signal(MediaSort.dateDesc, options: SignalOptions(name: 'sort'));
+  final page = signal(0, options: SignalOptions(name: 'page'));
   final int pageSize;
 
   // View state
-  final isGridView = signal(true, debugLabel: 'isGridView');
-  final selectedAssetId = signal<String?>(null, debugLabel: 'selectedAssetId');
+  final isGridView = signal(true, options: SignalOptions(name: 'isGridView'));
+  final selectedAssetId = signal<String?>(null, options: SignalOptions(name: 'selectedAssetId'));
 
   // Data — reactive: auto-reloads when filter signals change
   late final assetsData = futureSignal<MediaPage>(
@@ -30,8 +30,7 @@ class MediaBrowserState {
       limit: pageSize,
       offset: page.value * pageSize,
     ),
-    dependencies: [search, typeFilter, sort, page],
-    debugLabel: 'assetsData',
+    options: AsyncSignalOptions(dependencies: [search, typeFilter, sort, page], name: 'assetsData'),
   );
 
   MediaBrowserState({

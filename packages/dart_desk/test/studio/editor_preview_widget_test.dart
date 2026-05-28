@@ -19,13 +19,13 @@ import '../helpers/input_test_helpers.dart';
 
 /// Minimal preview panel that watches editedData and calls docType.builder,
 /// mirroring the real DeskStudio._buildPreview logic.
-class _PreviewPanel extends StatelessWidget {
+class _PreviewPanel extends SignalWidget {
   final DocumentType docType;
   const _PreviewPanel({required this.docType});
 
   @override
   Widget build(BuildContext context) {
-    final edited = GetIt.I<DeskDocumentViewModel>().editedData.watch(context);
+    final edited = GetIt.I<DeskDocumentViewModel>().editedData.value;
     return docType.builder(context, edited);
   }
 }
@@ -227,9 +227,11 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+debugDumpApp();
 
       await tester.tap(find.byType(ShadSwitch));
       await tester.pumpAndSettle();
+debugDumpApp();
 
       expect(receivedName, 'boolean_field');
       expect(receivedValue, isNotNull);
@@ -310,6 +312,7 @@ void main() {
 
       await tester.tap(switchFinder);
       await tester.pumpAndSettle();
+debugDumpApp();
 
       final editedData = GetIt.I<DeskDocumentViewModel>().editedData;
       expect(editedData['boolean_field'], isNotNull);
@@ -401,6 +404,7 @@ void main() {
       );
       await tester.tap(switchFinder);
       await tester.pumpAndSettle();
+debugDumpApp();
 
       expect(find.text('preview:boolean_field: true'), findsOneWidget);
     });
@@ -416,6 +420,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+debugDumpApp();
 
       expect(find.text('preview:document_ref_dropdown: []'), findsOneWidget);
     });
@@ -438,6 +443,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+debugDumpApp();
 
       expect(
         find.text(
@@ -468,6 +474,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+debugDumpApp();
 
       expect(
         find.text(
@@ -483,6 +490,7 @@ void main() {
         'document_ref_dropdown': [gammaDoc.id!],
       };
       await tester.pumpAndSettle();
+debugDumpApp();
 
       expect(
         find.text(

@@ -1,6 +1,8 @@
 import 'package:dart_desk_annotation/dart_desk_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
+import 'package:collection/collection.dart';
+
 
 import 'package:get_it/get_it.dart';
 
@@ -173,7 +175,7 @@ final allFieldsDocumentType = DocumentType(
 );
 
 Widget _testAllFieldsBuilder(BuildContext context, Map<String, dynamic> data) {
-  return Builder(
+  return SignalBuilder(
     builder: (context) {
       // Resolve selected document titles from the context-aware multi-dropdown
       final selectedIds = data['document_ref_dropdown'];
@@ -182,8 +184,8 @@ Widget _testAllFieldsBuilder(BuildContext context, Map<String, dynamic> data) {
         final viewModel = GetIt.I<DeskViewModel>();
         final state = viewModel
             .documentsContainer('test_all_fields')
-            .watch(context);
-        selectedDocTitles = state.map(
+            .value;
+        selectedDocTitles = state.map<String?>(
           data: (list) => selectedIds
               .map(
                 (id) => list.documents
@@ -251,8 +253,8 @@ class TestDocumentRefDropdownOption extends DeskMultiDropdownOption<String> {
     final viewModel = GetIt.I<DeskViewModel>();
     final state = viewModel
         .documentsContainer('test_all_fields')
-        .watch(context);
-    return state.map(
+        .value;
+    return state.map<List<DropdownOption<String>>>(
       data: (list) => list.documents
           .map((d) => DropdownOption(value: d.id.toString(), label: d.title))
           .toList(),

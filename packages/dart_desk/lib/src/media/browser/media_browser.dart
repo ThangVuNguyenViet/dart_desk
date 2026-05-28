@@ -20,7 +20,7 @@ import 'media_toolbar.dart';
 
 enum MediaBrowserMode { standalone, picker }
 
-class MediaBrowser extends StatefulWidget {
+class MediaBrowser extends SignalStatefulWidget {
   final DataSource dataSource;
   final MediaBrowserMode mode;
   final MediaTypeFilter? initialTypeFilter;
@@ -47,7 +47,7 @@ class _MediaBrowserState extends State<MediaBrowser> {
   );
   final ImagePicker _picker = ImagePicker();
   // Local error signal for upload/drop failures (separate from listMedia errors)
-  final _uploadError = signal<String?>(null, debugLabel: 'uploadError');
+  final _uploadError = signal<String?>(null, options: SignalOptions(name: 'uploadError'));
 
   @override
   void dispose() {
@@ -178,9 +178,9 @@ class _MediaBrowserState extends State<MediaBrowser> {
           ),
 
           // Error banner (listMedia errors or upload/drop errors)
-          Watch((context) {
-            final asyncState = _state.assetsData.watch(context);
-            final uploadErr = _uploadError.watch(context);
+          SignalBuilder(builder: (context) {
+            final asyncState = _state.assetsData.value;
+            final uploadErr = _uploadError.value;
             final errorMsg = asyncState.hasError
                 ? 'Failed to load media'
                 : uploadErr;
@@ -207,8 +207,8 @@ class _MediaBrowserState extends State<MediaBrowser> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child: Watch((context) {
-                    final isGrid = _state.isGridView.watch(context);
+                  child: SignalBuilder(builder: (context) {
+                    final isGrid = _state.isGridView.value;
                     if (isGrid) {
                       return MediaGrid(
                         state: _state,
@@ -223,10 +223,10 @@ class _MediaBrowserState extends State<MediaBrowser> {
                 ),
                 SizedBox(
                   width: 320,
-                  child: Watch((context) {
-                    final selectedId = _state.selectedAssetId.watch(context);
+                  child: SignalBuilder(builder: (context) {
+                    final selectedId = _state.selectedAssetId.value;
                     final assets =
-                        _state.assetsData.watch(context).value?.items ?? [];
+                        _state.assetsData.value.value?.items ?? [];
                     final asset = selectedId != null
                         ? assets
                               .where((a) => a.assetId == selectedId)
@@ -266,9 +266,9 @@ class _MediaBrowserState extends State<MediaBrowser> {
             child: Row(
               children: [
                 // Pagination
-                Watch((context) {
-                  final currentPage = _state.page.watch(context);
-                  final asyncState = _state.assetsData.watch(context);
+                SignalBuilder(builder: (context) {
+                  final currentPage = _state.page.value;
+                  final asyncState = _state.assetsData.value;
                   final total = asyncState.value?.total ?? 0;
                   final totalPages = _state.totalPages;
 
@@ -304,9 +304,9 @@ class _MediaBrowserState extends State<MediaBrowser> {
                 const Spacer(),
                 // Picker mode: Select button
                 if (widget.mode == MediaBrowserMode.picker)
-                  Watch((context) {
-                    final selectedId = _state.selectedAssetId.watch(context);
-                    final asyncState = _state.assetsData.watch(context);
+                  SignalBuilder(builder: (context) {
+                    final selectedId = _state.selectedAssetId.value;
+                    final asyncState = _state.assetsData.value;
                     final assets = asyncState.value?.items ?? [];
                     final asset = selectedId != null
                         ? assets
